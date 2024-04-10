@@ -9,11 +9,6 @@
       "vite/client"
     ]
   },
-  "exclude": [
-    "src/**/*.test.ts",
-    "src/**/*.test.tsx",
-    "src/**/*.test.js",
-    "src/**/*.test.jsx"
-  ],
+  "exclude": ["src/**/*.test.ts", "src/**/*.test.tsx"],
   "include": ["src/**/*.js", "src/**/*.jsx", "src/**/*.ts", "src/**/*.tsx"]
 }

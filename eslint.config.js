@@ -1,30 +1,25 @@
-export default {
-  ignores: ['**/*'],
-      files: ['*.ts', '*.tsx', '*.js', '*.jsx'],
-      rules: {
-        '@nx/enforce-module-boundaries': [
-          'error',
-          {
-            enforceBuildableLibDependency: true,
-            allow: [],
-            depConstraints: [
-              {
-                sourceTag: '*',
-                onlyDependOnLibsWithTags: ['*'],
-              },
-            ],
-          },
-        ],
+import eslint from '@eslint/js';
+import tseslint from 'typescript-eslint';
+import prettierConfig from 'eslint-config-prettier';
+import unicornPlugin from 'eslint-plugin-unicorn';
+
+export default tseslint.config(
+  eslint.configs.recommended,
+  ...tseslint.configs.recommended,
+  prettierConfig,
+  unicornPlugin.configs['flat/recommended'],
+  {
+    languageOptions: {
+      parserOptions: {
+        sourceType: 'module',
+        ecmaVersion: 'latest',
       },
     },
-    {
-      files: ['*.ts', '*.tsx'],
-      extends: ['plugin:@nx/typescript'],
-      rules: {},
+    plugins: {
+      //
     },
-    {
-      files: ['*.js', '*.jsx'],
-      extends: ['plugin:@nx/javascript'],
-      rules: {},
+    rules: {
+      //
     },
-};
+  },
+);
