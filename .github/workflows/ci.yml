@@ -27,11 +27,18 @@ jobs:
         with:
           node-version: 20
           cache: 'yarn'
+
       - run: yarn install --immutable
+
       - uses: nrwl/nx-set-shas@v4
+        env:
+          NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
 
       - run: git branch --track main origin/main
         if: ${{ github.event_name == 'pull_request' }}
 
       - run: yarn nx-cloud record -- nx format:check
+        env:
+          NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
+
       - run: yarn nx affected -t lint test build
