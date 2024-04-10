@@ -1,0 +1,25 @@
+# dependencies - common files and folders
+node_modules
+yarn-error.log
+package.tgz
+
+# dependencies - yarn zero installs
+.yarn/*
+!.yarn/cache
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
+
+# build artifacts
+build/
+
+# editor specific files
+.idea
+
+# tooling
+.eslintcache
+
+# secrets & sensitive
+.env
