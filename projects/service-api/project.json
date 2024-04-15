@@ -68,7 +68,7 @@
       "executor": "nx:run-commands",
       "options": {
         "commands": [
-          "fly deploy --local-only --dockerfile projects/service-api/Dockerfile --config projects/service-api/fly.toml"
+          "flyctl deploy --local-only --dockerfile projects/service-api/Dockerfile --config projects/service-api/fly.toml"
         ]
       }
     }

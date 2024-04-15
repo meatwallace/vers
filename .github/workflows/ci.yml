@@ -45,5 +45,9 @@ jobs:
 
       - run: yarn nx affected -t lint test build
 
+      - uses: superfly/flyctl-actions/setup-flyctl@master
+
       - run: yarn deploy:service-api
         if: ${{ github.ref_name == 'main' }}
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
