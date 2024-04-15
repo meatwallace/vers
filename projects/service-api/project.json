@@ -28,6 +28,7 @@
       "configurations": {
         "development": {},
         "production": {
+          "thirdParty": true,
           "esbuildOptions": {
             "sourcemap": false,
             "outExtension": {

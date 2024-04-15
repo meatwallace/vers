@@ -47,7 +47,7 @@ jobs:
 
       - uses: superfly/flyctl-actions/setup-flyctl@master
 
-      - run: yarn deploy:service-api
+      - run: yarn deploy:service-api --configuration=production
         if: ${{ github.ref_name == 'main' }}
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
