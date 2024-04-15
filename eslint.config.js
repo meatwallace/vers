@@ -19,6 +19,16 @@ export default tseslint.config(
       //
     },
     rules: {
+      'unicorn/prevent-abbreviations': [
+        'error',
+        {
+          allowList: {
+            env: true,
+            Env: true,
+            ctx: true,
+          },
+        },
+      ],
       //
     },
   },
