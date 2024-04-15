@@ -19,7 +19,22 @@ export default tseslint.config(
       //
     },
     rules: {
+      'unicorn/prevent-abbreviations': [
+        'error',
+        {
+          allowList: {
+            args: true,
+            Args: true,
+            ctx: true,
+            env: true,
+            Env: true,
+          },
+        },
+      ],
       //
     },
+  },
+  {
+    ignores: ['**/dist/**', '**/*timestamp*.mjs'],
   },
 );

@@ -5,7 +5,7 @@
     "production": [
       "default",
       "!{projectRoot}/**/?(*.)+(spec|test).[jt]s?(x)?(.snap)",
-      "!{projectRoot}/tsconfig.spec.json",
+      "!{projectRoot}/tsconfig.test.json",
       "!{projectRoot}/eslint.config.js"
     ],
     "sharedGlobals": []
@@ -51,5 +51,12 @@
       }
     }
   },
-  "nxCloudAccessToken": "YTRjZDAxOTYtOTI0Mi00ODFkLWFmM2ItYjM3NjBiMmRlZjVifHJlYWQ="
+  "nxCloudAccessToken": "YTRjZDAxOTYtOTI0Mi00ODFkLWFmM2ItYjM3NjBiMmRlZjVifHJlYWQ=",
+  "targetDefaults": {
+    "@nx/esbuild:esbuild": {
+      "cache": true,
+      "dependsOn": ["^build"],
+      "inputs": ["production", "^production"]
+    }
+  }
 }
