@@ -13,7 +13,7 @@
         "platform": "node",
         "outputPath": "projects/service-api/dist",
         "format": ["esm"],
-        "bundle": false,
+        "bundle": true,
         "main": "projects/service-api/src/main.ts",
         "tsConfig": "projects/service-api/tsconfig.app.json",
         "assets": ["projects/service-api/src/assets"],

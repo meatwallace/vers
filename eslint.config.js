@@ -23,9 +23,11 @@ export default tseslint.config(
         'error',
         {
           allowList: {
+            args: true,
+            Args: true,
+            ctx: true,
             env: true,
             Env: true,
-            ctx: true,
           },
         },
       ],
