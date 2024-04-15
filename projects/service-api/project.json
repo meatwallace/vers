@@ -63,6 +63,14 @@
         ],
         "cwd": "projects/service-api"
       }
+    },
+    "deploy": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "fly deploy --local-only --dockerfile projects/service-api/Dockerfile --config projects/service-api/fly.toml"
+        ]
+      }
     }
   }
 }
