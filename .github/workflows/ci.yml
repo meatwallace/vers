@@ -5,6 +5,8 @@ on:
     branches:
       - main
   pull_request:
+    branches:
+      - main
 
 permissions:
   actions: read
@@ -42,3 +44,6 @@ jobs:
           NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
 
       - run: yarn nx affected -t lint test build
+
+      - run: yarn deploy:service-api
+        if: ${{ github.ref_name == 'main' }}
