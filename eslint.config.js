@@ -35,6 +35,6 @@ export default tseslint.config(
     },
   },
   {
-    ignores: ['**/dist/**'],
+    ignores: ['**/dist/**', '**/*timestamp*.mjs'],
   },
 );
