@@ -13,8 +13,13 @@ ENV NODE_ENV="production"
 # Copy application code
 COPY --link . .
 
-# Build application
-RUN yarn run build:service-api
+# Build application & install specific dependencies
+RUN \
+  yarn run build:service-api && \
+  cd projects/service-api/dist && \
+  # disable pnp so we can simply resolve our modules 
+  yarn config set nodeLinker node-modules && \
+  yarn install
 
 # Final stage for app image
 FROM gcr.io/distroless/nodejs${NODE_VERSION}
