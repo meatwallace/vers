@@ -25,6 +25,7 @@
   "devDependencies": {
     "@commitlint/cli": "19.2.1",
     "@eslint/js": "9.0.0",
+    "@graphql-tools/executor-http": "1.0.9",
     "@nx/cypress": "18.2.4",
     "@nx/devkit": "18.2.4",
     "@nx/esbuild": "18.2.4",
@@ -67,7 +68,6 @@
     "nx": "18.2.4",
     "playwright": "1.43.0",
     "prettier": "3.2.5",
-    "ts-node": "10.9.2",
     "tslib": "2.6.2",
     "typescript": "5.4.5",
     "typescript-eslint": "7.6.0",
