@@ -84,6 +84,7 @@
     "@remix-run/serve": "2.8.1",
     "envalid": "8.0.0",
     "graphql": "16.8.1",
+    "graphql-request": "6.1.0",
     "graphql-yoga": "5.3.0",
     "hono": "4.2.4",
     "isbot": "4",
