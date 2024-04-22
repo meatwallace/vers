@@ -45,14 +45,11 @@ export default defineConfig({
 
   // @ts-expect-error - we're not using vitest's `defineConfig` as it has errors with our plugin type definitions
   test: {
-    setupFiles: ['test-setup.ts'],
+    setupFiles: ['vitest.setup.ts'],
     globals: true,
-    cache: {
-      dir: '../../node_modules/.vitest',
-    },
     environment: 'happy-dom',
     env: loadEnv('test', process.cwd(), ''),
-    include: ['src/**/*.test.{ts,tsx}'],
+    include: ['app/**/*.test.{ts,tsx}'],
     reporters: ['default'],
     coverage: {
       reportsDirectory: '../../coverage/apps/app-web',

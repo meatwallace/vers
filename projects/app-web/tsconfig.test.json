@@ -15,6 +15,7 @@
   "include": [
     "vite.config.ts",
     "vitest.config.ts",
+    "vitest.setup.ts",
     "app/**/*.test.ts",
     "app/**/*.test.tsx"
   ]
