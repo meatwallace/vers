@@ -16,6 +16,7 @@
   },
   "devDependencies": {
     "@remix-run/dev": "2.8.1",
+    "@remix-run/testing": "2.8.1",
     "@types/react": "18.2.75",
     "@types/react-dom": "18.2.24",
     "typescript": "5.4.5"
@@ -23,5 +24,10 @@
   "engines": {
     "node": "20.12.1"
   },
-  "sideEffects": false
+  "sideEffects": false,
+  "msw": {
+    "workerDirectory": [
+      "public"
+    ]
+  }
 }

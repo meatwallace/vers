@@ -2,13 +2,12 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "jsx": "react-jsx",
-    "outDir": "../../dist/out-tsc",
     "types": [
+      "vitest",
       "vitest/globals",
       "vitest/importMeta",
       "vite/client",
       "node",
-      "vitest",
       "@nx/react/typings/cssmodule.d.ts",
       "@nx/react/typings/image.d.ts"
     ]
@@ -17,7 +16,6 @@
     "vite.config.ts",
     "vitest.config.ts",
     "app/**/*.test.ts",
-    "app/**/*.test.tsx",
-    "app/**/*.d.ts"
+    "app/**/*.test.tsx"
   ]
 }
