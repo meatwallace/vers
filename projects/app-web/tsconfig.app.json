@@ -11,5 +11,5 @@
     ]
   },
   "exclude": ["app/**/*.test.ts", "app/**/*.test.tsx"],
-  "include": ["env.d.ts", "app/**/*.ts", "app/**/*.tsx"]
+  "include": ["app/**/*.ts", "app/**/*.tsx"]
 }

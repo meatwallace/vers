@@ -74,6 +74,7 @@ const RAW_RUNTIME_STATE =
           ["eslint-plugin-react-hooks", "virtual:4693e2adf740857f263b3cecb982e42dfab2bbaea841273a76fd4bb0d3ba85e3b6808c5d98439071448ab2131d3c0226971ce4e558290b9a29867f6017ede1e3#npm:4.6.0"],\
           ["eslint-plugin-unicorn", "virtual:4693e2adf740857f263b3cecb982e42dfab2bbaea841273a76fd4bb0d3ba85e3b6808c5d98439071448ab2131d3c0226971ce4e558290b9a29867f6017ede1e3#npm:52.0.0"],\
           ["graphql", "npm:16.8.1"],\
+          ["graphql-request", "virtual:4693e2adf740857f263b3cecb982e42dfab2bbaea841273a76fd4bb0d3ba85e3b6808c5d98439071448ab2131d3c0226971ce4e558290b9a29867f6017ede1e3#npm:6.1.0"],\
           ["graphql-yoga", "virtual:4693e2adf740857f263b3cecb982e42dfab2bbaea841273a76fd4bb0d3ba85e3b6808c5d98439071448ab2131d3c0226971ce4e558290b9a29867f6017ede1e3#npm:5.3.0"],\
           ["hono", "npm:4.2.4"],\
           ["husky", "npm:9.0.11"],\
@@ -3054,6 +3055,7 @@ const RAW_RUNTIME_STATE =
           ["eslint-plugin-react-hooks", "virtual:4693e2adf740857f263b3cecb982e42dfab2bbaea841273a76fd4bb0d3ba85e3b6808c5d98439071448ab2131d3c0226971ce4e558290b9a29867f6017ede1e3#npm:4.6.0"],\
           ["eslint-plugin-unicorn", "virtual:4693e2adf740857f263b3cecb982e42dfab2bbaea841273a76fd4bb0d3ba85e3b6808c5d98439071448ab2131d3c0226971ce4e558290b9a29867f6017ede1e3#npm:52.0.0"],\
           ["graphql", "npm:16.8.1"],\
+          ["graphql-request", "virtual:4693e2adf740857f263b3cecb982e42dfab2bbaea841273a76fd4bb0d3ba85e3b6808c5d98439071448ab2131d3c0226971ce4e558290b9a29867f6017ede1e3#npm:6.1.0"],\
           ["graphql-yoga", "virtual:4693e2adf740857f263b3cecb982e42dfab2bbaea841273a76fd4bb0d3ba85e3b6808c5d98439071448ab2131d3c0226971ce4e558290b9a29867f6017ede1e3#npm:5.3.0"],\
           ["hono", "npm:4.2.4"],\
           ["husky", "npm:9.0.11"],\
@@ -9336,6 +9338,16 @@ const RAW_RUNTIME_STATE =
         "linkType": "HARD"\
       }]\
     ]],\
+    ["cross-fetch", [\
+      ["npm:3.1.8", {\
+        "packageLocation": "./.yarn/cache/cross-fetch-npm-3.1.8-71c3c05709-4c5e022ffe.zip/node_modules/cross-fetch/",\
+        "packageDependencies": [\
+          ["cross-fetch", "npm:3.1.8"],\
+          ["node-fetch", "virtual:71c3c0570974c795b79987bb85d4a29514e196f75c7ca2bb56e80f88177e71cbbb73c9a0f02e781c6ccd33e5e8542eb2d0a05fb7aad876eea2872ec6993aa554#npm:2.7.0"]\
+        ],\
+        "linkType": "HARD"\
+      }]\
+    ]],\
     ["cross-inspect", [\
       ["npm:1.0.0", {\
         "packageLocation": "./.yarn/cache/cross-inspect-npm-1.0.0-75dbd2a0f5-53530865c3.zip/node_modules/cross-inspect/",\
@@ -11991,6 +12003,30 @@ const RAW_RUNTIME_STATE =
         "packageLocation": "./.yarn/cache/graphql-npm-16.8.1-c2cd08b4c0-129c318156.zip/node_modules/graphql/",\
         "packageDependencies": [\
           ["graphql", "npm:16.8.1"]\
+        ],\
+        "linkType": "HARD"\
+      }]\
+    ]],\
+    ["graphql-request", [\
+      ["npm:6.1.0", {\
+        "packageLocation": "./.yarn/cache/graphql-request-npm-6.1.0-d265ce919d-f8167925a1.zip/node_modules/graphql-request/",\
+        "packageDependencies": [\
+          ["graphql-request", "npm:6.1.0"]\
+        ],\
+        "linkType": "SOFT"\
+      }],\
+      ["virtual:4693e2adf740857f263b3cecb982e42dfab2bbaea841273a76fd4bb0d3ba85e3b6808c5d98439071448ab2131d3c0226971ce4e558290b9a29867f6017ede1e3#npm:6.1.0", {\
+        "packageLocation": "./.yarn/__virtual__/graphql-request-virtual-0855294de3/0/cache/graphql-request-npm-6.1.0-d265ce919d-f8167925a1.zip/node_modules/graphql-request/",\
+        "packageDependencies": [\
+          ["graphql-request", "virtual:4693e2adf740857f263b3cecb982e42dfab2bbaea841273a76fd4bb0d3ba85e3b6808c5d98439071448ab2131d3c0226971ce4e558290b9a29867f6017ede1e3#npm:6.1.0"],\
+          ["@graphql-typed-document-node/core", "virtual:fc33a2f62576414ef4174f61aad8b6d8086a397834556eb852e8314e58b6d404c241a51f779d57a996317e7d1149f4bd4d4e42525255f67abd6c02ac47c16410#npm:3.2.0"],\
+          ["@types/graphql", null],\
+          ["cross-fetch", "npm:3.1.8"],\
+          ["graphql", "npm:16.8.1"]\
+        ],\
+        "packagePeers": [\
+          "@types/graphql",\
+          "graphql"\
         ],\
         "linkType": "HARD"\
       }]\
@@ -15381,6 +15417,29 @@ const RAW_RUNTIME_STATE =
         "linkType": "HARD"\
       }]\
     ]],\
+    ["node-fetch", [\
+      ["npm:2.7.0", {\
+        "packageLocation": "./.yarn/cache/node-fetch-npm-2.7.0-587d57004e-b55786b602.zip/node_modules/node-fetch/",\
+        "packageDependencies": [\
+          ["node-fetch", "npm:2.7.0"]\
+        ],\
+        "linkType": "SOFT"\
+      }],\
+      ["virtual:71c3c0570974c795b79987bb85d4a29514e196f75c7ca2bb56e80f88177e71cbbb73c9a0f02e781c6ccd33e5e8542eb2d0a05fb7aad876eea2872ec6993aa554#npm:2.7.0", {\
+        "packageLocation": "./.yarn/__virtual__/node-fetch-virtual-749a5a9668/0/cache/node-fetch-npm-2.7.0-587d57004e-b55786b602.zip/node_modules/node-fetch/",\
+        "packageDependencies": [\
+          ["node-fetch", "virtual:71c3c0570974c795b79987bb85d4a29514e196f75c7ca2bb56e80f88177e71cbbb73c9a0f02e781c6ccd33e5e8542eb2d0a05fb7aad876eea2872ec6993aa554#npm:2.7.0"],\
+          ["@types/encoding", null],\
+          ["encoding", null],\
+          ["whatwg-url", "npm:5.0.0"]\
+        ],\
+        "packagePeers": [\
+          "@types/encoding",\
+          "encoding"\
+        ],\
+        "linkType": "HARD"\
+      }]\
+    ]],\
     ["node-gyp", [\
       ["npm:10.1.0", {\
         "packageLocation": "./.yarn/unplugged/node-gyp-npm-10.1.0-bdea7d2ece/node_modules/node-gyp/",\
@@ -18681,6 +18740,13 @@ const RAW_RUNTIME_STATE =
       }]\
     ]],\
     ["tr46", [\
+      ["npm:0.0.3", {\
+        "packageLocation": "./.yarn/cache/tr46-npm-0.0.3-de53018915-047cb209a6.zip/node_modules/tr46/",\
+        "packageDependencies": [\
+          ["tr46", "npm:0.0.3"]\
+        ],\
+        "linkType": "HARD"\
+      }],\
       ["npm:5.0.0", {\
         "packageLocation": "./.yarn/cache/tr46-npm-5.0.0-d15754040d-1521b6e7bb.zip/node_modules/tr46/",\
         "packageDependencies": [\
@@ -19708,6 +19774,13 @@ const RAW_RUNTIME_STATE =
       }]\
     ]],\
     ["webidl-conversions", [\
+      ["npm:3.0.1", {\
+        "packageLocation": "./.yarn/cache/webidl-conversions-npm-3.0.1-60310f6a2b-5612d5f3e5.zip/node_modules/webidl-conversions/",\
+        "packageDependencies": [\
+          ["webidl-conversions", "npm:3.0.1"]\
+        ],\
+        "linkType": "HARD"\
+      }],\
       ["npm:7.0.0", {\
         "packageLocation": "./.yarn/cache/webidl-conversions-npm-7.0.0-e8c8e30c68-228d8cb6d2.zip/node_modules/webidl-conversions/",\
         "packageDependencies": [\
@@ -19750,6 +19823,15 @@ const RAW_RUNTIME_STATE =
           ["whatwg-url", "npm:14.0.0"],\
           ["tr46", "npm:5.0.0"],\
           ["webidl-conversions", "npm:7.0.0"]\
+        ],\
+        "linkType": "HARD"\
+      }],\
+      ["npm:5.0.0", {\
+        "packageLocation": "./.yarn/cache/whatwg-url-npm-5.0.0-374fb45e60-1588bed84d.zip/node_modules/whatwg-url/",\
+        "packageDependencies": [\
+          ["whatwg-url", "npm:5.0.0"],\
+          ["tr46", "npm:0.0.3"],\
+          ["webidl-conversions", "npm:3.0.1"]\
         ],\
         "linkType": "HARD"\
       }]\
