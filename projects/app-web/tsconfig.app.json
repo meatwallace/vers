@@ -1,6 +1,7 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
+    "jsx": "react-jsx",
     "outDir": "../../dist/out-tsc",
     "types": [
       "node",
@@ -9,6 +10,6 @@
       "vite/client"
     ]
   },
-  "exclude": ["src/**/*.test.ts", "src/**/*.test.tsx"],
-  "include": ["src/**/*.js", "src/**/*.jsx", "src/**/*.ts", "src/**/*.tsx"]
+  "exclude": ["app/**/*.test.ts", "app/**/*.test.tsx"],
+  "include": ["env.d.ts", "app/**/*.ts", "app/**/*.tsx"]
 }

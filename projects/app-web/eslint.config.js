@@ -1,7 +1,7 @@
 import reactPlugin from 'eslint-plugin-react';
 import reactHooksPlugin from 'eslint-plugin-react-hooks';
 import jsxA11yPlugin from 'eslint-plugin-jsx-a11y';
-import rootConfig from '../../eslint.config.js';
+import rootConfig from '../../eslint.config.cjs';
 
 // TODO(#6): extract plugin configs to centralized location for sharing
 export default [
