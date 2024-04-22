@@ -5,6 +5,7 @@
   },
   "eslint.nodePath": ".yarn/sdks",
   "prettier.prettierPath": ".yarn/sdks/prettier/index.cjs",
+  "eslint.experimental.useFlatConfig": true,
   "typescript.tsdk": ".yarn/sdks/typescript/lib",
   "typescript.enablePromptUseWorkspaceTsdk": true
 }

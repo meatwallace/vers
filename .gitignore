@@ -1,6 +1,7 @@
 # See http://help.github.com/ignore-files/ for more about ignoring files.
 
 # compiled output
+build
 dist
 tmp
 /out-tsc
@@ -38,4 +39,6 @@ testem.log
 .DS_Store
 Thumbs.db
 
+# caches
+.cache
 .nx/cache
