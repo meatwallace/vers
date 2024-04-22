@@ -37,6 +37,11 @@ module.exports = tseslint.config(
     },
   },
   {
-    ignores: ['**/dist/**', '**/build/**', '**/*timestamp*.mjs'],
+    ignores: [
+      '**/dist/**',
+      '**/build/**',
+      '**/*timestamp*.mjs',
+      '**/mockServiceWorker.js',
+    ],
   },
 );
