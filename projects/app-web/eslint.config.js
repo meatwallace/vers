@@ -1,7 +1,7 @@
 import reactPlugin from 'eslint-plugin-react';
 import reactHooksPlugin from 'eslint-plugin-react-hooks';
 import jsxA11yPlugin from 'eslint-plugin-jsx-a11y';
-import rootConfig from '../../eslint.config.js';
+import rootConfig from '../../eslint.config.cjs';
 
 // TODO(#6): extract plugin configs to centralized location for sharing
 export default [
@@ -15,11 +15,16 @@ export default [
         version: 'detect',
       },
     },
-    files: ['src/**'],
+    files: ['app/**', 'server.mjs'],
     plugins: {
       react: reactPlugin,
       'react-hooks': reactHooksPlugin,
       'jsx-a11y': jsxA11yPlugin,
+    },
+    languageOptions: {
+      globals: {
+        console: 'readonly',
+      },
     },
     // TODO(#7): ENABLE RULES WHEN FULL ESLINT 9 SUPPORT AVAILABLE
     rules: {
@@ -195,21 +200,7 @@ export default [
       'jsx-a11y/tabindex-no-positive': 'error',
     },
   },
-  // {
-  //   ignores: ['!**/*'],
-  //   overrides: [
-  //     {
-  //       files: ['*.ts', '*.tsx', '*.js', '*.jsx'],
-  //       rules: {},
-  //     },
-  //     {
-  //       files: ['*.ts', '*.tsx'],
-  //       rules: {},
-  //     },
-  //     {
-  //       files: ['*.js', '*.jsx'],
-  //       rules: {},
-  //     },
-  //   ],
-  // },
+  {
+    ignores: ['**/app/gql/**'],
+  },
 ];

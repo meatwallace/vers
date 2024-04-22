@@ -7,7 +7,7 @@ import { workspaceRoot } from '@nx/devkit';
 const __filename = fileURLToPath(import.meta.url);
 
 // For CI, you may want to set BASE_URL to the deployed application.
-const baseURL = process.env['BASE_URL'] || 'http://localhost:4200';
+const baseURL = process.env['BASE_URL'] || 'http://localhost:4000';
 
 /**
  * Read environment variables from file.
@@ -29,9 +29,11 @@ export default defineConfig({
   /* Run your local dev server before starting the tests */
   webServer: {
     command: 'yarn dev:app-web',
-    url: 'http://localhost:4200',
+    url: 'http://localhost:4000',
     reuseExistingServer: !process.env.CI,
     cwd: workspaceRoot,
+    stdout: 'pipe',
+    timeout: 60 * 1000,
   },
   projects: [
     {

@@ -1,6 +1,7 @@
 # See http://help.github.com/ignore-files/ for more about ignoring files.
 
 # compiled output
+build
 dist
 tmp
 /out-tsc
@@ -33,9 +34,12 @@ npm-debug.log
 yarn-error.log
 testem.log
 /typings
+*.timestamp*.mjs
 
 # System Files
 .DS_Store
 Thumbs.db
 
+# caches
+.cache
 .nx/cache

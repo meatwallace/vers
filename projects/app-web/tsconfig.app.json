@@ -1,14 +1,17 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "outDir": "../../dist/out-tsc",
-    "types": [
-      "node",
-      "@nx/react/typings/cssmodule.d.ts",
-      "@nx/react/typings/image.d.ts",
-      "vite/client"
+    "jsx": "react-jsx",
+    "types": ["node", "vite/client", "vitest"],
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "plugins": [
+      {
+        "name": "@0no-co/graphqlsp",
+        "schema": "../../schema.graphql"
+      }
     ]
   },
-  "exclude": ["src/**/*.test.ts", "src/**/*.test.tsx"],
-  "include": ["src/**/*.js", "src/**/*.jsx", "src/**/*.ts", "src/**/*.tsx"]
+  "exclude": ["app/**/*.test.ts", "app/**/*.test.tsx"],
+  "include": ["app/**/*.ts", "app/**/*.tsx"]
 }

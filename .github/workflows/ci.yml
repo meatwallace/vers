@@ -15,39 +15,73 @@ permissions:
 jobs:
   main:
     runs-on: ubuntu-latest
+    outputs:
+      affected-projects: ${{ steps.record-affected-projects.outputs.affected-projects }}
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      # Connect your workspace on nx.app and uncomment this to enable task distribution.
-      # The "--stop-agents-after" is optional, but allows idle agents to shut down once the "build" targets have been requested
-      # - run: yarn nx-cloud start-ci-run --distribute-on="5 linux-medium-js" --stop-agents-after="build"
-
-      # Cache node_modules
-      - uses: actions/setup-node@v3
+      - name: Setup Node
+        uses: actions/setup-node@v3
         with:
           node-version: 20
           cache: 'yarn'
 
-      - run: yarn install --immutable
+      - name: Install Dependencies
+        run: yarn install --immutable
 
-      - uses: nrwl/nx-set-shas@v4
+      - name: Capture SHA in NX Cloud
+        uses: nrwl/nx-set-shas@v4
         env:
           NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
 
-      - run: git branch --track main origin/main
+      - name: Track main branch
+        run: git branch --track main origin/main
         if: ${{ github.event_name == 'pull_request' }}
 
-      - run: yarn nx-cloud record -- nx format:check
+      - name: Check Formatting
+        run: yarn nx-cloud record -- nx format:check
         env:
           NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
 
-      - run: yarn nx affected -t lint test build
+      - name: Lint
+        run: yarn nx affected -t lint
 
-      - uses: superfly/flyctl-actions/setup-flyctl@master
+      - name: Unit Tests
+        run: yarn nx affected -t test
 
-      - run: yarn deploy:service-api --configuration=production
+      - name: Build
+        run: yarn nx affected -t build
+
+      - name: Install E2E browsers
+        run: yarn dlx playwright install --with-deps
+
+      - name: E2E Tests
+        run: yarn nx affected -t e2e
+
+      - name: Record Affected Projects
+        id: record-affected-projects
         if: ${{ github.ref_name == 'main' }}
+        run: |
+          delimiter="$(openssl rand -hex 8)"
+          echo "affected-projects<<${delimiter}" >> "${GITHUB_OUTPUT}"
+          yarn nx show projects --affected >> "${GITHUB_OUTPUT}"
+          echo "${delimiter}" >> "${GITHUB_OUTPUT}"
+
+      - name: Setup Fly CLI
+        if: ${{ github.ref_name == 'main' }}
+        uses: superfly/flyctl-actions/setup-flyctl@master
+
+      - name: Deploy API service
+        if: ${{ github.ref_name == 'main' && contains(steps.record-affected-projects.outputs.affected-projects, 'service-api') }}
+        run: yarn deploy:service-api --configuration=production
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+
+      - name: Deploy Web App
+        if: ${{ github.ref_name == 'main' && contains(steps.record-affected-projects.outputs.affected-projects, 'app-web') }}
+        run: yarn deploy:app-web --configuration=production
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}

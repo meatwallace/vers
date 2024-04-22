@@ -1,11 +1,11 @@
 {
   "compilerOptions": {
-    "jsx": "react-jsx",
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
     "allowJs": false,
     "esModuleInterop": false,
     "allowSyntheticDefaultImports": true,
     "strict": true,
-    "types": ["vite/client", "vitest"]
+    "types": ["vitest", "vite/client"]
   },
   "files": [],
   "include": [],
