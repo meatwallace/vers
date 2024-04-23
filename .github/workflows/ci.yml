@@ -55,7 +55,10 @@ jobs:
       - name: Build
         run: yarn nx affected -t build
 
-      - name: E2E
+      - name: Install E2E browsers
+        run: yarn dlx playwright install --with-deps
+
+      - name: E2E Tests
         run: yarn nx affected -t e2e
 
       - name: Record Affected Projects
