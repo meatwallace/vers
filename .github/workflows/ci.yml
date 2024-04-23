@@ -16,7 +16,8 @@ jobs:
   main:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
@@ -24,30 +25,46 @@ jobs:
       # The "--stop-agents-after" is optional, but allows idle agents to shut down once the "build" targets have been requested
       # - run: yarn nx-cloud start-ci-run --distribute-on="5 linux-medium-js" --stop-agents-after="build"
 
-      # Cache node_modules
-      - uses: actions/setup-node@v3
+      - name: Setup Node
+        uses: actions/setup-node@v3
         with:
           node-version: 20
           cache: 'yarn'
 
-      - run: yarn install --immutable
+      - name: Install Dependencies
+        run: yarn install --immutable
 
-      - uses: nrwl/nx-set-shas@v4
+      - name: Capture SHA in NX Cloud
+        uses: nrwl/nx-set-shas@v4
         env:
           NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
 
-      - run: git branch --track main origin/main
+      - name: Track main branch
+        run: git branch --track main origin/main
         if: ${{ github.event_name == 'pull_request' }}
 
-      - run: yarn nx-cloud record -- nx format:check
+      - name: Check Formatting
+        run: yarn nx-cloud record -- nx format:check
         env:
           NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
 
-      - run: yarn nx affected -t lint test build
+      - name: Lint
+        run: yarn nx affected -t lint
 
-      - uses: superfly/flyctl-actions/setup-flyctl@master
+      - name: Unit Tests
+        run: yarn nx affected -t test
 
-      - run: yarn deploy:service-api --configuration=production
+      - name: Build
+        run: yarn nx affected -t build
+
+      - name: E2E
+        run: yarn nx affected -t e2e
+
+      - name: Setup Fly CLI
+        uses: superfly/flyctl-actions/setup-flyctl@master
+
+      - name: Deploy API service
+        run: yarn deploy:service-api --configuration=production
         if: ${{ github.ref_name == 'main' }}
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
