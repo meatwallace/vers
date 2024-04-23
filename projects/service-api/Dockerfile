@@ -15,7 +15,7 @@ COPY --link . .
 
 # Build application & install specific dependencies
 RUN \
-  yarn run build:service-api && \
+  yarn run build:service-api --mode production && \
   cd projects/service-api/dist && \
   # disable pnp so we can simply resolve our modules 
   yarn config set nodeLinker node-modules && \

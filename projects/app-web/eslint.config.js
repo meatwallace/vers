@@ -15,11 +15,16 @@ export default [
         version: 'detect',
       },
     },
-    files: ['src/**'],
+    files: ['app/**', 'server.mjs'],
     plugins: {
       react: reactPlugin,
       'react-hooks': reactHooksPlugin,
       'jsx-a11y': jsxA11yPlugin,
+    },
+    languageOptions: {
+      globals: {
+        console: 'readonly',
+      },
     },
     // TODO(#7): ENABLE RULES WHEN FULL ESLINT 9 SUPPORT AVAILABLE
     rules: {

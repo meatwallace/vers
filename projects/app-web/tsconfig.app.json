@@ -2,13 +2,9 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "jsx": "react-jsx",
-    "types": [
-      "node",
-      "@nx/react/typings/cssmodule.d.ts",
-      "@nx/react/typings/image.d.ts",
-      "vite/client",
-      "vitest"
-    ]
+    "types": ["node", "vite/client", "vitest"],
+    "module": "ESNext",
+    "moduleResolution": "Bundler"
   },
   "exclude": ["app/**/*.test.ts", "app/**/*.test.tsx"],
   "include": ["app/**/*.ts", "app/**/*.tsx"]
