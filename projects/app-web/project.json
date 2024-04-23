@@ -17,6 +17,21 @@
         ],
         "cwd": "projects/app-web"
       }
+    },
+    "build-remix": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": ["yarn run remix vite:build"],
+        "cwd": "projects/app-web"
+      }
+    },
+    "deploy": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "flyctl deploy --local-only --dockerfile projects/app-web/Dockerfile --config projects/app-web/fly.toml"
+        ]
+      }
     }
   }
 }

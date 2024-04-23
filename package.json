@@ -11,8 +11,9 @@
     "typecheck": "nx run-many -t typecheck",
     "e2e": "nx run-many -t e2e",
     "---PROJECT-SPECIFIC": "",
-    "build:app-web": "nx build app-web",
+    "build:app-web": "nx build-remix app-web",
     "build:service-api": "nx build service-api",
+    "deploy:app-web": "nx deploy service-api",
     "deploy:service-api": "nx deploy service-api",
     "dev:app-web": "nx serve app-web",
     "dev:service-api": "nx serve service-api",
@@ -34,7 +35,6 @@
     "@nx/node": "18.2.4",
     "@nx/playwright": "18.2.4",
     "@nx/react": "18.2.4",
-    "@nx/remix": "18.2.4",
     "@nx/vite": "18.2.4",
     "@nx/web": "18.2.4",
     "@nx/workspace": "18.2.4",
@@ -95,11 +95,15 @@
     "react-dom": "18.2.0",
     "react-is": "18.2.0",
     "react-router-dom": "6.22.3",
+    "remix-hono": "0.0.16",
     "styled-components": "6.1.8"
   },
   "packageManager": "yarn@4.1.1",
   "dockerfile": {
     "cache": "",
     "distroless": true
-  }
+  },
+  "workspaces": [
+    "projects/*"
+  ]
 }

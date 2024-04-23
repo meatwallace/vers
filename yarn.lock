@@ -1587,7 +1587,6 @@ __metadata:
     "@nx/node": "npm:18.2.4"
     "@nx/playwright": "npm:18.2.4"
     "@nx/react": "npm:18.2.4"
-    "@nx/remix": "npm:18.2.4"
     "@nx/vite": "npm:18.2.4"
     "@nx/web": "npm:18.2.4"
     "@nx/workspace": "npm:18.2.4"
@@ -1640,6 +1639,7 @@ __metadata:
     react-dom: "npm:18.2.0"
     react-is: "npm:18.2.0"
     react-router-dom: "npm:6.22.3"
+    remix-hono: "npm:0.0.16"
     styled-components: "npm:6.1.8"
     tslib: "npm:2.6.2"
     typescript: "npm:5.4.5"
@@ -2550,6 +2550,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@hono/node-server@npm:1.11.0":
+  version: 1.11.0
+  resolution: "@hono/node-server@npm:1.11.0"
+  checksum: 10c0/3f888b5a1ddcb8b2f6568c49e62794b34994d367bbfcfccfa3ef00a8431fad0d3a2a5e2bd8ca3fc8540170e5d0fb9c8b2a61ced0e07e4e505119ce967a81d4cf
+  languageName: node
+  linkType: hard
+
 "@humanwhocodes/config-array@npm:^0.11.14":
   version: 0.11.14
   resolution: "@humanwhocodes/config-array@npm:0.11.14"
@@ -3134,15 +3141,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@nrwl/remix@npm:18.2.4":
-  version: 18.2.4
-  resolution: "@nrwl/remix@npm:18.2.4"
-  dependencies:
-    "@nx/remix": "npm:18.2.4"
-  checksum: 10c0/e3a0ee1619bbeaeec6c1dba50e78b4dd0dc3c43ee9da96239e521e32bee5a5c2e6b2517af1b9b8093c240242547cfa2c05a77864e3844f3b7f70144f376a8983
-  languageName: node
-  linkType: hard
-
 "@nrwl/tao@npm:18.2.4":
   version: 18.2.4
   resolution: "@nrwl/tao@npm:18.2.4"
@@ -3458,20 +3456,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@nx/remix@npm:18.2.4":
-  version: 18.2.4
-  resolution: "@nx/remix@npm:18.2.4"
-  dependencies:
-    "@nrwl/remix": "npm:18.2.4"
-    "@nx/devkit": "npm:18.2.4"
-    "@nx/js": "npm:18.2.4"
-    "@nx/react": "npm:18.2.4"
-    "@phenomnomnominal/tsquery": "npm:~5.0.1"
-    tslib: "npm:^2.3.1"
-  checksum: 10c0/1ddb1f956af2cfeeba43b8fc0ed2f8c05603d955e351af0be5a5e945b3e2dcb463a747ec0bea32d9f5e157954d317a4b3ff1686c4284c04cbd677437f7810868
-  languageName: node
-  linkType: hard
-
 "@nx/vite@npm:18.2.4":
   version: 18.2.4
   resolution: "@nx/vite@npm:18.2.4"
@@ -3753,7 +3737,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@remix-run/server-runtime@npm:2.8.1":
+"@remix-run/server-runtime@npm:2.8.1, @remix-run/server-runtime@npm:^2.6.0":
   version: 2.8.1
   resolution: "@remix-run/server-runtime@npm:2.8.1"
   dependencies:
@@ -5394,6 +5378,39 @@ __metadata:
   checksum: 10c0/57b06ae984bc32a0d22592c87384cd88fe4511b1dd7581497831c56d41939c8a001b28e7b853e1450f2bf61992dfcaa8ae2d0d161a0a90c4fb631ef07098fbac
   languageName: node
   linkType: hard
+
+"app-web@workspace:projects/app-web":
+  version: 0.0.0-use.local
+  resolution: "app-web@workspace:projects/app-web"
+  dependencies:
+    "@hono/node-server": "npm:1.11.0"
+    "@nx/vite": "npm:18.2.4"
+    "@remix-run/dev": "npm:2.8.1"
+    "@remix-run/node": "npm:2.8.1"
+    "@remix-run/react": "npm:2.8.1"
+    "@remix-run/testing": "npm:2.8.1"
+    "@testing-library/jest-dom": "npm:6.4.2"
+    "@testing-library/react": "npm:14.3.0"
+    "@types/node": "npm:20.12.7"
+    "@types/react": "npm:18.2.75"
+    "@types/react-dom": "npm:18.2.24"
+    "@vitejs/plugin-react": "npm:4.2.1"
+    eslint-plugin-jsx-a11y: "npm:6.8.0"
+    eslint-plugin-react: "npm:7.34.1"
+    eslint-plugin-react-hooks: "npm:4.6.0"
+    graphql-request: "npm:6.1.0"
+    hono: "npm:4.2.4"
+    isbot: "npm:4"
+    msw: "npm:2.2.14"
+    react: "npm:18.2.0"
+    react-dom: "npm:18.2.0"
+    remix-hono: "npm:0.0.16"
+    tslib: "npm:2.6.2"
+    typescript: "npm:5.4.5"
+    vite: "npm:5.2.10"
+    vitest: "npm:1.5.0"
+  languageName: unknown
+  linkType: soft
 
 "arch@npm:^2.1.0":
   version: 2.2.0
@@ -9365,6 +9382,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"hono@npm:^4.0.0":
+  version: 4.2.6
+  resolution: "hono@npm:4.2.6"
+  checksum: 10c0/7c0cd407ae2f535b0b209bfcd85de9143fac817d8fe2363727e2e7bbd9655c99d0ea5528c751b4f0c25e8837703fdb2e4402c8b2ce0df39e8661722c0b28b6c7
+  languageName: node
+  linkType: hard
+
 "hosted-git-info@npm:^2.1.4":
   version: 2.8.9
   resolution: "hosted-git-info@npm:2.8.9"
@@ -13281,6 +13305,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"pretty-cache-header@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "pretty-cache-header@npm:1.0.0"
+  dependencies:
+    timestring: "npm:^6.0.0"
+  checksum: 10c0/e9129e6a6cd6bee308ac1cc347f6fc536d4f2fa4b2b7048af0ef2ac22880cbfda0834b6c32946437a75dc1004f95c1ebf4c583e4c69fa819958c92c59370673e
+  languageName: node
+  linkType: hard
+
 "pretty-format@npm:^27.0.2":
   version: 27.5.1
   resolution: "pretty-format@npm:27.5.1"
@@ -13789,6 +13822,31 @@ __metadata:
     mdast-util-to-hast: "npm:^12.1.0"
     unified: "npm:^10.0.0"
   checksum: 10c0/803e658c9b51a9b53ee2ada42ff82e8e570444bb97c873e0d602c2d8dcb69a774fd22bd6f26643dfd5ab4c181059ea6c9fb9a99a2d7f9665f3f11bef1a1489bd
+  languageName: node
+  linkType: hard
+
+"remix-hono@npm:0.0.16":
+  version: 0.0.16
+  resolution: "remix-hono@npm:0.0.16"
+  dependencies:
+    "@remix-run/server-runtime": "npm:^2.6.0"
+    hono: "npm:^4.0.0"
+    pretty-cache-header: "npm:^1.0.0"
+  peerDependencies:
+    "@remix-run/cloudflare": ^2.0.0
+    i18next: ^23.0.0
+    remix-i18next: ^6.0.0
+    zod: ^3.0.0
+  peerDependenciesMeta:
+    "@remix-run/cloudflare":
+      optional: true
+    i18next:
+      optional: true
+    remix-i18next:
+      optional: true
+    zod:
+      optional: true
+  checksum: 10c0/fc13cb4db13e8b1d079ea0aa99665f06f381acdb9bc488e0c6007686b4a1ce80505abccc5b46f12fdd6d086353d54a0d8cd17d3b63b76d77b32f8e60baa737e0
   languageName: node
   linkType: hard
 
@@ -15009,6 +15067,13 @@ __metadata:
   version: 2.3.8
   resolution: "through@npm:2.3.8"
   checksum: 10c0/4b09f3774099de0d4df26d95c5821a62faee32c7e96fb1f4ebd54a2d7c11c57fe88b0a0d49cf375de5fee5ae6bf4eb56dbbf29d07366864e2ee805349970d3cc
+  languageName: node
+  linkType: hard
+
+"timestring@npm:^6.0.0":
+  version: 6.0.0
+  resolution: "timestring@npm:6.0.0"
+  checksum: 10c0/753688c0f6ebdec5af6a77a01ad85b5fd868d04d2d1e7510bb23b2554236ea400f008b0b358a54f148c2aa0cf517494e786f20b61d8a7477d7fa4438f33bf84e
   languageName: node
   linkType: hard
 

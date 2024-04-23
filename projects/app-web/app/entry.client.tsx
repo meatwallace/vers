@@ -9,7 +9,7 @@ import { startTransition, StrictMode } from 'react';
 import { hydrateRoot } from 'react-dom/client';
 
 async function prepareApp() {
-  if (process.env.VITE_ENABLE_MSW === 'true') {
+  if (!import.meta.env.PROD && import.meta.env.VITE_ENABLE_MSW === 'true') {
     const { worker } = await import('./mocks/browser');
 
     return worker.start();

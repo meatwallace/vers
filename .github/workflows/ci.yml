@@ -15,15 +15,13 @@ permissions:
 jobs:
   main:
     runs-on: ubuntu-latest
+    outputs:
+      affected-projects: ${{ steps.record-affected-projects.outputs.affected-projects }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
-      # Connect your workspace on nx.app and uncomment this to enable task distribution.
-      # The "--stop-agents-after" is optional, but allows idle agents to shut down once the "build" targets have been requested
-      # - run: yarn nx-cloud start-ci-run --distribute-on="5 linux-medium-js" --stop-agents-after="build"
 
       - name: Setup Node
         uses: actions/setup-node@v3
@@ -60,11 +58,23 @@ jobs:
       - name: E2E
         run: yarn nx affected -t e2e
 
+      - name: Record Affected Projects
+        id: record-affected-projects
+        if: ${{ github.ref_name == 'main' }}
+        run: yarn nx show projects --affected >> "$GITHUB_OUTPUT"
+
       - name: Setup Fly CLI
+        if: ${{ github.ref_name == 'main' }}
         uses: superfly/flyctl-actions/setup-flyctl@master
 
       - name: Deploy API service
+        if: ${{ github.ref_name == 'main' && contains(steps.record-affected-projects.outputs.affected-projects, 'service-api') }}
         run: yarn deploy:service-api --configuration=production
-        if: ${{ github.ref_name == 'main' }}
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+
+      - name: Deploy Web App
+        if: ${{ github.ref_name == 'main' && contains(steps.record-affected-projects.outputs.affected-projects, 'app-web') }}
+        run: yarn deploy:app-web --configuration=production
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}

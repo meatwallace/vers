@@ -10,11 +10,12 @@ import { createReadableStreamFromReadable } from '@remix-run/node';
 import { RemixServer } from '@remix-run/react';
 import { isbot } from 'isbot';
 import { renderToPipeableStream } from 'react-dom/server';
-import { server } from './mocks/node';
 
 const ABORT_DELAY = 5000;
 
-if (process.env.VITE_ENABLE_MSW === 'true') {
+if (!import.meta.env.PROD && import.meta.env.VITE_ENABLE_MSW === 'true') {
+  const { server } = await import('./mocks/node');
+
   server.listen();
 }
 

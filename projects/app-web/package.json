@@ -3,27 +3,42 @@
   "private": true,
   "description": "",
   "license": "",
-  "scripts": {},
   "type": "module",
+  "scripts": {
+    "start": "NODE_ENV=production node ./server.mjs"
+  },
   "dependencies": {
+    "@hono/node-server": "1.11.0",
     "@remix-run/node": "2.8.1",
     "@remix-run/react": "2.8.1",
-    "@remix-run/serve": "2.8.1",
     "graphql-request": "6.1.0",
+    "hono": "4.2.4",
     "isbot": "4",
+    "msw": "2.2.14",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "react-router-dom": "6.22.3"
+    "remix-hono": "0.0.16"
   },
   "devDependencies": {
+    "@nx/vite": "18.2.4",
     "@remix-run/dev": "2.8.1",
     "@remix-run/testing": "2.8.1",
+    "@testing-library/jest-dom": "6.4.2",
+    "@testing-library/react": "14.3.0",
+    "@types/node": "20.12.7",
     "@types/react": "18.2.75",
     "@types/react-dom": "18.2.24",
-    "typescript": "5.4.5"
+    "@vitejs/plugin-react": "4.2.1",
+    "eslint-plugin-jsx-a11y": "6.8.0",
+    "eslint-plugin-react": "7.34.1",
+    "eslint-plugin-react-hooks": "4.6.0",
+    "tslib": "2.6.2",
+    "typescript": "5.4.5",
+    "vite": "5.2.10",
+    "vitest": "1.5.0"
   },
   "engines": {
-    "node": "20.12.1"
+    "node": "20.12.2"
   },
   "sideEffects": false,
   "msw": {
