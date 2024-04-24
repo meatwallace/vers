@@ -64,7 +64,11 @@ jobs:
       - name: Record Affected Projects
         id: record-affected-projects
         if: ${{ github.ref_name == 'main' }}
-        run: yarn nx show projects --affected >> "$GITHUB_OUTPUT"
+        run: |
+          delimiter="$(openssl rand -hex 8)"
+          echo "affected-projects<<${delimiter}" >> "${GITHUB_OUTPUT}"
+          yarn nx show projects --affected >> "${GITHUB_OUTPUT}"
+          echo "${delimiter}" >> "${GITHUB_OUTPUT}"
 
       - name: Setup Fly CLI
         if: ${{ github.ref_name == 'main' }}
