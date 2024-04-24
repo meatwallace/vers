@@ -4,7 +4,13 @@
     "jsx": "react-jsx",
     "types": ["node", "vite/client", "vitest"],
     "module": "ESNext",
-    "moduleResolution": "Bundler"
+    "moduleResolution": "Bundler",
+    "plugins": [
+      {
+        "name": "@0no-co/graphqlsp",
+        "schema": "../../schema.graphql"
+      }
+    ]
   },
   "exclude": ["app/**/*.test.ts", "app/**/*.test.tsx"],
   "include": ["app/**/*.ts", "app/**/*.tsx"]

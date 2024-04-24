@@ -1,20 +1,16 @@
 import { useLoaderData, json } from '@remix-run/react';
-import { gql } from 'graphql-request';
 import { MetaFunction } from '@remix-run/node';
 import { client } from '../client';
+import { graphql } from '../gql';
 
-const GetHelloWorld = gql`
+const GetHelloWorld = graphql(/* GraphQL */ `
   query GetHelloWorld {
     hello
   }
-`;
-
-type GetHelloResponse = {
-  hello: string;
-};
+`);
 
 export const loader = async () => {
-  const { hello } = await client.request<GetHelloResponse>(GetHelloWorld);
+  const { hello } = await client.request(GetHelloWorld);
 
   return json({ hello });
 };
@@ -27,7 +23,7 @@ export const meta: MetaFunction = () => [
 ];
 
 export default function Index() {
-  const { hello } = useLoaderData<GetHelloResponse>();
+  const { hello } = useLoaderData<typeof loader>();
 
   return <div>{hello}</div>;
 }

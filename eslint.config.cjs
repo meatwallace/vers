@@ -12,6 +12,9 @@ module.exports = tseslint.config(
   unicornPlugin.configs['flat/recommended'],
   {
     languageOptions: {
+      globals: {
+        console: 'readonly',
+      },
       parserOptions: {
         sourceType: 'module',
         ecmaVersion: 'latest',
@@ -38,10 +41,15 @@ module.exports = tseslint.config(
   },
   {
     ignores: [
-      '**/dist/**',
+      '**/.nx/**',
+      '**/.yarn/**',
       '**/build/**',
+      '**/dist/**',
+      '.pnp.cjs',
+      '.pnp.loader.mjs',
       '**/*timestamp*.mjs',
       '**/mockServiceWorker.js',
+      '**/projects/app-web/app/gql/**',
     ],
   },
 );
