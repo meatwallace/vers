@@ -14,7 +14,6 @@ installGlobals();
 
 export default defineConfig({
   root: __dirname,
-  cacheDir: '../../node_modules/.vite/apps/app-web',
   server: {
     port: 4000,
     host: 'localhost',

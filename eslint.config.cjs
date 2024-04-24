@@ -24,19 +24,8 @@ module.exports = tseslint.config(
       //
     },
     rules: {
-      'unicorn/prevent-abbreviations': [
-        'error',
-        {
-          allowList: {
-            args: true,
-            Args: true,
-            ctx: true,
-            env: true,
-            Env: true,
-          },
-        },
-      ],
-      //
+      'unicorn/no-null': 'off',
+      'unicorn/prevent-abbreviations': 'off',
     },
   },
   {

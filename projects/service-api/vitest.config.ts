@@ -1,12 +1,13 @@
+import { loadEnv } from 'vite';
 import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
   test: {
     globals: true,
-    cache: {
-      dir: '../../node_modules/.vitest',
-    },
     environment: 'node',
+    passWithNoTests: true,
+    env: loadEnv('test', process.cwd(), ''),
+    setupFiles: ['./vitest.setup.ts'],
     include: ['src/**/*.test.ts'],
     reporters: ['default'],
     coverage: {

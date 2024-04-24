@@ -8,5 +8,5 @@ export default {
     (files) => `yarn nx affected:lint --files=${files.join(',')}`,
     (files) => `yarn nx format:write --files=${files.join(',')}`,
   ],
-  'projects/**/*.graphql': ['yarn nx format:write'],
+  '**/*.graphql': ['yarn nx format:write'],
 };

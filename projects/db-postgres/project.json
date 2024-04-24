@@ -1,0 +1,46 @@
+{
+  "name": "db-postgres",
+  "$schema": "../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "projects/db-postgres/src",
+  "projectType": "application",
+  "tags": [],
+  "targets": {
+    "migrations-generate": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": ["yarn run drizzle-kit generate:pg"],
+        "cwd": "projects/db-postgres"
+      }
+    },
+    "migrations-run-dev": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "dotenvx run -f .env.development -- yarn run tsx migrate.ts"
+        ],
+        "cwd": "projects/db-postgres"
+      }
+    },
+    "migrations-run-prod": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "dotenvx run -f .env.production -- yarn run tsx migrate.ts"
+        ],
+        "cwd": "projects/db-postgres"
+      }
+    },
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          {
+            "command": "tsc -p tsconfig.app.json --noEmit",
+            "forwardAllArgs": false
+          }
+        ],
+        "cwd": "projects/db-postgres"
+      }
+    }
+  }
+}

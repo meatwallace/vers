@@ -1,0 +1,83 @@
+{
+  "name": "service-user",
+  "$schema": "../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "projects/service-user/src",
+  "projectType": "application",
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "@nx/esbuild:esbuild",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
+      "options": {
+        "platform": "node",
+        "outputPath": "projects/service-user/dist",
+        "format": ["cjs"],
+        "bundle": false,
+        "main": "projects/service-user/src/main.ts",
+        "tsConfig": "projects/service-user/tsconfig.app.json",
+        "assets": ["projects/service-user/src/assets"],
+        "generatePackageJson": true,
+        "esbuildOptions": {
+          "sourcemap": true,
+          "outExtension": {
+            ".js": ".js"
+          }
+        }
+      },
+      "configurations": {
+        "development": {},
+        "production": {
+          "esbuildOptions": {
+            "sourcemap": false,
+            "outExtension": {
+              ".js": ".js"
+            }
+          }
+        }
+      }
+    },
+    "deploy": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "flyctl deploy --local-only --dockerfile projects/service-user/Dockerfile --config projects/service-user/fly.toml"
+        ]
+      }
+    },
+    "serve": {
+      "executor": "@nx/js:node",
+      "defaultConfiguration": "development",
+      "options": {
+        "buildTarget": "service-user:build"
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "service-user:build:development"
+        },
+        "production": {
+          "buildTarget": "service-user:build:production"
+        }
+      }
+    },
+    "test-watch": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": ["yarn run vitest watch"],
+        "cwd": "projects/service-user"
+      }
+    },
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          {
+            "command": "tsc -p tsconfig.app.json --noEmit",
+            "forwardAllArgs": false
+          }
+        ],
+        "cwd": "projects/service-user"
+      }
+    }
+  }
+}

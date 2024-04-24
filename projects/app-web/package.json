@@ -9,8 +9,8 @@
   },
   "dependencies": {
     "@hono/node-server": "1.11.0",
-    "@remix-run/node": "2.8.1",
-    "@remix-run/react": "2.8.1",
+    "@remix-run/node": "2.9.1",
+    "@remix-run/react": "2.9.1",
     "graphql-request": "6.1.0",
     "hono": "4.2.4",
     "isbot": "4",
@@ -21,9 +21,9 @@
   },
   "devDependencies": {
     "@graphql-typed-document-node/core": "3.2.0",
-    "@nx/vite": "18.2.4",
-    "@remix-run/dev": "2.8.1",
-    "@remix-run/testing": "2.8.1",
+    "@nx/vite": "18.3.3",
+    "@remix-run/dev": "2.9.1",
+    "@remix-run/testing": "2.9.1",
     "@testing-library/jest-dom": "6.4.2",
     "@testing-library/react": "14.3.0",
     "@types/node": "20.12.7",
@@ -34,10 +34,11 @@
     "eslint-plugin-react": "7.34.1",
     "eslint-plugin-react-hooks": "4.6.0",
     "graphql": "16.8.1",
+    "jest-extended": "4.0.2",
     "tslib": "2.6.2",
     "typescript": "5.4.5",
     "vite": "5.2.10",
-    "vitest": "1.5.0"
+    "vitest": "1.5.1"
   },
   "engines": {
     "node": "20.12.2"
