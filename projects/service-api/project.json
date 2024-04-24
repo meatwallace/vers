@@ -71,6 +71,13 @@
           "flyctl deploy --local-only --dockerfile projects/service-api/Dockerfile --config projects/service-api/fly.toml"
         ]
       }
+    },
+    "test-watch": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": ["yarn run vitest watch"],
+        "cwd": "projects/service-api"
+      }
     }
   }
 }

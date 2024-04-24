@@ -32,6 +32,13 @@
           "flyctl deploy --local-only --dockerfile projects/app-web/Dockerfile --config projects/app-web/fly.toml"
         ]
       }
+    },
+    "test-watch": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": ["yarn run vitest watch"],
+        "cwd": "projects/app-web"
+      }
     }
   }
 }

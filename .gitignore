@@ -43,3 +43,7 @@ Thumbs.db
 # caches
 .cache
 .nx/cache
+
+# secrets
+projects/db-postgres/.env.production
+projects/service-*/.env.production

@@ -14,7 +14,15 @@
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
-    "paths": {},
+    "paths": {
+      "@campaign/postgres-schema": [
+        "projects/lib-postgres-schema/src/index.ts"
+      ],
+      "@campaign/service-test-utils": [
+        "projects/lib-service-test-utils/src/index.ts"
+      ],
+      "@campaign/service-utils": ["projects/lib-service-utils/src/index.ts"]
+    },
     "strict": true
   },
   "exclude": ["node_modules", "tmp"]
