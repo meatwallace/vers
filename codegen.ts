@@ -14,13 +14,12 @@ const config: CodegenConfig = {
       plugins: ['schema-ast'],
     },
   },
-  // TODO: enable when introducing graphql-scalars
-  // config: {
-  //   scalars: {
-  //     UUID: 'string',
-  //     DateTime: 'Date',
-  //   },
-  // },
+  config: {
+    scalars: {
+      Date: 'Date',
+      DateTime: 'Date',
+    },
+  },
 };
 
 export default config;

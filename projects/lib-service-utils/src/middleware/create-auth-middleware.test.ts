@@ -61,6 +61,23 @@ test('it returns a 401 if no token is provided', async () => {
   expect(res.status).toBe(401);
 });
 
+test('it rejects an invalid authorization header', async () => {
+  const { app } = setupTest();
+
+  const req = new Request('http://localhost/test');
+
+  req.headers.set('Authorization', `Bearer`);
+
+  const res = await app.request(req);
+
+  expect(testHandlerSpy).not.toHaveBeenCalled();
+  expect(await res.text()).toBe('Unauthorized');
+  expect(res.status).toBe(401);
+  expect(res.headers.get('www-authenticate')).toMatchInlineSnapshot(
+    `"Bearer realm="http://localhost/test",error="invalid_request",error_description="invalid authorization header structure""`,
+  );
+});
+
 test('it rejects an invalid token', async () => {
   const { app } = setupTest();
 

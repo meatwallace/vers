@@ -1,4 +1,5 @@
 import { fileURLToPath } from 'node:url';
+import path from 'node:path';
 import { defineConfig, devices } from '@playwright/test';
 import { nxE2EPreset } from '@nx/playwright/preset';
 import { workspaceRoot } from '@nx/devkit';
@@ -6,27 +7,30 @@ import { workspaceRoot } from '@nx/devkit';
 // patch cjs
 const __filename = fileURLToPath(import.meta.url);
 
-// For CI, you may want to set BASE_URL to the deployed application.
 const baseURL = process.env['BASE_URL'] || 'http://localhost:4000';
 
-/**
- * Read environment variables from file.
- * https://github.com/motdotla/dotenv
- */
-// require('dotenv').config();
+// having a million issues trying to use __dirname to establish a reliable path
+// so it's easier to do this to handle the case when this file gets parsed for
+// building our nx graph
+const projectRoot = process.cwd().includes('app-web-e2e')
+  ? process.cwd()
+  : `${process.cwd()}/projects/app-web-e2e`;
 
-/**
- * See https://playwright.dev/docs/test-configuration.
- */
+const dotEnvFile = path.join(projectRoot, '.env');
+
+process.loadEnvFile(dotEnvFile);
 export default defineConfig({
   ...nxE2EPreset(__filename, { testDir: './src' }),
-  /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
+  outputDir: '.test-results',
+  timeout: 60 * 1000,
+  expect: {
+    timeout: 10 * 1000,
+  },
   use: {
     baseURL,
-    /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
+    screenshot: 'only-on-failure',
   },
-  /* Run your local dev server before starting the tests */
   webServer: {
     command: 'yarn dev:app-web',
     url: 'http://localhost:4000',
@@ -45,30 +49,5 @@ export default defineConfig({
       name: 'firefox',
       use: { ...devices['Desktop Firefox'] },
     },
-
-    {
-      name: 'webkit',
-      use: { ...devices['Desktop Safari'] },
-    },
-
-    // Uncomment for mobile browsers support
-    /* {
-      name: 'Mobile Chrome',
-      use: { ...devices['Pixel 5'] },
-    },
-    {
-      name: 'Mobile Safari',
-      use: { ...devices['iPhone 12'] },
-    }, */
-
-    // Uncomment for branded browsers
-    /* {
-      name: 'Microsoft Edge',
-      use: { ...devices['Desktop Edge'], channel: 'msedge' },
-    },
-    {
-      name: 'Google Chrome',
-      use: { ...devices['Desktop Chrome'], channel: 'chrome' },
-    } */
   ],
 });

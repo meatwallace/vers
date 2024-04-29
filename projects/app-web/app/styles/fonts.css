@@ -1,0 +1,44 @@
+@font-face {
+  font-family: 'Josefin Sans Medium';
+  src:
+    url('/assets/fonts/josefin-sans-semi-bold.woff2') format('woff2'),
+    url('/assets/fonts/josefin-sans-semi-bold.woff') format('woff');
+  font-weight: 500;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Josefin Slab Bold';
+  src:
+    url('/assets/fonts/josefin-slab-bold.woff2') format('woff2'),
+    url('/assets/fonts/josefin-slab-bold.woff') format('woff');
+  font-weight: 700;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Karla Light';
+  src:
+    url('/assets/fonts/karla-light.woff2') format('woff2'),
+    url('/assets/fonts/karla-light.woff') format('woff');
+  font-weight: 200;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Karla Regular';
+  src:
+    url('/assets/fonts/karla-regular.woff2') format('woff2'),
+    url('/assets/fonts/karla-regular.woff') format('woff');
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Karla Bold';
+  src:
+    url('/assets/fonts/karla-bold.woff2') format('woff2'),
+    url('/assets/fonts/karla-bold.woff') format('woff');
+  font-weight: 600;
+  font-style: normal;
+}

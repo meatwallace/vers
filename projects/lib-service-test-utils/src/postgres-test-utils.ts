@@ -6,7 +6,7 @@ import { PostgresJsDatabase, drizzle } from 'drizzle-orm/postgres-js';
 import { migrate } from 'drizzle-orm/postgres-js/migrator';
 import path from 'node:path';
 import postgres, { Sql } from 'postgres';
-import cuid from 'cuid';
+import { createId } from '@paralleldrive/cuid2';
 import * as schema from '@campaign/postgres-schema';
 
 const TEST_TEMPLATE_DB = 'test_template';
@@ -41,7 +41,7 @@ export const PostgresTestUtils: IPostgresTestUtils = {
       'postgres',
     );
 
-    const testDBID = cuid();
+    const testDBID = createId();
 
     // create a new DB for this test from our pre-migrated template DB
     // for some reason we need to jump into unsafe mode otherwise `postgres` wont inline our params

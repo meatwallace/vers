@@ -24,6 +24,13 @@ module.exports = tseslint.config(
       //
     },
     rules: {
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        {
+          ignoreRestSiblings: true,
+        },
+      ],
+
       'unicorn/no-null': 'off',
       'unicorn/prevent-abbreviations': 'off',
     },

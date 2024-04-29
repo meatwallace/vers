@@ -3,7 +3,8 @@ import { HTTPException } from 'hono/http-exception';
 import {
   createTokenVerifier,
   TokenVerifierConfig,
-} from '../context-utils/create-token-verifier';
+} from '../utils/create-token-verifier.js';
+import { getTokenFromHeader } from '../utils/get-token-from-header';
 
 type AuthMiddlewareConfig = {
   tokenVerifierConfig: TokenVerifierConfig;
@@ -33,9 +34,9 @@ export function createAuthMiddleware(config: AuthMiddlewareConfig) {
       });
     }
 
-    const parts = authHeader.split(/\s+/);
+    const token = getTokenFromHeader(authHeader);
 
-    if (parts.length !== 2) {
+    if (!token) {
       const errorDescription = 'invalid authorization header structure';
 
       throw new HTTPException(401, {
@@ -47,8 +48,6 @@ export function createAuthMiddleware(config: AuthMiddlewareConfig) {
         }),
       });
     }
-
-    const [, token] = parts;
 
     try {
       const payload = await verifyToken(token);

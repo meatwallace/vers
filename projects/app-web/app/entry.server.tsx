@@ -19,6 +19,11 @@ if (!import.meta.env.PROD && import.meta.env.VITE_ENABLE_MSW === 'true') {
   server.listen();
 }
 
+// if we're in dev mode, load our local environment variables which should include our server secrets
+if (!import.meta.env.PROD) {
+  process.loadEnvFile('.env.development.local');
+}
+
 export default function handleRequest(
   request: Request,
   responseStatusCode: number,

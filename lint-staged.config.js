@@ -8,5 +8,6 @@ export default {
     (files) => `yarn nx affected:lint --files=${files.join(',')}`,
     (files) => `yarn nx format:write --files=${files.join(',')}`,
   ],
+  'projects/lib-postgres-schema/**/*.ts': ['yarn postgres:migrations-generate'],
   '**/*.graphql': ['yarn nx format:write'],
 };

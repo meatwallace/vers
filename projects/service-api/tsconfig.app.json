@@ -4,6 +4,6 @@
     "module": "ESNext",
     "types": ["node"]
   },
-  "exclude": ["src/**/*.test.ts"],
+  "exclude": ["src/test-utils/**/*.ts", "src/**/*.test.ts"],
   "include": ["src/**/*.ts"]
 }
