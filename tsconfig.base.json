@@ -4,7 +4,7 @@
     "rootDir": ".",
     "sourceMap": true,
     "declaration": false,
-    "moduleResolution": "Node",
+    "moduleResolution": "Bundler",
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "importHelpers": true,
@@ -15,13 +15,15 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@campaign/postgres-schema": [
+      "@chrononomicon/postgres-schema": [
         "projects/lib-postgres-schema/src/index.ts"
       ],
-      "@campaign/service-test-utils": [
+      "@chrononomicon/service-test-utils": [
         "projects/lib-service-test-utils/src/index.ts"
       ],
-      "@campaign/service-utils": ["projects/lib-service-utils/src/index.ts"]
+      "@chrononomicon/service-utils": [
+        "projects/lib-service-utils/src/index.ts"
+      ]
     },
     "strict": true
   },

@@ -5,6 +5,7 @@
     "types": ["node", "vitest/globals"]
   },
   "include": [
+    "src/test-utils/**/*.ts",
     "src/**/*.test.ts",
     "src/**/*.d.ts",
     "vite.config.ts",

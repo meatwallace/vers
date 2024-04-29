@@ -1,4 +1,4 @@
-import '@testing-library/jest-dom/matchers';
+import '@testing-library/jest-dom/vitest';
 import * as matchers from 'jest-extended';
 // import { installGlobals } from '@remix-run/node';
 import { server } from './app/mocks/node';

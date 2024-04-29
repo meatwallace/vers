@@ -1,4 +1,4 @@
-app = 'campaign-pg'
+app = 'chrononomicon-pg'
 primary_region = 'syd'
 
 [env]
@@ -57,6 +57,11 @@ primary_region = 'syd'
     interval = '15s'
     timeout = '10s'
     path = '/flycheck/vm'
+
+[[vm]]
+  memory = '1gb'
+  cpu_kind = 'shared'
+  cpus = 1
 
 [[metrics]]
   port = 9187

@@ -1,8 +1,12 @@
 import { app } from './app';
-import { getOrCreateUser } from './handlers';
+import { getCurrentUser, getOrCreateUser } from './handlers';
 import { db } from './db';
 import { authMiddleware } from './middleware';
 
-app.get('/get-or-create-user', authMiddleware, async (ctx) =>
+app.post('/get-current-user', authMiddleware, async (ctx) =>
+  getCurrentUser(ctx, db),
+);
+
+app.post('/get-or-create-user', authMiddleware, async (ctx) =>
   getOrCreateUser(ctx, db),
 );

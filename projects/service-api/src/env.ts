@@ -1,11 +1,16 @@
-import { cleanEnv, str } from 'envalid';
+import { cleanEnv, str, url } from 'envalid';
 import { Env } from './types';
 
 export const env: Env = cleanEnv(process.env, {
-  POSTGRES_URL: str(),
+  NODE_ENV: str({ choices: ['development', 'test', 'production'] }),
   LOGGING: str({
     choices: ['debug', 'info', 'warn', 'error'],
     default: 'info',
   }),
-  NODE_ENV: str({ choices: ['development', 'test', 'production'] }),
+
+  API_IDENTIFIER: str(),
+  AUTH0_DOMAIN: str(),
+
+  // service URLs
+  USERS_API_URL: url(),
 });

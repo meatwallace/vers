@@ -1,5 +1,5 @@
 import { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
-import * as schema from '@campaign/postgres-schema';
+import * as schema from '@chrononomicon/postgres-schema';
 
 export type Env = {
   POSTGRES_URL: string;

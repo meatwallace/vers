@@ -1,10 +1,10 @@
 import { Hono } from 'hono';
 import createJWKSMock from 'mock-jwks';
-import * as schema from '@campaign/postgres-schema';
+import * as schema from '@chrononomicon/postgres-schema';
+import { createAuthMiddleware } from '@chrononomicon/service-utils';
+import { PostgresTestUtils } from '@chrononomicon/service-test-utils';
 import { env } from '../env';
-import { createAuthMiddleware } from '@campaign/service-utils';
 import { getOrCreateUser } from './get-or-create-user';
-import { PostgresTestUtils } from '../../../lib-service-test-utils/src';
 
 // mock auth0 user info client
 const { getUserInfoMock } = vi.hoisted(() => ({ getUserInfoMock: vi.fn() }));
@@ -45,7 +45,9 @@ async function setupTest() {
   const app = new Hono();
 
   jwks.start();
-  app.get('/test', authMiddleware, async (ctx) => getOrCreateUser(ctx, db));
+  app.post('/get-or-create-user', authMiddleware, async (ctx) =>
+    getOrCreateUser(ctx, db),
+  );
 
   const token = jwks.token(TEST_TOKEN_PAYLOAD);
 
@@ -62,15 +64,21 @@ test('it creates and returns a user', async () => {
 
   getUserInfoMock.mockImplementation(() => ({
     data: {
+      sub: 'auth0|test_id',
       email: 'user@test.com',
       email_verified: true,
       name: 'Test User',
+      given_name: 'Test',
     },
   }));
 
-  const req = new Request('http://localhost/test');
-
-  req.headers.set('Authorization', `Bearer ${token}`);
+  const req = new Request('http://localhost/get-or-create-user', {
+    method: 'POST',
+    body: JSON.stringify({ email: 'user@test.com' }),
+    headers: {
+      authorization: `Bearer ${token}`,
+    },
+  });
 
   const res = await app.request(req);
 
@@ -78,10 +86,13 @@ test('it creates and returns a user', async () => {
   expect(await res.json()).toMatchObject({
     success: true,
     data: {
-      id: 'test_id',
+      id: expect.any(String),
+      auth0ID: 'auth0|test_id',
       name: 'Test User',
+      firstName: 'Test',
       email: 'user@test.com',
       emailVerified: true,
+      createdAt: expect.any(String),
     },
   });
 
@@ -93,14 +104,20 @@ test('it returns an existing user', async () => {
 
   await db.insert(schema.users).values({
     id: 'test_id',
+    auth0ID: 'auth0|test_id',
     name: 'Test User',
+    firstName: 'Test',
     email: 'user@test.com',
     emailVerified: true,
   });
 
-  const req = new Request('http://localhost/test');
-
-  req.headers.set('Authorization', `Bearer ${token}`);
+  const req = new Request('http://localhost/get-or-create-user', {
+    method: 'POST',
+    body: JSON.stringify({ email: 'user@test.com' }),
+    headers: {
+      authorization: `Bearer ${token}`,
+    },
+  });
 
   const res = await app.request(req);
 
@@ -109,9 +126,12 @@ test('it returns an existing user', async () => {
     success: true,
     data: {
       id: 'test_id',
+      auth0ID: 'auth0|test_id',
       name: 'Test User',
+      firstName: 'Test',
       email: 'user@test.com',
       emailVerified: true,
+      createdAt: expect.any(String),
     },
   });
 

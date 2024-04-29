@@ -28,7 +28,6 @@ node_modules
 # misc
 /.sass-cache
 /connect.lock
-/coverage
 /libpeerconnection.log
 npm-debug.log
 yarn-error.log
@@ -36,9 +35,14 @@ testem.log
 /typings
 *.timestamp*.mjs
 
+# Test Output
+/coverage
+**/.test-results
+
 # System Files
 .DS_Store
 Thumbs.db
+*Zone.Identifier
 
 # caches
 .cache
@@ -47,3 +51,5 @@ Thumbs.db
 # secrets
 projects/db-postgres/.env.production
 projects/service-*/.env.production
+projects/app-web-e2e/.env
+**/.env*.local

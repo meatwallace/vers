@@ -5,7 +5,7 @@ ARG NODE_VERSION=20.12.2
 FROM node:${NODE_VERSION}-slim as build
 
 # Node.js app lives here
-WORKDIR /app
+WORKDIR /not_app
 
 # Set production environment
 ENV NODE_ENV="production"
@@ -19,7 +19,6 @@ RUN \
   # issue does not exist outside of docker - cannot be bothered spending any more time working out why.
   rm -f projects/app-web/.env.development && \
   rm -f projects/app-web/.env.test && \
-  ls -a projects/app-web && \
   # build application
   yarn build:app-web --mode production && \
   # clean up msw
@@ -42,9 +41,9 @@ WORKDIR /app
 ENV NODE_ENV="production"
 
 # Copy built application
-COPY --from=build /app/projects/app-web/package.json /app/projects/app-web/server.mjs /app/
-COPY --from=build /app/projects/app-web/node_modules /app/node_modules
-COPY --from=build /app/projects/app-web/build /app/build
+COPY --from=build /not_app/projects/app-web/package.json /not_app/projects/app-web/server.mjs /app/
+COPY --from=build /not_app/projects/app-web/node_modules /app/node_modules
+COPY --from=build /not_app/projects/app-web/build /app/build
 
 # Start the server by default, this can be overwritten at runtime
 EXPOSE 3000

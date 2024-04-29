@@ -4,6 +4,8 @@
     "allowJs": false,
     "esModuleInterop": false,
     "allowSyntheticDefaultImports": true,
+    "noEmit": true,
+    "allowImportingTsExtensions": true,
     "strict": true,
     "types": ["vitest", "vite/client"]
   },

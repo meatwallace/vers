@@ -1,4 +1,4 @@
-import { createAuthMiddleware } from '@campaign/service-utils';
+import { createAuthMiddleware } from '@chrononomicon/service-utils';
 import { env } from '../env';
 
 export const authMiddleware = createAuthMiddleware({

@@ -1,4 +1,4 @@
-import * as schema from '@campaign/postgres-schema';
+import * as schema from '@chrononomicon/postgres-schema';
 import { drizzle } from 'drizzle-orm/postgres-js';
 import { pg } from './pg';
 

@@ -23,6 +23,12 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Setup Dotenv
+        run: |
+          echo "${{ secrets.DOTENV_APP_WEB_DEV }}" > projects/app-web/.env.development.local
+          echo "${{ secrets.DOTENV_APP_WEB_E2E }}" > projects/app-web-e2e/.env
+          echo "${{ secrets.DOTENV_DB_POSTGRES }}" > projects/db-postgres/.env.production
+
       - name: Setup Node
         uses: actions/setup-node@v3
         with:
@@ -61,6 +67,13 @@ jobs:
       - name: E2E Tests
         run: yarn nx affected -t e2e
 
+      - name: Upload Videos Of Failed E2E
+        uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-results
+          path: projects/app-web-e2e/.test-results
+
       - name: Record Affected Projects
         id: record-affected-projects
         if: ${{ github.ref_name == 'main' }}
@@ -76,9 +89,7 @@ jobs:
 
       - name: Deploy Postgres Migrations
         if: ${{ github.ref_name == 'main' && contains(steps.record-affected-projects.outputs.affected-projects, 'db-postgres') }}
-        run: |
-          echo "${{secrets.DOTENV_DB_POSTGRES }}" > projects/db-postgres/.env.production
-          yarn postgres:migrations-run:prod
+        run: yarn postgres:migrations-run:prod
 
       - name: Deploy API Service
         if: ${{ github.ref_name == 'main' && contains(steps.record-affected-projects.outputs.affected-projects, 'service-api') }}

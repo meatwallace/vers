@@ -1,4 +1,4 @@
-import { PostgresTestUtils } from '@campaign/service-test-utils';
+import { PostgresTestUtils } from '@chrononomicon/service-test-utils';
 
 export async function setup() {
   await PostgresTestUtils.initialize();
