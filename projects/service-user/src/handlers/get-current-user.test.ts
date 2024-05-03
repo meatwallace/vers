@@ -2,20 +2,15 @@ import { Hono } from 'hono';
 import createJWKSMock from 'mock-jwks';
 import * as schema from '@chrononomicon/postgres-schema';
 import { createAuthMiddleware } from '@chrononomicon/service-utils';
-import { PostgresTestUtils } from '@chrononomicon/service-test-utils';
+import {
+  PostgresTestUtils,
+  createTestAccessToken,
+} from '@chrononomicon/service-test-utils';
 import { env } from '../env';
 import { getCurrentUser } from './get-current-user';
+import { pgTestConfig } from '../pg-test-config';
 
-// setup jwks mock
 const jwks = createJWKSMock(`https://${env.AUTH0_DOMAIN}/`);
-
-const TEST_TOKEN_PAYLOAD = {
-  sub: 'auth0|test_id',
-  iss: `https://${env.AUTH0_DOMAIN}/`,
-  name: 'Test User',
-  email: 'user@test.com',
-  email_verified: 'true',
-};
 
 const authMiddleware = createAuthMiddleware({
   tokenVerifierConfig: {
@@ -25,8 +20,15 @@ const authMiddleware = createAuthMiddleware({
 });
 
 async function setupTest() {
-  const { db, teardown } = await PostgresTestUtils.createTestDB();
   const app = new Hono();
+
+  const { db, teardown } = await PostgresTestUtils.createTestDB(pgTestConfig);
+
+  const { accessToken } = createTestAccessToken({
+    jwks,
+    audience: env.API_IDENTIFIER,
+    issuer: `https://${env.AUTH0_DOMAIN}/`,
+  });
 
   jwks.start();
 
@@ -34,9 +36,7 @@ async function setupTest() {
     getCurrentUser(ctx, db),
   );
 
-  const token = jwks.token(TEST_TOKEN_PAYLOAD);
-
-  return { app, db, token, teardown };
+  return { app, db, accessToken, teardown };
 }
 
 afterEach(() => {
@@ -45,7 +45,7 @@ afterEach(() => {
 });
 
 test('it returns the current user', async () => {
-  const { app, db, token, teardown } = await setupTest();
+  const { app, db, accessToken, teardown } = await setupTest();
 
   const createdAt = new Date();
 
@@ -61,7 +61,7 @@ test('it returns the current user', async () => {
 
   const req = new Request('http://localhost/get-current-user', {
     headers: {
-      authorization: `Bearer ${token}`,
+      authorization: `Bearer ${accessToken}`,
     },
   });
 

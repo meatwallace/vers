@@ -8,7 +8,7 @@
     "migrations-generate": {
       "executor": "nx:run-commands",
       "options": {
-        "commands": ["yarn run drizzle-kit generate:pg"],
+        "commands": ["yarn run drizzle-kit generate"],
         "cwd": "projects/db-postgres"
       }
     },

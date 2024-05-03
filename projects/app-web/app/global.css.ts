@@ -6,6 +6,25 @@ import { globalFontFace, globalStyle } from '@vanilla-extract/css';
 // foreground - #ddefff
 // background - #07080b
 
+globalStyle('*', {
+  boxSizing: 'border-box',
+  margin: '0',
+  padding: '0',
+});
+
+globalStyle('html, body', {
+  display: 'block',
+  height: '100%',
+});
+
+globalStyle('html', {
+  //
+});
+
+globalStyle('body', {
+  backgroundColor: '#404756',
+});
+
 globalFontFace('Josefin Sans', {
   src: [
     'url("/assets/fonts/josefin-sans-semi-bold.woff2") format("woff2")',
@@ -19,7 +38,7 @@ globalFontFace('Josefin Slab', {
     'url("/assets/fonts/josefin-slab-bold.woff2") format("woff2")',
     'url("/assets/fonts/josefin-slab-bold.woff") format("woff")',
   ],
-  fontWeight: '-bold',
+  fontWeight: 'bold',
 });
 
 globalFontFace('Karla', [
@@ -45,18 +64,3 @@ globalFontFace('Karla', [
     fontWeight: 'bold',
   },
 ]);
-
-globalStyle('html, body', {
-  all: 'unset',
-  boxSizing: 'border-box',
-  display: 'block',
-  height: '100%',
-});
-
-globalStyle('html', {
-  //
-});
-
-globalStyle('body', {
-  backgroundColor: '#07080b;',
-});

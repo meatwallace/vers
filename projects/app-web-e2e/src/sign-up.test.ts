@@ -14,5 +14,5 @@ test('it signs the user in and welcomes them', async ({ page }) => {
 
   await expect(page).toHaveURL(/localhost:4000/);
 
-  await expect(page.getByText('Hello, Test User')).toBeVisible();
+  await expect(page.getByText('John')).toBeVisible();
 });

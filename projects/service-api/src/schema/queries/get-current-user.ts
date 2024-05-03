@@ -3,16 +3,7 @@ import { isAuthed } from '../../utils';
 import { builder } from '../builder';
 import { User } from '../types';
 
-builder.queryField('getCurrentUser', (t) =>
-  t.field({
-    type: User,
-    resolve: getCurrentUser,
-  }),
-);
-
-type Args = {
-  name?: string | null;
-};
+type Args = Record<PropertyKey, never>;
 
 export async function getCurrentUser(
   _: object,
@@ -24,13 +15,13 @@ export async function getCurrentUser(
     throw new Error('Unauthorized');
   }
 
-  // eslint-disable-next-line no-useless-catch
-  try {
-    const user = await ctx.services.users.getCurrentUser({});
-
-    return user;
-  } catch (error: unknown) {
-    // TODO(#16): capture via Sentry
-    throw error;
-  }
+  // we can return the user from the context directly as it was fetched when we instantiated our context
+  return ctx.user;
 }
+
+builder.queryField('getCurrentUser', (t) =>
+  t.field({
+    type: User,
+    resolve: getCurrentUser,
+  }),
+);

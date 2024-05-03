@@ -3,6 +3,7 @@ import { DateResolver, DateTimeResolver } from 'graphql-scalars';
 import { Context } from '../types';
 
 type SchemaConfig = {
+  DefaultFieldNullability: false;
   Scalars: {
     DateTime: {
       Input: Date;
@@ -16,7 +17,9 @@ type SchemaConfig = {
   Context: Context;
 };
 
-export const builder = new SchemaBuilder<SchemaConfig>({});
+export const builder = new SchemaBuilder<SchemaConfig>({
+  defaultFieldNullability: false,
+});
 
 builder.queryType({});
 

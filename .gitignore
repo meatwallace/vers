@@ -5,6 +5,7 @@ build
 dist
 tmp
 /out-tsc
+.test-results
 
 # dependencies
 node_modules
@@ -46,10 +47,13 @@ Thumbs.db
 
 # caches
 .cache
-.nx/cache
+
+# nx
+.nx
+!.nx/workflows
 
 # secrets
 projects/db-postgres/.env.production
 projects/service-*/.env.production
 projects/app-web-e2e/.env
-**/.env*.local
+projects/**/.env*.local

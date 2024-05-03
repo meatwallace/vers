@@ -6,5 +6,5 @@ export type ServiceContext = {
 
 export type CreateServiceContextConfig = {
   apiURL: string;
-  accessToken: string | null;
+  accessToken?: string | null;
 };

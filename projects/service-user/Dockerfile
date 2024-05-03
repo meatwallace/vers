@@ -10,12 +10,16 @@ WORKDIR /app
 # Set production environment
 ENV NODE_ENV="production"
 
+# use a build arg to specify our vite build mode
+ARG BUILD_MODE=production
+ENV BUILD_MODE $BUILD_MODE
+
 # Copy application code
 COPY --link . .
 
 # Build application & install specific dependencies
 RUN \
-  yarn run build:service-user --mode production && \
+  yarn run build:service-user --mode "$BUILD_MODE" && \
   cd projects/service-user/dist && \
   # disable pnp so we can simply resolve our modules 
   yarn config set nodeLinker node-modules && \
@@ -36,5 +40,5 @@ ENV NODE_ENV="production"
 COPY --from=build /app/projects/service-user/dist /app
 
 # Start the server by default, this can be overwritten at runtime
-EXPOSE 3000
+EXPOSE 3001
 CMD [ "main.js" ]

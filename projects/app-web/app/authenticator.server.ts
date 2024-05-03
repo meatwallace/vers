@@ -28,7 +28,7 @@ const config = {
 
 const auth0Strategy = new Auth0Strategy(config, handleVerifySuccess);
 
-const GetOrCreateUser = graphql(/* GraphQL */ `
+const GetOrCreateUserMutation = graphql(/* GraphQL */ `
   mutation GetOrCreateUser($input: GetOrCreateUserInput!) {
     getOrCreateUser(input: $input) {
       ... on User {
@@ -59,7 +59,7 @@ async function handleVerifySuccess(
 
   invariant(email, 'email is required');
 
-  const { getOrCreateUser } = await client.request(GetOrCreateUser, {
+  const { getOrCreateUser } = await client.request(GetOrCreateUserMutation, {
     input: { email },
   });
 

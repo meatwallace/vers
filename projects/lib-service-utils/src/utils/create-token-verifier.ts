@@ -1,5 +1,4 @@
 import jwt, {
-  Jwt,
   JwtHeader,
   JwtPayload,
   SigningKeyCallback,
@@ -7,26 +6,42 @@ import jwt, {
 } from 'jsonwebtoken';
 import jwksClient from 'jwks-rsa';
 
-type Result = string | Jwt | JwtPayload;
-
 export type TokenVerifierConfig = {
   audience: string;
   issuer: string;
 };
 
+type RelevantJWTPayload = {
+  iss: string | undefined;
+  sub: string;
+};
+
 export function createTokenVerifier(config: TokenVerifierConfig) {
   // wrap jwt#verify in a promise to avoid callback hell
-  const verifyJWT = (token: string, options: VerifyOptions): Promise<Result> =>
+  const verifyJWT = (
+    token: string,
+    options: VerifyOptions,
+  ): Promise<RelevantJWTPayload> =>
     new Promise((resolve, reject) => {
-      jwt.verify(token, getKey, options, (error, decoded) => {
-        if (error) {
-          return reject(error);
-        }
+      jwt.verify(
+        token,
+        getKey,
+        options,
+        (error, decoded: JwtPayload | string | undefined) => {
+          if (error) {
+            return reject(error);
+          }
 
-        if (decoded) {
-          return resolve(decoded);
-        }
-      });
+          if (typeof decoded === 'string' || !decoded || !decoded.sub) {
+            return reject(new Error('Invalid token'));
+          }
+
+          return resolve({
+            iss: decoded.iss,
+            sub: decoded.sub,
+          });
+        },
+      );
     });
 
   const client = jwksClient({
@@ -41,7 +56,7 @@ export function createTokenVerifier(config: TokenVerifierConfig) {
     });
   }
 
-  return async (token: string): Promise<Result> => {
+  return async (token: string): Promise<RelevantJWTPayload> => {
     if (!token) {
       throw new Error('No token provided');
     }

@@ -1,23 +1,13 @@
 import { graphql, HttpResponse } from 'msw';
 import { jwtDecode } from 'jwt-decode';
+import { User } from '../../../gql/graphql';
 import { db } from '../../db';
-import { MutationResponse } from './types';
 
-type GetCurrentUserResponse = MutationResponse<{
-  getCurrentUser: {
-    id: string;
-    auth0ID: string;
-    email: string;
-    emailVerified: boolean;
-    name: string;
-    firstName?: string;
-    createdAt: Date;
-  };
-}>;
-
-type GetOrCreateUserVariables = {
-  //
+type GetCurrentUserResponse = {
+  getCurrentUser: User;
 };
+
+type GetOrCreateUserVariables = Record<PropertyKey, never>;
 
 export const GetCurrentUser = graphql.query<
   GetCurrentUserResponse,
@@ -27,14 +17,7 @@ export const GetCurrentUser = graphql.query<
 
   if (!authHeader) {
     return HttpResponse.json({
-      data: {
-        getCurrentUser: {
-          error: {
-            title: 'Unauthorized',
-            message: 'Access token not provided',
-          },
-        },
-      },
+      errors: [{ message: 'Unauthorized' }],
     });
   }
 
@@ -46,14 +29,7 @@ export const GetCurrentUser = graphql.query<
 
   if (!user) {
     return HttpResponse.json({
-      data: {
-        getCurrentUser: {
-          error: {
-            title: 'Not found',
-            message: 'User not found',
-          },
-        },
-      },
+      errors: [{ message: 'Internal Server Error' }],
     });
   }
 

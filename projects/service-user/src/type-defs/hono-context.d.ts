@@ -1,6 +1,7 @@
 import 'hono';
 
 type JWTPayload = {
+  iss: string | undefined;
   sub: string;
 };
 

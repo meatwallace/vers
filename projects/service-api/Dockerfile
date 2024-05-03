@@ -10,12 +10,16 @@ WORKDIR /app
 # Set production environment
 ENV NODE_ENV="production"
 
+# use a build arg to specify our vite build mode
+ARG BUILD_MODE=production
+ENV BUILD_MODE $BUILD_MODE
+
 # Copy application code
 COPY --link . .
 
 # Build application & install specific dependencies
 RUN \
-  yarn run build:service-api --mode production && \
+  yarn run build:service-api --mode "$BUILD_MODE" && \
   cd projects/service-api/dist && \
   # disable pnp so we can simply resolve our modules 
   yarn config set nodeLinker node-modules && \

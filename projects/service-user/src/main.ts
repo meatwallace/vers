@@ -1,7 +1,11 @@
 import { serve } from '@hono/node-server';
+import { logger } from 'hono/logger';
 import { app } from './app';
+import { env } from './env';
 import './routes';
 
-serve({ fetch: app.fetch, port: 3001 });
+app.use(logger());
 
-console.log('⚡️ Serving User API @ http://localhost:3001');
+serve({ fetch: app.fetch, port: env.PORT, hostname: env.HOSTNAME });
+
+console.log(`⚡️ Serving User API @ http://${env.HOSTNAME}:${env.PORT}`);

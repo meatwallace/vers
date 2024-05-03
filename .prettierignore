@@ -1,4 +1,7 @@
-# Add files here to ignore them from prettier formatting
 /dist
 /coverage
 /.nx/cache
+/.nx/workspace-data
+/projects/app-web/app/gql
+.pnp.loader.mjs
+schema.graphql

@@ -13,16 +13,20 @@ const TEST_TEMPLATE_DB = 'test_template';
 const TEST_DB_USER = 'test';
 const TEST_DB_PASSWORD = 'test';
 
+type PostgresTestConfig = {
+  port: number;
+};
+
 interface IPostgresTestUtils {
   container: StartedPostgreSqlContainer | null;
   client: Sql | null;
   db: PostgresJsDatabase<typeof schema> | null;
   testDBClients: Record<string, Sql>;
-  createTestDB: () => Promise<{
+  createTestDB: (config: PostgresTestConfig) => Promise<{
     db: PostgresJsDatabase<typeof schema>;
     teardown: () => Promise<void>;
   }>;
-  initialize: () => Promise<void>;
+  initialize: (config: PostgresTestConfig) => Promise<void>;
   teardown: () => Promise<void>;
 }
 
@@ -31,9 +35,9 @@ export const PostgresTestUtils: IPostgresTestUtils = {
   client: null,
   db: null,
   testDBClients: {},
-  async createTestDB() {
+  async createTestDB(config: PostgresTestConfig) {
     if (!this.container) {
-      this.container = await createPostgresContainer();
+      this.container = await createPostgresContainer(config);
     }
 
     const defaultClient = await createPostgresClient(
@@ -70,9 +74,9 @@ export const PostgresTestUtils: IPostgresTestUtils = {
 
     return { db: testDB, teardown };
   },
-  async initialize() {
+  async initialize(config: PostgresTestConfig) {
     if (!this.container) {
-      this.container = await createPostgresContainer();
+      this.container = await createPostgresContainer(config);
     }
 
     if (!this.client) {
@@ -109,7 +113,9 @@ export const PostgresTestUtils: IPostgresTestUtils = {
   },
 };
 
-async function createPostgresContainer(): Promise<StartedPostgreSqlContainer> {
+async function createPostgresContainer(
+  config: PostgresTestConfig,
+): Promise<StartedPostgreSqlContainer> {
   return await new PostgreSqlContainer('postgres:16.2-alpine3.19')
     .withDatabase(TEST_TEMPLATE_DB)
     .withUsername(TEST_DB_USER)
@@ -119,7 +125,7 @@ async function createPostgresContainer(): Promise<StartedPostgreSqlContainer> {
     .withEnvironment({
       PGDATA: '/var/lib/pg/data',
     })
-    .withExposedPorts(5432)
+    .withExposedPorts({ host: config.port, container: 5432 })
     // allow reusing our container across tests
     .withReuse()
     .start();

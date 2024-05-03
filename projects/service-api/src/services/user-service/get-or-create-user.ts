@@ -1,10 +1,6 @@
 import { users } from '@chrononomicon/postgres-schema';
-import {
-  GetOrCreateUserArgs,
-  RawUserData,
-  ServiceResponse,
-  userServiceContext,
-} from './types';
+import { ServiceResponse } from '../types';
+import { GetOrCreateUserArgs, RawUserData, userServiceContext } from './types';
 import { marshal } from './marshal';
 
 type GetOrCreateUserResponse = ServiceResponse<RawUserData>;

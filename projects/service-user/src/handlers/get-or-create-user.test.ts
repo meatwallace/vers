@@ -2,11 +2,14 @@ import { Hono } from 'hono';
 import createJWKSMock from 'mock-jwks';
 import * as schema from '@chrononomicon/postgres-schema';
 import { createAuthMiddleware } from '@chrononomicon/service-utils';
-import { PostgresTestUtils } from '@chrononomicon/service-test-utils';
+import {
+  PostgresTestUtils,
+  createTestAccessToken,
+} from '@chrononomicon/service-test-utils';
 import { env } from '../env';
 import { getOrCreateUser } from './get-or-create-user';
+import { pgTestConfig } from '../pg-test-config';
 
-// mock auth0 user info client
 const { getUserInfoMock } = vi.hoisted(() => ({ getUserInfoMock: vi.fn() }));
 
 vi.mock('auth0', async (importOriginal) => {
@@ -22,36 +25,35 @@ vi.mock('auth0', async (importOriginal) => {
   };
 });
 
-// setup jwks mock
-const jwks = createJWKSMock(`https://${env.AUTH0_DOMAIN}/`);
+const ISSUER = `https://${env.AUTH0_DOMAIN}/`;
 
-const TEST_TOKEN_PAYLOAD = {
-  sub: 'test_id',
-  iss: `https://${env.AUTH0_DOMAIN}/`,
-  name: 'Test User',
-  email: 'user@test.com',
-  email_verified: 'true',
-};
+const jwks = createJWKSMock(ISSUER);
 
 const authMiddleware = createAuthMiddleware({
   tokenVerifierConfig: {
     audience: env.API_IDENTIFIER,
-    issuer: `https://${env.AUTH0_DOMAIN}/`,
+    issuer: ISSUER,
   },
 });
 
 async function setupTest() {
-  const { db, teardown } = await PostgresTestUtils.createTestDB();
   const app = new Hono();
 
+  const { db, teardown } = await PostgresTestUtils.createTestDB(pgTestConfig);
+
   jwks.start();
+
   app.post('/get-or-create-user', authMiddleware, async (ctx) =>
     getOrCreateUser(ctx, db),
   );
 
-  const token = jwks.token(TEST_TOKEN_PAYLOAD);
+  const { accessToken } = createTestAccessToken({
+    jwks,
+    audience: env.API_IDENTIFIER,
+    issuer: ISSUER,
+  });
 
-  return { app, db, token, teardown };
+  return { app, db, accessToken, teardown };
 }
 
 afterEach(() => {
@@ -60,7 +62,7 @@ afterEach(() => {
 });
 
 test('it creates and returns a user', async () => {
-  const { app, token, teardown } = await setupTest();
+  const { app, accessToken, teardown } = await setupTest();
 
   getUserInfoMock.mockImplementation(() => ({
     data: {
@@ -76,7 +78,7 @@ test('it creates and returns a user', async () => {
     method: 'POST',
     body: JSON.stringify({ email: 'user@test.com' }),
     headers: {
-      authorization: `Bearer ${token}`,
+      authorization: `Bearer ${accessToken}`,
     },
   });
 
@@ -100,7 +102,7 @@ test('it creates and returns a user', async () => {
 });
 
 test('it returns an existing user', async () => {
-  const { app, db, token, teardown } = await setupTest();
+  const { app, db, accessToken, teardown } = await setupTest();
 
   await db.insert(schema.users).values({
     id: 'test_id',
@@ -115,7 +117,7 @@ test('it returns an existing user', async () => {
     method: 'POST',
     body: JSON.stringify({ email: 'user@test.com' }),
     headers: {
-      authorization: `Bearer ${token}`,
+      authorization: `Bearer ${accessToken}`,
     },
   });
 

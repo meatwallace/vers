@@ -1,6 +1,13 @@
 import { Context } from '../types';
-import { getTokenFromContext } from './get-token-from-context';
 
-export function isAuthed(ctx: Context): boolean {
-  return Boolean(getTokenFromContext(ctx));
+type Authed = {
+  user: NonNullable<Context['user']>;
+};
+
+type MaybeAuthed = {
+  user: Context['user'];
+};
+
+export function isAuthed<T extends MaybeAuthed>(ctx: T): ctx is T & Authed {
+  return Boolean(ctx.user);
 }

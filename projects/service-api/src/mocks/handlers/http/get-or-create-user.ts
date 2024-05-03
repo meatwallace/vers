@@ -1,17 +1,10 @@
 import { http, HttpResponse } from 'msw';
-import {
-  createTokenVerifier,
-  getTokenFromHeader,
-} from '@chrononomicon/service-utils';
+import { getTokenFromHeader } from '@chrononomicon/service-utils';
+import { jwtDecode } from 'jwt-decode';
 import { env } from '../../../env';
 import { db } from '../../db';
 
-const verifyToken = createTokenVerifier({
-  audience: env.API_IDENTIFIER,
-  issuer: `https://${env.AUTH0_DOMAIN}/`,
-});
-
-const ENDPOINT_URL = `${env.USERS_API_URL}get-or-create-user`;
+const ENDPOINT_URL = `${env.USERS_SERVICE_URL}get-or-create-user`;
 
 export const getOrCreateUser = http.post(ENDPOINT_URL, async ({ request }) => {
   const authHeader = request.headers.get('authorization');
@@ -21,18 +14,22 @@ export const getOrCreateUser = http.post(ENDPOINT_URL, async ({ request }) => {
     return new HttpResponse(null, { status: 401 });
   }
 
-  const payload = (await verifyToken(accessToken)) as { sub: string };
+  const payload = jwtDecode(accessToken);
 
-  const userID = payload.sub;
-  const existingUser = db.user.findFirst({ where: { id: { equals: userID } } });
+  if (!payload.sub) {
+    return new HttpResponse(null, { status: 401 });
+  }
+
+  const existingUser = db.user.findFirst({
+    where: { auth0ID: { equals: payload.sub } },
+  });
 
   if (existingUser) {
     return HttpResponse.json({ success: true, data: existingUser });
   }
 
   const user = db.user.create({
-    id: userID,
-    auth0ID: `auth0|${userID}`,
+    auth0ID: payload.sub,
   });
 
   return HttpResponse.json({ success: true, data: user });
