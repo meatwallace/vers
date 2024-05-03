@@ -1,19 +1,12 @@
 import { graphql, HttpResponse } from 'msw';
 import { jwtDecode } from 'jwt-decode';
 import { createId } from '@paralleldrive/cuid2';
+import { User } from '../../../gql/graphql';
 import { db } from '../../db';
 import { MutationResponse } from './types';
 
 type GetOrCreateUserResponse = MutationResponse<{
-  getOrCreateUser: {
-    id: string;
-    auth0ID: string;
-    email: string;
-    emailVerified: boolean;
-    name: string;
-    firstName?: string;
-    createdAt: Date;
-  };
+  getOrCreateUser: User;
 }>;
 
 type GetOrCreateUserVariables = {

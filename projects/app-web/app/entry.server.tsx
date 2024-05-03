@@ -1,9 +1,3 @@
-/**
- * By default, Remix will handle generating the HTTP Response for you.
- * You are free to delete this file if you'd like to, but if you ever want it revealed again, you can run `npx remix reveal` ✨
- * For more information, see https://remix.run/docs/en/main/file-conventions/entry.server
- */
-
 import { PassThrough } from 'node:stream';
 import type { EntryContext } from '@remix-run/node';
 import { createReadableStreamFromReadable } from '@remix-run/node';
@@ -11,7 +5,7 @@ import { RemixServer } from '@remix-run/react';
 import { isbot } from 'isbot';
 import { renderToPipeableStream } from 'react-dom/server';
 
-const ABORT_DELAY = 5000;
+export const streamTimeout = 5000;
 
 if (!import.meta.env.PROD && import.meta.env.VITE_ENABLE_MSW === 'true') {
   const { server } = await import('./mocks/node');
@@ -30,7 +24,10 @@ export default function handleRequest(
   responseHeaders: Headers,
   remixContext: EntryContext,
 ) {
-  return isbot(request.headers.get('user-agent'))
+  const prohibitOutOfOrderStreaming =
+    isBotRequest(request.headers.get('user-agent')) || remixContext.isSpaMode;
+
+  return prohibitOutOfOrderStreaming
     ? handleBotRequest(
         request,
         responseStatusCode,
@@ -45,6 +42,14 @@ export default function handleRequest(
       );
 }
 
+function isBotRequest(userAgent: string | null) {
+  if (!userAgent) {
+    return false;
+  }
+
+  return isbot(userAgent);
+}
+
 function handleBotRequest(
   request: Request,
   responseStatusCode: number,
@@ -52,20 +57,21 @@ function handleBotRequest(
   remixContext: EntryContext,
 ) {
   return new Promise((resolve, reject) => {
+    let shellRendered = false;
+
     const { pipe, abort } = renderToPipeableStream(
-      <RemixServer
-        context={remixContext}
-        url={request.url}
-        abortDelay={ABORT_DELAY}
-      />,
+      <RemixServer context={remixContext} url={request.url} />,
       {
         onAllReady() {
+          shellRendered = true;
+
           const body = new PassThrough();
+          const stream = createReadableStreamFromReadable(body);
 
           responseHeaders.set('Content-Type', 'text/html');
 
           resolve(
-            new Response(createReadableStreamFromReadable(body), {
+            new Response(stream, {
               headers: responseHeaders,
               status: responseStatusCode,
             }),
@@ -78,12 +84,18 @@ function handleBotRequest(
         },
         onError(error: unknown) {
           responseStatusCode = 500;
-          console.error(error);
+
+          // Log streaming rendering errors from inside the shell.  Don't log
+          // errors encountered during initial shell rendering since they'll
+          // reject and get logged in handleDocumentRequest.
+          if (shellRendered) {
+            console.error(error);
+          }
         },
       },
     );
 
-    setTimeout(abort, ABORT_DELAY);
+    setTimeout(abort, streamTimeout + 1000);
   });
 }
 
@@ -94,20 +106,21 @@ function handleBrowserRequest(
   remixContext: EntryContext,
 ) {
   return new Promise((resolve, reject) => {
+    let shellRendered = false;
+
     const { pipe, abort } = renderToPipeableStream(
-      <RemixServer
-        context={remixContext}
-        url={request.url}
-        abortDelay={ABORT_DELAY}
-      />,
+      <RemixServer context={remixContext} url={request.url} />,
       {
         onShellReady() {
+          shellRendered = true;
+
           const body = new PassThrough();
+          const stream = createReadableStreamFromReadable(body);
 
           responseHeaders.set('Content-Type', 'text/html');
 
           resolve(
-            new Response(createReadableStreamFromReadable(body), {
+            new Response(stream, {
               headers: responseHeaders,
               status: responseStatusCode,
             }),
@@ -119,12 +132,18 @@ function handleBrowserRequest(
           reject(error);
         },
         onError(error: unknown) {
-          console.error(error);
           responseStatusCode = 500;
+
+          // Log streaming rendering errors from inside the shell.  Don't log
+          // errors encountered during initial shell rendering since they'll
+          // reject and get logged in handleDocumentRequest.
+          if (shellRendered) {
+            console.error(error);
+          }
         },
       },
     );
 
-    setTimeout(abort, ABORT_DELAY);
+    setTimeout(abort, streamTimeout + 1000);
   });
 }

@@ -1,10 +1,7 @@
 import { Context, StandardMutationPayload } from '../../types';
-import { getTokenFromContext } from '../../utils/get-token-from-context';
 import { builder } from '../builder';
-import { MutationErrorPayload } from '../types/mutation-error-payload';
-import { User } from '../types/user';
-import { createUnauthorizedError } from '../utils/create-unauthorized-error';
-import { createPayloadResolver } from '../utils/create-payload-resolver';
+import { MutationErrorPayload, User } from '../types';
+import { createPayloadResolver } from '../utils';
 
 type Args = {
   input: typeof GetOrCreateUserInput.$inferInput;
@@ -14,16 +11,10 @@ export async function getOrCreateUser(
   _: object,
   args: Args,
   ctx: Context,
-): Promise<StandardMutationPayload<typeof User>> {
-  const accessToken = getTokenFromContext(ctx);
-
-  if (!accessToken) {
-    return { error: createUnauthorizedError() };
-  }
-
+): Promise<StandardMutationPayload<typeof User.$inferType>> {
   // eslint-disable-next-line no-useless-catch
   try {
-    const user = await ctx.services.users.getOrCreateUser({
+    const user = await ctx.services.user.getOrCreateUser({
       email: args.input.email,
     });
 

@@ -1,11 +1,11 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { createRemixStub } from '@remix-run/testing';
+import { drop } from '@mswjs/data';
 import { Dashboard, loader } from './dashboard';
 import { Routes } from '../types';
 import { db } from '../mocks/db';
 import { client } from '../client';
-import { drop } from '@mswjs/data';
 
 function ExpectedRoute() {
   return 'Logged out';
@@ -22,7 +22,11 @@ function setupTest() {
   ]);
 
   client.setHeader('authorization', MOCK_TOKEN);
-  db.user.create({ auth0ID: 'auth0|test_id', name: 'Test User' });
+
+  db.user.create({
+    auth0ID: 'auth0|test_id',
+    firstName: 'John',
+  });
 
   render(<DashboardStub />);
 
@@ -31,13 +35,14 @@ function setupTest() {
 
 function teardownTest() {
   drop(db);
+
   client.setHeader('authorization', '');
 }
 
-test('it renders a greeting from the server', async () => {
+test('it renders the users name', async () => {
   setupTest();
 
-  const greeting = await screen.findByText('Hello, Test User');
+  const greeting = await screen.findByText('John');
 
   expect(greeting).toBeInTheDocument();
 

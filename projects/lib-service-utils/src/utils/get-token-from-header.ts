@@ -1,5 +1,7 @@
-export function getTokenFromHeader(header: string | null): string | null {
-  if (header === null) {
+export function getTokenFromHeader(
+  header: string | null | undefined,
+): string | null {
+  if (!header) {
     return null;
   }
 

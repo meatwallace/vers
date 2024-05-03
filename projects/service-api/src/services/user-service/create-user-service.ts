@@ -1,4 +1,4 @@
-import { createServiceContext } from '../utils/create-service-context';
+import { createServiceContext } from '../utils';
 import { CreateServiceContextConfig } from '../utils/types';
 import { getCurrentUser } from './get-current-user';
 import { getOrCreateUser } from './get-or-create-user';

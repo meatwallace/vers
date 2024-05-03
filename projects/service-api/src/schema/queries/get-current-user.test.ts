@@ -1,16 +1,16 @@
-import createJWKSMock from 'mock-jwks';
+import { createJWKSMock } from 'mock-jwks';
+import { drop } from '@mswjs/data';
 import { env } from '../../env';
 import { createMockGQLContext } from '../../test-utils';
 import { getCurrentUser } from './get-current-user';
 import { server } from '../../mocks/node';
 import { db } from '../../mocks/db';
-import { drop } from '@mswjs/data';
 
 const jwks = createJWKSMock(`https://${env.AUTH0_DOMAIN}/`);
 
 test('it returns the current user', async () => {
   db.user.create({
-    id: 'test_id',
+    id: 'test_user_id',
     auth0ID: 'auth0|test_id',
     email: 'user@test.com',
     emailVerified: true,
@@ -18,7 +18,7 @@ test('it returns the current user', async () => {
     firstName: 'Test',
   });
 
-  server.use(jwks.handler);
+  server.use(jwks.mswHandler);
 
   const accessToken = jwks.token({
     sub: 'test_id',
@@ -30,7 +30,7 @@ test('it returns the current user', async () => {
   const result = await getCurrentUser({}, {}, ctx);
 
   expect(result).toMatchObject({
-    id: 'test_id',
+    id: 'test_user_id',
     auth0ID: 'auth0|test_id',
     email: 'user@test.com',
     emailVerified: true,

@@ -1,28 +1,8 @@
 import { style } from '@vanilla-extract/css';
 
 export const container = style({
-  margin: '0 auto',
-  maxWidth: '1140px',
-  padding: '0 24px',
-  textAlign: 'center',
-});
-
-export const brandIcon = style({
-  height: '42px',
-  marginTop: '-2px',
-  width: '42px',
-});
-
-export const brandName = style({
-  alignSelf: 'center',
-  color: '#0087ff',
-  display: 'flex',
-  fontFamily: 'Josefin Sans Medium, sans-serif',
-  fontSize: '48px',
-  fontWeight: 500,
-  lineHeight: 1,
-  padding: 0,
-  textTransform: 'uppercase',
+  backgroundColor: '#07080b',
+  minHeight: '100vh',
 });
 
 export const heroSection = style({
@@ -30,6 +10,15 @@ export const heroSection = style({
   display: 'flex',
   flexFlow: 'column',
   justifyContent: 'center',
+  margin: '0 auto',
+  maxWidth: '1140px',
+  paddingBottom: '32px',
+  paddingTop: '32px',
+  textAlign: 'center',
+});
+
+export const brand = style({
+  marginBottom: '32px',
 });
 
 export const heroDescriptionContainer = style({
@@ -40,13 +29,14 @@ export const heroDescriptionContainer = style({
 
 export const heroDescriptionIcon = style({
   height: '192px',
+  marginBottom: '32px',
   marginLeft: '-16px',
   width: '192px',
 });
 
 export const heroDescription = style({
   color: '#76a5ce',
-  fontFamily: 'Karla Bold, sans-serif',
+  fontFamily: 'Karla, sans-serif',
   fontSize: '36px',
   fontWeight: 600,
 });
@@ -56,12 +46,24 @@ export const authSection = style({
   display: 'flex',
   flexFlow: 'column',
   justifyContent: 'center',
+  margin: '0 auto',
+  maxWidth: '1140px',
+  paddingBottom: '32px',
+  paddingTop: '32px',
+});
+
+export const signUpButton = style({
+  marginBottom: '16px',
+});
+
+export const logInButton = style({
+  marginBottom: '16px',
 });
 
 export const existingAccountText = style({
   color: '#ddefff',
-  fontFamily: 'Karla Regular, sans-serif',
+  fontFamily: 'Karla, sans-serif',
   fontSize: '16px',
   fontWeight: 400,
-  marginBottom: '8px',
+  marginBottom: '16px',
 });

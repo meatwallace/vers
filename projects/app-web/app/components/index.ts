@@ -1,3 +1,3 @@
-export { LogInButton } from './log-in-button';
-export { LogOutButton } from './log-out-button';
-export { SignUpButton } from './sign-up-button';
+export { Brand } from './brand';
+export { Button } from './button';
+export { Header } from './header';

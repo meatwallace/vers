@@ -5,9 +5,8 @@ expect.extend(matchers);
 
 // vitest instead `@vitest/expect`
 declare module 'vitest' {
-  interface JestAssertion<T>
-    extends matchers.TestingLibraryMatchers<
-      ReturnType<typeof expect.stringContaining>,
-      T
-    > {}
+  type JestAssertion<T> = matchers.TestingLibraryMatchers<
+    ReturnType<typeof expect.stringContaining>,
+    T
+  >;
 }

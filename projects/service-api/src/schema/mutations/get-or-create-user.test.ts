@@ -1,4 +1,4 @@
-import createJWKSMock from 'mock-jwks';
+import { createJWKSMock } from 'mock-jwks';
 import { drop } from '@mswjs/data';
 import { env } from '../../env';
 import { createMockGQLContext } from '../../test-utils';
@@ -18,10 +18,10 @@ test('it returns an existing user', async () => {
     firstName: 'Test',
   });
 
-  server.use(jwks.handler);
+  server.use(jwks.mswHandler);
 
   const accessToken = jwks.token({
-    sub: 'test_id',
+    sub: 'auth0|test_id',
     aud: env.API_IDENTIFIER,
     iss: `https://${env.AUTH0_DOMAIN}/`,
   });

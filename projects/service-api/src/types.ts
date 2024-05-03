@@ -1,8 +1,12 @@
-import { Get } from 'type-fest';
+import { users } from '@chrononomicon/postgres-schema';
 import { MutationErrorPayload } from './schema/types/mutation-error-payload';
 import { UserService } from './services/user-service/types';
+import { WorldService } from './services/world-service/types';
 
 export type Env = {
+  HOSTNAME: string;
+  PORT: number;
+
   LOGGING: 'debug' | 'info' | 'warn' | 'error';
   NODE_ENV: 'development' | 'test' | 'production';
 
@@ -10,7 +14,8 @@ export type Env = {
   AUTH0_DOMAIN: string;
 
   // service urls
-  USERS_API_URL: string;
+  USERS_SERVICE_URL: string;
+  WORLDS_SERVICE_URL: string;
 
   // utils
   isProduction: boolean;
@@ -19,13 +24,15 @@ export type Env = {
 
 export type Context = {
   request: Request;
+  user: typeof users.$inferSelect | null;
   services: Services;
 };
 
 export type Services = {
-  users: UserService;
+  user: UserService;
+  world: WorldService;
 };
 
 export type StandardMutationPayload<T> =
-  | Get<T, '$inferType'>
+  | T
   | typeof MutationErrorPayload.$inferType;

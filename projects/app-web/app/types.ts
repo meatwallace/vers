@@ -6,4 +6,8 @@ export enum Routes {
   AuthLogout = '/auth/logout',
 
   Dashboard = '/dashboard',
+
+  CreateWorld = '/worlds/create',
+  CreateWorldWizard = '/worlds/create/:worldID',
+  DeleteWorld = '/worlds/delete/:worldID',
 }

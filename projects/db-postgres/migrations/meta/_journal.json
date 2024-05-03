@@ -15,6 +15,13 @@
       "when": 1714230768356,
       "tag": "0001_yummy_prodigy",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1714608336891,
+      "tag": "0002_square_changeling",
+      "breakpoints": true
     }
   ]
 }

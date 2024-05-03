@@ -1,7 +1,7 @@
 import { eq } from 'drizzle-orm';
 import { Context } from 'hono';
 import * as schema from '@chrononomicon/postgres-schema';
-import { getUserIDFromContext } from '@chrononomicon/service-utils';
+import { getAuth0IDFromContext } from '@chrononomicon/service-utils';
 import { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
 
 export async function getCurrentUser(
@@ -9,10 +9,10 @@ export async function getCurrentUser(
   db: PostgresJsDatabase<typeof schema>,
 ) {
   try {
-    const userID = getUserIDFromContext(ctx);
+    const auth0ID = getAuth0IDFromContext(ctx);
 
     const user = await db.query.users.findFirst({
-      where: eq(schema.users.auth0ID, userID),
+      where: eq(schema.users.auth0ID, auth0ID),
     });
 
     return ctx.json({ success: true, data: user });

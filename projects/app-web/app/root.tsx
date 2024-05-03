@@ -21,7 +21,7 @@ export const meta: MetaFunction = () => [
   },
 ];
 
-export default function App() {
+export function App() {
   return (
     <html lang="en">
       <head>
@@ -36,3 +36,5 @@ export default function App() {
     </html>
   );
 }
+
+export default App;

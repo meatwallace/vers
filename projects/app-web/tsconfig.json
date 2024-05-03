@@ -7,7 +7,7 @@
     "noEmit": true,
     "allowImportingTsExtensions": true,
     "strict": true,
-    "types": ["vitest", "vite/client"]
+    "types": ["@remix-run/node", "vitest", "vite/client"]
   },
   "files": [],
   "include": [],

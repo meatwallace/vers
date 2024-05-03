@@ -18,6 +18,13 @@
         "cwd": "projects/app-web"
       }
     },
+    "dev": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": ["yarn run remix vite:dev"],
+        "cwd": "projects/app-web"
+      }
+    },
     "build-remix": {
       "executor": "nx:run-commands",
       "options": {

@@ -16,6 +16,14 @@ test('it returns null if the provided header is null', () => {
   expect(token).toBeNull();
 });
 
+test('it returns null if the provided header is undefined', () => {
+  const header = undefined;
+
+  const token = getTokenFromHeader(header);
+
+  expect(token).toBeNull();
+});
+
 test('it returns null if the provided header is invalid', () => {
   const header = 'Bearer';
 

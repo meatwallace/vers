@@ -2,9 +2,10 @@ import { eq } from 'drizzle-orm';
 import { Context } from 'hono';
 import { createId } from '@paralleldrive/cuid2';
 import * as schema from '@chrononomicon/postgres-schema';
-import { getTokenFromContext } from '@chrononomicon/service-utils';
 import { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
 import * as auth0 from '../auth0';
+import { HTTPException } from 'hono/http-exception';
+import { getTokenFromHeader } from '@chrononomicon/service-utils';
 
 type RequestBody = {
   email: string;
@@ -25,7 +26,13 @@ export async function getOrCreateUser(
       return ctx.json({ success: true, data: existingUser });
     }
 
-    const accessToken = getTokenFromContext(ctx);
+    const authHeader = ctx.req.header('authorization');
+    const accessToken = getTokenFromHeader(authHeader);
+
+    if (!accessToken) {
+      throw new HTTPException(401, { message: 'Unauthorized' });
+    }
+
     const auth0UserInfo = await auth0.userInfoClient.getUserInfo(accessToken);
 
     const newUser = {
@@ -42,7 +49,6 @@ export async function getOrCreateUser(
 
     return ctx.json({ success: true, data: newUser });
   } catch (error: unknown) {
-    console.log(error);
     // TODO(#16): capture via Sentry
     if (error instanceof Error) {
       return ctx.json({ success: false, error: 'An unknown error occurred' });
