@@ -1,11 +1,5 @@
-import { MetaFunction } from '@remix-run/node';
-import {
-  Links,
-  Meta,
-  Outlet,
-  Scripts,
-  ScrollRestoration,
-} from '@remix-run/react';
+import { MetaFunction } from 'react-router';
+import { Links, Meta, Outlet, Scripts, ScrollRestoration } from 'react-router';
 import * as styles from './global.css.ts';
 
 // quick hack to ensure our global styles are kept in the prod build -

@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react';
-import { createRemixStub } from '@remix-run/testing';
+import { createRoutesStub } from 'react-router';
 import { drop } from '@mswjs/data';
 import { client } from '../../client';
 import { db } from '../../mocks/db';
@@ -18,7 +18,7 @@ function setupTest() {
     ownerID: user.id,
   });
 
-  const CreateWorldWizardStub = createRemixStub([
+  const CreateWorldWizardStub = createRoutesStub([
     {
       path: '/:worldID',
       loader,

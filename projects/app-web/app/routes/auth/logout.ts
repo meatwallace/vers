@@ -1,4 +1,4 @@
-import { ActionFunctionArgs, redirect } from '@remix-run/node';
+import { ActionFunctionArgs, redirect } from 'react-router';
 import { sessionStorage } from '../../session-storage.server';
 
 export const action = async ({ request }: ActionFunctionArgs) => {

@@ -1,5 +1,5 @@
 import invariant from 'tiny-invariant';
-import { createCookieSessionStorage } from '@remix-run/node';
+import { createCookieSessionStorage } from 'react-router';
 
 type SessionData = {
   [key: string]: string;

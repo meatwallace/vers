@@ -1,6 +1,6 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { createRemixStub } from '@remix-run/testing';
+import { createRoutesStub } from 'react-router';
 import { drop } from '@mswjs/data';
 import { Dashboard, loader } from './dashboard';
 import { Routes } from '../types';
@@ -16,7 +16,7 @@ const MOCK_TOKEN = `eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJ0ZXN0IiwiaWF
 function setupTest() {
   const user = userEvent.setup();
 
-  const DashboardStub = createRemixStub([
+  const DashboardStub = createRoutesStub([
     { path: '/', Component: Dashboard, loader },
     { path: Routes.AuthLogout, Component: ExpectedRoute, action: () => null },
   ]);

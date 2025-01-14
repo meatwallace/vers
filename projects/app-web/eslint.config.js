@@ -201,6 +201,6 @@ export default [
     },
   },
   {
-    ignores: ['**/app/gql/**'],
+    ignores: ['**/app/gql/**', '.react-router/**'],
   },
 ];

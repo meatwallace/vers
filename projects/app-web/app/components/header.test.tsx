@@ -1,7 +1,7 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Header } from './header';
-import { createRemixStub } from '@remix-run/testing';
+import { createRoutesStub } from 'react-router';
 import { Routes } from '../types';
 
 function ExpectedRoute() {
@@ -15,7 +15,7 @@ const MOCK_USER = {
 function setupTest() {
   const user = userEvent.setup();
 
-  const HeaderButtonStub = createRemixStub([
+  const HeaderButtonStub = createRoutesStub([
     { path: Routes.Index, Component: () => <Header user={MOCK_USER} /> },
     { path: Routes.AuthLogout, Component: ExpectedRoute, action: () => null },
   ]);

@@ -1,4 +1,4 @@
-import { redirect } from '@remix-run/node';
+import { redirect } from 'react-router';
 import { graphql } from '../../gql';
 import { client } from '../../client';
 import { isMutationError } from '../../utils';

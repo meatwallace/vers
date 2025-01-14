@@ -1,8 +1,7 @@
-import { useLoaderData } from '@remix-run/react';
-import { LoaderFunctionArgs, MetaFunction, redirect } from '@remix-run/node';
+import { useLoaderData } from 'react-router';
+import { LoaderFunctionArgs, MetaFunction, redirect } from 'react-router';
 import { graphql } from '../../gql/index';
 import { client } from '../../client.ts';
-import { isMutationError } from '../../utils/index';
 import * as styles from './create.$worldID.css.ts';
 import { Routes } from '../../types.ts';
 
@@ -33,10 +32,6 @@ export async function loader({ params }: LoaderFunctionArgs) {
     input: { worldID: params.worldID },
   });
 
-  if (isMutationError(getWorld)) {
-    return { error: getWorld.error };
-  }
-
   return { world: getWorld };
 }
 
@@ -49,16 +44,6 @@ export const meta: MetaFunction = () => [
 
 export function CreateWorldWizard() {
   const data = useLoaderData<typeof loader>();
-
-  if ('error' in data) {
-    // TODO: generic error component?
-    return (
-      <div>
-        <span>{data.error.title}</span>
-        <span>{data.error.message}</span>
-      </div>
-    );
-  }
 
   return (
     <>

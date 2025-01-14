@@ -1,8 +1,8 @@
 import { SyntheticEvent } from 'react';
-import { Form, useFetcher, useLoaderData } from '@remix-run/react';
-import { MetaFunction } from '@remix-run/node';
+import { Form, useFetcher, useLoaderData } from 'react-router';
+import { MetaFunction } from 'react-router';
 import { formatDistance } from 'date-fns';
-import type { ArrayValues, Jsonify } from 'type-fest';
+import type { ArrayValues } from 'type-fest';
 import { Header } from '../components/header';
 import { graphql } from '../gql';
 import type { GetWorldsQuery as GetWorldsQueryResponse } from '../gql/graphql';
@@ -93,9 +93,7 @@ export function Dashboard() {
   );
 }
 
-type WorldListItemProps = ArrayValues<
-  Jsonify<GetWorldsQueryResponse>['getWorlds']
-> & {
+type WorldListItemProps = ArrayValues<GetWorldsQueryResponse['getWorlds']> & {
   //
 };
 
@@ -136,7 +134,7 @@ function WorldListItem(props: WorldListItemProps) {
   );
 }
 
-function getDistanceFromNow(date: string): string {
+function getDistanceFromNow(date: Date): string {
   const formatOpts = { includeSeconds: true, addSuffix: true };
 
   return formatDistance(new Date(date), new Date(), formatOpts);

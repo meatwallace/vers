@@ -1,4 +1,4 @@
-import { ActionFunctionArgs, redirect } from '@remix-run/node';
+import { ActionFunctionArgs, redirect } from 'react-router';
 import { graphql } from '../../gql';
 import { client } from '../../client';
 import { isMutationError } from '../../utils';

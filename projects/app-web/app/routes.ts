@@ -1,4 +1,4 @@
-import { type RouteConfig, index, route } from '@remix-run/route-config';
+import { type RouteConfig, index, route } from '@react-router/dev/routes';
 
 export default [
   index('routes/_index.tsx'),
@@ -10,6 +10,6 @@ export default [
   route('auth/logout', 'routes/auth/logout.ts'),
 
   route('worlds/create', 'routes/worlds/create.tsx'),
-  route('worlds/create/$worldID', 'routes/worlds/create.$worldID.tsx'),
-  route('worlds/delete/$worldID', 'routes/worlds/delete.$worldID.tsx'),
+  route('worlds/create/:worldID', 'routes/worlds/create.$worldID.tsx'),
+  route('worlds/delete/:worldID', 'routes/worlds/delete.$worldID.tsx'),
 ] satisfies RouteConfig;
