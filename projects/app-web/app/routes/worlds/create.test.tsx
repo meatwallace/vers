@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
-import { createRemixStub } from '@remix-run/testing';
-import { Form } from '@remix-run/react';
+import { createRoutesStub } from 'react-router';
+import { Form } from 'react-router';
 import userEvent from '@testing-library/user-event';
 import { drop } from '@mswjs/data';
 import { client } from '../../client';
@@ -15,7 +15,7 @@ function setupTest() {
 
   const user = db.user.create({});
 
-  const CreateWorldStub = createRemixStub([
+  const CreateWorldStub = createRoutesStub([
     {
       path: '/',
       Component: () => (

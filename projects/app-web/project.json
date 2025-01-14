@@ -21,14 +21,14 @@
     "dev": {
       "executor": "nx:run-commands",
       "options": {
-        "commands": ["yarn run remix vite:dev"],
+        "commands": ["yarn run react-router dev"],
         "cwd": "projects/app-web"
       }
     },
-    "build-remix": {
+    "build": {
       "executor": "nx:run-commands",
       "options": {
-        "commands": ["yarn run remix vite:build"],
+        "commands": ["yarn run react-router build"],
         "cwd": "projects/app-web"
       }
     },

@@ -1,32 +1,28 @@
 import { Authenticator } from 'remix-auth';
-import {
-  Auth0Strategy,
-  Auth0Profile,
-  Auth0ExtraParams,
-} from 'remix-auth-auth0';
-import { OAuth2StrategyVerifyParams } from 'remix-auth-oauth2';
+import { OAuth2Strategy } from 'remix-auth-oauth2';
 import invariant from 'tiny-invariant';
 import { client } from './client';
 import { graphql } from './gql';
 import { User } from './gql/graphql';
-import { sessionStorage } from './session-storage.server';
 import { isMutationError } from './utils';
+import { Auth0UserInfo } from './types';
+import { Auth0Strategy } from './auth/auth0-strategy';
 
-export const authenticator = new Authenticator<User>(sessionStorage, {
-  sessionKey: 'userID',
-});
+export const authenticator = new Authenticator<User>();
 
 invariant(process.env.AUTH0_CLIENT_SECRET, '$AUTH0_CLIENT_SECRET is required');
 
 const config = {
-  callbackURL: import.meta.env.VITE_AUTH0_CALLBACK_URL,
-  clientID: import.meta.env.VITE_AUTH0_CLIENT_ID,
+  authorizationEndpoint: `https://${import.meta.env.VITE_AUTH0_DOMAIN}/authorize`,
+  tokenEndpoint: `https://${import.meta.env.VITE_AUTH0_DOMAIN}/oauth/token`,
+  clientId: import.meta.env.VITE_AUTH0_CLIENT_ID,
   clientSecret: process.env.AUTH0_CLIENT_SECRET,
-  domain: import.meta.env.VITE_AUTH0_DOMAIN,
+  redirectURI: import.meta.env.VITE_AUTH0_CALLBACK_URL,
+  scopes: ['openid', 'profile', 'email'],
   audience: import.meta.env.VITE_AUTH0_AUDIENCE,
 };
 
-const auth0Strategy = new Auth0Strategy(config, handleVerifySuccess);
+const auth0Strategy = new Auth0Strategy<User>(config, handleVerifySuccess);
 
 const GetOrCreateUserMutation = graphql(/* GraphQL */ `
   mutation GetOrCreateUser($input: GetOrCreateUserInput!) {
@@ -51,16 +47,23 @@ const GetOrCreateUserMutation = graphql(/* GraphQL */ `
 `);
 
 async function handleVerifySuccess(
-  params: OAuth2StrategyVerifyParams<Auth0Profile, Auth0ExtraParams>,
+  options: OAuth2Strategy.VerifyOptions,
 ): Promise<Omit<User, '__typename'>> {
-  client.setHeader('authorization', `Bearer ${params.accessToken}`);
+  client.setHeader('authorization', `Bearer ${options.tokens.accessToken()}`);
 
-  const email = params.profile.emails?.[0].value;
+  const auth0ProfileResponse = await fetch(
+    `https://${import.meta.env.VITE_AUTH0_DOMAIN}/userinfo`,
+    {
+      headers: { Authorization: `Bearer ${options.tokens.accessToken()}` },
+    },
+  );
 
-  invariant(email, 'email is required');
+  const auth0Profile: Auth0UserInfo = await auth0ProfileResponse.json();
+
+  invariant(auth0Profile.email, 'email is required');
 
   const { getOrCreateUser } = await client.request(GetOrCreateUserMutation, {
-    input: { email },
+    input: { email: auth0Profile.email },
   });
 
   if (isMutationError(getOrCreateUser)) {
@@ -77,4 +80,4 @@ async function handleVerifySuccess(
   return user;
 }
 
-authenticator.use(auth0Strategy);
+authenticator.use(auth0Strategy, 'auth0');

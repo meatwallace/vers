@@ -1,6 +1,6 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { createRemixStub } from '@remix-run/testing';
+import { createRoutesStub } from 'react-router';
 import { Index } from './_index';
 import { Routes } from '../types';
 
@@ -11,7 +11,7 @@ function ExpectedRoute() {
 function setupTest() {
   const user = userEvent.setup();
 
-  const IndexStub = createRemixStub([
+  const IndexStub = createRoutesStub([
     { path: '/', Component: Index },
     { path: Routes.AuthAuth0, Component: ExpectedRoute, action: () => null },
   ]);

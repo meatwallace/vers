@@ -2,7 +2,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { searchForWorkspaceRoot } from 'vite';
 import { defineConfig, loadEnv } from 'vite';
-import { vitePlugin as remix } from '@remix-run/dev';
+import { reactRouter } from '@react-router/dev/vite';
 import { nxViteTsPaths } from '@nx/vite/plugins/nx-tsconfig-paths.plugin';
 import { vanillaExtractPlugin } from '@vanilla-extract/vite-plugin';
 
@@ -32,19 +32,7 @@ export default defineConfig({
   },
 
   plugins: [
-    !process.env.VITEST &&
-      remix({
-        ignoredRouteFiles: ['**/*'],
-        future: {
-          unstable_optimizeDeps: true,
-          v3_fetcherPersist: true,
-          v3_relativeSplatPath: true,
-          v3_throwAbortReason: true,
-          v3_lazyRouteDiscovery: true,
-          v3_singleFetch: true,
-          v3_routeConfig: true,
-        },
-      }),
+    !process.env.VITEST && reactRouter(),
     vanillaExtractPlugin(),
     nxViteTsPaths(),
   ],

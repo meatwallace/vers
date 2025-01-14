@@ -1,5 +1,5 @@
-import { MetaFunction } from '@remix-run/node';
-import { Form } from '@remix-run/react';
+import { MetaFunction } from 'react-router';
+import { Form } from 'react-router';
 import { Brand, Button } from '../components';
 import * as styles from './_index.css.ts';
 import { Routes } from '../types.ts';

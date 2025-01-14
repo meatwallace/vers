@@ -7,10 +7,11 @@
     "noEmit": true,
     "allowImportingTsExtensions": true,
     "strict": true,
-    "types": ["@remix-run/node", "vitest", "vite/client"]
+    "types": ["@react-router/node", "vitest", "vite/client"],
+    "rootDirs": [".", "./.react-router/types"]
   },
   "files": [],
-  "include": [],
+  "include": [".react-router/types/**/*"],
   "references": [
     {
       "path": "./tsconfig.app.json"
