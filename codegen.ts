@@ -1,9 +1,8 @@
 import type { CodegenConfig } from '@graphql-codegen/cli';
-import { printSchema } from 'graphql';
-import { schema } from './projects/service-api/src/schema';
 
 const config: CodegenConfig = {
-  schema: printSchema(schema),
+  schema: './projects/service-api/src/schema/**/*.ts',
+  require: ['tsx/cjs'],
   documents: ['projects/app-web/app/**/*.ts?(x)'],
   generates: {
     './projects/app-web/app/gql/': {
@@ -16,8 +15,14 @@ const config: CodegenConfig = {
   },
   config: {
     scalars: {
-      Date: 'Date',
-      DateTime: 'Date',
+      Date: {
+        input: 'Date',
+        output: 'string',
+      },
+      DateTime: {
+        input: 'Date',
+        output: 'string',
+      },
     },
   },
 };

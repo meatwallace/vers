@@ -1,29 +1,16 @@
 import { and, eq } from 'drizzle-orm';
 import { Context } from 'hono';
-import * as schema from '@chrononomicon/postgres-schema';
+import * as schema from '@chrono/postgres-schema';
 import { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
-
-type World = typeof schema.worlds.$inferSelect;
-
-type RequestBody = {
-  ownerID: string;
-  worldID: string;
-  name?: string;
-  fantasyType?: World['fantasyType'];
-  technologyLevel?: World['technologyLevel'];
-  archetype?: World['archetype'];
-  atmosphere?: World['atmosphere'];
-  population?: World['population'];
-  geographyType?: World['geographyType'];
-  geographyFeatures?: World['geographyFeatures'];
-};
+import { UpdateWorldRequest, UpdateWorldResponse } from '@chrono/service-types';
 
 export async function updateWorld(
   ctx: Context,
   db: PostgresJsDatabase<typeof schema>,
 ) {
   try {
-    const { ownerID, worldID, ...update } = await ctx.req.json<RequestBody>();
+    const { ownerID, worldID, ...update } =
+      await ctx.req.json<UpdateWorldRequest>();
 
     const [world] = await db
       .update(schema.worlds)
@@ -36,11 +23,21 @@ export async function updateWorld(
       )
       .returning();
 
-    return ctx.json({ success: true, data: world });
+    const response: UpdateWorldResponse = {
+      success: true,
+      data: world,
+    };
+
+    return ctx.json(response);
   } catch (error: unknown) {
     // TODO(#16): capture via Sentry
     if (error instanceof Error) {
-      return ctx.json({ success: false, error: 'An unknown error occurred' });
+      const response = {
+        success: false,
+        error: 'An unknown error occurred',
+      };
+
+      return ctx.json(response);
     }
 
     throw error;

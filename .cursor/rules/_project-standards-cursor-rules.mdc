@@ -1,0 +1,143 @@
+---
+description: Standards for Writing Cursor Rules
+globs: "**/*.mdc"
+---
+
+# Cursor Rule Standards
+
+Standards for writing and formatting Cursor rule files.
+
+<rule>
+name: _project_standards_cursor_rules 
+description: Standards for writing and organizing Cursor rules
+filters:
+  - type: file_extension
+    pattern: "\\.mdc$"
+
+actions:
+  - type: suggest
+    message: |
+      Cursor Rule Standards:
+
+      1. File Organization:
+         - Place all rule files in `.cursor/rules/`
+         - Name rule files like `lower-kebab-case-name.mdc`
+         - Group related rules into single files
+
+      2. File Structure:
+         - Start with YAML frontmatter containing `description` and `globs`
+         - Include a markdown title matching the rule's purpose
+         - Wrap rule content in <rule> tags
+         - Include name, description, filters, actions, examples, and metadata
+
+      3. Content Guidelines:
+         - Write clear, actionable standards
+         - Group related standards under numbered sections
+         - Use consistent indentation (2 spaces)
+         - Always use language-specific code blocks (e.g. ```tsx, ```ts)
+         - Keep examples focused and minimal
+         - Include both good and bad examples with explanatory comments
+
+      4. Formatting:
+         - Use backticks for inline code and file paths
+         - Use lowercase for comments and descriptions
+         - Indent list items consistently
+         - Separate major sections with blank lines
+         - Keep line length under 80 characters
+         - Use appropriate language tags for code blocks:
+           - ```tsx for React components
+           - ```ts for TypeScript
+           - ```json for JSON/package.json
+           - ```yaml for YAML
+           - ```css for CSS/styles
+
+      5. Modifications:
+        - Do not remove examples unless their corresponding rules have been removed
+
+examples:
+  - input: |
+      ---
+      description: A Badly Written Rule - poor organisation and lack of formatting 
+      globs: "*"
+      ---
+      # Rule
+      <rule>
+      name: my_rule
+      description: does stuff
+      filters:
+      - type: file_extension
+        pattern: "\\.*"
+      actions:
+      - type: suggest
+        message: do things
+      examples:
+      - input: |
+          // example
+          const x = 1
+        output: "done"
+      metadata:
+        priority: low
+      </rule>
+
+      ---
+      description: A Well Written Rule - clear structure with formatting 
+      globs: "**/*.{ts,tsx}"
+      ---
+
+      # Component Standards
+
+      Standards for writing React components.
+
+      <rule>
+      name: component_standards
+      description: Standards for writing and organizing React components
+      filters:
+        - type: file_extension
+          pattern: "\\.(ts|tsx)$"
+
+      actions:
+        - type: suggest
+          message: |
+            Component Standards:
+
+            1. File Structure:
+               - Place components in dedicated files
+               - Use consistent naming
+
+            2. Best Practices:
+               - Write pure functions
+               - Handle errors gracefully
+
+      examples:
+        - input: |
+            ```tsx
+            // Bad - Poor component structure
+            export default function comp(p) {
+              return <div>{p.text}</div>
+            }
+
+            // Good - Clear structure and typing
+            type Props = {
+              text: string;
+            };
+
+            export function TextDisplay(props: Props) {
+              return (
+                <div role="text">
+                  {props.text}
+                </div>
+              );
+            }
+            ```
+          output: "Component following standards"
+
+      metadata:
+        priority: high
+        version: 1.0
+      </rule>
+    output: "Cursor rule following standards"
+
+metadata:
+  priority: high
+  version: 1.0
+</rule>

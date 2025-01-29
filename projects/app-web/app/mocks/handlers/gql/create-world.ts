@@ -1,8 +1,8 @@
 import { graphql, HttpResponse } from 'msw';
-import { jwtDecode } from 'jwt-decode';
 import { createId } from '@paralleldrive/cuid2';
-import { World } from '../../../gql/graphql';
-import { db } from '../../db';
+import { World } from '~/gql/graphql';
+import { db } from '~/mocks/db';
+import { decodeMockJWT } from '../../utils/decode-mock-jwt';
 import { MutationResponse } from './types';
 
 type CreateWorldResponse = MutationResponse<{
@@ -26,10 +26,10 @@ export const CreateWorld = graphql.mutation<
   }
 
   const token = authHeader.replace('Bearer ', '');
-  const payload = jwtDecode(token);
+  const payload = decodeMockJWT(token);
 
   const user = db.user.findFirst({
-    where: { auth0ID: { equals: payload.sub } },
+    where: { id: { equals: payload.sub } },
   });
 
   if (!user) {

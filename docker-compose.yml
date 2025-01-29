@@ -24,12 +24,46 @@ services:
     env_file:
       - projects/service-api/.env.development
     environment:
-      - USERS_SERVICE_URL=http://service-user:3001/
-      - WORLDS_SERVICE_URL=http://service-world:3002/
+      - EMAILS_SERVICE_URL=http://service-email:3001/
+      - SESSIONS_SERVICE_URL=http://service-session:3002/
+      - USERS_SERVICE_URL=http://service-user:3003/
+      - VERIFICATIONS_SERVICE_URL=http://service-verification:3004/
+      - WORLDS_SERVICE_URL=http://service-world:3005/
     expose:
       - '3000'
     ports:
       - '3000:3000'
+  service-email:
+    build:
+      context: .
+      dockerfile: projects/service-email/Dockerfile
+      args:
+        BUILD_MODE: development
+    restart: always
+    env_file:
+      - projects/service-email/.env.development
+      - projects/service-email/.env.development.local
+    environment:
+      - POSTGRES_URL=postgresql://admin:password@postgres:5433/chrononomicon
+    ports:
+      - '3001:3001'
+    depends_on:
+      - postgres
+  service-session:
+    build:
+      context: .
+      dockerfile: projects/service-session/Dockerfile
+      args:
+        BUILD_MODE: development
+    restart: always
+    env_file:
+      - projects/service-session/.env.development
+    environment:
+      - POSTGRES_URL=postgresql://admin:password@postgres:5433/chrononomicon
+    ports:
+      - '3002:3002'
+    depends_on:
+      - postgres
   service-user:
     build:
       context: .
@@ -42,7 +76,22 @@ services:
     environment:
       - POSTGRES_URL=postgresql://admin:password@postgres:5433/chrononomicon
     ports:
-      - '3001:3001'
+      - '3003:3003'
+    depends_on:
+      - postgres
+  service-verification:
+    build:
+      context: .
+      dockerfile: projects/service-verification/Dockerfile
+      args:
+        BUILD_MODE: development
+    restart: always
+    env_file:
+      - projects/service-verification/.env.development
+    environment:
+      - POSTGRES_URL=postgresql://admin:password@postgres:5433/chrononomicon
+    ports:
+      - '3004:3004'
     depends_on:
       - postgres
   service-world:
@@ -57,7 +106,7 @@ services:
     environment:
       - POSTGRES_URL=postgresql://admin:password@postgres:5433/chrononomicon
     ports:
-      - '3002:3002'
+      - '3005:3005'
     depends_on:
       - postgres
 volumes:

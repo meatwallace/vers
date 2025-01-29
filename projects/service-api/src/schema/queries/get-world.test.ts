@@ -1,35 +1,31 @@
-import { createJWKSMock } from 'mock-jwks';
 import { drop } from '@mswjs/data';
-import { createTestAccessToken } from '@chrononomicon/service-test-utils';
-import { env } from '../../env';
-import { createMockGQLContext } from '../../test-utils';
-import { server } from '../../mocks/node';
-import { db } from '../../mocks/db';
-import { getWorld } from './get-world';
-
-const jwks = createJWKSMock(`https://${env.AUTH0_DOMAIN}/`);
+import { createTestJWT } from '@chrono/service-test-utils';
+import { env } from '~/env';
+import { createMockGQLContext } from '~/test-utils/create-mock-gql-context';
+import { db } from '~/mocks/db';
+import { resolve } from './get-world';
 
 test('it returns the requested world', async () => {
-  server.use(jwks.mswHandler);
+  const user = db.user.create({});
 
   db.world.create({
     id: 'test_id',
-    ownerID: 'test_owner_id',
+    ownerID: user.id,
   });
 
-  const { accessToken } = createTestAccessToken({
-    jwks,
+  const accessToken = await createTestJWT({
+    sub: user.id,
     audience: env.API_IDENTIFIER,
-    issuer: `https://${env.AUTH0_DOMAIN}/`,
+    issuer: `https://${env.API_IDENTIFIER}/`,
   });
 
-  const ctx = createMockGQLContext({ accessToken });
+  const ctx = createMockGQLContext({ accessToken, user });
   const args = { input: { worldID: 'test_id' } };
-  const result = await getWorld({}, args, ctx);
+  const result = await resolve({}, args, ctx);
 
   expect(result).toMatchObject({
     id: 'test_id',
-    ownerID: 'test_owner_id',
+    ownerID: user.id,
     name: 'New World',
     fantasyType: 'Medium',
     technologyLevel: 'Medieval',
@@ -56,5 +52,5 @@ test('it returns an error if the user isnt authenticated', async () => {
   const ctx = createMockGQLContext({});
   const args = { input: { worldID: 'test_id' } };
 
-  await expect(() => getWorld({}, args, ctx)).rejects.toThrow('Unauthorized');
+  await expect(() => resolve({}, args, ctx)).rejects.toThrow('Unauthorized');
 });

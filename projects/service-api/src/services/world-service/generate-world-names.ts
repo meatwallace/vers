@@ -1,10 +1,11 @@
-import { ServiceResponse } from '../types';
-import { GenerateWorldNamesArgs, WorldServiceContext } from './types';
-
-type GenerateWorldNamesResponse = ServiceResponse<Array<string>>;
+import {
+  GenerateWorldNamesRequest,
+  GenerateWorldNamesResponse,
+} from '@chrono/service-types';
+import { WorldServiceContext } from './types';
 
 export async function generateWorldNames(
-  args: GenerateWorldNamesArgs,
+  args: GenerateWorldNamesRequest,
   ctx: WorldServiceContext,
 ): Promise<Array<string>> {
   const response = await ctx.client.post<GenerateWorldNamesResponse>(

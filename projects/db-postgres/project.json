@@ -5,10 +5,19 @@
   "projectType": "application",
   "tags": [],
   "targets": {
+    "migrations-update": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": ["yarn run drizzle-kit up --config=drizzle.config.ts"],
+        "cwd": "projects/db-postgres"
+      }
+    },
     "migrations-generate": {
       "executor": "nx:run-commands",
       "options": {
-        "commands": ["yarn run drizzle-kit generate"],
+        "commands": [
+          "yarn run drizzle-kit generate --config=drizzle.config.ts"
+        ],
         "cwd": "projects/db-postgres"
       }
     },

@@ -1,9 +1,6 @@
 import { Hono } from 'hono';
-import {
-  PostgresTestUtils,
-  createTestUser,
-} from '@chrononomicon/service-test-utils';
-import { worlds } from '@chrononomicon/postgres-schema';
+import { PostgresTestUtils, createTestUser } from '@chrono/service-test-utils';
+import { worlds } from '@chrono/postgres-schema';
 import { createId } from '@paralleldrive/cuid2';
 import { deleteWorld } from './delete-world';
 import { pgTestConfig } from '../pg-test-config';
@@ -13,7 +10,7 @@ async function setupTest() {
 
   const { db, teardown } = await PostgresTestUtils.createTestDB(pgTestConfig);
 
-  const { user } = await createTestUser({ db });
+  const user = await createTestUser({ db });
 
   app.post('/delete-world', async (ctx) => deleteWorld(ctx, db));
 

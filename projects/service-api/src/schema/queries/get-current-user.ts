@@ -1,7 +1,8 @@
-import { Context } from '../../types';
-import { isAuthed } from '../../utils';
+import invariant from 'tiny-invariant';
+import { Context } from '~/types';
 import { builder } from '../builder';
-import { User } from '../types';
+import { User } from '../types/user';
+import { requireAuth } from '../utils/require-auth';
 
 type Args = Record<PropertyKey, never>;
 
@@ -10,18 +11,17 @@ export async function getCurrentUser(
   args: Args,
   ctx: Context,
 ): Promise<typeof User.$inferType> {
-  if (!isAuthed(ctx)) {
-    // TODO(#16): capture via sentry
-    throw new Error('Unauthorized');
-  }
+  invariant(ctx.user, 'user is required in an authed resolver');
 
   // we can return the user from the context directly as it was fetched when we instantiated our context
   return ctx.user;
 }
 
+export const resolve = requireAuth(getCurrentUser);
+
 builder.queryField('getCurrentUser', (t) =>
   t.field({
     type: User,
-    resolve: getCurrentUser,
+    resolve,
   }),
 );

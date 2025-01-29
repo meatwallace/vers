@@ -1,7 +1,7 @@
 import { graphql, HttpResponse } from 'msw';
-import { jwtDecode } from 'jwt-decode';
-import { World } from '../../../gql/graphql';
+import { World } from '~/gql/graphql';
 import { db } from '../../db';
+import { decodeMockJWT } from '../../utils/decode-mock-jwt';
 
 type GetWorldsResponse = {
   getWorlds: Array<World>;
@@ -21,9 +21,10 @@ export const GetWorlds = graphql.query<GetWorldsResponse, GetWorldsVariables>(
     }
 
     const token = authHeader.replace('Bearer ', '');
-    const payload = jwtDecode(token);
+    const payload = decodeMockJWT(token);
+
     const user = db.user.findFirst({
-      where: { auth0ID: { equals: payload.sub } },
+      where: { id: { equals: payload.sub } },
     });
 
     if (!user) {

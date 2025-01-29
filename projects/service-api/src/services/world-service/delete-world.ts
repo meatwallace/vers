@@ -1,9 +1,8 @@
-import { ServiceResponse } from '../types';
-import { GetWorldArgs, WorldServiceContext } from './types';
-type DeleteWorldResponse = ServiceResponse<null>;
+import { DeleteWorldRequest, DeleteWorldResponse } from '@chrono/service-types';
+import { WorldServiceContext } from './types';
 
 export async function deleteWorld(
-  args: GetWorldArgs,
+  args: DeleteWorldRequest,
   ctx: WorldServiceContext,
 ): Promise<true> {
   const response = await ctx.client.post<DeleteWorldResponse>('delete-world', {

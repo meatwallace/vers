@@ -5,7 +5,6 @@ export const env: Env = cleanEnv(process.env, {
   HOSTNAME: str(),
   PORT: num(),
   POSTGRES_URL: str(),
-  AUTH0_DOMAIN: str(),
   API_IDENTIFIER: str(),
   LOGGING: str({
     choices: ['debug', 'info', 'warn', 'error'],

@@ -1,50 +1,63 @@
+import { afterEach, expect, test } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { createRoutesStub } from 'react-router';
 import { drop } from '@mswjs/data';
-import { client } from '../../client';
-import { db } from '../../mocks/db';
+import { withAuthedUser } from '~/test-utils/with-authed-user.ts';
+import { createGQLClient } from '~/utils/create-gql-client.server.ts';
+import { db } from '~/mocks/db';
+import { Routes } from '~/types';
 import { CreateWorldWizard, loader } from './create.$worldID';
 
-const MOCK_TOKEN = `eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJ0ZXN0IiwiaWF0IjoxNzE0NDA5NTMxLCJleHAiOjE3NDU5NDU1MzEsImF1ZCI6Ind3dy50ZXN0LmNvbSIsInN1YiI6ImF1dGgwfHRlc3RfaWQifQ.Drta5B74QNaMfKpZtFyCde5YG-e1eTU6tySwknytnig`;
+const userID = 'user_id';
 
-function setupTest() {
-  client.setHeader('authorization', MOCK_TOKEN);
+type TestConfig = {
+  isAuthed: boolean;
+};
 
-  const user = db.user.create({
-    auth0ID: 'auth0|test_id',
-  });
+const client = createGQLClient();
 
+function setupTest(config: TestConfig) {
   const world = db.world.create({
-    ownerID: user.id,
+    ownerID: userID,
   });
 
   const CreateWorldWizardStub = createRoutesStub([
     {
       path: '/:worldID',
-      loader,
+      // @ts-expect-error(#35) - react router test types are out of date
+      loader: config.isAuthed
+        ? // @ts-expect-error(#35) - react router test types are out of date
+          withAuthedUser(loader, { client, userID })
+        : loader,
       Component: CreateWorldWizard,
+    },
+    {
+      path: Routes.Login,
+      Component: () => 'LOGIN_ROUTE',
     },
   ]);
 
   render(<CreateWorldWizardStub initialEntries={[`/${world.id}`]} />);
 
-  return { user, world };
+  return { world };
 }
 
-function teardownTest() {
+afterEach(() => {
   drop(db);
-
-  client.setHeader('authorization', '');
-}
+});
 
 test('it displays info about the given world', async () => {
-  const { world } = setupTest();
+  const { world } = setupTest({ isAuthed: true });
 
   const worldID = await screen.findByText(world.id, { exact: false });
   const ownerID = await screen.findByText(world.ownerID, { exact: false });
 
   expect(worldID).toBeInTheDocument();
   expect(ownerID).toBeInTheDocument();
+});
 
-  teardownTest();
+test('it redirects to the login route when not authenticated', async () => {
+  setupTest({ isAuthed: false });
+
+  expect(await screen.findByText('LOGIN_ROUTE')).toBeInTheDocument();
 });

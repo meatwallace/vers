@@ -1,14 +1,13 @@
-import createJWKSMock from 'mock-jwks';
 import { drop } from '@mswjs/data';
-import { createTestAccessToken } from '@chrononomicon/service-test-utils';
-import { env } from '../../env';
-import { createMockGQLContext } from '../../test-utils';
-import { db } from '../../mocks/db';
-import { updateWorld } from './update-world';
-
-const jwks = createJWKSMock(`https://${env.AUTH0_DOMAIN}/`);
+import { createTestJWT } from '@chrono/service-test-utils';
+import { env } from '~/env';
+import { createMockGQLContext } from '~/test-utils/create-mock-gql-context';
+import { db } from '~/mocks/db';
+import { resolve } from './update-world';
 
 test('it updates a world', async () => {
+  const user = db.user.create({});
+
   db.world.create({
     id: 'test_id',
     name: 'New World',
@@ -20,13 +19,13 @@ test('it updates a world', async () => {
     geographyFeatures: ['Deserts'],
   });
 
-  const { accessToken } = createTestAccessToken({
-    jwks,
+  const accessToken = await createTestJWT({
+    sub: user.id,
     audience: env.API_IDENTIFIER,
-    issuer: `https://${env.AUTH0_DOMAIN}/`,
+    issuer: `https://${env.API_IDENTIFIER}/`,
   });
 
-  const ctx = createMockGQLContext({ accessToken });
+  const ctx = createMockGQLContext({ accessToken, user });
 
   const args = {
     input: {
@@ -41,7 +40,7 @@ test('it updates a world', async () => {
     },
   };
 
-  const result = await updateWorld({}, args, ctx);
+  const result = await resolve({}, args, ctx);
 
   expect(result).toMatchObject({
     id: 'test_id',
@@ -58,8 +57,11 @@ test('it updates a world', async () => {
 });
 
 test('it supports partial updates', async () => {
+  const user = db.user.create({});
+
   db.world.create({
     id: 'test_id',
+    ownerID: user.id,
     name: 'New World',
     fantasyType: 'Medium',
     technologyLevel: 'Medieval',
@@ -69,13 +71,13 @@ test('it supports partial updates', async () => {
     geographyFeatures: ['Deserts'],
   });
 
-  const { accessToken } = createTestAccessToken({
-    jwks,
+  const accessToken = await createTestJWT({
+    sub: user.id,
     audience: env.API_IDENTIFIER,
-    issuer: `https://${env.AUTH0_DOMAIN}/`,
+    issuer: `https://${env.API_IDENTIFIER}/`,
   });
 
-  const ctx = createMockGQLContext({ accessToken });
+  const ctx = createMockGQLContext({ accessToken, user });
 
   const args = {
     input: {
@@ -84,7 +86,7 @@ test('it supports partial updates', async () => {
     },
   };
 
-  const result = await updateWorld({}, args, ctx);
+  const result = await resolve({}, args, ctx);
 
   expect(result).toMatchObject({
     id: 'test_id',
@@ -108,12 +110,5 @@ test('it returns an error if the user isnt authenticated', async () => {
     },
   };
 
-  const result = await updateWorld({}, args, ctx);
-
-  expect(result).toMatchObject({
-    error: {
-      title: 'Unauthorized',
-      message: 'You must be logged in to perform this action',
-    },
-  });
+  await expect(() => resolve({}, args, ctx)).rejects.toThrow('Unauthorized');
 });

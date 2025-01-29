@@ -1,10 +1,8 @@
 {
-  "id": "664a33df-abd4-4ced-a006-0e490c7f260d",
-  "prevId": "b9cd3f67-6398-4e1b-bf34-56edd9c360b7",
-  "version": "5",
-  "dialect": "pg",
+  "version": "7",
+  "dialect": "postgresql",
   "tables": {
-    "users": {
+    "public.users": {
       "name": "users",
       "schema": "",
       "columns": {
@@ -58,17 +56,20 @@
       "uniqueConstraints": {
         "users_auth0_id_unique": {
           "name": "users_auth0_id_unique",
-          "nullsNotDistinct": false,
-          "columns": ["auth0_id"]
+          "columns": ["auth0_id"],
+          "nullsNotDistinct": false
         },
         "users_email_unique": {
           "name": "users_email_unique",
-          "nullsNotDistinct": false,
-          "columns": ["email"]
+          "columns": ["email"],
+          "nullsNotDistinct": false
         }
-      }
+      },
+      "policies": {},
+      "isRLSEnabled": false,
+      "checkConstraints": {}
     },
-    "worlds": {
+    "public.worlds": {
       "name": "worlds",
       "schema": "",
       "columns": {
@@ -152,84 +153,67 @@
         "worlds_owner_id_users_id_fk": {
           "name": "worlds_owner_id_users_id_fk",
           "tableFrom": "worlds",
-          "tableTo": "users",
           "columnsFrom": ["owner_id"],
+          "tableTo": "users",
           "columnsTo": ["id"],
-          "onDelete": "no action",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "no action"
         }
       },
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
+      "uniqueConstraints": {},
+      "policies": {},
+      "isRLSEnabled": false,
+      "checkConstraints": {}
     }
   },
   "enums": {
-    "archetype": {
+    "public.archetype": {
       "name": "archetype",
-      "values": {
-        "Steampunk": "Steampunk",
-        "Dieselpunk": "Dieselpunk",
-        "Cyberpunk": "Cyberpunk"
-      }
+      "schema": "public",
+      "values": ["Steampunk", "Dieselpunk", "Cyberpunk"]
     },
-    "atmosphere": {
+    "public.atmosphere": {
       "name": "atmosphere",
-      "values": {
-        "Dark": "Dark",
-        "Neutral": "Neutral",
-        "Light": "Light"
-      }
+      "schema": "public",
+      "values": ["Dark", "Neutral", "Light"]
     },
-    "fantasy_type": {
+    "public.fantasy_type": {
       "name": "fantasy_type",
-      "values": {
-        "Low": "Low",
-        "Medium": "Medium",
-        "High": "High"
-      }
+      "schema": "public",
+      "values": ["Low", "Medium", "High"]
     },
-    "geography_features": {
+    "public.geography_features": {
       "name": "geography_features",
-      "values": {
-        "Deserts": "Deserts",
-        "Forest": "Forest",
-        "Mountains": "Mountains",
-        "Plains": "Plains",
-        "Swamps": "Swamps",
-        "Tundra": "Tundra"
-      }
+      "schema": "public",
+      "values": ["Deserts", "Forest", "Mountains", "Plains", "Swamps", "Tundra"]
     },
-    "geography_type": {
+    "public.geography_type": {
       "name": "geography_type",
-      "values": {
-        "Supercontinent": "Supercontinent",
-        "Continents": "Continents",
-        "Islands": "Islands",
-        "Archipelago": "Archipelago"
-      }
+      "schema": "public",
+      "values": ["Supercontinent", "Continents", "Islands", "Archipelago"]
     },
-    "population": {
+    "public.population": {
       "name": "population",
-      "values": {
-        "Sparse": "Sparse",
-        "Average": "Average",
-        "Dense": "Dense"
-      }
+      "schema": "public",
+      "values": ["Sparse", "Average", "Dense"]
     },
-    "technology_level": {
+    "public.technology_level": {
       "name": "technology_level",
-      "values": {
-        "Ancient": "Ancient",
-        "Medieval": "Medieval",
-        "Modern": "Modern",
-        "Futuristic": "Futuristic"
-      }
+      "schema": "public",
+      "values": ["Ancient", "Medieval", "Modern", "Futuristic"]
     }
   },
   "schemas": {},
   "_meta": {
-    "columns": {},
     "schemas": {},
-    "tables": {}
-  }
+    "tables": {},
+    "columns": {}
+  },
+  "id": "664a33df-abd4-4ced-a006-0e490c7f260d",
+  "prevId": "b9cd3f67-6398-4e1b-bf34-56edd9c360b7",
+  "sequences": {},
+  "policies": {},
+  "views": {},
+  "roles": {}
 }

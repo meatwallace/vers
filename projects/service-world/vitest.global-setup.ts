@@ -1,4 +1,4 @@
-import { PostgresTestUtils } from '@chrononomicon/service-test-utils';
+import { PostgresTestUtils } from '@chrono/service-test-utils';
 import { pgTestConfig } from './src/pg-test-config';
 
 export async function setup() {

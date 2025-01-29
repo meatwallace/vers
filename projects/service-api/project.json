@@ -18,6 +18,7 @@
         "tsConfig": "projects/service-api/tsconfig.app.json",
         "assets": ["projects/service-api/src/assets"],
         "generatePackageJson": true,
+        "external": ["react", "react-dom"],
         "esbuildOptions": {
           "sourcemap": true,
           "outExtension": {

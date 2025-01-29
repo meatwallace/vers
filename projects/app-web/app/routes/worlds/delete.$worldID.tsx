@@ -1,13 +1,15 @@
-import { ActionFunctionArgs, redirect } from 'react-router';
-import { graphql } from '../../gql';
-import { client } from '../../client';
-import { isMutationError } from '../../utils';
-import { Routes } from '../../types';
+import { redirect } from 'react-router';
+import { type Route } from './+types/delete.$worldID';
+import { createGQLClient } from '~/utils/create-gql-client.server.ts';
+import { graphql } from '~/gql';
+import { Routes } from '~/types';
+import { isMutationError } from '~/utils/is-mutation-error';
+import { requireAuth } from '~/utils/require-auth.server.ts';
 
 const DeleteWorldMutation = graphql(/* GraphQL */ `
   mutation DeleteWorld($input: DeleteWorldInput!) {
     deleteWorld(input: $input) {
-      ... on DeleteWorldSuccessPayload {
+      ... on MutationSuccess {
         success
       }
 
@@ -21,7 +23,11 @@ const DeleteWorldMutation = graphql(/* GraphQL */ `
   }
 `);
 
-export const action = async ({ params }: ActionFunctionArgs) => {
+export const action = async ({ params, request }: Route.ActionArgs) => {
+  const client = createGQLClient();
+
+  await requireAuth(request, { client });
+
   // this shouldn't happen - we should only reach here when a param is defined due to routing
   if (!params.worldID) {
     return redirect(Routes.Dashboard);

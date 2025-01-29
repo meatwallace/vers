@@ -1,6 +1,7 @@
-import { Context } from '../../types';
-import { isAuthed } from '../../utils';
+import invariant from 'tiny-invariant';
+import { Context } from '~/types';
 import { builder } from '../builder';
+import { requireAuth } from '../utils/require-auth';
 
 type Args = {
   input: typeof GenerateWorldNamesInput.$inferInput;
@@ -11,10 +12,7 @@ export async function generateWorldNames(
   args: Args,
   ctx: Context,
 ): Promise<Array<string>> {
-  if (!isAuthed(ctx)) {
-    // TODO(#16): capture via sentry
-    throw new Error('Unauthorized');
-  }
+  invariant(ctx.user, 'user is required in an authed resolver');
 
   // eslint-disable-next-line no-useless-catch
   try {
@@ -36,11 +34,13 @@ const GenerateWorldNamesInput = builder.inputType('GenerateWorldNamesInput', {
   }),
 });
 
+export const resolve = requireAuth(generateWorldNames);
+
 builder.queryField('generateWorldNames', (t) =>
   t.stringList({
     args: {
       input: t.arg({ type: GenerateWorldNamesInput, required: true }),
     },
-    resolve: generateWorldNames,
+    resolve,
   }),
 );

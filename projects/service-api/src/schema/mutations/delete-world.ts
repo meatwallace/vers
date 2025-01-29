@@ -1,8 +1,10 @@
-import { Context, StandardMutationPayload } from '../../types';
-import { isAuthed } from '../../utils';
-import { MutationErrorPayload } from '../types';
-import { createPayloadResolver, createUnauthorizedError } from '../utils';
+import invariant from 'tiny-invariant';
+import { Context, StandardMutationPayload } from '~/types';
 import { builder } from '../builder';
+import { MutationErrorPayload } from '../types/mutation-error-payload';
+import { MutationSuccess } from '../types/mutation-success';
+import { createPayloadResolver } from '../utils/create-payload-resolver';
+import { requireAuth } from '../utils/require-auth';
 
 type Args = {
   input: typeof DeleteWorldInput.$inferInput;
@@ -12,10 +14,8 @@ export async function deleteWorld(
   _: object,
   args: Args,
   ctx: Context,
-): Promise<StandardMutationPayload<{ success: boolean }>> {
-  if (!isAuthed(ctx)) {
-    return { error: createUnauthorizedError() };
-  }
+): Promise<StandardMutationPayload<typeof MutationSuccess.$inferType>> {
+  invariant(ctx.user, 'user is required in an authed resolver');
 
   // eslint-disable-next-line no-useless-catch
   try {
@@ -37,20 +37,12 @@ const DeleteWorldInput = builder.inputType('DeleteWorldInput', {
   }),
 });
 
-const DeleteWorldSuccessPayload = builder.objectRef<{ success: boolean }>(
-  'DeleteWorldSuccessPayload',
-);
-
-DeleteWorldSuccessPayload.implement({
-  fields: (t) => ({
-    success: t.exposeBoolean('success'),
-  }),
-});
-
 const DeleteWorldPayload = builder.unionType('DeleteWorldPayload', {
-  types: [DeleteWorldSuccessPayload, MutationErrorPayload],
-  resolveType: createPayloadResolver(DeleteWorldSuccessPayload),
+  types: [MutationSuccess, MutationErrorPayload],
+  resolveType: createPayloadResolver(MutationSuccess),
 });
+
+export const resolve = requireAuth(deleteWorld);
 
 builder.mutationField('deleteWorld', (t) =>
   t.field({
@@ -58,6 +50,6 @@ builder.mutationField('deleteWorld', (t) =>
     args: {
       input: t.arg({ type: DeleteWorldInput, required: true }),
     },
-    resolve: deleteWorld,
+    resolve,
   }),
 );

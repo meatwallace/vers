@@ -1,12 +1,10 @@
-import { users } from '@chrononomicon/postgres-schema';
-import { RawUserData } from './types';
+import { Jsonify } from 'type-fest';
+import { UserData } from './types';
 
-type UserData = typeof users.$inferSelect;
-
-export function marshal(rawUser: RawUserData): UserData {
+export function marshal(rawUser: Jsonify<UserData>): UserData {
   return {
     ...rawUser,
-    firstName: rawUser.firstName ?? null,
     createdAt: new Date(rawUser.createdAt),
+    updatedAt: new Date(rawUser.updatedAt),
   };
 }

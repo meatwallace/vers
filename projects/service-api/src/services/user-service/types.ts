@@ -1,30 +1,34 @@
-import { users } from '@chrononomicon/postgres-schema';
+import { users } from '@chrono/postgres-schema';
+import {
+  GetUserRequest,
+  CreateUserRequest,
+  VerifyPasswordRequest,
+} from '@chrono/service-types';
 import { ServiceContext } from '../utils/types';
 
-export type RawUserData = {
-  id: string;
-  auth0ID: string;
-  email: string;
-  emailVerified: boolean;
-  name: string;
-  firstName?: string;
-  createdAt: string;
+export type UserServiceContext = ServiceContext;
+
+export type UserData = Omit<typeof users.$inferSelect, 'passwordHash'>;
+
+type VerifyPasswordErrorPayload = {
+  success: false;
+  error: string;
 };
 
-export type userServiceContext = ServiceContext;
+type VerifyPasswordSuccessPayload = {
+  success: true;
+};
+
+export type VerifyPasswordPayload =
+  | VerifyPasswordErrorPayload
+  | VerifyPasswordSuccessPayload;
 
 export type UserService = {
-  getCurrentUser: (
-    args: GetCurrentUserArgs,
-  ) => Promise<typeof users.$inferSelect>;
+  createUser: (args: CreateUserRequest) => Promise<UserData>;
 
-  getOrCreateUser: (
-    args: GetOrCreateUserArgs,
-  ) => Promise<typeof users.$inferSelect>;
-};
+  getUser: (args: GetUserRequest) => Promise<UserData | null>;
 
-export type GetCurrentUserArgs = Record<PropertyKey, never>;
-
-export type GetOrCreateUserArgs = {
-  email: string;
+  verifyPassword: (
+    args: VerifyPasswordRequest,
+  ) => Promise<VerifyPasswordPayload>;
 };

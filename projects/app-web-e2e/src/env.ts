@@ -8,6 +8,6 @@ export const env: Env = cleanEnv(process.env, {
     default: 'info',
   }),
 
-  TEST_USER_EMAIL: str(),
-  TEST_USER_PASSWORD: str(),
+  // TEST_USER_EMAIL: str(),
+  // TEST_USER_PASSWORD: str(),
 });

@@ -12,9 +12,13 @@ export const env: Env = cleanEnv(process.env, {
   }),
 
   API_IDENTIFIER: str(),
-  AUTH0_DOMAIN: str(),
+  JWT_SIGNING_SECRET: str(),
 
+  APP_WEB_URL: url(),
   // service URLs
+  EMAILS_SERVICE_URL: url(),
+  SESSIONS_SERVICE_URL: url(),
   USERS_SERVICE_URL: url(),
+  VERIFICATIONS_SERVICE_URL: url(),
   WORLDS_SERVICE_URL: url(),
 });

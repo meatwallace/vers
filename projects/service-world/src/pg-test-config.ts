@@ -1,3 +1,3 @@
 export const pgTestConfig = {
-  port: 32_776,
+  port: 32_999,
 };

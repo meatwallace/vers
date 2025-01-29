@@ -8,7 +8,16 @@
     "allowImportingTsExtensions": true,
     "strict": true,
     "types": ["@react-router/node", "vitest", "vite/client"],
-    "rootDirs": [".", "./.react-router/types"]
+    "rootDirs": [".", "./.react-router/types"],
+    "baseUrl": ".",
+    "paths": {
+      "~/*": ["./app/*"],
+      "@chrono/email-templates": ["../lib-email-templates/src/index.ts"],
+      "@chrono/postgres-schema": ["../lib-postgres-schema/src/index.ts"],
+      "@chrono/service-test-utils": ["../lib-service-test-utils/src/index.ts"],
+      "@chrono/service-types": ["../lib-service-types/src/index.ts"],
+      "@chrono/service-utils": ["../lib-service-utils/src/index.ts"]
+    }
   },
   "files": [],
   "include": [".react-router/types/**/*"],

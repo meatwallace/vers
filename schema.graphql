@@ -1,3 +1,9 @@
+type AuthPayload {
+  accessToken: String!
+  refreshToken: String!
+  session: Session!
+}
+
 input CreateWorldInput {
   placeholder: String
 }
@@ -14,25 +20,35 @@ A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `dat
 """
 scalar DateTime
 
+input DeleteSessionInput {
+  id: String!
+}
+
+union DeleteSessionPayload = MutationErrorPayload | MutationSuccess
+
 input DeleteWorldInput {
   worldID: String!
 }
 
-union DeleteWorldPayload = DeleteWorldSuccessPayload | MutationErrorPayload
+union DeleteWorldPayload = MutationErrorPayload | MutationSuccess
 
-type DeleteWorldSuccessPayload {
-  success: Boolean!
+input FinishEmailSignupInput {
+  email: String!
+  name: String!
+  password: String!
+  rememberMe: Boolean!
+  username: String!
 }
+
+union FinishEmailSignupPayload = AuthPayload | MutationErrorPayload
 
 input GenerateWorldNamesInput {
   worldID: String!
 }
 
-input GetOrCreateUserInput {
-  email: String!
+input GetSessionsInput {
+  placeholder: String
 }
-
-union GetOrCreateUserPayload = MutationErrorPayload | User
 
 input GetWorldInput {
   worldID: String!
@@ -42,11 +58,24 @@ input GetWorldsInput {
   placeholder: String
 }
 
+input LoginWithPasswordInput {
+  email: String!
+  password: String!
+  rememberMe: Boolean!
+}
+
+union LoginWithPasswordPayload = AuthPayload | MutationErrorPayload
+
 type Mutation {
   createWorld(input: CreateWorldInput!): CreateWorldPayload!
+  deleteSession(input: DeleteSessionInput!): DeleteSessionPayload!
   deleteWorld(input: DeleteWorldInput!): DeleteWorldPayload!
-  getOrCreateUser(input: GetOrCreateUserInput!): GetOrCreateUserPayload!
+  finishEmailSignup(input: FinishEmailSignupInput!): FinishEmailSignupPayload!
+  loginWithPassword(input: LoginWithPasswordInput!): LoginWithPasswordPayload!
+  refreshAccessToken(input: RefreshAccessTokenInput!): RefreshAccessTokenPayload!
+  startEmailSignup(input: StartEmailSignupInput!): StartEmailSignupPayload!
   updateWorld(input: UpdateWorldInput!): UpdateWorldPayload!
+  verifyOTP(input: VerifyOTPInput!): VerifyOTPPayload!
 }
 
 type MutationError {
@@ -58,12 +87,36 @@ type MutationErrorPayload {
   error: MutationError!
 }
 
+type MutationSuccess {
+  success: Boolean!
+}
+
 type Query {
   generateWorldNames(input: GenerateWorldNamesInput!): [String!]!
   getCurrentUser: User!
+  getSessions(input: GetSessionsInput!): [Session!]!
   getWorld(input: GetWorldInput!): World!
   getWorlds(input: GetWorldsInput!): [World!]!
 }
+
+input RefreshAccessTokenInput {
+  refreshToken: String!
+}
+
+union RefreshAccessTokenPayload = AuthPayload | MutationErrorPayload
+
+type Session {
+  createdAt: DateTime!
+  expiresAt: DateTime!
+  id: ID!
+  user: User!
+}
+
+input StartEmailSignupInput {
+  email: String!
+}
+
+union StartEmailSignupPayload = MutationErrorPayload | MutationSuccess
 
 input UpdateWorldInput {
   archetype: String
@@ -82,11 +135,31 @@ union UpdateWorldPayload = MutationErrorPayload | World
 type User {
   createdAt: DateTime!
   email: String!
-  emailVerified: Boolean!
-  firstName: String
   id: ID!
   name: String!
+  updatedAt: DateTime!
+  username: String!
 }
+
+type Verification {
+  id: ID!
+  target: String!
+}
+
+enum VerificationType {
+  CHANGE_EMAIL
+  ONBOARDING
+  RESET_PASSWORD
+  TWO_FACTOR_AUTH
+}
+
+input VerifyOTPInput {
+  code: String!
+  target: String!
+  type: VerificationType!
+}
+
+union VerifyOTPPayload = MutationErrorPayload | Verification
 
 type World {
   archetype: String

@@ -7,7 +7,7 @@ import { migrate } from 'drizzle-orm/postgres-js/migrator';
 import path from 'node:path';
 import postgres, { Sql } from 'postgres';
 import { createId } from '@paralleldrive/cuid2';
-import * as schema from '@chrononomicon/postgres-schema';
+import * as schema from '@chrono/postgres-schema';
 
 const TEST_TEMPLATE_DB = 'test_template';
 const TEST_DB_USER = 'test';
@@ -22,11 +22,13 @@ interface IPostgresTestUtils {
   client: Sql | null;
   db: PostgresJsDatabase<typeof schema> | null;
   testDBClients: Record<string, Sql>;
+  startContainer: (config: PostgresTestConfig) => Promise<void>;
+  stopContainer: () => Promise<void>;
+  initialize: (config: PostgresTestConfig) => Promise<void>;
   createTestDB: (config: PostgresTestConfig) => Promise<{
     db: PostgresJsDatabase<typeof schema>;
     teardown: () => Promise<void>;
   }>;
-  initialize: (config: PostgresTestConfig) => Promise<void>;
   teardown: () => Promise<void>;
 }
 
@@ -53,6 +55,8 @@ export const PostgresTestUtils: IPostgresTestUtils = {
       CREATE DATABASE test_${testDBID} TEMPLATE ${TEST_TEMPLATE_DB};
     `);
 
+    console.log(`✔️  created test DB ${testDBID}`);
+
     await defaultClient.end();
 
     if (!this.client) {
@@ -74,7 +78,7 @@ export const PostgresTestUtils: IPostgresTestUtils = {
 
     return { db: testDB, teardown };
   },
-  async initialize(config: PostgresTestConfig) {
+  async startContainer(config: PostgresTestConfig) {
     if (!this.container) {
       this.container = await createPostgresContainer(config);
     }
@@ -97,13 +101,23 @@ export const PostgresTestUtils: IPostgresTestUtils = {
     // tear down client connection to the template DB
     await this.client.end();
   },
+  async stopContainer() {
+    if (!this.container) {
+      throw new Error('Container not initialized');
+    }
+
+    await this.container.stop();
+  },
+  async initialize(config: PostgresTestConfig) {
+    if (this.container) {
+      throw new Error('Container already exists');
+    }
+
+    this.container = await createPostgresContainer(config);
+  },
   async teardown() {
     if (this.client) {
       await this.client.end();
-    }
-
-    if (this.container) {
-      await this.container.stop();
     }
 
     // loop over any remaining db clients and end their connection

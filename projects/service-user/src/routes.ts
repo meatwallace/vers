@@ -1,12 +1,9 @@
 import { app } from './app';
-import { getCurrentUser, getOrCreateUser } from './handlers';
+import { createUser } from './handlers/create-user';
+import { getUser } from './handlers/get-user';
+import { verifyPassword } from './handlers/verify-password';
 import { db } from './db';
-import { authMiddleware } from './middleware';
 
-// include our auth middleware so we get jwt payload in the ctx to avoid calling
-// the auth0 userinfo endpoint
-app.post('/get-current-user', authMiddleware, async (ctx) =>
-  getCurrentUser(ctx, db),
-);
-
-app.post('/get-or-create-user', async (ctx) => getOrCreateUser(ctx, db));
+app.post('/create-user', async (ctx) => createUser(ctx, db));
+app.post('/get-user', async (ctx) => getUser(ctx, db));
+app.post('/verify-password', async (ctx) => verifyPassword(ctx, db));

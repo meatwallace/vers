@@ -3,24 +3,16 @@ import clsx from 'clsx';
 import { RecipeVariants } from '@vanilla-extract/recipes';
 import * as styles from './button.css.ts';
 
-type Props = React.ComponentProps<'button'> &
+export type Props = React.ComponentProps<'button'> &
   RecipeVariants<typeof styles.button>;
 
-export const Button = React.forwardRef<HTMLButtonElement, Props>(
-  ({ className, ...restProps }, forwardedRef) => {
-    const buttonClassName = styles.button({
-      color: restProps.color,
-      size: restProps.size,
-    });
+export function Button(props: Props) {
+  const { className, ...restProps } = props;
 
-    return (
-      <button
-        {...restProps}
-        ref={forwardedRef}
-        className={clsx(buttonClassName, className)}
-      />
-    );
-  },
-);
+  const buttonClassName = styles.button({
+    color: restProps.color,
+    size: restProps.size,
+  });
 
-Button.displayName = 'Button';
+  return <button {...restProps} className={clsx(buttonClassName, className)} />;
+}

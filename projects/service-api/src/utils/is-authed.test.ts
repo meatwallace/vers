@@ -12,12 +12,11 @@ test('it returns true if it is an authed request', () => {
 
   const user = {
     id: 'test-id',
-    auth0ID: 'auth0|test_id',
     email: 'user@test.com',
-    emailVerified: true,
     name: 'Test User',
-    firstName: 'Test',
+    username: 'test_user',
     createdAt: new Date(),
+    updatedAt: new Date(),
   };
 
   const authed = isAuthed({ request, user, services });

@@ -1,35 +1,27 @@
-import { createJWKSMock } from 'mock-jwks';
 import { drop } from '@mswjs/data';
-import { createTestAccessToken } from '@chrononomicon/service-test-utils';
-import { env } from '../../env';
-import { createMockGQLContext } from '../../test-utils';
-import { server } from '../../mocks/node';
-import { db } from '../../mocks/db';
-import { createWorld } from './create-world';
-
-const jwks = createJWKSMock(`https://${env.AUTH0_DOMAIN}/`);
+import { createTestJWT } from '@chrono/service-test-utils';
+import { env } from '~/env';
+import { createMockGQLContext } from '~/test-utils/create-mock-gql-context';
+import { db } from '~/mocks/db';
+import { resolve } from './create-world';
 
 test('it creates a new world', async () => {
-  server.use(jwks.mswHandler);
+  const user = db.user.create({});
 
-  const { accessToken } = createTestAccessToken({
-    jwks,
+  const accessToken = await createTestJWT({
+    sub: user.id,
     audience: env.API_IDENTIFIER,
-    issuer: `https://${env.AUTH0_DOMAIN}/`,
+    issuer: `https://${env.API_IDENTIFIER}/`,
   });
 
-  const ctx = createMockGQLContext({ accessToken });
-
-  db.user.create({
-    id: ctx.user?.id,
-  });
+  const ctx = createMockGQLContext({ accessToken, user });
 
   const args = { input: {} };
-  const result = await createWorld({}, args, ctx);
+  const result = await resolve({}, args, ctx);
 
   expect(result).toMatchObject({
     id: expect.any(String),
-    ownerID: 'test_user_id',
+    ownerID: user.id,
     name: 'New World',
     fantasyType: 'Medium',
     technologyLevel: 'Medieval',
@@ -55,12 +47,6 @@ test('it creates a new world', async () => {
 test('it returns an error if the user isnt authenticated', async () => {
   const ctx = createMockGQLContext({});
   const args = { input: {} };
-  const result = await createWorld({}, args, ctx);
 
-  expect(result).toMatchObject({
-    error: {
-      title: 'Unauthorized',
-      message: 'You must be logged in to perform this action',
-    },
-  });
+  await expect(() => resolve({}, args, ctx)).rejects.toThrow('Unauthorized');
 });

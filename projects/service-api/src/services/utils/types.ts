@@ -1,3 +1,4 @@
+import { ServiceID } from '@chrono/service-types';
 import { Got } from 'got';
 
 export type ServiceContext = {
@@ -5,6 +6,8 @@ export type ServiceContext = {
 };
 
 export type CreateServiceContextConfig = {
+  requestID: string;
+  serviceID: ServiceID;
   apiURL: string;
   accessToken?: string | null;
 };

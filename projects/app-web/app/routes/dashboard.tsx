@@ -1,22 +1,24 @@
-import { SyntheticEvent } from 'react';
 import { Form, useFetcher, useLoaderData } from 'react-router';
 import { MetaFunction } from 'react-router';
-import { formatDistance } from 'date-fns';
+import { SyntheticEvent } from 'react';
 import type { ArrayValues } from 'type-fest';
-import { Header } from '../components/header';
-import { graphql } from '../gql';
-import type { GetWorldsQuery as GetWorldsQueryResponse } from '../gql/graphql';
-import { client } from '../client';
-import { Button } from '../components';
+import { type Route } from './+types/dashboard';
+import { Button } from '~/components/button.tsx';
+import { Header } from '~/components/header.tsx';
+import { graphql } from '~/gql';
+import type { GetWorldsQuery as GetWorldsQueryResponse } from '~/gql/graphql.ts';
+import { Routes } from '~/types.ts';
+import { createGQLClient } from '~/utils/create-gql-client.server.ts';
+import { requireAuth } from '~/utils/require-auth.server.ts';
+import { getDistanceFromNow } from '~/utils/get-distance-from-now.ts';
 import * as styles from './dashboard.css.ts';
-import { Routes } from '../types.ts';
 
 const GetCurrentUserQuery = graphql(/* GraphQL */ `
   query GetCurrentUser {
     getCurrentUser {
       id
+      username
       name
-      firstName
     }
   }
 `);
@@ -31,9 +33,13 @@ const GetWorldsQuery = graphql(/* GraphQL */ `
   }
 `);
 
-export async function loader() {
+export async function loader({ request }: Route.LoaderArgs) {
+  const client = createGQLClient();
+
+  await requireAuth(request, { client });
+
   const [{ getCurrentUser }, { getWorlds }] = await Promise.all([
-    client.request(GetCurrentUserQuery),
+    client.request(GetCurrentUserQuery, {}),
     client.request(GetWorldsQuery, { input: {} }),
   ]);
 
@@ -67,7 +73,7 @@ export function Dashboard() {
                   <WorldListItem key={world.id} {...world} />
                 ))}
               </div>
-              <Form action="/worlds/create" method="post">
+              <Form action={Routes.CreateWorld} method="post">
                 <Button className={styles.createWorldButton} size="small">
                   Create World
                 </Button>
@@ -80,7 +86,10 @@ export function Dashboard() {
               <p className={styles.noWorldsText}>
                 You haven't created a world yet.
               </p>
-              <createWorldFetcher.Form method="post" action="/worlds/create">
+              <createWorldFetcher.Form
+                method="post"
+                action={Routes.CreateWorld}
+              >
                 <Button className={styles.noWorldCreateWorldButton}>
                   {isCreatingWorld ? 'Creating...' : 'Create world'}
                 </Button>
@@ -116,7 +125,7 @@ function WorldListItem(props: WorldListItemProps) {
       <span className={styles.singleLine}>
         <span className={styles.updatedAtLabel}>Updated: </span>
         <span className={styles.updatedAt}>
-          {getDistanceFromNow(props.updatedAt)}
+          {getDistanceFromNow(new Date(props.updatedAt))}
         </span>
       </span>
       <span className={styles.worldID}>{props.id}</span>
@@ -132,12 +141,6 @@ function WorldListItem(props: WorldListItemProps) {
       </deleteWorldFetcher.Form>
     </div>
   );
-}
-
-function getDistanceFromNow(date: Date): string {
-  const formatOpts = { includeSeconds: true, addSuffix: true };
-
-  return formatDistance(new Date(date), new Date(), formatOpts);
 }
 
 export default Dashboard;

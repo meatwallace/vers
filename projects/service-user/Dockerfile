@@ -2,7 +2,7 @@
 
 # Adjust NODE_VERSION as desired
 ARG NODE_VERSION=20
-FROM node:${NODE_VERSION}-slim as build
+FROM node:${NODE_VERSION}-slim AS build
 
 # Node.js app lives here
 WORKDIR /app
@@ -40,5 +40,5 @@ ENV NODE_ENV="production"
 COPY --from=build /app/projects/service-user/dist /app
 
 # Start the server by default, this can be overwritten at runtime
-EXPOSE 3001
+EXPOSE 3003
 CMD [ "main.js" ]
