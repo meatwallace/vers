@@ -1,18 +1,20 @@
-import { worlds } from '@chrononomicon/postgres-schema';
-import { RawWorldData, UpdateWorldArgs, WorldServiceContext } from './types';
+import { Jsonify } from 'type-fest';
+import { worlds } from '@chrono/postgres-schema';
+import { UpdateWorldRequest, UpdateWorldResponse } from '@chrono/service-types';
 import { marshal } from './marshal';
-import { ServiceResponse } from '../types';
-
-type UpdateWorldResponse = ServiceResponse<RawWorldData>;
+import { WorldServiceContext } from './types';
 
 export async function updateWorld(
-  args: UpdateWorldArgs,
+  args: UpdateWorldRequest,
   ctx: WorldServiceContext,
 ): Promise<typeof worlds.$inferSelect> {
-  const response = await ctx.client.post<UpdateWorldResponse>('update-world', {
-    body: JSON.stringify(args),
-    resolveBodyOnly: true,
-  });
+  const response = await ctx.client.post<Jsonify<UpdateWorldResponse>>(
+    'update-world',
+    {
+      body: JSON.stringify(args),
+      resolveBodyOnly: true,
+    },
+  );
 
   if (!response.success) {
     // TODO(#16): capture via Sentry

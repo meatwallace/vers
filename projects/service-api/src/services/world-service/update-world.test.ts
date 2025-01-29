@@ -1,42 +1,36 @@
-import { createJWKSMock } from 'mock-jwks';
 import { drop } from '@mswjs/data';
-import { createTestAccessToken } from '@chrononomicon/service-test-utils';
-import { env } from '../../env';
-import { server } from '../../mocks/node';
-import { db } from '../../mocks/db';
+import { createTestJWT } from '@chrono/service-test-utils';
+import { createId } from '@paralleldrive/cuid2';
+import { ServiceID } from '@chrono/service-types';
+import { env } from '~/env';
+import { db } from '~/mocks/db';
 import { createServiceContext } from '../utils';
 import { updateWorld } from './update-world';
 
-const ISSUER = `https://${env.AUTH0_DOMAIN}/`;
-
-const jwks = createJWKSMock(ISSUER);
-
 test('it updates a world', async () => {
-  db.user.create({
-    id: 'test_id',
-  });
+  const user = db.user.create({});
 
   db.world.create({
     id: 'test_id',
-    ownerID: 'test_id',
+    ownerID: user.id,
     name: 'Test World',
   });
 
-  server.use(jwks.mswHandler);
-
-  const { accessToken } = createTestAccessToken({
-    jwks,
+  const accessToken = await createTestJWT({
+    sub: user.id,
     audience: env.API_IDENTIFIER,
-    issuer: ISSUER,
+    issuer: `https://${env.API_IDENTIFIER}/`,
   });
 
   const ctx = createServiceContext({
+    requestID: createId(),
+    serviceID: ServiceID.ServiceWorld,
     apiURL: env.WORLDS_SERVICE_URL,
     accessToken,
   });
 
   const args = {
-    ownerID: 'test_id',
+    ownerID: user.id,
     worldID: 'test_id',
     name: 'Updated World',
   };
@@ -45,7 +39,7 @@ test('it updates a world', async () => {
 
   expect(result).toMatchObject({
     id: 'test_id',
-    ownerID: 'test_id',
+    ownerID: user.id,
     name: 'Updated World',
     fantasyType: 'Medium',
     technologyLevel: 'Medieval',

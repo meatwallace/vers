@@ -1,0 +1,83 @@
+{
+  "name": "service-session",
+  "$schema": "../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "projects/service-session/src",
+  "projectType": "application",
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "@nx/esbuild:esbuild",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
+      "options": {
+        "platform": "node",
+        "outputPath": "projects/service-session/dist",
+        "format": ["esm"],
+        "bundle": true,
+        "main": "projects/service-session/src/main.ts",
+        "tsConfig": "projects/service-session/tsconfig.app.json",
+        "assets": ["projects/service-session/src/assets"],
+        "generatePackageJson": true,
+        "esbuildOptions": {
+          "sourcemap": true,
+          "outExtension": {
+            ".js": ".js"
+          }
+        }
+      },
+      "configurations": {
+        "development": {},
+        "production": {
+          "esbuildOptions": {
+            "sourcemap": false,
+            "outExtension": {
+              ".js": ".js"
+            }
+          }
+        }
+      }
+    },
+    "deploy": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "flyctl deploy --local-only --dockerfile projects/service-session/Dockerfile --config projects/service-session/fly.toml"
+        ]
+      }
+    },
+    "serve": {
+      "executor": "@nx/js:node",
+      "defaultConfiguration": "development",
+      "options": {
+        "buildTarget": "service-session:build"
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "service-session:build:development"
+        },
+        "production": {
+          "buildTarget": "service-session:build:production"
+        }
+      }
+    },
+    "test-watch": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": ["yarn run vitest watch"],
+        "cwd": "projects/service-session"
+      }
+    },
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          {
+            "command": "tsc -p tsconfig.app.json --noEmit",
+            "forwardAllArgs": false
+          }
+        ],
+        "cwd": "projects/service-session"
+      }
+    }
+  }
+}

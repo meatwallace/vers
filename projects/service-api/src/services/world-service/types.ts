@@ -1,13 +1,23 @@
-import { worlds } from '@chrononomicon/postgres-schema';
+import { worlds } from '@chrono/postgres-schema';
 import { ServiceContext } from '../utils/types';
+import {
+  GetWorldRequest,
+  GetWorldsRequest,
+  CreateWorldRequest,
+  DeleteWorldRequest,
+  UpdateWorldRequest,
+  GenerateWorldNamesRequest,
+} from '@chrono/service-types';
 
 type World = typeof worlds.$inferSelect;
+
+export type WorldData = World;
 
 export type RawWorldData = {
   id: string;
   ownerID: string;
   name: string;
-  fantasyType: World['fantasyType'];
+  fantasyType: string;
   technologyLevel: World['technologyLevel'];
   archetype: World['archetype'];
   atmosphere: World['atmosphere'];
@@ -21,53 +31,17 @@ export type RawWorldData = {
 export type WorldServiceContext = ServiceContext;
 
 export type WorldService = {
-  getWorld: (args: GetWorldArgs) => Promise<typeof worlds.$inferSelect>;
+  getWorld: (args: GetWorldRequest) => Promise<WorldData | null>;
 
-  getWorlds: (
-    args: GetWorldsArgs,
-  ) => Promise<Array<typeof worlds.$inferSelect>>;
+  getWorlds: (args: GetWorldsRequest) => Promise<Array<WorldData>>;
 
-  createWorld: (args: CreateWorldArgs) => Promise<typeof worlds.$inferSelect>;
+  createWorld: (args: CreateWorldRequest) => Promise<WorldData>;
 
-  deleteWorld: (args: DeleteWorldArgs) => Promise<true>;
+  deleteWorld: (args: DeleteWorldRequest) => Promise<true>;
 
-  updateWorld: (args: UpdateWorldArgs) => Promise<typeof worlds.$inferSelect>;
+  updateWorld: (args: UpdateWorldRequest) => Promise<WorldData>;
 
-  generateWorldNames: (args: GenerateWorldNamesArgs) => Promise<Array<string>>;
-};
-
-export type GetWorldArgs = {
-  ownerID: string;
-  worldID: string;
-};
-
-export type GetWorldsArgs = {
-  ownerID: string;
-};
-
-export type CreateWorldArgs = {
-  ownerID: string;
-};
-
-export type DeleteWorldArgs = {
-  ownerID: string;
-  worldID: string;
-};
-
-export type UpdateWorldArgs = {
-  worldID: string;
-  ownerID: string;
-  name?: string;
-  fantasyType?: World['fantasyType'];
-  technologyLevel?: World['technologyLevel'];
-  archetype?: World['archetype'];
-  atmosphere?: World['atmosphere'];
-  population?: World['population'];
-  geographyType?: World['geographyType'];
-  geographyFeatures?: World['geographyFeatures'];
-};
-
-export type GenerateWorldNamesArgs = {
-  ownerID: string;
-  worldID: string;
+  generateWorldNames: (
+    args: GenerateWorldNamesRequest,
+  ) => Promise<Array<string>>;
 };

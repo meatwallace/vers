@@ -1,9 +1,11 @@
 import { useLoaderData } from 'react-router';
-import { LoaderFunctionArgs, MetaFunction, redirect } from 'react-router';
-import { graphql } from '../../gql/index';
-import { client } from '../../client.ts';
+import { redirect } from 'react-router';
+import { type Route } from './+types/create.$worldID.ts';
+import { graphql } from '~/gql';
+import { Routes } from '~/types.ts';
+import { createGQLClient } from '~/utils/create-gql-client.server.ts';
+import { requireAuth } from '~/utils/require-auth.server.ts';
 import * as styles from './create.$worldID.css.ts';
-import { Routes } from '../../types.ts';
 
 const GetCreatedWorldQuery = graphql(/* GraphQL */ `
   query GetCreatedWorld($input: GetWorldInput!) {
@@ -22,7 +24,11 @@ const GetCreatedWorldQuery = graphql(/* GraphQL */ `
   }
 `);
 
-export async function loader({ params }: LoaderFunctionArgs) {
+export async function loader({ params, request }: Route.LoaderArgs) {
+  const client = createGQLClient();
+
+  await requireAuth(request, { client });
+
   // this shouldn't happen - we should only reach here when a param is defined due to routing
   if (!params.worldID) {
     return redirect(Routes.Dashboard);
@@ -35,7 +41,7 @@ export async function loader({ params }: LoaderFunctionArgs) {
   return { world: getWorld };
 }
 
-export const meta: MetaFunction = () => [
+export const meta: Route.MetaFunction = () => [
   {
     title: '',
     description: '',

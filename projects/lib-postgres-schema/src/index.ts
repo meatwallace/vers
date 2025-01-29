@@ -1,4 +1,8 @@
+export { sessions } from './sessions';
+
 export { users } from './users';
+
+export { verificationTypeEnum, verifications } from './verifications';
 
 export {
   archetypeEnum,

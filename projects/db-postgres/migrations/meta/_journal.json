@@ -22,6 +22,27 @@
       "when": 1714608336891,
       "tag": "0002_square_changeling",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1738199266827,
+      "tag": "0003_mature_diamondback",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1739242638343,
+      "tag": "0004_puzzling_shriek",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1739575668826,
+      "tag": "0005_puzzling_moondragon",
+      "breakpoints": true
     }
   ]
 }

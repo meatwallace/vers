@@ -1,17 +1,17 @@
 import { graphql, HttpResponse } from 'msw';
-import { jwtDecode } from 'jwt-decode';
-import { User } from '../../../gql/graphql';
+import { User } from '~/gql/graphql';
 import { db } from '../../db';
+import { decodeMockJWT } from '../../utils/decode-mock-jwt';
 
 type GetCurrentUserResponse = {
   getCurrentUser: User;
 };
 
-type GetOrCreateUserVariables = Record<PropertyKey, never>;
+type GetCurrentUserVariables = Record<PropertyKey, never>;
 
 export const GetCurrentUser = graphql.query<
   GetCurrentUserResponse,
-  GetOrCreateUserVariables
+  GetCurrentUserVariables
 >('GetCurrentUser', async ({ request }) => {
   const authHeader = request.headers.get('authorization');
 
@@ -22,9 +22,10 @@ export const GetCurrentUser = graphql.query<
   }
 
   const token = authHeader.replace('Bearer ', '');
-  const payload = jwtDecode(token);
+  const payload = decodeMockJWT(token);
+
   const user = db.user.findFirst({
-    where: { auth0ID: { equals: payload.sub } },
+    where: { id: { equals: payload.sub } },
   });
 
   if (!user) {

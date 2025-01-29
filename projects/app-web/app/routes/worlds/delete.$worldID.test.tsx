@@ -1,24 +1,26 @@
+import userEvent from '@testing-library/user-event';
+import { afterEach, expect, test } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { createRoutesStub } from 'react-router';
 import { Form } from 'react-router';
-import userEvent from '@testing-library/user-event';
 import { drop } from '@mswjs/data';
-import { client } from '../../client';
-import { db } from '../../mocks/db';
-import { Routes } from '../../types';
+import { db } from '~/mocks/db';
+import { withAuthedUser } from '~/test-utils/with-authed-user.ts';
+import { createGQLClient } from '~/utils/create-gql-client.server.ts';
+import { Routes } from '~/types';
 import { action } from './delete.$worldID';
 
-const MOCK_TOKEN = `eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJ0ZXN0IiwiaWF0IjoxNzE0NDA5NTMxLCJleHAiOjE3NDU5NDU1MzEsImF1ZCI6Ind3dy50ZXN0LmNvbSIsInN1YiI6ImF1dGgwfHRlc3RfaWQifQ.Drta5B74QNaMfKpZtFyCde5YG-e1eTU6tySwknytnig`;
+const userID = 'user_id';
 
-function setupTest() {
-  client.setHeader('authorization', MOCK_TOKEN);
+type TestConfig = {
+  isAuthed: boolean;
+};
 
-  const user = db.user.create({
-    auth0ID: 'auth0|test_id',
-  });
+const client = createGQLClient();
 
+function setupTest(config: TestConfig) {
   const world = db.world.create({
-    ownerID: user.id,
+    ownerID: userID,
   });
 
   const DeleteWorldStub = createRoutesStub([
@@ -33,7 +35,19 @@ function setupTest() {
         </Form>
       ),
     },
-    { path: Routes.DeleteWorld, Component: () => 'Deleted', action },
+    {
+      path: Routes.DeleteWorld,
+      Component: () => 'DELETE_WORLD_ROUTE',
+      // @ts-expect-error(#35) - react router test types are out of date
+      action: config.isAuthed
+        ? // @ts-expect-error(#35) - react router test types are out of date
+          withAuthedUser(action, { client, user: { id: userID } })
+        : action,
+    },
+    {
+      path: Routes.Login,
+      Component: () => 'LOGIN_ROUTE',
+    },
   ]);
 
   render(<DeleteWorldStub />);
@@ -41,19 +55,19 @@ function setupTest() {
   return { user: userEvent.setup(), worldID: world.id };
 }
 
-function teardownTest() {
+afterEach(() => {
   drop(db);
 
   client.setHeader('authorization', '');
-}
+});
 
 test('it deletes the expected world', async () => {
-  const { user, worldID } = setupTest();
+  const { user, worldID } = setupTest({ isAuthed: true });
 
   const deleteButton = await screen.findByText('Delete');
 
   await user.click(deleteButton);
-  await screen.findByText('Deleted');
+  await screen.findByText('DELETE_WORLD_ROUTE');
 
   const world = db.world.findFirst({
     where: {
@@ -64,6 +78,14 @@ test('it deletes the expected world', async () => {
   });
 
   expect(world).toBeNull();
+});
 
-  teardownTest();
+test('it redirects to the login route when not authenticated', async () => {
+  const { user } = setupTest({ isAuthed: false });
+
+  const deleteButton = await screen.findByText('Delete');
+
+  await user.click(deleteButton);
+
+  expect(await screen.findByText('LOGIN_ROUTE')).toBeInTheDocument();
 });

@@ -1,0 +1,196 @@
+---
+description: Standards for creating backend HTTP service MSW mocks
+globs: "**/service-api/**/mocks/handlers/http/**/*.ts"
+---
+
+# HTTP Service MSW Mock Standards
+
+Standards for creating and maintaining MSW (Mock Service Worker) mocks for backend HTTP services.
+
+<rule>
+name: testing_standards_msw_http
+description: Standards for creating backend HTTP service MSW mocks for testing
+filters:
+  - type: path
+    pattern: "mocks/handlers/http/"
+
+actions:
+  - type: suggest
+    message: |
+      HTTP Service MSW Mock Creation Standards:
+
+      1. File Organization:
+         - Place handlers in `mocks/handlers/http/` directory
+         - Use kebab-case for filenames matching the HTTP operation (e.g. `create-session.ts`)
+         - Name files after the HTTP endpoint they mock
+         - Export handlers with PascalCase names matching the operation
+         - Export all handlers from `index.ts`
+
+      2. Type Safety:
+         - Import types from `@chrono/service-types` for request/response shapes
+         - Define explicit Request and Response types for each handler
+         - Use zod schemas for request validation
+         - Document complex type structures
+         - Never use `any` or `unknown` types
+         - Use strict typing for request bodies and query params
+
+      3. Handler Structure:
+         - Use `http.post()`, `http.get()`, etc. with exact route paths
+         - Use `HttpResponse.json()` for consistent response formatting
+         - Match API response shapes exactly
+         - Handle all error cases explicitly
+         - Follow RESTful conventions for success/error responses
+         - Include proper status codes
+         - Handle query parameters and path variables correctly
+
+      4. Database Integration:
+         - Use MSW database for state management
+         - Clean up database in `afterEach` blocks
+         - Use proper database querying patterns
+         - Handle database errors gracefully
+         - Maintain referential integrity between models
+         - Mirror production database constraints
+
+      5. Error Handling:
+         - Return proper HTTP error status codes
+         - Include standardized error response structure
+         - Handle validation errors (400)
+         - Handle not found errors (404)
+         - Handle authorization errors (401/403)
+         - Handle server errors (500)
+         - Use consistent error patterns
+         - Include error details in development
+
+      6. Testing Integration:
+         - Export handlers individually for selective test usage
+         - Allow handler overrides in tests
+         - Reset handlers between tests
+         - Document handler behavior
+         - Provide test utilities for common operations
+         - Support partial mocking
+         - Test error scenarios
+
+examples:
+  - input: |
+      ```ts
+      // Bad - missing types, inconsistent response structure
+      export const badHandler = http.post('/api/sessions', () => {
+        return HttpResponse.json({ success: true });
+      });
+
+      // Bad - inconsistent error handling
+      export const anotherBadHandler = http.post('/api/sessions', () => {
+        return new Response(
+          JSON.stringify({ error: 'Failed' }),
+          { status: 500 }
+        );
+      });
+
+      // Good - proper typing and response structure
+      import { http, HttpResponse } from 'msw';
+      import { CreateSessionRequest, CreateSessionResponse } from '@chrono/service-types';
+      import { db } from '~/mocks/db';
+      import { createSessionSchema } from '~/schema/mutations/create-session';
+      import { env } from '~/env';
+      
+      const ENDPOINT_URL = `${env.SESSIONS_SERVICE_URL}create-session`;
+
+      export const CreateSession = http.post(ENDPOINT_URL, async ({ request }) => {
+        try {
+          const body = await request.json();
+          const result = createSessionSchema.safeParse(body);
+
+          if (!result.success) {
+            return HttpResponse.json(
+              {
+                error: {
+                  title: 'Validation Error',
+                  message: 'Invalid request body',
+                  details: result.error.issues,
+                },
+              },
+              { status: 400 },
+            );
+          }
+
+          const user = db.user.findFirst({
+            where: {
+              email: { equals: result.data.email },
+            },
+          });
+
+          if (!user) {
+            return HttpResponse.json(
+              {
+                error: {
+                  title: 'Not Found',
+                  message: 'User not found',
+                },
+              },
+              { status: 404 },
+            );
+          }
+
+          const session = db.session.create({
+            userId: user.id,
+            expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
+          });
+
+          return HttpResponse.json(
+            {
+              session: {
+                id: session.id,
+                userId: session.userId,
+                expiresAt: session.expiresAt,
+              },
+            },
+            { status: 201 },
+          );
+        } catch (error) {
+          return HttpResponse.json(
+            {
+              error: {
+                title: 'Internal Error',
+                message: 'Something went wrong',
+              },
+            },
+            { status: 500 },
+          );
+        }
+      });
+
+      // Good - proper test integration
+      import { server } from '~/mocks/node';
+      import { db } from '~/mocks/db';
+
+      // Good - reset MSW database and handlers after each test
+      afterEach(() => {
+        server.resetHandlers();
+
+        drop(db);
+      });
+
+      test('handles server error', async () => {
+        server.use(
+          http.post('/api/sessions', () => {
+            return HttpResponse.json(
+              {
+                error: {
+                  title: 'Server Error',
+                  message: 'Something went wrong',
+                },
+              },
+              { status: 500 },
+            );
+          }),
+        );
+
+        // Test implementation
+      });
+      ```
+    output: "HTTP service MSW mock following standards"
+
+metadata:
+  priority: high
+  version: 1.0
+</rule> 

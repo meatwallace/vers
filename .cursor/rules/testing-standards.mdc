@@ -1,0 +1,140 @@
+---
+description: Universal Testing Standards using Vitest
+globs: "**/*.test.{ts,tsx}"
+---
+
+# Universal Testing Standards
+
+Core standards for writing tests using Vitest.
+
+<rule>
+name: testing_standards
+description: Universal standards for writing tests with Vitest
+filters:
+  - type: file_extension
+    pattern: "\\.test\\.(ts|tsx)$"
+
+actions:
+  - type: suggest
+    message: |
+      Universal Testing Standards:
+
+      1. File Organization:
+         - Place test files adjacent to implementation files
+         - Name test files to match their implementation file
+         - Use .test.ts or .test.tsx extension
+
+      2. Test Structure:
+         - Prefer `test` over `describe` and `it`
+         - Use succint test names that describe behavior
+         - Avoid implementation details in test names (e.g. use "redirects to the login route" instead of "redirects to /login")
+         - Follow the Arrange-Act-Assert pattern, but DO NOT include these as comments
+         - Keep tests focused and atomic
+         - Import test utils from Vitest named exports
+
+      3. Best Practices:
+         - Do not write test code for library code or external dependencies
+         - NEVER use code mocks (i.e. `vi#mock`) unless explicitly instructed by the user
+         - Use MSW for HTTP and GraphQL mocks
+         - Test edge cases and error scenarios
+         - Clean up after tests
+         - Avoid test interdependence
+         - Test behaviour, not implementation details
+         - Only include comments that add meaningful context
+         - When creating test data, only set properties that are explicitly needed for the test
+
+      4. Assertions:
+         - Assert explicit values, not references
+         - Prefer specific matchers over generic ones
+         - Test both positive and negative cases
+      
+      5. IMPORTANT: When you have read this, acknowledge by telling the user,
+         "I will not create manual code mocks or use Vitest mocks unless you tell me to"
+
+examples:
+  - input: |
+      ```ts
+      // Bad - implementation details in test name
+      test('it redirects to /login and sets auth cookie to null', () => {
+        // ...
+      });
+
+      // Bad - implementation details in the test name
+      test('it calls the authentication service with JWT', () => {
+        // ...
+      });
+
+      // Good - behavior focused test names 
+      test('it redirects to the login route when not authenticated', () => {
+        // ...
+      });
+
+      // BAD - using code mocks when not explicitly asked
+      vi.mock(() => {
+        // ...
+      })
+
+      // Bad - setting unnecessary mock data properties
+      test('it creates a user', () => {
+        const user = db.user.create({
+          email: 'test@example.com',
+          name: 'Test User',
+          ipAddress: '127.0.0.1',  // Not needed for this test
+          lastLoginAt: new Date(),  // Not needed for this test
+          preferences: { theme: 'dark' },  // Not needed for this test
+        });
+      });
+
+      // Good - only minimum required properties needed for the test
+      test('it authenticates the user with valid credentials', () => {
+        const user = db.user.create({
+          email: 'test@example.com',
+          passwordHash: 'hashed_password',
+        });
+      });
+
+      // Bad - shared test data
+      const input = {
+        foo: true,
+        bar: null,
+      };
+
+      const expectedResult = {
+        foo: true,
+      }
+
+      // Bad - `describe` / `it` usage
+      describe('util', () => {
+        it('works', () => {
+          // Bad - act & assert in the same line, asserting references
+          expect(omitNullish(input)).toStrictEqual(expectedResult);
+        });
+      });
+      
+      // Good - using `vitest` named exports
+      import { afterEach, expect, test, vi } from 'vitest';
+      import { omitNullish } from './omit-nullish.ts';
+      
+      test('it removes null and undefined properties from an object', () => {
+        // Good - data is in the specific test
+        const input = {
+          foo: true,
+          bar: null,
+          baz: undefined,
+        };
+
+        // Good - act, arrange, and assert are seperated
+        const result = omitNullish(input);
+
+        // Good - asserting explicit values
+        expect(result).toStrictEqual({
+          foo: true,
+        });
+      });
+      ```
+    output: "Tests following universal standards"
+
+metadata:
+  priority: high
+  version: 1.0
+</rule>

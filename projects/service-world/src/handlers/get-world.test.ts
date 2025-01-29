@@ -1,18 +1,16 @@
 import { Hono } from 'hono';
-import {
-  PostgresTestUtils,
-  createTestUser,
-} from '@chrononomicon/service-test-utils';
+import { PostgresTestUtils, createTestUser } from '@chrono/service-test-utils';
 import { createId } from '@paralleldrive/cuid2';
-import { worlds } from '@chrononomicon/postgres-schema';
+import { worlds } from '@chrono/postgres-schema';
 import { getWorld } from './get-world';
 import { pgTestConfig } from '../pg-test-config';
+
 async function setupTest() {
   const app = new Hono();
 
   const { db, teardown } = await PostgresTestUtils.createTestDB(pgTestConfig);
 
-  const { user } = await createTestUser({ db });
+  const user = await createTestUser({ db });
 
   app.post('/get-world', async (ctx) => getWorld(ctx, db));
 

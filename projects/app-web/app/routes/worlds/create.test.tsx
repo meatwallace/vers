@@ -1,20 +1,22 @@
+import userEvent from '@testing-library/user-event';
+import { afterEach, expect, test } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { createRoutesStub } from 'react-router';
 import { Form } from 'react-router';
-import userEvent from '@testing-library/user-event';
 import { drop } from '@mswjs/data';
-import { client } from '../../client';
-import { db } from '../../mocks/db';
-import { Routes } from '../../types';
+import { withAuthedUser } from '~/test-utils/with-authed-user.ts';
+import { createGQLClient } from '~/utils/create-gql-client.server.ts';
+import { db } from '~/mocks/db';
+import { Routes } from '~/types';
 import { action } from './create';
 
-const MOCK_TOKEN = `eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJ0ZXN0IiwiaWF0IjoxNzE0NDA5NTMxLCJleHAiOjE3NDU5NDU1MzEsImF1ZCI6Ind3dy50ZXN0LmNvbSIsInN1YiI6ImF1dGgwfHRlc3RfaWQifQ.Drta5B74QNaMfKpZtFyCde5YG-e1eTU6tySwknytnig`;
+type TestConfig = {
+  isAuthed: boolean;
+};
 
-function setupTest() {
-  client.setHeader('authorization', MOCK_TOKEN);
+const client = createGQLClient();
 
-  const user = db.user.create({});
-
+function setupTest(config: TestConfig) {
   const CreateWorldStub = createRoutesStub([
     {
       path: '/',
@@ -24,23 +26,32 @@ function setupTest() {
         </Form>
       ),
     },
-    { path: Routes.CreateWorld, Component: null, action },
+    {
+      path: Routes.CreateWorld,
+      Component: null,
+      // @ts-expect-error(#35) - react router test types are out of date
+      action: config.isAuthed
+        ? // @ts-expect-error(#35) - react router test types are out of date
+          withAuthedUser(action, { client, user: { id: 'user_id' } })
+        : action,
+    },
     { path: Routes.CreateWorldWizard, Component: () => 'Create World Wizard' },
+    { path: Routes.Login, Component: () => 'LOGIN_ROUTE' },
   ]);
 
   render(<CreateWorldStub />);
 
-  return { user: userEvent.setup(), userID: user.id };
+  return { user: userEvent.setup() };
 }
 
-function teardownTest() {
+afterEach(() => {
   drop(db);
 
   client.setHeader('authorization', '');
-}
+});
 
 test('it creates a world and redirects to the world creation wizard', async () => {
-  const { user, userID } = setupTest();
+  const { user } = setupTest({ isAuthed: true });
 
   const createButton = await screen.findByText('Create');
 
@@ -53,12 +64,20 @@ test('it creates a world and redirects to the world creation wizard', async () =
   const world = db.world.findFirst({
     where: {
       ownerID: {
-        equals: userID,
+        equals: 'user_id',
       },
     },
   });
 
   expect(world).not.toBeNull();
+});
 
-  teardownTest();
+test('it redirects to the login route when not authenticated', async () => {
+  const { user } = setupTest({ isAuthed: false });
+
+  const createButton = await screen.findByText('Create');
+
+  await user.click(createButton);
+
+  expect(await screen.findByText('LOGIN_ROUTE')).toBeInTheDocument();
 });

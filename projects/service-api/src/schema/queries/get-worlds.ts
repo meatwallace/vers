@@ -1,7 +1,8 @@
-import { Context } from '../../types';
-import { isAuthed } from '../../utils';
+import invariant from 'tiny-invariant';
+import { Context } from '~/types';
 import { builder } from '../builder';
-import { World } from '../types';
+import { World } from '../types/world';
+import { requireAuth } from '../utils/require-auth';
 
 type Args = {
   input: typeof GetWorldsInput.$inferInput;
@@ -12,10 +13,7 @@ export async function getWorlds(
   args: Args,
   ctx: Context,
 ): Promise<Array<typeof World.$inferType>> {
-  if (!isAuthed(ctx)) {
-    // TODO(#16): capture via sentry
-    throw new Error('Unauthorized');
-  }
+  invariant(ctx.user, 'user is required in an authed resolver');
 
   // eslint-disable-next-line no-useless-catch
   try {
@@ -36,12 +34,14 @@ const GetWorldsInput = builder.inputType('GetWorldsInput', {
   }),
 });
 
+export const resolve = requireAuth(getWorlds);
+
 builder.queryField('getWorlds', (t) =>
   t.field({
     type: [World],
     args: {
       input: t.arg({ type: GetWorldsInput, required: true }),
     },
-    resolve: getWorlds,
+    resolve,
   }),
 );

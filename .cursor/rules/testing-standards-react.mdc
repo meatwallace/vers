@@ -1,0 +1,221 @@
+---
+description: React Component Testing Standards
+globs: "**/*.test.{ts,tsx}"
+---
+
+# React Component Testing Standards
+
+Standards for testing React components using Vitest and Testing Library.
+
+<rule>
+name: testing_standards_react
+description: Standards for testing React components
+filters:
+  - type: file_extension
+    pattern: "\\.test\\.(ts|tsx)$"
+
+actions:
+  - type: suggest
+    message: |
+      React Component Testing Standards:
+
+      1. What to Test:
+         - Complex components with business logic
+         - Components with state management
+         - Components with side effects
+         - Form handling and validation
+         - Data fetching and mutations
+         - Route components
+         - Error boundaries
+         - Context providers
+         - Custom hooks
+         - Integration between components
+
+      2. What NOT to Test:
+         - Simple presentational components (e.g., Button, Input, Label)
+         - Components that only render props
+         - Static layouts
+         - Styling or CSS classes
+         - Third-party components (unless wrapped with custom logic)
+         - Implementation details
+         - Prop drilling
+         - Basic DOM structure
+
+      3. Testing Library Usage:
+         - Use `screen` queries over container queries
+         - Prefer role-based queries (getByRole)
+         - Fall back to text-based queries (getByText)
+         - Avoid testid-based queries unless necessary
+         - Use proper aria roles and labels
+         - Always assign React Testing Library queries to variables before assertions
+         - Reuse query variables when referencing the same element multiple times
+         - Never chain queries directly into assertions
+
+      4. Component Setup:
+         - Create type-safe setup functions
+         - Return commonly used utilities
+         - Document required vs optional props
+         - Reset component state between tests
+         - Mock complex dependencies
+         - Set up test data appropriately
+
+      5. User Interactions:
+         - Use `userEvent` over `fireEvent`
+         - Test keyboard interactions
+         - Test mouse interactions
+         - Test form submissions
+         - Wait for async updates
+         - Test error states
+         - Test loading states
+
+      6. Component-Specific Assertions:
+         - Test business logic outcomes
+         - Verify state changes
+         - Check data mutations
+         - Validate complex interactions
+         - Test error handling
+         - Verify side effects
+         - Test integration points
+
+examples:
+  - input: |
+      ```tsx
+      // Bad - poor component test structure
+      describe('Button', () => {
+        it('works', () => {
+          render(<Button data-testid="btn" />)
+          expect(screen.getByTestId('btn')).toBeInTheDocument()
+        })
+      })
+
+      // Bad - Testing Library query chained directly into assertion
+      test('it renders the submit button', () => {
+        render(<Button label="Submit" />);
+        expect(screen.getByRole('button', { name: /submit/i })).toBeInTheDocument();
+      });
+
+      // Good - Testing Library query assigned to variable
+      test('it renders the submit button', () => {
+        render(<Button label="Submit" />);
+
+        const submitButton = screen.getByRole('button', { name: /submit/i });
+
+        expect(submitButton).toBeInTheDocument();
+      });
+
+      // Good - proper React component testing
+      import userEvent from '@testing-library/user-event';
+      import { afterEach, expect, test, vi } from 'vitest';
+      import { render, screen } from '@testing-library/react';
+      import { Button } from './button';
+
+      type TestConfig = {
+        props: React.ComponentProps<typeof Button>,
+      };
+
+      function setupTest(config: Partial<TestConfig>) {
+        const user = userEvent.setup();
+
+        render(<Button {...config.props} />);
+
+        return {
+          user,
+        };
+      };
+
+      test('it renders an accessible button with the correct label', () => {
+        setupTest({
+          props: { label: 'Submit' },
+        });
+
+        const button = screen.getByRole('button', {
+          name: /submit/i,
+        });
+
+        expect(button).toBeEnabled();
+      });
+
+      test('it calls the `onClick` handler when clicked', async () => {
+        const onClickSpy = vi.fn();
+
+        const { user } = setupTest({
+          props: {
+            label: 'Submit',
+            onClick: onClickSpy,
+          },
+        });
+
+        await user.click(
+          screen.getByRole('button', { name: /click me/i })
+        );
+
+        expect(onClickSpy).toHaveBeenCalledTimes(1);
+      });
+
+      test('it supports keyboard interaction', async () => {
+        const onClickSpy = vi.fn();
+
+        const { user } = setupTest({
+          props: {
+            label: 'Submit',
+            onClick: onClickSpy,
+          },
+        });
+
+        const button = screen.getByRole('button')
+
+        await user.tab()
+
+        expect(button).toHaveFocus()
+
+        await user.keyboard('{Enter}')
+
+        expect(onClickSpy).toHaveBeenCalledTimes(1)
+      });
+
+      // Additional examples of what TO test
+      
+      // Good - testing a complex form component
+      test('form submission with validation', async () => {
+        const onSubmitSpy = vi.fn();
+        const { user } = setupTest({
+          props: { onSubmit: onSubmitSpy }
+        });
+
+        const emailInput = screen.getByRole('textbox', { name: /email/i });
+        const submitButton = screen.getByRole('button', { name: /submit/i });
+
+        await user.type(emailInput, 'invalid-email');
+        await user.click(submitButton);
+
+        const errorMessage = screen.getByText(/invalid email format/i);
+        expect(errorMessage).toBeInTheDocument();
+        expect(onSubmitSpy).not.toHaveBeenCalled();
+
+        await user.clear(emailInput);
+        await user.type(emailInput, 'valid@email.com');
+        await user.click(submitButton);
+
+        expect(onSubmitSpy).toHaveBeenCalledWith({
+          email: 'valid@email.com'
+        });
+      });
+
+      // Good - testing a data fetching component
+      test('displays user data after loading', async () => {
+        const { user } = setupTest();
+
+        expect(screen.getByText(/loading/i)).toBeInTheDocument();
+
+        const userProfile = await screen.findByRole('article');
+        const userName = within(userProfile).getByText(/john doe/i);
+
+        expect(userName).toBeInTheDocument();
+      });
+      ```
+    output: "React component tests following standards"
+
+metadata:
+  priority: high
+  version: 1.0
+</rule>

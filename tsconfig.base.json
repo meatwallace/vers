@@ -11,21 +11,22 @@
     "target": "ES2017",
     "module": "ESNext",
     "lib": ["ES2020"],
+    "jsx": "react-jsx",
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
+    "strict": true,
+    "allowImportingTsExtensions": true,
+    "noEmit": true,
     "paths": {
-      "@chrononomicon/postgres-schema": [
-        "projects/lib-postgres-schema/src/index.ts"
-      ],
-      "@chrononomicon/service-test-utils": [
+      "@chrono/email-templates": ["projects/lib-email-templates/src/index.ts"],
+      "@chrono/postgres-schema": ["projects/lib-postgres-schema/src/index.ts"],
+      "@chrono/service-test-utils": [
         "projects/lib-service-test-utils/src/index.ts"
       ],
-      "@chrononomicon/service-utils": [
-        "projects/lib-service-utils/src/index.ts"
-      ]
-    },
-    "strict": true
+      "@chrono/service-types": ["projects/lib-service-types/src/index.ts"],
+      "@chrono/service-utils": ["projects/lib-service-utils/src/index.ts"]
+    }
   },
   "exclude": ["node_modules", "tmp"]
 }

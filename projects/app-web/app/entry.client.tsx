@@ -2,7 +2,16 @@ import { HydratedRouter } from 'react-router/dom';
 import { startTransition, StrictMode } from 'react';
 import { hydrateRoot } from 'react-dom/client';
 
-const SILENCED_UNHANDLED_URLS = ['/__manifest'];
+const SILENCED_UNHANDLED_URLS = [
+  '/__manifest',
+  '.woff',
+  '.svg',
+  '.css',
+  '.png',
+  '.ts',
+  '.tsx',
+  '.data',
+];
 
 async function prepareApp() {
   if (!import.meta.env.PROD && import.meta.env.VITE_ENABLE_MSW === 'true') {

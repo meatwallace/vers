@@ -1,8 +1,10 @@
 import { redirect } from 'react-router';
-import { graphql } from '../../gql';
-import { client } from '../../client';
-import { isMutationError } from '../../utils';
-import { Routes } from '../../types';
+import { type Route } from './+types/create';
+import { createGQLClient } from '~/utils/create-gql-client.server.ts';
+import { graphql } from '~/gql';
+import { Routes } from '~/types';
+import { isMutationError } from '~/utils/is-mutation-error';
+import { requireAuth } from '~/utils/require-auth.server.ts';
 
 const CreateWorldMutation = graphql(/* GraphQL */ `
   mutation CreateWorld($input: CreateWorldInput!) {
@@ -21,7 +23,11 @@ const CreateWorldMutation = graphql(/* GraphQL */ `
   }
 `);
 
-export const action = async () => {
+export const action = async ({ request }: Route.ActionArgs) => {
+  const client = createGQLClient();
+
+  await requireAuth(request, { client });
+
   try {
     const { createWorld } = await client.request(CreateWorldMutation, {
       input: {},

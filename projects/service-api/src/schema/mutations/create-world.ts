@@ -1,9 +1,10 @@
-import { Context, StandardMutationPayload } from '../../types';
-import { isAuthed } from '../../utils';
-import { MutationErrorPayload } from '../types';
-import { World } from '../types';
-import { createPayloadResolver, createUnauthorizedError } from '../utils';
+import invariant from 'tiny-invariant';
+import { Context, StandardMutationPayload } from '~/types';
 import { builder } from '../builder';
+import { MutationErrorPayload } from '../types/mutation-error-payload';
+import { World } from '../types/world';
+import { createPayloadResolver } from '../utils/create-payload-resolver';
+import { requireAuth } from '../utils/require-auth';
 
 type Args = {
   input: typeof CreateWorldInput.$inferInput;
@@ -14,9 +15,7 @@ export async function createWorld(
   args: Args,
   ctx: Context,
 ): Promise<StandardMutationPayload<typeof World.$inferType>> {
-  if (!isAuthed(ctx)) {
-    return { error: createUnauthorizedError() };
-  }
+  invariant(ctx.user, 'user is required in an authed resolver');
 
   // eslint-disable-next-line no-useless-catch
   try {
@@ -42,12 +41,14 @@ const CreateWorldPayload = builder.unionType('CreateWorldPayload', {
   resolveType: createPayloadResolver(World),
 });
 
+export const resolve = requireAuth(createWorld);
+
 builder.mutationField('createWorld', (t) =>
   t.field({
     type: CreateWorldPayload,
     args: {
       input: t.arg({ type: CreateWorldInput, required: true }),
     },
-    resolve: createWorld,
+    resolve,
   }),
 );

@@ -1,43 +1,39 @@
-import { createJWKSMock } from 'mock-jwks';
 import { drop } from '@mswjs/data';
-import { createTestAccessToken } from '@chrononomicon/service-test-utils';
-import { env } from '../../env';
-import { createMockGQLContext } from '../../test-utils';
-import { server } from '../../mocks/node';
-import { db } from '../../mocks/db';
-import { getWorlds } from './get-worlds';
-
-const jwks = createJWKSMock(`https://${env.AUTH0_DOMAIN}/`);
+import { createTestJWT } from '@chrono/service-test-utils';
+import { env } from '~/env';
+import { db } from '~/mocks/db';
+import { createMockGQLContext } from '~/test-utils/create-mock-gql-context';
+import { resolve } from './get-worlds';
 
 test('it returns all the worlds for the provided owner', async () => {
-  server.use(jwks.mswHandler);
+  const user = db.user.create({});
 
   db.world.create({
     id: 'test_id_1',
-    ownerID: 'test_user_id',
+    ownerID: user.id,
     name: 'New World #1',
   });
 
   db.world.create({
     id: 'test_id_2',
-    ownerID: 'test_user_id',
+    ownerID: user.id,
     name: 'New World #2',
   });
 
-  const { accessToken } = createTestAccessToken({
-    jwks,
+  const accessToken = await createTestJWT({
+    sub: user.id,
     audience: env.API_IDENTIFIER,
-    issuer: `https://${env.AUTH0_DOMAIN}/`,
+    issuer: `https://${env.API_IDENTIFIER}/`,
   });
 
-  const ctx = createMockGQLContext({ accessToken });
-  const args = { input: { worldID: 'test_id' } };
-  const result = await getWorlds({}, args, ctx);
+  const ctx = createMockGQLContext({ accessToken, user });
+  const args = { input: {} };
+  const result = await resolve({}, args, ctx);
 
   expect(result).toIncludeAllMembers([
     {
       id: 'test_id_1',
-      ownerID: 'test_user_id',
+      ownerID: user.id,
       name: 'New World #1',
       fantasyType: 'Medium',
       technologyLevel: 'Medieval',
@@ -58,7 +54,7 @@ test('it returns all the worlds for the provided owner', async () => {
     },
     {
       id: 'test_id_2',
-      ownerID: 'test_user_id',
+      ownerID: user.id,
       name: 'New World #2',
       fantasyType: 'Medium',
       technologyLevel: 'Medieval',
@@ -84,7 +80,7 @@ test('it returns all the worlds for the provided owner', async () => {
 
 test('it returns an error if the user isnt authenticated', async () => {
   const ctx = createMockGQLContext({});
-  const args = { input: { worldID: 'test_id' } };
+  const args = { input: {} };
 
-  await expect(() => getWorlds({}, args, ctx)).rejects.toThrow('Unauthorized');
+  await expect(() => resolve({}, args, ctx)).rejects.toThrow('Unauthorized');
 });

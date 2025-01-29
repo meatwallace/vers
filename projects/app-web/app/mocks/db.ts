@@ -1,15 +1,35 @@
 import { factory, nullable, primaryKey } from '@mswjs/data';
 import { createId } from '@paralleldrive/cuid2';
+import { encodeMockJWT } from './utils/encode-mock-jwt';
+
+const EXPIRATION_IN_MS = 1000 * 60 * 60 * 24; // 1 day
 
 export const db = factory({
+  session: {
+    id: primaryKey(() => createId()),
+    userID: () => createId(),
+    createdAt: () => new Date().toISOString(),
+    refreshToken: () =>
+      encodeMockJWT({
+        sub: createId(),
+        exp: Date.now() + EXPIRATION_IN_MS,
+      }),
+    expiresAt: () => new Date(Date.now() + EXPIRATION_IN_MS).toISOString(),
+  },
+  verification: {
+    id: primaryKey(() => createId()),
+    target: () => 'user@test.com',
+    type: () => 'ONBOARDING',
+    createdAt: () => new Date().toISOString(),
+  },
   user: {
     id: primaryKey(() => createId()),
-    auth0ID: () => 'auth0|test_id',
     email: () => 'user@test.com',
-    emailVerified: () => true,
+    username: () => 'test_user',
     name: () => 'John Smith',
-    firstName: () => 'John',
-    createdAt: () => new Date(),
+    password: () => 'password',
+    createdAt: () => new Date().toISOString(),
+    updatedAt: () => new Date().toISOString(),
   },
   world: {
     id: primaryKey(() => createId()),
@@ -29,7 +49,7 @@ export const db = factory({
       'Swamps',
       'Tundra',
     ],
-    createdAt: () => new Date(),
-    updatedAt: () => new Date(),
+    createdAt: () => new Date().toISOString(),
+    updatedAt: () => new Date().toISOString(),
   },
 });

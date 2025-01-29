@@ -1,11 +1,12 @@
+import tsconfigPaths from 'vite-tsconfig-paths';
 import { loadEnv } from 'vite';
 import { defineConfig } from 'vitest/config';
-import { nxViteTsPaths } from '@nx/vite/plugins/nx-tsconfig-paths.plugin';
-
 export default defineConfig({
-  plugins: [nxViteTsPaths()],
+  plugins: [
+    // @ts-expect-error - outdated plugin types
+    tsconfigPaths(),
+  ],
   server: {
-    // @ts-expect-error - `ws` is a new option and isn't typed yet in vitest
     ws: process.env.VITEST === 'true' ? false : undefined,
   },
   test: {

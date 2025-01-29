@@ -1,19 +1,19 @@
 import { and, eq } from 'drizzle-orm';
 import { Context } from 'hono';
-import * as schema from '@chrononomicon/postgres-schema';
+import * as schema from '@chrono/postgres-schema';
 import { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
-
-type RequestBody = {
-  ownerID: string;
-  worldID: string;
-};
+import {
+  GenerateWorldNamesRequest,
+  GenerateWorldNamesResponse,
+} from '@chrono/service-types';
 
 export async function generateWorldNames(
   ctx: Context,
   db: PostgresJsDatabase<typeof schema>,
 ) {
   try {
-    const { ownerID, worldID } = await ctx.req.json<RequestBody>();
+    const { ownerID, worldID } =
+      await ctx.req.json<GenerateWorldNamesRequest>();
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const world = await db.query.worlds.findFirst({
@@ -23,14 +23,28 @@ export async function generateWorldNames(
       ),
     });
 
+    if (!world) {
+      return ctx.json({ success: false, error: 'World not found' }, 404);
+    }
+
     // TODO(#23): implement world name generation
     const names = ['Example World'];
 
-    return ctx.json({ success: true, data: names });
+    const response: GenerateWorldNamesResponse = {
+      success: true,
+      data: names,
+    };
+
+    return ctx.json(response);
   } catch (error: unknown) {
     // TODO(#16): capture via Sentry
     if (error instanceof Error) {
-      return ctx.json({ success: false, error: 'An unknown error occurred' });
+      const response = {
+        success: false,
+        error: 'An unknown error occurred',
+      };
+
+      return ctx.json(response);
     }
 
     throw error;

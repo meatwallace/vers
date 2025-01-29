@@ -1,10 +1,8 @@
 {
-  "id": "b9cd3f67-6398-4e1b-bf34-56edd9c360b7",
-  "prevId": "ef8f887a-ba0d-4635-96de-08a6d58fb7d7",
-  "version": "5",
-  "dialect": "pg",
+  "version": "7",
+  "dialect": "postgresql",
   "tables": {
-    "users": {
+    "public.users": {
       "name": "users",
       "schema": "",
       "columns": {
@@ -58,22 +56,31 @@
       "uniqueConstraints": {
         "users_auth0_id_unique": {
           "name": "users_auth0_id_unique",
-          "nullsNotDistinct": false,
-          "columns": ["auth0_id"]
+          "columns": ["auth0_id"],
+          "nullsNotDistinct": false
         },
         "users_email_unique": {
           "name": "users_email_unique",
-          "nullsNotDistinct": false,
-          "columns": ["email"]
+          "columns": ["email"],
+          "nullsNotDistinct": false
         }
-      }
+      },
+      "policies": {},
+      "isRLSEnabled": false,
+      "checkConstraints": {}
     }
   },
   "enums": {},
   "schemas": {},
   "_meta": {
-    "columns": {},
     "schemas": {},
-    "tables": {}
-  }
+    "tables": {},
+    "columns": {}
+  },
+  "id": "b9cd3f67-6398-4e1b-bf34-56edd9c360b7",
+  "prevId": "ef8f887a-ba0d-4635-96de-08a6d58fb7d7",
+  "sequences": {},
+  "policies": {},
+  "views": {},
+  "roles": {}
 }

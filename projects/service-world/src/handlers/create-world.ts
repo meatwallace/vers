@@ -1,18 +1,16 @@
 import { Context } from 'hono';
-import * as schema from '@chrononomicon/postgres-schema';
+import * as schema from '@chrono/postgres-schema';
+import { CreateWorldRequest, CreateWorldResponse } from '@chrono/service-types';
 import { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
 import { createId } from '@paralleldrive/cuid2';
-
-type RequestBody = {
-  ownerID: string;
-};
 
 export async function createWorld(
   ctx: Context,
   db: PostgresJsDatabase<typeof schema>,
 ) {
   try {
-    const { ownerID } = await ctx.req.json<RequestBody>();
+    const { ownerID } = await ctx.req.json<CreateWorldRequest>();
+
     const createdAt = new Date();
 
     // set a bunch of defaults
@@ -40,11 +38,21 @@ export async function createWorld(
 
     await db.insert(schema.worlds).values(world);
 
-    return ctx.json({ success: true, data: world });
+    const response: CreateWorldResponse = {
+      success: true,
+      data: world,
+    };
+
+    return ctx.json(response);
   } catch (error: unknown) {
     // TODO(#16): capture via Sentry
     if (error instanceof Error) {
-      return ctx.json({ success: false, error: 'An unknown error occurred' });
+      const response = {
+        success: false,
+        error: 'An unknown error occurred',
+      };
+
+      return ctx.json(response);
     }
 
     throw error;

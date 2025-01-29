@@ -1,12 +1,13 @@
 import { Form } from 'react-router';
+import { Routes } from '~/types.ts';
 import { Brand } from './brand';
 import { Button } from './button';
 import * as styles from './header.css.ts';
 
 type Props = {
   user: {
-    name: string;
-    firstName?: string | null;
+    username: string;
+    name?: string;
   };
 };
 
@@ -16,10 +17,10 @@ export function Header(props: Props) {
       <Brand size="small" />
 
       <span className={styles.userName}>
-        {props.user.firstName ?? props.user.name}
+        {props.user.name ?? props.user.username}
       </span>
 
-      <Form action="/auth/logout" method="post">
+      <Form action={Routes.Logout} method="post">
         <Button color="transparent" size="small">
           Log out
         </Button>

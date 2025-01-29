@@ -8,4 +8,4 @@ app.use(logger());
 
 serve({ fetch: app.fetch, port: env.PORT, hostname: env.HOSTNAME });
 
-console.log(`⚡️ Serving User API @ http://${env.HOSTNAME}:${env.PORT}`);
+console.log(`⚡️ Serving Users API @ http://${env.HOSTNAME}:${env.PORT}`);

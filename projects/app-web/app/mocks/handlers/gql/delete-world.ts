@@ -1,6 +1,6 @@
 import { graphql, HttpResponse } from 'msw';
-import { jwtDecode } from 'jwt-decode';
 import { db } from '../../db';
+import { decodeMockJWT } from '../../utils/decode-mock-jwt';
 import { MutationResponse } from './types';
 
 type DeleteWorldResponse = MutationResponse<{
@@ -28,10 +28,10 @@ export const DeleteWorld = graphql.mutation<
   }
 
   const token = authHeader.replace('Bearer ', '');
-  const payload = jwtDecode(token);
+  const payload = decodeMockJWT(token);
 
   const user = db.user.findFirst({
-    where: { auth0ID: { equals: payload.sub } },
+    where: { id: { equals: payload.sub } },
   });
 
   if (!user) {

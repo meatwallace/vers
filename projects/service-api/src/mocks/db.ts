@@ -3,14 +3,31 @@ import { createId } from '@paralleldrive/cuid2';
 
 // TODO: extract & centralise
 export const db = factory({
+  session: {
+    id: primaryKey(() => createId()),
+    userID: () => createId(),
+    refreshToken: () => 'refresh_token',
+    ipAddress: () => '127.0.0.1',
+    expiresAt: () => new Date(),
+    createdAt: () => new Date(),
+    updatedAt: () => new Date(),
+  },
   user: {
     id: primaryKey(() => createId()),
-    auth0ID: () => 'auth0|test_id',
     email: () => 'user@test.com',
-    emailVerified: () => true,
     name: () => 'Test User',
-    firstName: () => 'John',
+    username: () => 'test_user',
+    passwordHash: nullable(() => null),
     createdAt: () => new Date(),
+    updatedAt: () => new Date(),
+  },
+  verification: {
+    id: primaryKey(() => createId()),
+    type: () => 'onboarding',
+    target: () => 'test@example.com',
+    createdAt: () => new Date(),
+    // 5 mins
+    expiresAt: () => new Date(Date.now() + 1000 * 60 * 5),
   },
   world: {
     id: primaryKey(() => createId()),

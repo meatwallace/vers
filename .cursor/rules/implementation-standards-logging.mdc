@@ -1,0 +1,61 @@
+---
+description: Standards for initializing and configuring Pino logging across our services
+globs: "**/src/logger.ts"
+---
+
+# Logging Standards
+
+Standards for initializing and configuring Pino logging across our services.
+
+<rule>
+name: implementation_standards_logging
+description: Standards for implementing logging using Pino
+filters:
+  - type: file_path
+    pattern: ".*/src/logger\\.ts$"
+
+actions:
+  - type: suggest
+    message: |
+      Logging Standards:
+
+      1. Logger Setup:
+         - Create a `logger.ts` file in project's `src` directory
+         - Export a single logger instance
+         - Configure based on environment variables
+         - Use `pino-pretty` in development
+         - Set log level via environment variable
+
+examples:
+  - input: |
+      ```ts
+      // src/logger.ts
+      import pino from 'pino';
+      import { env } from './env';
+
+      export const logger = createLogger();
+
+      function createLogger() {
+        let transport;
+
+        if (env.NODE_ENV === 'development') {
+          transport = {
+            target: 'pino-pretty',
+            options: {
+              colorize: true,
+            },
+          };
+        }
+
+        return pino({
+          level: env.LOGGING,
+          transport,
+        });
+      }
+      ```
+    output: "Logger setup following standards"
+
+metadata:
+  priority: high
+  version: 1.0
+</rule>

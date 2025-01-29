@@ -1,8 +1,9 @@
-import { createServiceContext } from '../utils';
+import { createUser } from './create-user';
+import { getUser } from './get-user';
+import { verifyPassword } from './verify-password';
+import { UserService } from './types';
 import { CreateServiceContextConfig } from '../utils/types';
-import { getCurrentUser } from './get-current-user';
-import { getOrCreateUser } from './get-or-create-user';
-import { GetCurrentUserArgs, GetOrCreateUserArgs, UserService } from './types';
+import { createServiceContext } from '../utils/create-service-context';
 
 type UserServiceConfig = CreateServiceContextConfig;
 
@@ -10,9 +11,8 @@ export function createUserService(config: UserServiceConfig): UserService {
   const ctx = createServiceContext(config);
 
   return {
-    getCurrentUser: async (args: GetCurrentUserArgs) =>
-      getCurrentUser(args, ctx),
-    getOrCreateUser: async (args: GetOrCreateUserArgs) =>
-      getOrCreateUser(args, ctx),
+    createUser: (args) => createUser(args, ctx),
+    getUser: (args) => getUser(args, ctx),
+    verifyPassword: (args) => verifyPassword(args, ctx),
   };
 }

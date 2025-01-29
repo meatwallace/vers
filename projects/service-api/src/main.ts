@@ -1,13 +1,18 @@
 import { serve } from '@hono/node-server';
-import { logger } from 'hono/logger';
+import { createLoggerMiddleware } from '@chrono/service-utils';
+import { requestId } from 'hono/request-id';
+import { createRemoteAddressMiddleware } from './middleware/create-remote-address-middleware';
 import { app } from './app';
-import { initYoga } from './init-yoga';
 import { env } from './env';
+import { initYoga } from './init-yoga';
+import { logger } from './logger';
 
-app.use(logger());
+app.use('*', requestId());
+app.use('*', createRemoteAddressMiddleware());
+app.use('*', createLoggerMiddleware(logger));
 
 initYoga();
 
 serve({ fetch: app.fetch, port: env.PORT, hostname: env.HOSTNAME });
 
-console.log(`⚡️ Serving GraphQL API @ http://${env.HOSTNAME}:${env.PORT}`);
+logger.info(`Serving GraphQL API @ http://${env.HOSTNAME}:${env.PORT}`);

@@ -3,10 +3,11 @@ import { HTTPException } from 'hono/http-exception';
 import {
   createTokenVerifier,
   TokenVerifierConfig,
-} from '../utils/create-token-verifier.js';
-import { getTokenFromHeader } from '../utils/get-token-from-header';
+} from '../utils/create-token-verifier.ts';
+import { getTokenFromHeader } from '../utils/get-token-from-header.ts';
 
 type AuthMiddlewareConfig = {
+  isAuthRequired?: boolean;
   tokenVerifierConfig: TokenVerifierConfig;
 };
 
@@ -16,10 +17,19 @@ export function createAuthMiddleware(config: AuthMiddlewareConfig) {
   const verifyToken = createTokenVerifier({
     audience: config.tokenVerifierConfig.audience,
     issuer: config.tokenVerifierConfig.issuer,
+    signingKey: config.tokenVerifierConfig.signingKey,
   });
 
   return async (ctx: Context, next: Next) => {
     const authHeader = ctx.req.raw.headers.get('Authorization');
+
+    // if we don't explicitly require auth then we're safe to pass through
+    // when no auth header is present
+    if (!authHeader && !config.isAuthRequired) {
+      await next();
+
+      return;
+    }
 
     if (!authHeader) {
       const errorDescription = 'no authorization included in request';
@@ -54,6 +64,7 @@ export function createAuthMiddleware(config: AuthMiddlewareConfig) {
 
       ctx.set('token', token);
       ctx.set('jwtPayload', payload);
+      ctx.set('userID', payload.sub);
     } catch (error: unknown) {
       throw new HTTPException(401, {
         message: 'Unauthorized',

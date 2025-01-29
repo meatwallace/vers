@@ -1,36 +1,21 @@
 import { http, HttpResponse } from 'msw';
-import { getTokenFromHeader } from '@chrononomicon/service-utils';
-import { jwtDecode } from 'jwt-decode';
-import { env } from '../../../env';
+import { CreateWorldRequest, CreateWorldResponse } from '@chrono/service-types';
+import { env } from '~/env';
 import { db } from '../../db';
 
 const ENDPOINT_URL = `${env.WORLDS_SERVICE_URL}create-world`;
 
 export const createWorld = http.post(ENDPOINT_URL, async ({ request }) => {
-  const authHeader = request.headers.get('authorization');
-  const accessToken = getTokenFromHeader(authHeader);
-
-  if (!accessToken) {
-    return new HttpResponse(null, { status: 401 });
-  }
-
-  const payload = jwtDecode(accessToken);
-
-  if (!payload.sub) {
-    return new HttpResponse(null, { status: 401 });
-  }
-
-  const user = db.user.findFirst({
-    where: { auth0ID: { equals: payload.sub } },
-  });
-
-  if (!user) {
-    return new HttpResponse(null, { status: 401 });
-  }
+  const body = (await request.json()) as CreateWorldRequest;
 
   const world = db.world.create({
-    ownerID: user.id,
+    ownerID: body.ownerID,
   });
 
-  return HttpResponse.json({ success: true, data: world });
+  const response: CreateWorldResponse = {
+    success: true,
+    data: world,
+  };
+
+  return HttpResponse.json(response);
 });

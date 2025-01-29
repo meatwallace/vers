@@ -1,38 +1,56 @@
-import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { Header } from './header';
 import { createRoutesStub } from 'react-router';
-import { Routes } from '../types';
+import { render, screen, waitFor } from '@testing-library/react';
+import { Header } from './header';
+import { Routes } from '~/types';
 
-function ExpectedRoute() {
-  return 'Logged out';
-}
-
-const MOCK_USER = {
-  name: 'Test User',
+type TestConfig = {
+  username: string;
+  name?: string;
 };
 
-function setupTest() {
+function setupTest(config: TestConfig) {
   const user = userEvent.setup();
 
-  const HeaderButtonStub = createRoutesStub([
-    { path: Routes.Index, Component: () => <Header user={MOCK_USER} /> },
-    { path: Routes.AuthLogout, Component: ExpectedRoute, action: () => null },
+  const HeaderStub = createRoutesStub([
+    {
+      path: '/',
+      Component: () => (
+        <Header user={{ username: config.username, name: config.name }} />
+      ),
+    },
+    {
+      path: Routes.Logout,
+      Component: () => 'LOGOUT_ROUTE',
+      action: () => null,
+    },
   ]);
 
-  render(<HeaderButtonStub />);
+  render(<HeaderStub />);
 
   return { user };
 }
 
+test("it displays the user's `name`", () => {
+  setupTest({ username: 'test_user', name: 'John Doe' });
+
+  expect(screen.getByText('John Doe')).toBeInTheDocument();
+});
+
+test("it displays the user's `username` when `name` is not provided", () => {
+  setupTest({ username: 'test_user' });
+
+  expect(screen.getByText('test_user')).toBeInTheDocument();
+});
+
 test('it renders a log out button that redirects to the log out route when pressed', async () => {
-  const { user } = setupTest();
+  const { user } = setupTest({ username: 'test_user' });
 
   const HeaderButton = await screen.findByRole('button', { name: 'Log out' });
 
   await waitFor(() => user.click(HeaderButton));
 
-  const loggedOutMessage = await screen.findByText('Logged out');
+  const loggedOutMessage = await screen.findByText('LOGOUT_ROUTE');
 
   expect(loggedOutMessage).toBeInTheDocument();
 });

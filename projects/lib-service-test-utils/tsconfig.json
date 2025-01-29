@@ -3,7 +3,15 @@
   "files": [],
   "include": [],
   "compilerOptions": {
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "baseUrl": ".",
+    "paths": {
+      "~/*": ["./src/*"],
+      "@chrono/email-templates": ["../lib-email-templates/src/index.ts"],
+      "@chrono/postgres-schema": ["../lib-postgres-schema/src/index.ts"],
+      "@chrono/service-types": ["../lib-service-types/src/index.ts"],
+      "@chrono/service-utils": ["../lib-service-utils/src/index.ts"]
+    }
   },
   "references": [
     {

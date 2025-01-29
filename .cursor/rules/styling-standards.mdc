@@ -1,0 +1,80 @@
+---
+description: Styling Standards using Vanilla Extract
+globs: "**/*.css.ts"
+---
+
+# Styling Standards
+
+Standards for styling using Vanilla Extract and responsive design.
+
+<rule>
+name: styling_standards
+description: Standards for CSS-in-TS using Vanilla Extract
+filters:
+  - type: file_extension
+    pattern: "\\.css\\.ts$"
+
+actions:
+  - type: suggest
+    message: |
+      Styling Standards:
+
+      1. File Organization:
+         - Place style files adjacent to components with .css.ts extension
+         - Group related styles together
+         - Export styles as named exports
+
+      2. Responsive Design:
+         - Use mobile-first approach
+         - Define breakpoints using Vanilla Extract vars
+         - Use media queries for responsive adjustments
+
+      3. Best Practices:
+         - Use semantic class names
+         - Avoid magic numbers
+         - Define reusable tokens for colors, spacing, etc.
+         - Use composition over inheritance
+         - Implement responsive design patterns
+
+      4. Performance:
+         - Keep specificity low
+         - Avoid deep nesting
+         - Use atomic classes where appropriate
+
+examples:
+  - input: |
+      // Bad
+      export const container = style({
+        padding: '20px',
+        '@media': {
+          'screen and (min-width: 768px)': {
+            padding: '40px'
+          }
+        }
+      });
+
+      // Good
+      const tokens = {
+        space: {
+          small: '20px',
+          medium: '40px'
+        },
+        breakpoints: {
+          tablet: 'screen and (min-width: 768px)'
+        }
+      };
+
+      export const container = style({
+        padding: tokens.space.small,
+        '@media': {
+          [tokens.breakpoints.tablet]: {
+            padding: tokens.space.medium
+          }
+        }
+      });
+    output: "Vanilla Extract styles following standards"
+
+metadata:
+  priority: high
+  version: 1.0
+</rule> 

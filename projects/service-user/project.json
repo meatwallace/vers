@@ -12,8 +12,8 @@
       "options": {
         "platform": "node",
         "outputPath": "projects/service-user/dist",
-        "format": ["cjs"],
-        "bundle": false,
+        "format": ["esm"],
+        "bundle": true,
         "main": "projects/service-user/src/main.ts",
         "tsConfig": "projects/service-user/tsconfig.app.json",
         "assets": ["projects/service-user/src/assets"],

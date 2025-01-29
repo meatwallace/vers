@@ -1,0 +1,83 @@
+{
+  "name": "service-verification",
+  "$schema": "../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "projects/service-verification/src",
+  "projectType": "application",
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "@nx/esbuild:esbuild",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
+      "options": {
+        "platform": "node",
+        "outputPath": "projects/service-verification/dist",
+        "format": ["esm"],
+        "bundle": true,
+        "main": "projects/service-verification/src/main.ts",
+        "tsConfig": "projects/service-verification/tsconfig.app.json",
+        "assets": ["projects/service-verification/src/assets"],
+        "generatePackageJson": true,
+        "esbuildOptions": {
+          "sourcemap": true,
+          "outExtension": {
+            ".js": ".js"
+          }
+        }
+      },
+      "configurations": {
+        "development": {},
+        "production": {
+          "esbuildOptions": {
+            "sourcemap": false,
+            "outExtension": {
+              ".js": ".js"
+            }
+          }
+        }
+      }
+    },
+    "deploy": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "flyctl deploy --local-only --dockerfile projects/service-verification/Dockerfile --config projects/service-verification/fly.toml"
+        ]
+      }
+    },
+    "serve": {
+      "executor": "@nx/js:node",
+      "defaultConfiguration": "development",
+      "options": {
+        "buildTarget": "service-verification:build"
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "service-verification:build:development"
+        },
+        "production": {
+          "buildTarget": "service-verification:build:production"
+        }
+      }
+    },
+    "test-watch": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": ["yarn run vitest watch"],
+        "cwd": "projects/service-verification"
+      }
+    },
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          {
+            "command": "tsc -p tsconfig.app.json --noEmit",
+            "forwardAllArgs": false
+          }
+        ],
+        "cwd": "projects/service-verification"
+      }
+    }
+  }
+}

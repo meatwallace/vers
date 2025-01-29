@@ -1,15 +1,18 @@
 import { type RouteConfig, index, route } from '@react-router/dev/routes';
+import { Routes } from './types.ts';
 
 export default [
   index('routes/_index.tsx'),
 
-  route('dashboard', 'routes/dashboard.tsx'),
+  route(Routes.Dashboard, 'routes/dashboard.tsx'),
 
-  route('auth/auth0', 'routes/auth/auth0.tsx'),
-  route('auth/callback', 'routes/auth/callback.tsx'),
-  route('auth/logout', 'routes/auth/logout.ts'),
+  route(Routes.Login, 'routes/login.tsx'),
+  route(Routes.Signup, 'routes/signup.tsx'),
+  route(Routes.Onboarding, 'routes/onboarding/onboarding.tsx'),
+  route(Routes.VerifyOTP, 'routes/verify-otp/verify-otp.tsx'),
+  route(Routes.Logout, 'routes/logout.tsx'),
 
-  route('worlds/create', 'routes/worlds/create.tsx'),
-  route('worlds/create/:worldID', 'routes/worlds/create.$worldID.tsx'),
-  route('worlds/delete/:worldID', 'routes/worlds/delete.$worldID.tsx'),
+  route(Routes.CreateWorld, 'routes/worlds/create.tsx'),
+  route(Routes.CreateWorldWizard, 'routes/worlds/create.$worldID.tsx'),
+  route(Routes.DeleteWorld, 'routes/worlds/delete.$worldID.tsx'),
 ] satisfies RouteConfig;

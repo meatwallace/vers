@@ -1,6 +1,6 @@
 {
   "name": "lib-service-utils",
-  "$schema": "../node_modules/nx/schemas/project-schema.json",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "projects/lib-service-utils/src",
   "projectType": "library",
   "tags": [],

@@ -6,27 +6,32 @@ import { getWorld } from './get-world';
 import { getWorlds } from './get-worlds';
 import { updateWorld } from './update-world';
 import { deleteWorld } from './delete-world';
+import { WorldService } from './types';
 import {
-  CreateWorldArgs,
-  DeleteWorldArgs,
-  GenerateWorldNamesArgs,
-  GetWorldArgs,
-  GetWorldsArgs,
-  UpdateWorldArgs,
-  WorldService,
-} from './types';
-type WorldServiceConfig = CreateServiceContextConfig;
+  CreateWorldRequest,
+  DeleteWorldRequest,
+  GetWorldRequest,
+  GetWorldsRequest,
+  UpdateWorldRequest,
+  GenerateWorldNamesRequest,
+} from '@chrono/service-types';
 
+type WorldServiceConfig = CreateServiceContextConfig;
 export function createWorldService(config: WorldServiceConfig): WorldService {
   const ctx = createServiceContext(config);
 
   return {
-    createWorld: async (args: CreateWorldArgs) => createWorld(args, ctx),
-    deleteWorld: async (args: DeleteWorldArgs) => deleteWorld(args, ctx),
-    getWorld: async (args: GetWorldArgs) => getWorld(args, ctx),
-    getWorlds: async (args: GetWorldsArgs) => getWorlds(args, ctx),
-    updateWorld: async (args: UpdateWorldArgs) => updateWorld(args, ctx),
-    generateWorldNames: async (args: GenerateWorldNamesArgs) =>
+    createWorld: async (args: CreateWorldRequest) => createWorld(args, ctx),
+
+    deleteWorld: async (args: DeleteWorldRequest) => deleteWorld(args, ctx),
+
+    getWorld: async (args: GetWorldRequest) => getWorld(args, ctx),
+
+    getWorlds: async (args: GetWorldsRequest) => getWorlds(args, ctx),
+
+    updateWorld: async (args: UpdateWorldRequest) => updateWorld(args, ctx),
+
+    generateWorldNames: async (args: GenerateWorldNamesRequest) =>
       generateWorldNames(args, ctx),
   };
 }

@@ -1,7 +1,7 @@
-import { worlds } from '@chrononomicon/postgres-schema';
+import { WorldData } from '~/services/world-service/types';
 import { builder } from '../builder';
 
-export const World = builder.objectRef<typeof worlds.$inferSelect>('World');
+export const World = builder.objectRef<WorldData>('World');
 
 World.implement({
   fields: (t) => ({

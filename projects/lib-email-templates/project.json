@@ -1,0 +1,28 @@
+{
+  "name": "lib-email-templates",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "projects/lib-email-templates/src",
+  "projectType": "library",
+  "targets": {
+    "test-watch": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": ["yarn run vitest watch"],
+        "cwd": "projects/lib-email-templates"
+      }
+    },
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          {
+            "command": "tsc -p tsconfig.lib.json --noEmit",
+            "forwardAllArgs": false
+          }
+        ],
+        "cwd": "projects/lib-email-templates"
+      }
+    }
+  },
+  "tags": []
+}
