@@ -11,6 +11,9 @@ export default [
   route(Routes.Onboarding, 'routes/onboarding/onboarding.tsx'),
   route(Routes.VerifyOTP, 'routes/verify-otp/verify-otp.tsx'),
   route(Routes.Logout, 'routes/logout.tsx'),
+  route(Routes.ForgotPassword, 'routes/forgot-password.tsx'),
+  route(Routes.ResetPassword, 'routes/reset-password.tsx'),
+  route(Routes.ResetPasswordStarted, 'routes/reset-password-started.tsx'),
 
   route(Routes.CreateWorld, 'routes/worlds/create.tsx'),
   route(Routes.CreateWorldWizard, 'routes/worlds/create.$worldID.tsx'),

@@ -21,7 +21,6 @@ test('it refreshes the session tokens', async () => {
   const session = db.session.create({
     id: 'test_session_1',
     userID: user.id,
-    ipAddress: '127.0.0.1',
     refreshToken,
     expiresAt,
   });

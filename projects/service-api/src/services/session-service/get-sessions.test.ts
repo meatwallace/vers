@@ -20,16 +20,16 @@ test('it returns the user sessions', async () => {
   db.session.create({
     id: 'test_session_1',
     userID: user.id,
-    ipAddress: '127.0.0.1',
     refreshToken: 'test_refresh_token_1',
+    ipAddress: '127.0.0.1',
     expiresAt,
   });
 
   db.session.create({
     id: 'test_session_2',
     userID: user.id,
-    ipAddress: '127.0.0.2',
     refreshToken: 'test_refresh_token_2',
+    ipAddress: '127.0.0.2',
     expiresAt,
   });
 
@@ -56,12 +56,16 @@ test('it returns the user sessions', async () => {
       userID: user.id,
       ipAddress: '127.0.0.1',
       expiresAt: expect.any(Date),
+      createdAt: expect.any(Date),
+      updatedAt: expect.any(Date),
     },
     {
       id: 'test_session_2',
       userID: user.id,
       ipAddress: '127.0.0.2',
       expiresAt: expect.any(Date),
+      createdAt: expect.any(Date),
+      updatedAt: expect.any(Date),
     },
   ]);
 

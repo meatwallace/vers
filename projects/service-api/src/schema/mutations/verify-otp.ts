@@ -23,7 +23,9 @@ export async function verifyOTP(
     });
 
     if (!verification) {
-      return { error: { title: 'Invalid OTP', message: 'The OTP is invalid' } };
+      return {
+        error: { title: 'Invalid OTP', message: 'Invalid verification code' },
+      };
     }
 
     return verification;

@@ -44,7 +44,7 @@ test('it returns an error for an invalid OTP', async () => {
   expect(result).toMatchObject({
     error: {
       title: 'Invalid OTP',
-      message: 'The OTP is invalid',
+      message: 'Invalid verification code',
     },
   });
 

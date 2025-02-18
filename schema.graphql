@@ -42,6 +42,13 @@ input FinishEmailSignupInput {
 
 union FinishEmailSignupPayload = AuthPayload | MutationErrorPayload
 
+input FinishPasswordResetInput {
+  email: String!
+  password: String!
+}
+
+union FinishPasswordResetPayload = MutationErrorPayload | MutationSuccess
+
 input GenerateWorldNamesInput {
   worldID: String!
 }
@@ -71,9 +78,11 @@ type Mutation {
   deleteSession(input: DeleteSessionInput!): DeleteSessionPayload!
   deleteWorld(input: DeleteWorldInput!): DeleteWorldPayload!
   finishEmailSignup(input: FinishEmailSignupInput!): FinishEmailSignupPayload!
+  finishPasswordReset(input: FinishPasswordResetInput!): FinishPasswordResetPayload!
   loginWithPassword(input: LoginWithPasswordInput!): LoginWithPasswordPayload!
   refreshAccessToken(input: RefreshAccessTokenInput!): RefreshAccessTokenPayload!
   startEmailSignup(input: StartEmailSignupInput!): StartEmailSignupPayload!
+  startPasswordReset(input: StartPasswordResetInput!): StartPasswordResetPayloadUnion!
   updateWorld(input: UpdateWorldInput!): UpdateWorldPayload!
   verifyOTP(input: VerifyOTPInput!): VerifyOTPPayload!
 }
@@ -117,6 +126,16 @@ input StartEmailSignupInput {
 }
 
 union StartEmailSignupPayload = MutationErrorPayload | MutationSuccess
+
+input StartPasswordResetInput {
+  email: String!
+}
+
+type StartPasswordResetPayload {
+  success: Boolean!
+}
+
+union StartPasswordResetPayloadUnion = MutationErrorPayload | StartPasswordResetPayload
 
 input UpdateWorldInput {
   archetype: String

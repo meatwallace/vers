@@ -5,6 +5,9 @@ export enum Routes {
   Login = '/login',
   Logout = '/logout',
   Onboarding = '/onboarding',
+  ForgotPassword = '/forgot-password',
+  ResetPassword = '/reset-password',
+  ResetPasswordStarted = '/reset-password-started',
 
   VerifyOTP = '/verify-otp',
 

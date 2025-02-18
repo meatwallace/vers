@@ -18,6 +18,8 @@ export const db = factory({
     name: () => 'Test User',
     username: () => 'test_user',
     passwordHash: nullable(() => null),
+    passwordResetToken: nullable(() => null),
+    passwordResetTokenExpiresAt: nullable(() => null),
     createdAt: () => new Date(),
     updatedAt: () => new Date(),
   },

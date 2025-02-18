@@ -10,6 +10,12 @@ type Args = {
   input: typeof LoginWithPasswordInput.$inferInput;
 };
 
+// ensure we use the same error message for all failures to avoid user enumeration
+const AMBIGUOUS_CREDENTIALS_ERROR = {
+  title: 'Invalid credentials',
+  message: 'Wrong email or password',
+};
+
 export async function loginWithPassword(
   _: object,
   args: Args,
@@ -23,10 +29,7 @@ export async function loginWithPassword(
 
     if (!user) {
       return {
-        error: {
-          title: 'Invalid credentials',
-          message: 'No user with that email',
-        },
+        error: AMBIGUOUS_CREDENTIALS_ERROR,
       };
     }
 
@@ -37,10 +40,7 @@ export async function loginWithPassword(
 
     if (!verifyPasswordResult.success) {
       return {
-        error: {
-          title: 'Invalid credentials',
-          message: verifyPasswordResult.error,
-        },
+        error: AMBIGUOUS_CREDENTIALS_ERROR,
       };
     }
 

@@ -37,9 +37,7 @@ test('it logs in a user with valid credentials', async () => {
 });
 
 test('it returns an error if the user does not exist', async () => {
-  const ctx = createMockGQLContext({
-    ipAddress: '127.0.0.1',
-  });
+  const ctx = createMockGQLContext({});
 
   const args = {
     input: {
@@ -54,7 +52,7 @@ test('it returns an error if the user does not exist', async () => {
   expect(result).toMatchObject({
     error: {
       title: 'Invalid credentials',
-      message: 'No user with that email',
+      message: 'Wrong email or password',
     },
   });
 
@@ -66,9 +64,7 @@ test('it returns an error if the password is incorrect', async () => {
     passwordHash: 'password123',
   });
 
-  const ctx = createMockGQLContext({
-    ipAddress: '127.0.0.1',
-  });
+  const ctx = createMockGQLContext({});
 
   const args = {
     input: {
@@ -83,7 +79,7 @@ test('it returns an error if the password is incorrect', async () => {
   expect(result).toMatchObject({
     error: {
       title: 'Invalid credentials',
-      message: 'Incorrect password',
+      message: 'Wrong email or password',
     },
   });
 
@@ -95,9 +91,7 @@ test('it returns an error if the user has no password set', async () => {
     passwordHash: null,
   });
 
-  const ctx = createMockGQLContext({
-    ipAddress: '127.0.0.1',
-  });
+  const ctx = createMockGQLContext({});
 
   const args = {
     input: {
@@ -112,7 +106,7 @@ test('it returns an error if the user has no password set', async () => {
   expect(result).toMatchObject({
     error: {
       title: 'Invalid credentials',
-      message: 'User does not have a password set',
+      message: 'Wrong email or password',
     },
   });
 
