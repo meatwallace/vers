@@ -20,7 +20,6 @@ test('it deletes a session', async () => {
   const session = db.session.create({
     id: 'test_session_id',
     userID: user.id,
-    ipAddress: '127.0.0.1',
     refreshToken: 'test_refresh_token',
     expiresAt: new Date(Date.now() + 1000 * 60 * 60),
   });

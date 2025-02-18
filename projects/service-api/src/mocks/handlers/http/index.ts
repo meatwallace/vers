@@ -1,3 +1,5 @@
+import { changePassword } from './change-password';
+import { CreatePasswordResetToken } from './create-password-reset-token';
 import { createSession } from './create-session';
 import { createUser } from './create-user';
 import { createVerification } from './create-verification';
@@ -16,6 +18,9 @@ import { verifyCode } from './verify-code';
 import { verifyPassword } from './verify-password';
 
 export const handlers = [
+  // email
+  sendEmail,
+
   // sessions
   createSession,
   deleteSession,
@@ -23,6 +28,8 @@ export const handlers = [
   refreshTokens,
 
   // users
+  changePassword,
+  CreatePasswordResetToken,
   createUser,
   getUser,
   verifyPassword,
@@ -38,7 +45,4 @@ export const handlers = [
   // verifications
   createVerification,
   verifyCode,
-
-  // email
-  sendEmail,
 ];

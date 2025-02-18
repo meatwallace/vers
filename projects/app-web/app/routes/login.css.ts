@@ -36,6 +36,13 @@ export const rememberMeContainer = style({
   marginTop: '-0.5rem',
 });
 
+export const forgotPasswordLink = style({
+  textDecoration: 'none',
+  ':hover': {
+    textDecoration: 'underline',
+  },
+});
+
 export const signupContainer = style({
   display: 'flex',
   alignItems: 'center',

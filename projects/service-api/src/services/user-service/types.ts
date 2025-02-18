@@ -1,5 +1,7 @@
 import { users } from '@chrono/postgres-schema';
 import {
+  ChangePasswordRequest,
+  CreatePasswordResetTokenRequest,
   GetUserRequest,
   CreateUserRequest,
   VerifyPasswordRequest,
@@ -8,22 +10,22 @@ import { ServiceContext } from '../utils/types';
 
 export type UserServiceContext = ServiceContext;
 
-export type UserData = Omit<typeof users.$inferSelect, 'passwordHash'>;
-
-type VerifyPasswordErrorPayload = {
-  success: false;
-  error: string;
-};
-
-type VerifyPasswordSuccessPayload = {
-  success: true;
-};
+export type UserData = Omit<
+  typeof users.$inferSelect,
+  'passwordHash' | 'passwordResetToken' | 'passwordResetTokenExpiresAt'
+>;
 
 export type VerifyPasswordPayload =
-  | VerifyPasswordErrorPayload
-  | VerifyPasswordSuccessPayload;
+  | { success: false; error: string }
+  | { success: true };
 
 export type UserService = {
+  changePassword: (args: ChangePasswordRequest) => Promise<true>;
+
+  createPasswordResetToken: (
+    args: CreatePasswordResetTokenRequest,
+  ) => Promise<string>;
+
   createUser: (args: CreateUserRequest) => Promise<UserData>;
 
   getUser: (args: GetUserRequest) => Promise<UserData | null>;

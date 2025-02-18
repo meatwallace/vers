@@ -8,7 +8,7 @@ import { type HandleVerificationContext } from './types.ts';
 export async function handleOnboarding(ctx: HandleVerificationContext) {
   invariant(
     ctx.submission.status === 'success',
-    'Submission should be successful by now',
+    'submission should be successful by now',
   );
 
   const verifySession = await verifySessionStorage.getSession();

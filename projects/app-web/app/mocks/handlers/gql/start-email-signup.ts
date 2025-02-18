@@ -21,14 +21,12 @@ export const StartEmailSignup = graphql.mutation<
     where: { email: { equals: variables.input.email } },
   });
 
+  // return a success response as to avoid user enumeration the user doesn't exist
   if (existingUser) {
     return HttpResponse.json({
       data: {
         startEmailSignup: {
-          error: {
-            title: 'User already exists',
-            message: 'A user already exists with this email',
-          },
+          success: true,
         },
       },
     });

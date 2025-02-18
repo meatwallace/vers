@@ -182,6 +182,12 @@ export function Login({ actionData }: Route.ComponentProps) {
             }}
             errors={fields.rememberMe.errors ?? []}
           />
+          <Link
+            to={Routes.ForgotPassword}
+            className={styles.forgotPasswordLink}
+          >
+            Forgot password?
+          </Link>
         </div>
         <FormErrorList errors={form.errors ?? []} id={form.errorId} />
         <StatusButton

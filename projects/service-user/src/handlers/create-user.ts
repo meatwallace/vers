@@ -3,8 +3,11 @@ import * as schema from '@chrono/postgres-schema';
 import { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
 import { Context } from 'hono';
 import { createId } from '@paralleldrive/cuid2';
-import { CreateUserRequest, CreateUserResponse } from '@chrono/service-types';
 import { isUniqueConstraintError, hashPassword } from '@chrono/service-utils';
+import type {
+  CreateUserRequest,
+  CreateUserResponse,
+} from '@chrono/service-types';
 
 export async function createUser(
   ctx: Context,
@@ -23,6 +26,8 @@ export async function createUser(
       name,
       username,
       passwordHash,
+      passwordResetToken: null,
+      passwordResetTokenExpiresAt: null,
       createdAt,
       updatedAt: createdAt,
     };

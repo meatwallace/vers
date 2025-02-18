@@ -69,6 +69,8 @@ async function setupTest(config: Partial<TestConfig> = {}) {
 
 afterEach(() => {
   drop(db);
+
+  setCookieHeader = null;
 });
 
 test('it redirects to index route by default', async () => {

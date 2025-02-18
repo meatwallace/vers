@@ -38,7 +38,7 @@ export enum QueryParam {
   Code = 'code',
   Type = 'type',
   Target = 'target',
-  RedirectTo = 'redirectTo',
+  RedirectTo = 'redirect',
 }
 
 const VerificationTypeSchema = z.nativeEnum(VerificationType);

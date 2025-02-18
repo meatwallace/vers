@@ -4,9 +4,7 @@ import { db } from '~/mocks/db';
 import { resolve } from './finish-email-sign-up';
 
 test('it completes the email signup process', async () => {
-  const ctx = createMockGQLContext({
-    ipAddress: '127.0.0.1',
-  });
+  const ctx = createMockGQLContext({});
 
   const args = {
     input: {

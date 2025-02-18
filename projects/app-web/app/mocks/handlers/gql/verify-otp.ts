@@ -32,7 +32,7 @@ export const VerifyOTP = graphql.mutation<
         verifyOTP: {
           error: {
             title: 'Invalid OTP',
-            message: 'The OTP is invalid',
+            message: 'Invalid verification code',
           },
         },
       },
@@ -45,7 +45,7 @@ export const VerifyOTP = graphql.mutation<
         verifyOTP: {
           error: {
             title: 'Invalid OTP',
-            message: 'The OTP is invalid',
+            message: 'Invalid verification code',
           },
         },
       },

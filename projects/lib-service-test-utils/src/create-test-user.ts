@@ -28,6 +28,8 @@ export async function createTestUser(
     name: 'Test User',
     username: 'test_user',
     passwordHash,
+    passwordResetToken: null,
+    passwordResetTokenExpiresAt: null,
     createdAt: now,
     updatedAt: now,
     ...rest,

@@ -1,4 +1,7 @@
-import { generateWelcomeEmail } from '@chrono/email-templates';
+import {
+  generateExistingAccountEmail,
+  generateWelcomeEmail,
+} from '@chrono/email-templates';
 import { Context, StandardMutationPayload } from '~/types';
 import { env } from '~/env';
 import { builder } from '../builder';
@@ -22,13 +25,21 @@ export async function startEmailSignup(
       email: args.input.email,
     });
 
+    // as our user exists, let's email them to notify them that they've tried
+    // to sign up on an email that already exists then return a success response
+    // as to avoid user enumeration
     if (existingUser) {
-      return {
-        error: {
-          title: 'User already exists',
-          message: 'A user already exists with this email',
-        },
-      };
+      const email = await generateExistingAccountEmail({
+        email: args.input.email,
+      });
+
+      await ctx.services.email.sendEmail({
+        to: args.input.email,
+        subject: 'You already have an account!',
+        ...email,
+      });
+
+      return { success: true };
     }
 
     const verification = await ctx.services.verification.createVerification({
@@ -37,15 +48,15 @@ export async function startEmailSignup(
       period: 10 * 60, // 10 minutes
     });
 
-    const onboardingURL = new URL(`${env.APP_WEB_URL}/verify-otp`);
+    const verificationURL = new URL(`${env.APP_WEB_URL}/verify-otp`);
 
-    onboardingURL.searchParams.set('type', VerificationType.ONBOARDING);
-    onboardingURL.searchParams.set('target', args.input.email);
-    onboardingURL.searchParams.set('code', verification.code);
+    verificationURL.searchParams.set('type', VerificationType.ONBOARDING);
+    verificationURL.searchParams.set('target', args.input.email);
+    verificationURL.searchParams.set('code', verification.code);
 
     const email = await generateWelcomeEmail({
-      onboardingURL: onboardingURL.toString(),
-      otp: verification.code,
+      verificationURL: verificationURL.toString(),
+      verificationCode: verification.code,
     });
 
     await ctx.services.email.sendEmail({

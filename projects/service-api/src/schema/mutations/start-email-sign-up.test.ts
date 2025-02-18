@@ -20,7 +20,7 @@ test('it starts the email signup process', async () => {
   drop(db);
 });
 
-test('it returns an error if the user already exists', async () => {
+test('it returns success if the user already exists', async () => {
   db.user.create({
     email: 'user@test.com',
     name: 'Test User',
@@ -28,6 +28,7 @@ test('it returns an error if the user already exists', async () => {
   });
 
   const ctx = createMockGQLContext({});
+
   const args = {
     input: {
       email: 'user@test.com',
@@ -37,10 +38,7 @@ test('it returns an error if the user already exists', async () => {
   const result = await resolve({}, args, ctx);
 
   expect(result).toMatchObject({
-    error: {
-      title: 'User already exists',
-      message: 'A user already exists with this email',
-    },
+    success: true,
   });
 
   drop(db);
