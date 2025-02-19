@@ -45,6 +45,7 @@ union FinishEmailSignupPayload = AuthPayload | MutationErrorPayload
 input FinishPasswordResetInput {
   email: String!
   password: String!
+  resetToken: String!
 }
 
 union FinishPasswordResetPayload = MutationErrorPayload | MutationSuccess

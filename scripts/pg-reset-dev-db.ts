@@ -9,7 +9,7 @@ import { pg } from './postgres/pg';
 
 export const db = drizzle(pg, { schema });
 
-async function reset() {
+async function resetDevDB() {
   const query = sql`
     -- Suppress NOTICE messages
     SET client_min_messages TO WARNING;
@@ -101,7 +101,7 @@ async function reset() {
 
   await oraPromise(
     migrate(db, {
-      migrationsFolder: '../../projects/db-postgres/migrations',
+      migrationsFolder: './projects/db-postgres/migrations',
     }),
     migrationSpinnerConfig,
   );
@@ -110,7 +110,7 @@ async function reset() {
 }
 
 try {
-  await reset();
+  await resetDevDB();
 } catch (error) {
   console.error('❌ Reset failed');
   console.error(error);

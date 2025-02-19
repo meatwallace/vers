@@ -5,40 +5,6 @@
   "projectType": "application",
   "tags": [],
   "targets": {
-    "migrations-update": {
-      "executor": "nx:run-commands",
-      "options": {
-        "commands": ["yarn run drizzle-kit up --config=drizzle.config.ts"],
-        "cwd": "projects/db-postgres"
-      }
-    },
-    "migrations-generate": {
-      "executor": "nx:run-commands",
-      "options": {
-        "commands": [
-          "yarn run drizzle-kit generate --config=drizzle.config.ts"
-        ],
-        "cwd": "projects/db-postgres"
-      }
-    },
-    "migrations-run-dev": {
-      "executor": "nx:run-commands",
-      "options": {
-        "commands": [
-          "dotenvx run -f .env.development -- yarn run tsx migrate.ts"
-        ],
-        "cwd": "projects/db-postgres"
-      }
-    },
-    "migrations-run-prod": {
-      "executor": "nx:run-commands",
-      "options": {
-        "commands": [
-          "dotenvx run -f .env.production -- yarn run tsx migrate.ts"
-        ],
-        "cwd": "projects/db-postgres"
-      }
-    },
     "typecheck": {
       "executor": "nx:run-commands",
       "options": {

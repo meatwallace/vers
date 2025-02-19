@@ -6,13 +6,6 @@
   "tags": [],
   "// targets": "to see all targets run: nx show project lib-postgres-schema --web",
   "targets": {
-    "test-watch": {
-      "executor": "nx:run-commands",
-      "options": {
-        "commands": ["yarn run vitest watch"],
-        "cwd": "projects/lib-postgres-schema"
-      }
-    },
     "typecheck": {
       "executor": "nx:run-commands",
       "options": {

@@ -58,6 +58,7 @@ export type FinishEmailSignupPayload = AuthPayload | MutationErrorPayload;
 export type FinishPasswordResetInput = {
   email: Scalars['String']['input'];
   password: Scalars['String']['input'];
+  resetToken: Scalars['String']['input'];
 };
 
 export type FinishPasswordResetPayload = MutationErrorPayload | MutationSuccess;

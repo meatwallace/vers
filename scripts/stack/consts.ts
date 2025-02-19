@@ -6,5 +6,5 @@ const __dirname = path.dirname(__filename);
 
 export const DOCKER_COMPOSE_FILE = path.resolve(
   __dirname,
-  '../../../docker-compose.yml',
+  '../../docker-compose.yml',
 );

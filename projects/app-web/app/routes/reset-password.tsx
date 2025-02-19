@@ -1,3 +1,4 @@
+import invariant from 'tiny-invariant';
 import { z } from 'zod';
 import { data, redirect, Form, Link, Session } from 'react-router';
 import { HoneypotInputs } from 'remix-utils/honeypot/react';
@@ -95,11 +96,13 @@ export async function action({ request }: Route.ActionArgs) {
     return data({ result }, { status: 400 });
   }
 
-  const resetPasswordToken = verifySession.get(
-    SESSION_KEY_VERIFY_RESET_PASSWORD_TOKEN,
-  );
-
   try {
+    const resetPasswordToken = verifySession.get(
+      SESSION_KEY_VERIFY_RESET_PASSWORD_TOKEN,
+    );
+
+    invariant(resetPasswordToken, 'reset password token is required');
+
     const { finishPasswordReset } = await client.request(
       finishPasswordResetMutation,
       {

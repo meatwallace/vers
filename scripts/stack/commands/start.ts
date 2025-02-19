@@ -1,6 +1,6 @@
 import { ServiceID } from '@chrono/service-types';
-import { execa } from '../execa.ts';
-import { DOCKER_COMPOSE_FILE } from '../consts.ts';
+import { execa } from '../../utils/execa.js';
+import { DOCKER_COMPOSE_FILE } from '../consts.js';
 
 export type StartOptions = {
   build?: boolean;

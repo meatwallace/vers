@@ -18,7 +18,7 @@
         "tsConfig": "projects/service-api/tsconfig.app.json",
         "assets": ["projects/service-api/src/assets"],
         "generatePackageJson": true,
-        "external": ["react", "react-dom"],
+        "external": ["react", "react-dom", "pino-pretty"],
         "esbuildOptions": {
           "sourcemap": true,
           "outExtension": {
@@ -71,13 +71,6 @@
         "commands": [
           "flyctl deploy --local-only --dockerfile projects/service-api/Dockerfile --config projects/service-api/fly.toml"
         ]
-      }
-    },
-    "test-watch": {
-      "executor": "nx:run-commands",
-      "options": {
-        "commands": ["yarn run vitest watch"],
-        "cwd": "projects/service-api"
       }
     }
   }

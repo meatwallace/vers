@@ -1,15 +1,15 @@
 #!/usr/bin/env node
 
-import { Command as Commander } from 'commander';
+import { Command } from 'commander';
 import { ServiceID } from '@chrono/service-types';
-import { parseServiceArg } from './stack/utils/parse-service-arg.ts';
-import { start, type StartOptions } from './stack/commands/start.ts';
-import { stop } from './stack/commands/stop.ts';
-import { logs } from './stack/commands/logs.ts';
-import { status } from './stack/commands/status.ts';
-import { exec } from './stack/commands/exec.ts';
+import { parseServiceArg } from './stack/utils/parse-service-arg.js';
+import { start, type StartOptions } from './stack/commands/start.js';
+import { stop } from './stack/commands/stop.js';
+import { logs } from './stack/commands/logs.js';
+import { status } from './stack/commands/status.js';
+import { exec } from './stack/commands/exec.js';
 
-const program = new Commander()
+const program = new Command()
   .name('stack')
   .description('CLI to manage the development stack');
 

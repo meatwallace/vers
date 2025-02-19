@@ -8,16 +8,13 @@ export default {
     `yarn nx affected --target=test`,
   ],
   'projects/**/*.{js,ts,jsx,tsx,json}': (files) => [
-    `yarn nx affected:lint --files=${files.join(',')}`,
-    `yarn nx format:write --files=${files.join(',')}`,
+    `yarn lint --files ${files.join(',')}`,
+    `yarn format --files ${files.join(',')}`,
     'git add .',
   ],
   'projects/lib-postgres-schema/**/*.ts': () => [
     'yarn postgres:migrations-generate',
     'git add .',
   ],
-  '**/*.graphql': (files) => [
-    `yarn nx format:write --files=${files.join(',')}`,
-    'git add .',
-  ],
+  '**/*.graphql': () => ['yarn format', 'git add .'],
 };

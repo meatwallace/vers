@@ -1,6 +1,6 @@
 import { ServiceID } from '@chrono/service-types';
-import { DOCKER_COMPOSE_FILE } from '../consts.ts';
-import { execa } from '../execa.ts';
+import { DOCKER_COMPOSE_FILE } from '../consts.js';
+import { execa } from '../../utils/execa.js';
 
 export async function stop(service?: ServiceID): Promise<void> {
   const args = [];
