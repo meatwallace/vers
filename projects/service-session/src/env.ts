@@ -1,15 +1,21 @@
-import { cleanEnv, num, str } from 'envalid';
-import { Env } from './types';
+import { z } from 'zod';
+import {
+  addEnvUtils,
+  NodeEnvSchema,
+  LoggingSchema,
+} from '@chrono/service-utils';
 
-export const env: Env = cleanEnv(process.env, {
-  HOSTNAME: str(),
-  PORT: num(),
-  POSTGRES_URL: str(),
-  API_IDENTIFIER: str(),
-  NODE_ENV: str({ choices: ['development', 'test', 'production'] }),
-  LOGGING: str({
-    choices: ['debug', 'info', 'warn', 'error'],
-    default: 'info',
-  }),
-  JWT_SIGNING_SECRET: str(),
-});
+export const envSchema = z
+  .object({
+    NODE_ENV: NodeEnvSchema,
+    LOGGING: LoggingSchema,
+
+    HOSTNAME: z.string(),
+    PORT: z.string().transform(Number),
+    POSTGRES_URL: z.string(),
+    API_IDENTIFIER: z.string(),
+    JWT_SIGNING_SECRET: z.string(),
+  })
+  .transform(addEnvUtils);
+
+export const env = envSchema.parse(process.env);

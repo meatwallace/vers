@@ -1,24 +1,30 @@
-import { cleanEnv, num, str, url } from 'envalid';
-import { Env } from './types';
+import { z } from 'zod';
+import {
+  addEnvUtils,
+  NodeEnvSchema,
+  LoggingSchema,
+} from '@chrono/service-utils';
 
-export const env: Env = cleanEnv(process.env, {
-  HOSTNAME: str(),
-  PORT: num(),
+export const envSchema = z
+  .object({
+    NODE_ENV: NodeEnvSchema,
+    LOGGING: LoggingSchema,
 
-  NODE_ENV: str({ choices: ['development', 'test', 'production'] }),
-  LOGGING: str({
-    choices: ['debug', 'info', 'warn', 'error'],
-    default: 'info',
-  }),
+    HOSTNAME: z.string(),
+    PORT: z.string().transform(Number),
 
-  API_IDENTIFIER: str(),
-  JWT_SIGNING_SECRET: str(),
+    API_IDENTIFIER: z.string(),
+    JWT_SIGNING_SECRET: z.string(),
 
-  APP_WEB_URL: url(),
-  // service URLs
-  EMAILS_SERVICE_URL: url(),
-  SESSIONS_SERVICE_URL: url(),
-  USERS_SERVICE_URL: url(),
-  VERIFICATIONS_SERVICE_URL: url(),
-  WORLDS_SERVICE_URL: url(),
-});
+    APP_WEB_URL: z.string().url(),
+
+    // service URLs
+    EMAILS_SERVICE_URL: z.string().url(),
+    SESSIONS_SERVICE_URL: z.string().url(),
+    USERS_SERVICE_URL: z.string().url(),
+    VERIFICATIONS_SERVICE_URL: z.string().url(),
+    WORLDS_SERVICE_URL: z.string().url(),
+  })
+  .transform(addEnvUtils);
+
+export const env = envSchema.parse(process.env);

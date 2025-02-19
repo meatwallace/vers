@@ -1666,7 +1666,6 @@ __metadata:
     date-fns: "npm:4.1.0"
     drizzle-kit: "npm:0.30.4"
     drizzle-orm: "npm:0.39.3"
-    envalid: "npm:8.0.0"
     esbuild: "npm:0.25.0"
     eslint: "npm:9.20.1"
     eslint-config-prettier: "npm:10.0.1"
@@ -11375,15 +11374,6 @@ __metadata:
   version: 2.2.1
   resolution: "env-paths@npm:2.2.1"
   checksum: 10c0/285325677bf00e30845e330eec32894f5105529db97496ee3f598478e50f008c5352a41a30e5e72ec9de8a542b5a570b85699cd63bd2bc646dbcb9f311d83bc4
-  languageName: node
-  linkType: hard
-
-"envalid@npm:8.0.0":
-  version: 8.0.0
-  resolution: "envalid@npm:8.0.0"
-  dependencies:
-    tslib: "npm:2.6.2"
-  checksum: 10c0/8a12cdce071f54d780b2efa68ed77c1c1f397e44e47b2e23d9ec2130d7decc7502ffabff962760371e4eecf696a40a79188fdbd7bfc080d7283d484a8798c6e4
   languageName: node
   linkType: hard
 
@@ -21500,13 +21490,6 @@ __metadata:
     minimist: "npm:^1.2.6"
     strip-bom: "npm:^3.0.0"
   checksum: 10c0/09a5877402d082bb1134930c10249edeebc0211f36150c35e1c542e5b91f1047b1ccf7da1e59babca1ef1f014c525510f4f870de7c9bda470c73bb4e2721b3ea
-  languageName: node
-  linkType: hard
-
-"tslib@npm:2.6.2":
-  version: 2.6.2
-  resolution: "tslib@npm:2.6.2"
-  checksum: 10c0/e03a8a4271152c8b26604ed45535954c0a45296e32445b4b87f8a5abdb2421f40b59b4ca437c4346af0f28179780d604094eb64546bee2019d903d01c6c19bdb
   languageName: node
   linkType: hard
 
