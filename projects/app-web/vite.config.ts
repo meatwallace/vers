@@ -45,7 +45,7 @@ export default defineConfig({
     environment: 'happy-dom',
     passWithNoTests: true,
     env: {
-      ...loadEnv('test', process.cwd(), ''),
+      ...loadEnv('test', __dirname, ''),
 
       // set secret env vars here so we don't need to load a `.local` env file in tests
       SESSION_SECRET: 'secret',

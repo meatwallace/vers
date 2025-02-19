@@ -15,6 +15,7 @@ const TEST_DB_PASSWORD = 'test';
 
 type PostgresTestConfig = {
   port: number;
+  migrationPath?: string;
 };
 
 interface IPostgresTestUtils {
@@ -55,7 +56,7 @@ export const PostgresTestUtils: IPostgresTestUtils = {
       CREATE DATABASE test_${testDBID} TEMPLATE ${TEST_TEMPLATE_DB};
     `);
 
-    console.log(`✔️  created test DB ${testDBID}`);
+    console.log(`✔️ created test DB ${testDBID}`);
 
     await defaultClient.end();
 
@@ -94,7 +95,9 @@ export const PostgresTestUtils: IPostgresTestUtils = {
       this.db = drizzle(this.client, { schema });
     }
 
-    const migrationPath = path.join(process.cwd(), '../db-postgres/migrations');
+    const migrationPath =
+      config.migrationPath ??
+      path.join(process.cwd(), '../db-postgres/migrations');
 
     await migrate(this.db, { migrationsFolder: migrationPath });
 

@@ -18,6 +18,7 @@
         "tsConfig": "projects/service-user/tsconfig.app.json",
         "assets": ["projects/service-user/src/assets"],
         "generatePackageJson": true,
+        "external": ["pino-pretty"],
         "esbuildOptions": {
           "sourcemap": true,
           "outExtension": {
@@ -58,13 +59,6 @@
         "production": {
           "buildTarget": "service-user:build:production"
         }
-      }
-    },
-    "test-watch": {
-      "executor": "nx:run-commands",
-      "options": {
-        "commands": ["yarn run vitest watch"],
-        "cwd": "projects/service-user"
       }
     },
     "typecheck": {

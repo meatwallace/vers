@@ -13,15 +13,12 @@
           {
             "command": "tsc -p tsconfig.app.json --noEmit",
             "forwardAllArgs": false
+          },
+          {
+            "command": "tsc -p tsconfig.test.json --noEmit",
+            "forwardAllArgs": false
           }
         ],
-        "cwd": "projects/app-web"
-      }
-    },
-    "dev": {
-      "executor": "nx:run-commands",
-      "options": {
-        "commands": ["yarn run react-router dev"],
         "cwd": "projects/app-web"
       }
     },
@@ -38,13 +35,6 @@
         "commands": [
           "flyctl deploy --local-only --dockerfile projects/app-web/Dockerfile --config projects/app-web/fly.toml"
         ]
-      }
-    },
-    "test-watch": {
-      "executor": "nx:run-commands",
-      "options": {
-        "commands": ["yarn run vitest watch"],
-        "cwd": "projects/app-web"
       }
     }
   }

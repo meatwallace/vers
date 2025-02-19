@@ -59,12 +59,8 @@
           "name": "sessions_user_id_users_id_fk",
           "tableFrom": "sessions",
           "tableTo": "users",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "cascade"
         }
@@ -143,16 +139,12 @@
         "users_email_unique": {
           "name": "users_email_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "email"
-          ]
+          "columns": ["email"]
         },
         "users_username_unique": {
           "name": "users_username_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "username"
-          ]
+          "columns": ["username"]
         }
       },
       "policies": {},
@@ -325,12 +317,8 @@
           "name": "worlds_owner_id_users_id_fk",
           "tableFrom": "worlds",
           "tableTo": "users",
-          "columnsFrom": [
-            "owner_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["owner_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -346,80 +334,42 @@
     "public.archetype": {
       "name": "archetype",
       "schema": "public",
-      "values": [
-        "Steampunk",
-        "Dieselpunk",
-        "Cyberpunk"
-      ]
+      "values": ["Steampunk", "Dieselpunk", "Cyberpunk"]
     },
     "public.atmosphere": {
       "name": "atmosphere",
       "schema": "public",
-      "values": [
-        "Dark",
-        "Neutral",
-        "Light"
-      ]
+      "values": ["Dark", "Neutral", "Light"]
     },
     "public.fantasy_type": {
       "name": "fantasy_type",
       "schema": "public",
-      "values": [
-        "Low",
-        "Medium",
-        "High"
-      ]
+      "values": ["Low", "Medium", "High"]
     },
     "public.geography_features": {
       "name": "geography_features",
       "schema": "public",
-      "values": [
-        "Deserts",
-        "Forest",
-        "Mountains",
-        "Plains",
-        "Swamps",
-        "Tundra"
-      ]
+      "values": ["Deserts", "Forest", "Mountains", "Plains", "Swamps", "Tundra"]
     },
     "public.geography_type": {
       "name": "geography_type",
       "schema": "public",
-      "values": [
-        "Supercontinent",
-        "Continents",
-        "Islands",
-        "Archipelago"
-      ]
+      "values": ["Supercontinent", "Continents", "Islands", "Archipelago"]
     },
     "public.population": {
       "name": "population",
       "schema": "public",
-      "values": [
-        "Sparse",
-        "Average",
-        "Dense"
-      ]
+      "values": ["Sparse", "Average", "Dense"]
     },
     "public.technology_level": {
       "name": "technology_level",
       "schema": "public",
-      "values": [
-        "Ancient",
-        "Medieval",
-        "Modern",
-        "Futuristic"
-      ]
+      "values": ["Ancient", "Medieval", "Modern", "Futuristic"]
     },
     "public.verification_type": {
       "name": "verification_type",
       "schema": "public",
-      "values": [
-        "2fa",
-        "change-email",
-        "onboarding",
-        "reset-password"
-      ]
+      "values": ["2fa", "change-email", "onboarding", "reset-password"]
     }
   },
   "schemas": {},

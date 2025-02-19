@@ -1,0 +1,21 @@
+{
+  "extends": "../tsconfig.base.json",
+  "include": ["**/*.ts", "**/*.tsx"],
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "~/*": ["./*"],
+      "@chrono/email-templates": [
+        "../projects/lib-email-templates/src/index.ts"
+      ],
+      "@chrono/postgres-schema": [
+        "../projects/lib-postgres-schema/src/index.ts"
+      ],
+      "@chrono/service-test-utils": [
+        "../projects/lib-service-test-utils/src/index.ts"
+      ],
+      "@chrono/service-types": ["../projects/lib-service-types/src/index.ts"],
+      "@chrono/service-utils": ["../projects/lib-service-utils/src/index.ts"]
+    }
+  }
+}
