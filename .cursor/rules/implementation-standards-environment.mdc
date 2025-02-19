@@ -36,21 +36,24 @@ examples:
   - input: |
       ```ts
       import { z } from 'zod';
+      import { addEnvUtils } from '@chrono/service-utils';
 
-      const envSchema = z.object({
-        NODE_ENV: z.enum(['development', 'test', 'production']),
-        LOGGING: z
-          .enum(['debug', 'info', 'warn', 'error'])
-          .optional()
-          .default('info'),
+      const envSchema = z
+        .object({
+          NODE_ENV: z.enum(['development', 'e2e', 'test', 'production']),
+          LOGGING: z
+            .enum(['debug', 'info', 'warn', 'error'])
+            .optional()
+            .default('info'),
 
-        HOSTNAME: z.string(),
-        PORT: z.string().transform(Number),
+          HOSTNAME: z.string(),
+          PORT: z.string().transform(Number),
 
-        // Service-specific variables
-        API_IDENTIFIER: z.string(),
-        RESEND_API_KEY: z.string(),
-      });
+          // Service-specific variables
+          API_IDENTIFIER: z.string(),
+          RESEND_API_KEY: z.string(),
+        })
+        .transform(addEnvUtils);
 
       export const env = envSchema.parse(process.env);
 

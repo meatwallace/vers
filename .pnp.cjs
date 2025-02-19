@@ -96,7 +96,6 @@ const RAW_RUNTIME_STATE =
           ["date-fns", "npm:4.1.0"],\
           ["drizzle-kit", "npm:0.30.4"],\
           ["drizzle-orm", "virtual:78383247a788980a563098e2073e990e734a77581dbca923bae873812dc4cb4a3a6b3aada21cd1f75170c559d98bc43a8afb0e9951516e0e68c9288afbed8584#npm:0.39.3"],\
-          ["envalid", "npm:8.0.0"],\
           ["esbuild", "npm:0.25.0"],\
           ["eslint", "virtual:78383247a788980a563098e2073e990e734a77581dbca923bae873812dc4cb4a3a6b3aada21cd1f75170c559d98bc43a8afb0e9951516e0e68c9288afbed8584#npm:9.20.1"],\
           ["eslint-config-prettier", "virtual:78383247a788980a563098e2073e990e734a77581dbca923bae873812dc4cb4a3a6b3aada21cd1f75170c559d98bc43a8afb0e9951516e0e68c9288afbed8584#npm:10.0.1"],\
@@ -3276,7 +3275,6 @@ const RAW_RUNTIME_STATE =
           ["date-fns", "npm:4.1.0"],\
           ["drizzle-kit", "npm:0.30.4"],\
           ["drizzle-orm", "virtual:78383247a788980a563098e2073e990e734a77581dbca923bae873812dc4cb4a3a6b3aada21cd1f75170c559d98bc43a8afb0e9951516e0e68c9288afbed8584#npm:0.39.3"],\
-          ["envalid", "npm:8.0.0"],\
           ["esbuild", "npm:0.25.0"],\
           ["eslint", "virtual:78383247a788980a563098e2073e990e734a77581dbca923bae873812dc4cb4a3a6b3aada21cd1f75170c559d98bc43a8afb0e9951516e0e68c9288afbed8584#npm:9.20.1"],\
           ["eslint-config-prettier", "virtual:78383247a788980a563098e2073e990e734a77581dbca923bae873812dc4cb4a3a6b3aada21cd1f75170c559d98bc43a8afb0e9951516e0e68c9288afbed8584#npm:10.0.1"],\
@@ -15911,16 +15909,6 @@ const RAW_RUNTIME_STATE =
         "linkType": "HARD"\
       }]\
     ]],\
-    ["envalid", [\
-      ["npm:8.0.0", {\
-        "packageLocation": "./.yarn/cache/envalid-npm-8.0.0-42d6c3f74f-8a12cdce07.zip/node_modules/envalid/",\
-        "packageDependencies": [\
-          ["envalid", "npm:8.0.0"],\
-          ["tslib", "npm:2.6.2"]\
-        ],\
-        "linkType": "HARD"\
-      }]\
-    ]],\
     ["environment", [\
       ["npm:1.1.0", {\
         "packageLocation": "./.yarn/cache/environment-npm-1.1.0-3f2409b698-fb26434b0b.zip/node_modules/environment/",\
@@ -27690,13 +27678,6 @@ const RAW_RUNTIME_STATE =
       }]\
     ]],\
     ["tslib", [\
-      ["npm:2.6.2", {\
-        "packageLocation": "./.yarn/cache/tslib-npm-2.6.2-4fc8c068d9-e03a8a4271.zip/node_modules/tslib/",\
-        "packageDependencies": [\
-          ["tslib", "npm:2.6.2"]\
-        ],\
-        "linkType": "HARD"\
-      }],\
       ["npm:2.6.3", {\
         "packageLocation": "./.yarn/cache/tslib-npm-2.6.3-0fd136b3be-2598aef53d.zip/node_modules/tslib/",\
         "packageDependencies": [\

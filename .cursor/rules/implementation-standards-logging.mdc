@@ -38,7 +38,7 @@ examples:
       function createLogger() {
         let transport;
 
-        if (env.NODE_ENV === 'development') {
+        if (env.isDevelopment) {
           transport = {
             target: 'pino-pretty',
             options: {
