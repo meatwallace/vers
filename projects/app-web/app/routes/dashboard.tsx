@@ -84,7 +84,7 @@ export function Dashboard() {
           {worlds.length === 0 && (
             <div className={styles.noWorldsContainer}>
               <p className={styles.noWorldsText}>
-                You haven't created a world yet.
+                You haven&apos;t created a world yet.
               </p>
               <createWorldFetcher.Form
                 method="post"

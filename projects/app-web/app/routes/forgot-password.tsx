@@ -124,7 +124,7 @@ export function ForgotPassword({ actionData }: Route.ComponentProps) {
       <div className={styles.forgotPasswordHeader}>
         <h1 className={styles.forgotPasswordTitle}>Forgot Password</h1>
         <p className={styles.forgotPasswordSubtitle}>
-          No worries, we'll send you reset instructions.
+          No worries, we&apos;ll send you reset instructions.
         </p>
       </div>
 

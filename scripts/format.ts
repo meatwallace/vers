@@ -3,7 +3,7 @@
 import { Command } from 'commander';
 import { execa, ExecaError } from 'execa';
 import { oraPromise } from 'ora';
-import { parseCommaSeperatedStrings } from './utils/parse-comma-seperated-strings.js';
+import { parseCommaSeperatedStrings } from './utils/parse-comma-seperated-strings.ts';
 
 const defaultFilesToFormat = [
   '*.graphql',
@@ -55,13 +55,7 @@ async function formatFiles(commaSeperatedFiles: Array<string>, check: boolean) {
       execa({ shell: true })`prettier ${modeArg} ${files}`,
       prettierSpinnerConfig,
     );
-  } catch (error) {
-    if (error instanceof ExecaError) {
-      console.log(error.stderr);
-    } else {
-      console.error(error);
-    }
-
+  } catch {
     process.exit(1);
   }
 }

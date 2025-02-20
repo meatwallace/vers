@@ -198,7 +198,7 @@ export function Login({ actionData }: Route.ComponentProps) {
           Sign in
         </StatusButton>
         <div className={styles.signupContainer}>
-          <span className={styles.signupText}>Don't have an account?</span>
+          <span className={styles.signupText}>Don&apos;t have an account?</span>
           <Link to={Routes.Signup} className={styles.signupLink}>
             Signup
           </Link>

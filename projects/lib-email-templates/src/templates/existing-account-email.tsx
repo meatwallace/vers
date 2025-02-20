@@ -19,8 +19,8 @@ export function ExistingAccountEmail(props: Props): ReactElement {
       </p>
       <p>
         <E.Text>
-          If you've forgotten your password, you can reset it using our password
-          reset form.
+          If you&apos;ve forgotten your password, you can reset it using our
+          password reset form.
         </E.Text>
       </p>
       <E.Button

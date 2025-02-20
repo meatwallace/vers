@@ -13,7 +13,7 @@ export function ResetPasswordEmail(props: Props): ReactElement {
         <E.Text>Password Reset</E.Text>
       </E.Heading>
       <E.Text>
-        Here's your verification code: <strong>{props.otp}</strong>
+        Here&apos;s your verification code: <strong>{props.otp}</strong>
       </E.Text>
       <E.Text>Or click the link:</E.Text>
       <E.Link href={props.verificationURL}>{props.verificationURL}</E.Link>
