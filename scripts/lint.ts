@@ -1,12 +1,12 @@
 #!/usr/bin/env node
 
 import { Command } from 'commander';
-import { execa, ExecaError } from 'execa';
 import { oraPromise } from 'ora';
-import { parseCommaSeperatedStrings } from './utils/parse-comma-seperated-strings';
+import { execa } from './utils/execa.ts';
+import { parseCommaSeperatedStrings } from './utils/parse-comma-seperated-strings.ts';
 
 const filesToLint = [
-  'projects/**/*.js',
+  'projects/**/*.mjs',
   'projects/**/*.ts',
   'projects/**/*.tsx',
   'scripts/**/*.ts',
@@ -20,35 +20,33 @@ const eslintSpinnerConfig = {
 
 type LintArgs = {
   files: Array<string>;
+  fix: boolean;
 };
 
 const program = new Command()
   .name('lint')
   .description('CLI to lint files')
   .option('-f, --files <files>', 'files to lint', parseCommaSeperatedStrings)
-  .action(async ({ files }: LintArgs) => {
-    await lintFiles(files);
+  .option('--fix', 'fix linting errors', false)
+  .action(async ({ files, fix }: LintArgs) => {
+    await lintFiles(files, fix);
   });
 
-async function lintFiles(commaSeperatedFiles: Array<string>) {
+async function lintFiles(commaSeperatedFiles: Array<string>, fix: boolean) {
   let files = filesToLint.join(' ');
 
   if (commaSeperatedFiles) {
     files = commaSeperatedFiles.join(' ');
   }
 
+  const fixArg = fix ? '--fix' : '';
+
   try {
     await oraPromise(
-      execa({ shell: true })`eslint ${files}`,
+      execa({ shell: true })`eslint ${fixArg} ${files}`,
       eslintSpinnerConfig,
     );
-  } catch (error) {
-    if (error instanceof ExecaError) {
-      console.log(error.stderr);
-    } else {
-      console.error(error);
-    }
-
+  } catch {
     process.exit(1);
   }
 }
