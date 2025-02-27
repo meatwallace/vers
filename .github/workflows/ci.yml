@@ -90,7 +90,7 @@ jobs:
 
       - name: Deploy Postgres Migrations
         if: ${{ github.ref_name == 'main' && contains(steps.record-affected-projects.outputs.affected-projects, 'db-postgres') }}
-        run: yarn postgres:migrations-run:prod
+        run: yarn pg:migrations-run:prod
 
       - name: Deploy API Service
         if: ${{ github.ref_name == 'main' && contains(steps.record-affected-projects.outputs.affected-projects, 'service-api') }}
