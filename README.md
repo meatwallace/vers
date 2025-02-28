@@ -50,3 +50,14 @@ yarn stack:stop:<service>
 ```sh
 openssl genpkey -out rsakey.pem -algorithm RSA -pkeyopt rsa_keygen_bits:2048
 ```
+
+## development with cursor
+
+all of our cursor rules & agentic process is stored in the [.cursor](.cursor) directory.
+
+consider prompting an agentic composer like:
+
+> We are working on a new feature for the <project-name> project.
+> At a high level, we want to <describe-feature>.
+>
+> Please review the @001-initialization.md file to get proceed.
