@@ -1,18 +1,32 @@
+# fly.toml app configuration file generated for service-world on 2025-02-28T11:25:11+11:00
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
 app = 'service-world'
 primary_region = 'syd'
 
+[build]
+
+[http_service]
+  internal_port = 3005
+  force_https = true
+  auto_stop_machines = 'stop'
+  auto_start_machines = true
+  min_machines_running = 0
+  processes = ['app']
+
 [[services]]
+  protocol = 'tcp'
   internal_port = 3002
-  protocol = "tcp"
-  auto_stop_machines = true
+  auto_stop_machines = 'stop'
   auto_start_machines = true
   min_machines_running = 0
   processes = ['app']
 
   [[services.ports]]
-    handlers = ["http"]
     port = 3002
-    force_https = false
+    handlers = ['http']
 
 [[vm]]
   memory = '256mb'

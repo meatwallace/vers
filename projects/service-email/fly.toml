@@ -1,18 +1,32 @@
+# fly.toml app configuration file generated for service-email on 2025-02-28T11:20:00+11:00
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
 app = 'service-email'
 primary_region = 'syd'
 
-[[services]]
+[build]
+
+[http_service]
   internal_port = 3001
-  protocol = "tcp"
-  auto_stop_machines = true
+  force_https = true
+  auto_stop_machines = 'stop'
+  auto_start_machines = true
+  min_machines_running = 0
+  processes = ['app']
+
+[[services]]
+  protocol = 'tcp'
+  internal_port = 3001
+  auto_stop_machines = 'stop'
   auto_start_machines = true
   min_machines_running = 0
   processes = ['app']
 
   [[services.ports]]
-    handlers = ["http"]
     port = 3001
-    force_https = false
+    handlers = ['http']
 
 [[vm]]
   memory = '256mb'
