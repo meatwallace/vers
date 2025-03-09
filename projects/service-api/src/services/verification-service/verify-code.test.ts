@@ -1,3 +1,4 @@
+import { generateTOTP } from '@epic-web/totp';
 import { drop } from '@mswjs/data';
 import { ServiceID } from '@chrono/service-types';
 import { env } from '~/env';
@@ -6,11 +7,15 @@ import { createServiceContext } from '../utils';
 import { verifyCode } from './verify-code';
 
 test('it verifies a code', async () => {
+  const { otp, ...verificationConfig } = await generateTOTP({
+    algorithm: 'SHA-256',
+    charSet: 'ABCDEFGHJKLMNPQRSTUVWXYZ123456789',
+  });
+
   const verification = db.verification.create({
     type: 'onboarding',
     target: 'test@example.com',
-    expiresAt: new Date(Date.now() + 1000 * 60 * 5),
-    createdAt: new Date(),
+    ...verificationConfig,
   });
 
   const ctx = createServiceContext({
@@ -22,7 +27,7 @@ test('it verifies a code', async () => {
   const args = {
     type: 'onboarding',
     target: 'test@example.com',
-    code: '999999',
+    code: otp,
   } as const;
 
   const result = await verifyCode(args, ctx);

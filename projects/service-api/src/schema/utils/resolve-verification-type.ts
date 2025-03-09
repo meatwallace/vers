@@ -16,9 +16,17 @@ type VerificationTypeMap = Record<
   (typeof verifications.type.enumValues)[number]
 >;
 
+/**
+ * @description Maps GraphQL enum values to database enum values for verification types.
+ * @remarks This is used to ensure consistent mapping between GraphQL and database enums.
+ */
 const VERIFICATION_TYPE_MAP: VerificationTypeMap = {
   [VerificationType.TWO_FACTOR_AUTH]: '2fa',
-  [VerificationType.CHANGE_EMAIL]: 'change-email',
+  [VerificationType.RESET_PASSWORD]: '2fa',
+  [VerificationType.CHANGE_PASSWORD]: '2fa',
+  [VerificationType.CHANGE_EMAIL]: '2fa',
+  [VerificationType.TWO_FACTOR_AUTH_DISABLE]: '2fa',
+  [VerificationType.TWO_FACTOR_AUTH_SETUP]: '2fa-setup',
   [VerificationType.ONBOARDING]: 'onboarding',
-  [VerificationType.RESET_PASSWORD]: 'reset-password',
+  [VerificationType.CHANGE_EMAIL_CONFIRMATION]: 'change-email',
 } as const;

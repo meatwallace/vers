@@ -36,6 +36,13 @@
           "flyctl deploy --local-only --dockerfile projects/app-web/Dockerfile --config projects/app-web/fly.toml"
         ]
       }
+    },
+    "typegen": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": ["yarn react-router typegen"],
+        "cwd": "projects/app-web"
+      }
     }
   }
 }

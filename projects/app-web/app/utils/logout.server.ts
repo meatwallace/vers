@@ -11,11 +11,11 @@ import { Routes } from '~/types';
 import { combineHeaders } from './combine-headers.server.ts';
 import { createGQLClient } from './create-gql-client.server.ts';
 
-type Context = {
+interface Context {
   client?: GraphQLClient;
   redirectTo?: string;
   responseInit?: ResponseInit;
-};
+}
 
 const deleteSessionMutation = graphql(/* GraphQL */ `
   mutation DeleteSession($input: DeleteSessionInput!) {

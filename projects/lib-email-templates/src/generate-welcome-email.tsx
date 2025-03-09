@@ -2,10 +2,10 @@ import * as E from '@react-email/components';
 import { generateEmail } from './generate-email.ts';
 import { WelcomeEmail } from './templates/welcome-email.tsx';
 
-type Config = {
+interface Config {
   verificationURL: string;
   verificationCode: string;
-};
+}
 
 export async function generateWelcomeEmail(config: Config) {
   return generateEmail({

@@ -1,0 +1,43 @@
+import { drop } from '@mswjs/data';
+import { db } from '~/mocks/db';
+import { createMockGQLContext } from '~/test-utils/create-mock-gql-context';
+import { resolve } from './get-enable-2fa-verification';
+
+afterEach(() => {
+  drop(db);
+});
+
+test('it retrieves the 2FA verification URI', async () => {
+  const user = db.user.create({
+    email: 'test@example.com',
+  });
+
+  // Create a 2FA setup verification record
+  db.verification.create({
+    type: '2fa-setup',
+    target: user.email,
+    secret: 'ABCDEFGHIJKLMNOP',
+    algorithm: 'SHA-1',
+    digits: 6,
+    period: 30,
+    charSet: 'ABCDEFGHJKLMNPQRSTUVWXYZ123456789',
+  });
+
+  const ctx = createMockGQLContext({ user });
+
+  const result = await resolve({}, {}, ctx);
+
+  expect(result).toMatchObject({
+    otpURI: expect.any(String),
+  });
+
+  expect(result.otpURI).toMatch(
+    'otpauth://totp/Chrononomicon:test%40example.com',
+  );
+});
+
+test('it throws an error if unauthorized', async () => {
+  const ctx = createMockGQLContext({});
+
+  await expect(resolve({}, {}, ctx)).rejects.toThrow('Unauthorized');
+});

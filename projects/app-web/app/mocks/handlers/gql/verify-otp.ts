@@ -1,24 +1,23 @@
-import { graphql, HttpResponse } from 'msw';
-import { Verification } from '~/gql/graphql';
+import { HttpResponse, graphql } from 'msw';
+import {
+  VerificationType,
+  VerifyOtpInput,
+  VerifyOtpPayload,
+} from '~/gql/graphql';
 import { db } from '../../db';
-import { MutationResponse } from './types';
 
-type VerifyOTPResponse = MutationResponse<{
-  verifyOTP: Verification;
-}>;
+interface VerifyOTPResponse {
+  verifyOTP: VerifyOtpPayload;
+}
 
-type VerifyOTPVariables = {
-  input: {
-    code: string;
-    target: string;
-    type: string;
-  };
-};
+interface VerifyOTPVariables {
+  input: VerifyOtpInput;
+}
 
 export const VerifyOTP = graphql.mutation<
   VerifyOTPResponse,
   VerifyOTPVariables
->('VerifyOTP', async ({ variables }) => {
+>('VerifyOTP', ({ variables }) => {
   const verification = db.verification.findFirst({
     where: {
       target: { equals: variables.input.target },
@@ -52,11 +51,22 @@ export const VerifyOTP = graphql.mutation<
     });
   }
 
+  const is2FA =
+    verification.type === VerificationType.TwoFactorAuth ||
+    verification.type === VerificationType.TwoFactorAuthSetup;
+
+  if (!is2FA) {
+    db.verification.delete({
+      where: {
+        id: { equals: verification.id },
+      },
+    });
+  }
+
   return HttpResponse.json({
     data: {
       verifyOTP: {
-        id: verification.id,
-        target: verification.target,
+        transactionToken: 'valid_transaction_token',
       },
     },
   });

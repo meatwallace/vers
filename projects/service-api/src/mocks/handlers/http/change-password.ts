@@ -9,11 +9,11 @@ export const changePassword = http.post<never, ChangePasswordRequest>(
   ENDPOINT_URL,
   async ({ request }) => {
     try {
-      const { id, password, resetToken } = await request.json();
+      const body = await request.json();
 
       const user = db.user.findFirst({
         where: {
-          id: { equals: id },
+          id: { equals: body.id },
         },
       });
 
@@ -24,7 +24,7 @@ export const changePassword = http.post<never, ChangePasswordRequest>(
         });
       }
 
-      const isTokenMismatch = user.passwordResetToken !== resetToken;
+      const isTokenMismatch = user.passwordResetToken !== body.resetToken;
 
       if (isTokenMismatch) {
         return HttpResponse.json({
@@ -49,7 +49,7 @@ export const changePassword = http.post<never, ChangePasswordRequest>(
           id: { equals: user.id },
         },
         data: {
-          passwordHash: password,
+          passwordHash: body.password,
           passwordResetToken: null,
           passwordResetTokenExpiresAt: null,
         },

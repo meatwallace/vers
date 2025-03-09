@@ -5,7 +5,7 @@ import { ENDPOINT_URL as RESEND_EMAIL_ENDPOINT_URL } from '~/mocks/handlers/http
 import { sendEmail } from './send-email';
 import { server } from '~/mocks/node.ts';
 
-async function setupTest() {
+function setupTest() {
   const app = new Hono();
 
   app.post('/send-email', sendEmail);
@@ -18,7 +18,7 @@ afterEach(() => {
 });
 
 test('it successfully sends an email', async () => {
-  const { app } = await setupTest();
+  const { app } = setupTest();
 
   const email = {
     to: 'test@example.com',
@@ -40,12 +40,12 @@ test('it successfully sends an email', async () => {
 
 test('it handles Resend errors', async () => {
   server.use(
-    http.post(RESEND_EMAIL_ENDPOINT_URL, async () => {
+    http.post(RESEND_EMAIL_ENDPOINT_URL, () => {
       return HttpResponse.error();
     }),
   );
 
-  const { app } = await setupTest();
+  const { app } = setupTest();
 
   const email = {
     to: 'test@example.com',
@@ -69,7 +69,7 @@ test('it handles Resend errors', async () => {
 });
 
 test('handles an invalid request body', async () => {
-  const { app } = await setupTest();
+  const { app } = setupTest();
 
   const req = new Request('http://localhost/send-email', {
     method: 'POST',

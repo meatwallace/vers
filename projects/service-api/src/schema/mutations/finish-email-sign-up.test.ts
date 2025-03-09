@@ -1,10 +1,35 @@
 import { drop } from '@mswjs/data';
-import { createMockGQLContext } from '~/test-utils/create-mock-gql-context';
 import { db } from '~/mocks/db';
+import { createMockGQLContext } from '~/test-utils/create-mock-gql-context';
+import { createPendingTransaction } from '~/utils/create-pending-transaction';
+import { createTransactionToken } from '~/utils/create-transaction-token';
+import { VerificationType } from '../types/verification-type';
 import { resolve } from './finish-email-sign-up';
 
-test('it completes the email signup process', async () => {
+afterEach(() => {
+  drop(db);
+});
+
+test('it completes the email signup process when transaction token is valid', async () => {
   const ctx = createMockGQLContext({});
+
+  const transactionID = createPendingTransaction({
+    target: 'user@test.com',
+    ipAddress: ctx.ipAddress,
+    action: VerificationType.ONBOARDING,
+    sessionID: null,
+  });
+
+  const transactionToken = await createTransactionToken(
+    {
+      target: 'user@test.com',
+      action: VerificationType.ONBOARDING,
+      ipAddress: ctx.ipAddress,
+      transactionID,
+      sessionID: null,
+    },
+    ctx,
+  );
 
   const args = {
     input: {
@@ -13,6 +38,7 @@ test('it completes the email signup process', async () => {
       username: 'test_user',
       password: 'password123',
       rememberMe: true,
+      transactionToken,
     },
   };
 
@@ -24,7 +50,7 @@ test('it completes the email signup process', async () => {
     session: {
       id: expect.any(String),
       userID: expect.any(String),
-      ipAddress: '127.0.0.1',
+      ipAddress: ctx.ipAddress,
       expiresAt: expect.any(Date),
     },
   });
@@ -38,17 +64,9 @@ test('it completes the email signup process', async () => {
     name: args.input.name,
     username: args.input.username,
   });
-
-  drop(db);
 });
 
-test('it returns an error if the user already exists', async () => {
-  db.user.create({
-    email: 'user@test.com',
-    name: 'Existing User',
-    username: 'existing_user',
-  });
-
+test('it returns an error if the transaction token is invalid', async () => {
   const ctx = createMockGQLContext({});
   const args = {
     input: {
@@ -57,6 +75,7 @@ test('it returns an error if the user already exists', async () => {
       username: 'test_user',
       password: 'password123',
       rememberMe: true,
+      transactionToken: 'invalid',
     },
   };
 
@@ -64,10 +83,73 @@ test('it returns an error if the user already exists', async () => {
 
   expect(result).toMatchObject({
     error: {
-      title: 'User already exists',
-      message: 'A user already exists with this email',
+      title: 'Failed Verification',
+      message: 'Verification for this operation is invalid or has expired.',
     },
   });
 
-  drop(db);
+  // Verify no user was created
+  const user = db.user.findFirst({
+    where: { email: { equals: args.input.email } },
+  });
+
+  expect(user).toBeNull();
+});
+
+test('it returns an ambiguous error if the user already exists', async () => {
+  const ctx = createMockGQLContext({});
+
+  const transactionID = createPendingTransaction({
+    target: 'user@test.com',
+    ipAddress: ctx.ipAddress,
+    action: VerificationType.ONBOARDING,
+    sessionID: null,
+  });
+
+  db.user.create({
+    email: 'user@test.com',
+    name: 'Existing User',
+    username: 'existing_user',
+  });
+
+  const transactionToken = await createTransactionToken(
+    {
+      target: 'user@test.com',
+      action: VerificationType.ONBOARDING,
+      ipAddress: ctx.ipAddress,
+      transactionID,
+      sessionID: null,
+    },
+    ctx,
+  );
+
+  const args = {
+    input: {
+      email: 'user@test.com',
+      name: 'Test User',
+      username: 'test_user',
+      password: 'password123',
+      rememberMe: true,
+      transactionToken,
+    },
+  };
+
+  const result = await resolve({}, args, ctx);
+
+  expect(result).toMatchObject({
+    error: {
+      title: 'An unknown error occurred',
+      message: 'An unknown error occurred',
+    },
+  });
+
+  // Verify the existing user was not modified
+  const user = db.user.findFirst({
+    where: { email: { equals: args.input.email } },
+  });
+
+  expect(user).toMatchObject({
+    name: 'Existing User',
+    username: 'existing_user',
+  });
 });

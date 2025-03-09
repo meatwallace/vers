@@ -1,22 +1,21 @@
-import { graphql, HttpResponse } from 'msw';
+import { HttpResponse, graphql } from 'msw';
 import { createId } from '@paralleldrive/cuid2';
-import { World } from '~/gql/graphql';
+import { CreateWorldInput, CreateWorldPayload } from '~/gql/graphql';
 import { db } from '~/mocks/db';
 import { decodeMockJWT } from '../../utils/decode-mock-jwt';
-import { MutationResponse } from './types';
 
-type CreateWorldResponse = MutationResponse<{
-  createWorld: World;
-}>;
+interface CreateWorldVariables {
+  input: CreateWorldInput;
+}
 
-type CreateWorldVariables = {
-  input: Record<PropertyKey, never>;
-};
+interface CreateWorldResponse {
+  createWorld: CreateWorldPayload;
+}
 
 export const CreateWorld = graphql.mutation<
   CreateWorldResponse,
   CreateWorldVariables
->('CreateWorld', async ({ request }) => {
+>('CreateWorld', ({ request }) => {
   const authHeader = request.headers.get('authorization');
 
   if (!authHeader) {

@@ -3,6 +3,10 @@
     "esbenp.prettier-vscode",
     "ms-playwright.playwright",
     "arcanis.vscode-zipfs",
-    "dbaeumer.vscode-eslint"
+    "dbaeumer.vscode-eslint",
+    "bierner.markdown-mermaid",
+    "kumar-harsh.graphql-for-vscode",
+    "esbenp.prettier-vscode",
+    "dozerg.tsimportsorter"
   ]
 }

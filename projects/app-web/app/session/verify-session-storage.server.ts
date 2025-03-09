@@ -1,13 +1,11 @@
 import invariant from 'tiny-invariant';
 import { createCookieSessionStorage } from 'react-router';
 
-type SessionData = {
-  [key: string]: string;
-};
+type SessionData = Record<string, string>;
 
-type SessionFlashData = {
+interface SessionFlashData {
   error: string;
-};
+}
 
 invariant(process.env.SESSION_SECRET, '$SESSION_SECRET is required');
 

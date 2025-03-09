@@ -1,22 +1,19 @@
-import invariant from 'tiny-invariant';
-import { Context, StandardMutationPayload } from '~/types';
+import { AuthedContext } from '~/types';
 import { builder } from '../builder';
 import { MutationErrorPayload } from '../types/mutation-error-payload';
 import { MutationSuccess } from '../types/mutation-success';
 import { createPayloadResolver } from '../utils/create-payload-resolver';
 import { requireAuth } from '../utils/require-auth';
 
-type Args = {
+interface Args {
   input: typeof DeleteWorldInput.$inferInput;
-};
+}
 
 export async function deleteWorld(
   _: object,
   args: Args,
-  ctx: Context,
-): Promise<StandardMutationPayload<typeof MutationSuccess.$inferType>> {
-  invariant(ctx.user, 'user is required in an authed resolver');
-
+  ctx: AuthedContext,
+): Promise<typeof DeleteWorldPayload.$inferType> {
   // eslint-disable-next-line no-useless-catch
   try {
     await ctx.services.world.deleteWorld({

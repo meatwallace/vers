@@ -21,17 +21,17 @@ export function createServiceContext(
 
           logger.info(
             { requestID: config.requestID },
-            `(${shortRequestID}) --> ${options.method} ${options.url}`,
+            `(${shortRequestID}) --> ${options.method} ${options.url?.toString() ?? ''}`,
           );
         },
       ],
       afterResponse: [
-        async (response) => {
+        (response) => {
           const shortRequestID = config.requestID.slice(0, 8);
 
           logger.info(
             { requestID: config.requestID },
-            `(${shortRequestID}) <-- ${response.statusCode} ${response.url}`,
+            `(${shortRequestID}) <-- ${response.statusCode.toString()} ${response.url}`,
           );
 
           return response;

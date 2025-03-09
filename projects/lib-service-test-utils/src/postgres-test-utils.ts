@@ -13,16 +13,16 @@ const TEST_TEMPLATE_DB = 'test_template';
 const TEST_DB_USER = 'test';
 const TEST_DB_PASSWORD = 'test';
 
-type PostgresTestConfig = {
+interface PostgresTestConfig {
   port: number;
   migrationPath?: string;
-};
+}
 
 interface IPostgresTestUtils {
   container: StartedPostgreSqlContainer | null;
   client: Sql | null;
   db: PostgresJsDatabase<typeof schema> | null;
-  testDBClients: Record<string, Sql>;
+  testDBClients: Map<string, Sql>;
   startContainer: (config: PostgresTestConfig) => Promise<void>;
   stopContainer: () => Promise<void>;
   initialize: (config: PostgresTestConfig) => Promise<void>;
@@ -37,16 +37,13 @@ export const PostgresTestUtils: IPostgresTestUtils = {
   container: null,
   client: null,
   db: null,
-  testDBClients: {},
+  testDBClients: new Map(),
   async createTestDB(config: PostgresTestConfig) {
     if (!this.container) {
       this.container = await createPostgresContainer(config);
     }
 
-    const defaultClient = await createPostgresClient(
-      this.container,
-      'postgres',
-    );
+    const defaultClient = createPostgresClient(this.container, 'postgres');
 
     const testDBID = createId();
 
@@ -61,7 +58,7 @@ export const PostgresTestUtils: IPostgresTestUtils = {
     await defaultClient.end();
 
     if (!this.client) {
-      this.client = await createPostgresClient(this.container, testDBID);
+      this.client = createPostgresClient(this.container, testDBID);
     }
 
     const testDBConnectionString = `postgres://${TEST_DB_USER}:${TEST_DB_PASSWORD}@${this.container.getHost()}:${this.container.getFirstMappedPort()}/test_${testDBID}`;
@@ -69,12 +66,12 @@ export const PostgresTestUtils: IPostgresTestUtils = {
     const testDB = drizzle(testDBClient, { schema });
 
     // store a reference of the client so we can clean it up later
-    this.testDBClients[testDBID] = testDBClient;
+    this.testDBClients.set(testDBID, testDBClient);
 
     const teardown = async () => {
       await testDBClient.end();
 
-      delete this.testDBClients[testDBID];
+      this.testDBClients.delete(testDBID);
     };
 
     return { db: testDB, teardown };
@@ -85,10 +82,7 @@ export const PostgresTestUtils: IPostgresTestUtils = {
     }
 
     if (!this.client) {
-      this.client = await createPostgresClient(
-        this.container,
-        TEST_TEMPLATE_DB,
-      );
+      this.client = createPostgresClient(this.container, TEST_TEMPLATE_DB);
     }
 
     if (!this.db) {
@@ -124,7 +118,7 @@ export const PostgresTestUtils: IPostgresTestUtils = {
     }
 
     // loop over any remaining db clients and end their connection
-    for (const client of Object.values(this.testDBClients)) {
+    for (const client of this.testDBClients.values()) {
       await client.end();
     }
   },
@@ -148,10 +142,10 @@ async function createPostgresContainer(
     .start();
 }
 
-async function createPostgresClient(
+function createPostgresClient(
   container: StartedPostgreSqlContainer,
   database: string,
-): Promise<Sql> {
+): Sql {
   const connectionString = `postgres://${TEST_DB_USER}:${TEST_DB_PASSWORD}@${container.getHost()}:${container.getFirstMappedPort()}/${database}`;
 
   return postgres(connectionString);

@@ -4,6 +4,7 @@ import { changePassword } from './change-password';
 import { createPasswordResetToken } from './create-password-reset-token';
 import { createUser } from './create-user';
 import { getUser } from './get-user';
+import { updateUser } from './update-user';
 import { verifyPassword } from './verify-password';
 import { UserService } from './types';
 
@@ -17,6 +18,7 @@ export function createUserService(config: UserServiceConfig): UserService {
     createPasswordResetToken: (args) => createPasswordResetToken(args, ctx),
     createUser: (args) => createUser(args, ctx),
     getUser: (args) => getUser(args, ctx),
+    updateUser: (args) => updateUser(args, ctx),
     verifyPassword: (args) => verifyPassword(args, ctx),
   };
 }

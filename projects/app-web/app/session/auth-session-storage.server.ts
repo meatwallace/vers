@@ -1,13 +1,11 @@
 import invariant from 'tiny-invariant';
 import { createCookieSessionStorage } from 'react-router';
 
-type SessionData = {
-  [key: string]: string;
-};
+type SessionData = Record<string, string>;
 
-type SessionFlashData = {
+interface SessionFlashData {
   error: string;
-};
+}
 
 invariant(process.env.SESSION_SECRET, '$SESSION_SECRET is required');
 
@@ -50,9 +48,8 @@ Object.defineProperty(authSessionStorage, 'commitSession', {
       );
     }
 
-    const expires = session.has('expires')
-      ? new Date(session.get('expires') as string)
-      : undefined;
+    const sessionExpires = session.get('expires');
+    const expires = sessionExpires ? new Date(sessionExpires) : undefined;
 
     const setCookieHeader = await originalCommitSession(session, {
       ...options,

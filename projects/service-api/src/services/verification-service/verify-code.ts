@@ -13,7 +13,7 @@ export async function verifyCode(
 
   if (!response.success) {
     // TODO(#16): capture via Sentry
-    // console.error(response.error);
+    console.error(response.error);
 
     return null;
   }

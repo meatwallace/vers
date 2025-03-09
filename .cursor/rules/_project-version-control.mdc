@@ -1,0 +1,92 @@
+---
+description: Standards for version control, including branch naming and commit messages
+globs: "*"
+---
+
+# Version Control Standards
+
+Standards for branch naming, commit messages, and general version control practices.
+
+<rule>
+name: _project_standards_version_control
+description: Standards for version control practices
+filters:
+  - type: file_name
+    pattern: ".*"
+
+actions:
+  - type: suggest
+    message: |
+      Version Control Standards:
+
+      1. Branch Naming:
+         - Use prefixes: 
+           - `feature/` - New features or significant enhancements
+           - `fix/` - Bug fixes
+           - `chore/` - Maintenance, refactoring, or tooling
+         - Include issue number after prefix: `feature/#52-add-user-auth`
+         - Use kebab-case for descriptions
+         - Keep branch names concise but descriptive
+
+      2. Commit Messages:
+         Format: `type(#issue): description`
+         
+         Types:
+         - `feat`: New feature or enhancement
+         - `fix`: Bug fix
+         - `chore`: Maintenance tasks, dependencies
+         - `docs`: Documentation changes
+         - `test`: Test-related changes
+         - `refactor`: Code refactoring
+         
+         Guidelines:
+         - Use present tense ("add" not "added")
+         - First line should be complete sentence
+         - Reference GitHub issue number
+         - Keep description under 72 characters
+         - Add detailed description if needed
+
+      3. Pull Requests:
+         - Link related issues using GitHub keywords
+         - Include clear description of changes
+         - Keep changes focused and atomic
+         - Update PR description with relevant info
+
+      4. Git Practices:
+         - Rebase feature branches on main
+         - Squash commits before merging
+         - Keep linear history when possible
+         - No merge commits on feature branches
+         - Write meaningful commit messages
+
+examples:
+  - input: |
+      // Bad - no prefix or issue number
+      branch: add-auth
+      commit: added auth stuff and fixed tests
+
+      // Bad - wrong format
+      branch: feature/auth-stuff
+      commit: [FIX] auth bug #123
+
+      // Bad - multiple concerns
+      commit: feat(#52): add auth and fix tests and update docs
+
+      // Good - branch naming
+      branch: feature/#52-add-user-auth
+      branch: fix/#64-resolve-auth-state
+      branch: chore/#45-update-dependencies
+
+      // Good - commit messages
+      commit: feat(#52): add JWT-based user authentication
+      commit: fix(#64): resolve undefined user state in auth flow
+      commit: docs(#75): update authentication API documentation
+      commit: test(#80): add integration tests for auth flow
+      commit: chore(#45): update dependency versions
+    output: "Version control following standards"
+
+metadata:
+  priority: high
+  version: 1.0
+</rule>
+ 

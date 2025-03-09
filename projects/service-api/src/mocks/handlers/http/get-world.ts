@@ -5,12 +5,15 @@ import { db } from '../../db';
 
 const ENDPOINT_URL = `${env.WORLDS_SERVICE_URL}get-world`;
 
-export const getWorld = http.post(ENDPOINT_URL, async ({ request }) => {
-  const { worldID } = (await request.json()) as GetWorldRequest;
+export const getWorld = http.post<never, GetWorldRequest>(
+  ENDPOINT_URL,
+  async ({ request }) => {
+    const body = await request.json();
 
-  const world = db.world.findFirst({
-    where: { id: { equals: worldID } },
-  });
+    const world = db.world.findFirst({
+      where: { id: { equals: body.worldID } },
+    });
 
-  return HttpResponse.json({ success: true, data: world });
-});
+    return HttpResponse.json({ success: true, data: world });
+  },
+);

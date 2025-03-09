@@ -1,19 +1,16 @@
-import invariant from 'tiny-invariant';
-import { Context } from '~/types';
+import { AuthedContext } from '~/types';
 import { builder } from '../builder';
 import { requireAuth } from '../utils/require-auth';
 
-type Args = {
+interface Args {
   input: typeof GenerateWorldNamesInput.$inferInput;
-};
+}
 
 export async function generateWorldNames(
   _: object,
   args: Args,
-  ctx: Context,
+  ctx: AuthedContext,
 ): Promise<Array<string>> {
-  invariant(ctx.user, 'user is required in an authed resolver');
-
   // eslint-disable-next-line no-useless-catch
   try {
     const names = await ctx.services.world.generateWorldNames({

@@ -1,16 +1,16 @@
 import * as jose from 'jose';
 import invariant from 'tiny-invariant';
 
-export type TokenVerifierConfig = {
+export interface TokenVerifierConfig {
   audience: string;
   issuer: string;
   signingKey: string;
-};
+}
 
-type RelevantJWTPayload = {
+interface RelevantJWTPayload {
   iss: string | undefined;
   sub: string;
-};
+}
 
 export function createTokenVerifier(config: TokenVerifierConfig) {
   return async (token: string): Promise<RelevantJWTPayload> => {

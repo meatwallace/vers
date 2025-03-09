@@ -32,7 +32,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v3
         with:
-          node-version: 20
+          node-version: 20.18.3
           cache: 'yarn'
 
       - name: Install Dependencies
@@ -46,6 +46,9 @@ jobs:
       - name: Track main branch
         run: git branch --track main origin/main
         if: ${{ github.event_name == 'pull_request' }}
+
+      - name: Generate Types
+        run: yarn nx run app-web:typegen
 
       - name: Check Formatting
         run: yarn format --check
@@ -62,7 +65,7 @@ jobs:
         run: yarn nx affected -t build
 
       - name: Install E2E browsers
-        run: yarn dlx playwright install --with-deps
+        run: yarn playwright install --with-deps
 
       - name: E2E Tests
         run: yarn nx affected -t e2e

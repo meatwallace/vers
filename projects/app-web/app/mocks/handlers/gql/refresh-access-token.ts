@@ -1,25 +1,26 @@
-import { graphql, HttpResponse } from 'msw';
-import { AuthPayload } from '~/gql/graphql';
+import { HttpResponse, graphql } from 'msw';
+import {
+  RefreshAccessTokenInput,
+  RefreshAccessTokenPayload,
+} from '~/gql/graphql';
 import { db } from '../../db';
 import { encodeMockJWT } from '../../utils/encode-mock-jwt';
-import { MutationResponse } from './types';
+import { addUserResolvedFields } from './utils/add-user-resolved-fields';
 
-type RefreshAccessTokenResponse = MutationResponse<{
-  refreshAccessToken: AuthPayload;
-}>;
+interface RefreshAccessTokenVariables {
+  input: RefreshAccessTokenInput;
+}
 
-type RefreshAccessTokenVariables = {
-  input: {
-    refreshToken: string;
-  };
-};
+interface RefreshAccessTokenResponse {
+  refreshAccessToken: RefreshAccessTokenPayload;
+}
 
 const EXPIRATION_IN_S = 60 * 60 * 24; // 1 day
 
 export const RefreshAccessToken = graphql.mutation<
   RefreshAccessTokenResponse,
   RefreshAccessTokenVariables
->('RefreshAccessToken', async ({ variables }) => {
+>('RefreshAccessToken', ({ variables }) => {
   const session = db.session.findFirst({
     where: {
       refreshToken: {
@@ -74,7 +75,7 @@ export const RefreshAccessToken = graphql.mutation<
         accessToken,
         session: {
           ...session,
-          user: user,
+          user: addUserResolvedFields(user),
         },
       },
     },

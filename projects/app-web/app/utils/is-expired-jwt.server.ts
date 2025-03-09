@@ -1,8 +1,8 @@
 import { jwtDecode } from 'jwt-decode';
 
-type JWTPayload = {
+interface JWTPayload {
   exp: number;
-};
+}
 
 export function isExpiredJWT(token: string): boolean {
   const decoded = jwtDecode<JWTPayload>(token);

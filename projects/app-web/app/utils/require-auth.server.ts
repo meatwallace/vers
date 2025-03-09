@@ -1,25 +1,25 @@
 import { GraphQLClient } from 'graphql-request';
 import { redirect } from 'react-router';
 import { authSessionStorage } from '~/session/auth-session-storage.server.ts';
-import { Routes } from '~/types';
 import {
   SESSION_KEY_AUTH_ACCESS_TOKEN,
   SESSION_KEY_AUTH_REFRESH_TOKEN,
   SESSION_KEY_AUTH_SESSION_ID,
 } from '~/session/consts.ts';
+import { Routes } from '~/types';
 import { isExpiredJWT } from './is-expired-jwt.server.ts';
 import { logout } from './logout.server.ts';
 import { refreshAccessToken } from './refresh-access-token.server.ts';
 
-type AuthResult = {
+interface AuthResult {
   sessionID: string;
   accessToken: string;
   refreshToken: string;
-};
+}
 
-type Context = {
+interface Context {
   client: GraphQLClient;
-};
+}
 
 export async function requireAuth(
   request: Request,
@@ -38,6 +38,7 @@ export async function requireAuth(
   }
 
   ctx.client.setHeader('authorization', `Bearer ${accessToken}`);
+  ctx.client.setHeader('x-session-id', sessionID);
 
   const isExpiredAccessToken = isExpiredJWT(accessToken);
 
@@ -49,6 +50,9 @@ export async function requireAuth(
   }
 
   if (isExpiredAccessToken) {
+    // remove our expired access token so our gateway doesn't bounce the request
+    ctx.client.setHeader('authorization', '');
+
     const authPayload = await refreshAccessToken(request, {
       client: ctx.client,
       refreshToken,

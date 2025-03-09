@@ -7,7 +7,7 @@ import {
   SESSION_KEY_AUTH_REFRESH_TOKEN,
 } from './consts';
 
-async function setupTest() {
+function setupTest() {
   const sessionStorage = createCookieSessionStorage({
     cookie: {
       name: 'test_session',
@@ -21,7 +21,7 @@ async function setupTest() {
 }
 
 test('it stores the session ID in the session', async () => {
-  const { sessionStorage } = await setupTest();
+  const { sessionStorage } = setupTest();
 
   const session = await sessionStorage.getSession();
 
@@ -42,7 +42,7 @@ test('it stores the session ID in the session', async () => {
 });
 
 test('it stores the access token in the session', async () => {
-  const { sessionStorage } = await setupTest();
+  const { sessionStorage } = setupTest();
 
   const session = await sessionStorage.getSession();
 
@@ -63,7 +63,7 @@ test('it stores the access token in the session', async () => {
 });
 
 test('it stores the refresh token in the session', async () => {
-  const { sessionStorage } = await setupTest();
+  const { sessionStorage } = setupTest();
 
   const session = await sessionStorage.getSession();
 

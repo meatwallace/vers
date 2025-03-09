@@ -1,22 +1,23 @@
-import { graphql, HttpResponse } from 'msw';
-import { MutationSuccess } from '~/gql/graphql';
+import { HttpResponse, graphql } from 'msw';
+import {
+  StartEmailSignupInput,
+  StartEmailSignupPayload,
+  VerificationType,
+} from '~/gql/graphql';
 import { db } from '../../db';
-import { MutationResponse } from './types';
 
-type StartEmailSignupResponse = MutationResponse<{
-  startEmailSignup: MutationSuccess;
-}>;
+interface StartEmailSignupVariables {
+  input: StartEmailSignupInput;
+}
 
-type StartEmailSignupVariables = {
-  input: {
-    email: string;
-  };
-};
+interface StartEmailSignupResponse {
+  startEmailSignup: StartEmailSignupPayload;
+}
 
 export const StartEmailSignup = graphql.mutation<
   StartEmailSignupResponse,
   StartEmailSignupVariables
->('StartEmailSignup', async ({ variables }) => {
+>('StartEmailSignup', ({ variables }) => {
   const existingUser = db.user.findFirst({
     where: { email: { equals: variables.input.email } },
   });
@@ -26,7 +27,7 @@ export const StartEmailSignup = graphql.mutation<
     return HttpResponse.json({
       data: {
         startEmailSignup: {
-          success: true,
+          transactionID: 'valid-transaction-id',
         },
       },
     });
@@ -34,13 +35,13 @@ export const StartEmailSignup = graphql.mutation<
 
   db.verification.create({
     target: variables.input.email,
-    type: 'ONBOARDING',
+    type: VerificationType.Onboarding,
   });
 
   return HttpResponse.json({
     data: {
       startEmailSignup: {
-        success: true,
+        transactionID: 'valid-transaction-id',
       },
     },
   });

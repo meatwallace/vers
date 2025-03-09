@@ -4,10 +4,11 @@ import { env } from '~/env';
 
 const ENDPOINT_URL = `${env.WORLDS_SERVICE_URL}generate-world-names`;
 
-export const generateWorldNames = http.post(
+export const generateWorldNames = http.post<never, GenerateWorldNamesRequest>(
   ENDPOINT_URL,
   async ({ request }) => {
-    (await request.json()) as GenerateWorldNamesRequest;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const body = await request.json();
 
     const names = [
       'The Mystical Realm',

@@ -1,9 +1,9 @@
 import * as styles from './form-error-list.css.ts';
 
-type Props = {
+interface Props {
   errors: Array<string>;
   id: string;
-};
+}
 
 export function FormErrorList(props: Props) {
   const errors = props.errors.filter(Boolean);

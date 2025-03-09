@@ -1,12 +1,14 @@
-import { Hono } from 'hono';
-import { test, expect } from 'vitest';
+import { expect, test } from 'vitest';
 import { eq } from 'drizzle-orm';
-import { PostgresTestUtils } from '@chrono/service-test-utils';
+import { Hono } from 'hono';
+import invariant from 'tiny-invariant';
 import * as schema from '@chrono/postgres-schema';
+import { PostgresTestUtils } from '@chrono/service-test-utils';
+import { CreateVerificationResponse } from '@chrono/service-types';
 import { createId } from '@paralleldrive/cuid2';
 import { pgTestConfig } from '../pg-test-config';
-import { verifyCode } from './verify-code';
 import { createVerification } from './create-verification';
+import { verifyCode } from './verify-code';
 
 async function setupTest() {
   const app = new Hono();
@@ -32,10 +34,9 @@ test('it verifies a valid code', async () => {
   });
 
   const createRes = await app.request(createReq);
-  const createBody = (await createRes.json()) as {
-    success: boolean;
-    data: { otp: string };
-  };
+  const createBody = (await createRes.json()) as CreateVerificationResponse;
+
+  invariant(createBody.success);
 
   const verifyReq = new Request('http://localhost/verify-code', {
     method: 'POST',
@@ -142,6 +143,90 @@ test('it handles expired codes', async () => {
   });
 
   expect(verifications).toHaveLength(0);
+
+  await teardown();
+});
+
+test('it does not delete a 2FA verification', async () => {
+  const { app, db, teardown } = await setupTest();
+
+  const createReq = new Request('http://localhost/create-verification', {
+    method: 'POST',
+    body: JSON.stringify({
+      type: '2fa-setup',
+      target: 'test@example.com',
+    }),
+  });
+
+  const createRes = await app.request(createReq);
+  const createBody = (await createRes.json()) as CreateVerificationResponse;
+
+  invariant(createBody.success);
+
+  const req = new Request('http://localhost/verify-code', {
+    method: 'POST',
+    body: JSON.stringify({
+      type: '2fa-setup',
+      target: 'test@example.com',
+      code: createBody.data.otp,
+    }),
+  });
+
+  const res = await app.request(req);
+  const body = await res.json();
+
+  expect(res.status).toBe(200);
+  expect(body).toMatchObject({
+    success: true,
+  });
+
+  const verification = await db.query.verifications.findFirst({
+    where: eq(schema.verifications.id, createBody.data.id),
+  });
+
+  expect(verification).not.toBeUndefined();
+
+  await teardown();
+});
+
+test('it does not delete a 2FA disable verification', async () => {
+  const { app, db, teardown } = await setupTest();
+
+  const createReq = new Request('http://localhost/create-verification', {
+    method: 'POST',
+    body: JSON.stringify({
+      type: '2fa',
+      target: 'test@example.com',
+    }),
+  });
+
+  const createRes = await app.request(createReq);
+  const createBody = (await createRes.json()) as CreateVerificationResponse;
+
+  invariant(createBody.success);
+
+  const req = new Request('http://localhost/verify-code', {
+    method: 'POST',
+    body: JSON.stringify({
+      type: '2fa',
+      target: 'test@example.com',
+      code: createBody.data.otp,
+    }),
+  });
+
+  const res = await app.request(req);
+  const body = await res.json();
+
+  expect(res.status).toBe(200);
+  expect(body).toMatchObject({
+    success: true,
+  });
+
+  const verification = await db.query.verifications.findFirst({
+    where: eq(schema.verifications.id, createBody.data.id),
+  });
+
+  expect(verification).not.toBeUndefined();
 
   await teardown();
 });

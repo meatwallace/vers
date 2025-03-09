@@ -1,9 +1,12 @@
 import { type Context } from '~/types';
 import { generatePasswordChangedEmail } from '@chrono/email-templates';
+import { logger } from '~/logger';
+import { verifyTransactionToken } from '~/utils/verify-transaction-token';
 import { builder } from '../builder';
 import { MutationErrorPayload } from '../types/mutation-error-payload';
 import { createPayloadResolver } from '../utils/create-payload-resolver';
 import { MutationSuccess } from '../types/mutation-success';
+import { VerificationType } from '../types/verification-type';
 
 /**
  * @description Completes a password reset by updating the user's password and sending a confirmation email
@@ -30,24 +33,46 @@ import { MutationSuccess } from '../types/mutation-success';
  * ```
  */
 
-type Args = {
+interface Args {
   input: typeof FinishPasswordResetInput.$inferInput;
-};
+}
+
+// always return successful to avoid enumeration
+const AMBIGUOUS_SUCCESS_RESPONSE = {
+  success: true,
+} as const;
 
 export async function finishPasswordReset(
   _: object,
   args: Args,
   ctx: Context,
 ): Promise<typeof FinishPasswordResetPayload.$inferType> {
-  // eslint-disable-next-line no-useless-catch
   try {
     const user = await ctx.services.user.getUser({
       email: args.input.email,
     });
 
-    // return a success response as to avoid user enumeration if the user doesn't exist
     if (!user) {
-      return { success: true };
+      return AMBIGUOUS_SUCCESS_RESPONSE;
+    }
+
+    const twoFactorVerification =
+      await ctx.services.verification.getVerification({
+        type: '2fa',
+        target: args.input.email,
+      });
+
+    const isValidTransaction = await verifyTransactionToken(
+      {
+        token: args.input.transactionToken,
+        action: VerificationType.RESET_PASSWORD,
+        target: args.input.email,
+      },
+      ctx,
+    );
+
+    if (twoFactorVerification && !isValidTransaction) {
+      return AMBIGUOUS_SUCCESS_RESPONSE;
     }
 
     await ctx.services.user.changePassword({
@@ -60,23 +85,21 @@ export async function finishPasswordReset(
       email: user.email,
     });
 
-    try {
-      await ctx.services.email.sendEmail({
-        to: user.email,
-        subject: 'Password Changed',
-        html: email.html,
-        plainText: email.plainText,
-      });
-    } catch (error) {
-      // TODO(#16): capture email sending failure via Sentry
-      console.error('Failed to send password changed email:', error);
-    }
+    await ctx.services.email.sendEmail({
+      to: user.email,
+      subject: 'Password Changed',
+      html: email.html,
+      plainText: email.plainText,
+    });
 
-    // still return success since the password was updated
-    return { success: true };
+    return AMBIGUOUS_SUCCESS_RESPONSE;
   } catch (error: unknown) {
     // TODO(#16): capture via Sentry
-    throw error;
+    if (error instanceof Error) {
+      logger.error(error.message);
+    }
+
+    return AMBIGUOUS_SUCCESS_RESPONSE;
   }
 }
 
@@ -85,6 +108,7 @@ const FinishPasswordResetInput = builder.inputType('FinishPasswordResetInput', {
     email: t.string({ required: true }),
     password: t.string({ required: true }),
     resetToken: t.string({ required: true }),
+    transactionToken: t.string({ required: false }),
   }),
 });
 

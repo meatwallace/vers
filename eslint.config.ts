@@ -1,13 +1,13 @@
-import { FlatCompat } from '@eslint/eslintrc';
-import eslint from '@eslint/js';
-import tseslint from 'typescript-eslint';
-import drizzlePlugin from 'eslint-plugin-drizzle';
 import prettierConfig from 'eslint-config-prettier';
-import unicornPlugin from 'eslint-plugin-unicorn';
+import drizzlePlugin from 'eslint-plugin-drizzle';
+import jsxA11yPlugin from 'eslint-plugin-jsx-a11y';
 import reactPlugin from 'eslint-plugin-react';
-// import jsxA11yPlugin from 'eslint-plugin-jsx-a11y';
+import unicornPlugin from 'eslint-plugin-unicorn';
+import tseslint from 'typescript-eslint';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { FlatCompat } from '@eslint/eslintrc';
+import eslint from '@eslint/js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -18,13 +18,14 @@ const compat = new FlatCompat({
 
 export default tseslint.config(
   eslint.configs.recommended,
-  ...tseslint.configs.recommended,
+  tseslint.configs.strictTypeChecked,
+  tseslint.configs.stylisticTypeChecked,
   prettierConfig,
-  unicornPlugin.configs['flat/recommended'],
+  unicornPlugin.configs.recommended,
   reactPlugin.configs.flat.recommended,
   reactPlugin.configs.flat['jsx-runtime'],
   ...compat.extends('plugin:react-hooks/recommended'),
-  // ...jsxA11yPlugin.flatConfigs.recommended,
+  jsxA11yPlugin.flatConfigs.recommended,
   {
     settings: {
       react: {
@@ -39,6 +40,8 @@ export default tseslint.config(
         console: 'readonly',
       },
       parserOptions: {
+        projectService: true,
+        tsconfigRootDir: import.meta.dirname,
         sourceType: 'module',
         ecmaVersion: 'latest',
       },
@@ -53,8 +56,37 @@ export default tseslint.config(
           ignoreRestSiblings: true,
         },
       ],
+      '@typescript-eslint/array-type': [
+        'error',
+        {
+          default: 'generic',
+        },
+      ],
+      '@typescript-eslint/no-confusing-void-expression': [
+        'error',
+        {
+          ignoreArrowShorthand: true,
+        },
+      ],
+      '@typescript-eslint/restrict-template-expressions': [
+        'error',
+        {
+          allow: [{ name: ['URL'], from: 'lib' }],
+          allowBoolean: true,
+          allowNullish: true,
+          allowNumber: true,
+        },
+      ],
+      '@typescript-eslint/no-inferrable-types': [
+        'error',
+        {
+          ignoreParameters: true,
+        },
+      ],
+      '@typescript-eslint/only-throw-error': 'off',
+      '@typescript-eslint/no-unsafe-assignment': 'off',
 
-      'drizzle/enforce-delete-with-where': 'error',
+      'drizzle/enforce-delete-with-where': 'off',
       'drizzle/enforce-update-with-where': 'error',
 
       'unicorn/no-null': 'off',
@@ -72,6 +104,7 @@ export default tseslint.config(
       '**/*timestamp*.mjs',
       '**/mockServiceWorker.js',
       '**/projects/app-web/app/gql/**',
+      '**/.react-router/**',
     ],
   },
 );

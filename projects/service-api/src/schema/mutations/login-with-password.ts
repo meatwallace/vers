@@ -1,16 +1,19 @@
 import { GraphQLError } from 'graphql';
 import { logger } from '~/logger';
-import { Context, StandardMutationPayload } from '~/types';
+import { Context } from '~/types';
+import { createPendingTransaction } from '~/utils/create-pending-transaction';
 import { builder } from '../builder';
 import { AuthPayload } from '../types/auth-payload';
 import { MutationErrorPayload } from '../types/mutation-error-payload';
+import { TwoFactorRequiredPayload } from '../types/two-factor-required-payload';
+import { VerificationType } from '../types/verification-type';
 import { createPayloadResolver } from '../utils/create-payload-resolver';
 
-type Args = {
+interface Args {
   input: typeof LoginWithPasswordInput.$inferInput;
-};
+}
 
-// ensure we use the same error message for all failures to avoid user enumeration
+// ensure we use the same error message for all failures to avoid enumeration
 const AMBIGUOUS_CREDENTIALS_ERROR = {
   title: 'Invalid credentials',
   message: 'Wrong email or password',
@@ -20,8 +23,7 @@ export async function loginWithPassword(
   _: object,
   args: Args,
   ctx: Context,
-): Promise<StandardMutationPayload<typeof AuthPayload.$inferType>> {
-  // eslint-disable-next-line no-useless-catch
+): Promise<typeof LoginWithPasswordPayload.$inferType> {
   try {
     const user = await ctx.services.user.getUser({
       email: args.input.email,
@@ -44,11 +46,31 @@ export async function loginWithPassword(
       };
     }
 
+    // Check if 2FA is enabled for this user by looking for a verification record
+    const verification = await ctx.services.verification.getVerification({
+      type: '2fa',
+      target: user.email,
+    });
+
+    // create a session regardless if the user requires 2FA as we need it to
+    // bind the transaction to the session
     const authPayload = await ctx.services.session.createSession({
       userID: user.id,
       ipAddress: ctx.ipAddress,
       rememberMe: args.input.rememberMe,
     });
+
+    // If 2FA is enabled, return the two factor required payload
+    if (verification) {
+      const transactionID = createPendingTransaction({
+        target: user.email,
+        ipAddress: ctx.ipAddress,
+        action: VerificationType.TWO_FACTOR_AUTH,
+        sessionID: authPayload.session.id,
+      });
+
+      return { transactionID, sessionID: authPayload.session.id };
+    }
 
     return authPayload;
   } catch (error: unknown) {
@@ -74,7 +96,7 @@ const LoginWithPasswordInput = builder.inputType('LoginWithPasswordInput', {
 });
 
 const LoginWithPasswordPayload = builder.unionType('LoginWithPasswordPayload', {
-  types: [AuthPayload, MutationErrorPayload],
+  types: [AuthPayload, TwoFactorRequiredPayload, MutationErrorPayload],
   resolveType: createPayloadResolver(AuthPayload),
 });
 

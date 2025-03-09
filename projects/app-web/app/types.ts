@@ -8,10 +8,12 @@ export enum Routes {
   ForgotPassword = '/forgot-password',
   ResetPassword = '/reset-password',
   ResetPasswordStarted = '/reset-password-started',
-
   VerifyOTP = '/verify-otp',
 
   Dashboard = '/dashboard',
+
+  Profile = '/profile',
+  ProfileVerify2FA = '/profile/2fa/verify',
 
   CreateWorld = '/worlds/create',
   CreateWorldWizard = '/worlds/create/:worldID',

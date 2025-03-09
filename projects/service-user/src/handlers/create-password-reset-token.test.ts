@@ -7,9 +7,9 @@ import { CreatePasswordResetTokenResponse } from '@chrono/service-types';
 import { createPasswordResetToken } from './create-password-reset-token';
 import { pgTestConfig } from '../pg-test-config';
 
-type TestConfig = {
+interface TestConfig {
   user?: Partial<typeof schema.users.$inferInsert>;
-};
+}
 
 async function setupTest(config: TestConfig = {}) {
   const app = new Hono();
@@ -53,7 +53,7 @@ test('it creates a password reset token for an existing user', async () => {
   invariant(body.success, 'response has data if success is true');
 
   expect(updatedUser?.passwordResetToken).toBe(body.data.resetToken);
-  expect(updatedUser?.passwordResetTokenExpiresAt).toBeInstanceOf(Date);
+  expect(updatedUser?.passwordResetTokenExpiresAt).toBeDate();
   expect(updatedUser?.passwordResetTokenExpiresAt).toBeAfter(new Date());
   expect(updatedUser?.passwordResetTokenExpiresAt).toBeBefore(
     new Date(Date.now() + 11 * 60 * 1000),

@@ -30,7 +30,7 @@ test('it successfully sends an email', async () => {
 
 test('it throws an error when the email service fails', async () => {
   server.use(
-    http.post(ENDPOINT_URL, async () => {
+    http.post(ENDPOINT_URL, () => {
       return HttpResponse.json({ success: false });
     }),
   );

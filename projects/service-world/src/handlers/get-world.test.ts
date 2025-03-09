@@ -17,10 +17,6 @@ async function setupTest() {
   return { app, db, teardown, user };
 }
 
-afterEach(() => {
-  vi.restoreAllMocks();
-});
-
 test('it returns the requested world', async () => {
   const { app, db, teardown, user } = await setupTest();
 

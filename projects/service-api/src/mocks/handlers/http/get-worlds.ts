@@ -5,12 +5,15 @@ import { db } from '../../db';
 
 const ENDPOINT_URL = `${env.WORLDS_SERVICE_URL}get-worlds`;
 
-export const getWorlds = http.post(ENDPOINT_URL, async ({ request }) => {
-  const { ownerID } = (await request.json()) as GetWorldsRequest;
+export const getWorlds = http.post<never, GetWorldsRequest>(
+  ENDPOINT_URL,
+  async ({ request }) => {
+    const body = await request.json();
 
-  const worlds = db.world.findMany({
-    where: { ownerID: { equals: ownerID } },
-  });
+    const worlds = db.world.findMany({
+      where: { ownerID: { equals: body.ownerID } },
+    });
 
-  return HttpResponse.json({ success: true, data: worlds });
-});
+    return HttpResponse.json({ success: true, data: worlds });
+  },
+);

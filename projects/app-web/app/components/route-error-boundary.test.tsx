@@ -2,9 +2,9 @@ import { render, screen } from '@testing-library/react';
 import { createRoutesStub, ErrorResponse } from 'react-router';
 import { RouteErrorBoundary } from './route-error-boundary';
 
-type TestConfig = {
+interface TestConfig {
   error: Error | ErrorResponse;
-};
+}
 
 function createMockRouteError(
   errorParts: Pick<ErrorResponse, 'status' | 'statusText'>,
@@ -18,8 +18,11 @@ function createMockRouteError(
   };
 }
 
+// eslint-disable-next-line @typescript-eslint/no-empty-function
+const noop = () => {};
+
 function setupTest(config: TestConfig) {
-  vi.spyOn(console, 'error').mockImplementation(() => {});
+  vi.spyOn(console, 'error').mockImplementation(noop);
 
   const RouteStub = createRoutesStub([
     {

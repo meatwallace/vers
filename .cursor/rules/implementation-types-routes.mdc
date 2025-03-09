@@ -1,0 +1,62 @@
+---
+description: Standards for working with generated React Route types
+globs: "**/*.{ts,tsx}"
+---
+# Route Types Standards
+
+Standards for working with React Router's generated route types.
+
+<rule>
+name: implementation_standards_routes_types
+description: Standards for working with React Router's generated route types
+filters:
+  - type: file_extension
+    pattern: "\\.(ts|tsx)$"
+  - type: path
+    pattern: "routes/.*"
+
+actions:
+  - type: suggest
+    message: |
+      Route Types Standards:
+
+      1. Route Types (+types):
+         - Generated automatically when running the dev server
+         - Located in `+types` directories next to route files
+         - Generated when running `yarn dev:app-web`
+         - Never manually edit or commit these files
+         - Must run dev server to access route types
+
+      2. Development Workflow:
+         - Start dev server with `yarn dev:app-web` to generate route types
+         - Reference generated types in components
+         - Re-run dev server after route changes
+
+      3. Error Resolution:
+         - Missing route types: Start dev server with `yarn dev:app-web`
+         - Type mismatches: Update route implementation first
+         - Never create manual type definitions for route types
+
+examples:
+  - input: |
+      ```tsx
+      // ❌ WRONG: Creating manual route types
+      // file: routes/+types/profile.ts
+      export type Route = {
+        ComponentProps: {
+          // ...manual types
+        }
+      };
+
+      // ✅ CORRECT: Using generated route types
+      import { type Route } from './+types/routes';
+      
+      export function Profile(props: Route.ComponentProps) {
+        // ...
+      }
+      ```
+
+metadata:
+  priority: high
+  version: 1.0
+</rule> 

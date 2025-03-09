@@ -1,15 +1,15 @@
 import { afterEach, expect, test } from 'vitest';
-import { createRoutesStub, type LoaderFunction } from 'react-router';
-import { render, screen } from '@testing-library/react';
+import { type LoaderFunction, createRoutesStub } from 'react-router';
 import { drop } from '@mswjs/data';
+import { render, screen } from '@testing-library/react';
 import { db } from '~/mocks/db.ts';
 import { withAuthedUser } from '~/test-utils/with-authed-user.ts';
 import { Routes } from '~/types.ts';
 import { requireAnonymous } from './require-anonymous.server.ts';
 
-type TestConfig = {
+interface TestConfig {
   isAuthed?: boolean;
-};
+}
 
 const loader: LoaderFunction = async ({ request }) => {
   await requireAnonymous(request);
@@ -17,7 +17,7 @@ const loader: LoaderFunction = async ({ request }) => {
   return null;
 };
 
-async function setupTest(config: Partial<TestConfig> = {}) {
+function setupTest(config: TestConfig = {}) {
   const TestRoutesStub = createRoutesStub([
     {
       path: '/',
@@ -38,7 +38,7 @@ afterEach(() => {
 });
 
 test('it allows access when no session exists', async () => {
-  await setupTest();
+  setupTest();
 
   const testRoute = await screen.findByText('TEST_ROUTE');
 
@@ -46,7 +46,7 @@ test('it allows access when no session exists', async () => {
 });
 
 test('it redirects to dashboard when a session exists', async () => {
-  await setupTest({ isAuthed: true });
+  setupTest({ isAuthed: true });
 
   const dashboardRoute = await screen.findByText('DASHBOARD_ROUTE');
 

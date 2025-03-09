@@ -5,32 +5,35 @@ import { db } from '../../db';
 
 const ENDPOINT_URL = `${env.SESSIONS_SERVICE_URL}refresh-tokens`;
 
-export const refreshTokens = http.post(ENDPOINT_URL, async ({ request }) => {
-  const { refreshToken } = (await request.json()) as RefreshTokensRequest;
+export const refreshTokens = http.post<never, RefreshTokensRequest>(
+  ENDPOINT_URL,
+  async ({ request }) => {
+    const body = await request.json();
 
-  const session = db.session.findFirst({
-    where: { refreshToken: { equals: refreshToken } },
-  });
+    const session = db.session.findFirst({
+      where: { refreshToken: { equals: body.refreshToken } },
+    });
 
-  if (!session) {
-    return new HttpResponse(null, { status: 404 });
-  }
+    if (!session) {
+      return new HttpResponse(null, { status: 404 });
+    }
 
-  const { refreshToken: oldRefreshToken, ...sessionData } = session;
+    const { refreshToken: oldRefreshToken, ...sessionData } = session;
 
-  const newRefreshToken = `refresh_token_${Date.now()}`;
+    const newRefreshToken = `refresh_token_${Date.now()}`;
 
-  db.session.update({
-    where: { id: { equals: session.id } },
-    data: { refreshToken: newRefreshToken },
-  });
+    db.session.update({
+      where: { id: { equals: session.id } },
+      data: { refreshToken: newRefreshToken },
+    });
 
-  return HttpResponse.json({
-    success: true,
-    data: {
-      accessToken: `access_token_${Date.now()}`,
-      refreshToken: newRefreshToken,
-      ...sessionData,
-    },
-  });
-});
+    return HttpResponse.json({
+      success: true,
+      data: {
+        accessToken: `access_token_${Date.now()}`,
+        refreshToken: newRefreshToken,
+        ...sessionData,
+      },
+    });
+  },
+);

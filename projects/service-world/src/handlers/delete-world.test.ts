@@ -2,6 +2,7 @@ import { Hono } from 'hono';
 import { PostgresTestUtils, createTestUser } from '@chrono/service-test-utils';
 import { worlds } from '@chrono/postgres-schema';
 import { createId } from '@paralleldrive/cuid2';
+import { eq } from 'drizzle-orm';
 import { deleteWorld } from './delete-world';
 import { pgTestConfig } from '../pg-test-config';
 
@@ -16,10 +17,6 @@ async function setupTest() {
 
   return { app, db, teardown, user };
 }
-
-afterEach(() => {
-  vi.restoreAllMocks();
-});
 
 test('it deletes the given world', async () => {
   const { app, db, teardown, user } = await setupTest();
@@ -55,6 +52,12 @@ test('it deletes the given world', async () => {
       deletedID: worldID,
     },
   });
+
+  const deletedWorld = await db.query.worlds.findFirst({
+    where: eq(worlds.id, worldID),
+  });
+
+  expect(deletedWorld).toBeUndefined();
 
   await teardown();
 });

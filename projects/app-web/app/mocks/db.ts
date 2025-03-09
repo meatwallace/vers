@@ -1,5 +1,6 @@
 import { factory, nullable, primaryKey } from '@mswjs/data';
 import { createId } from '@paralleldrive/cuid2';
+import { VerificationType } from '~/gql/graphql';
 import { encodeMockJWT } from './utils/encode-mock-jwt';
 
 const EXPIRATION_IN_MS = 1000 * 60 * 60 * 24; // 1 day
@@ -19,7 +20,7 @@ export const db = factory({
   verification: {
     id: primaryKey(() => createId()),
     target: () => 'user@test.com',
-    type: () => 'ONBOARDING',
+    type: () => VerificationType.Onboarding,
     createdAt: () => new Date().toISOString(),
   },
   user: {

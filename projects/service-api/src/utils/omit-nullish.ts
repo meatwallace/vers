@@ -12,7 +12,7 @@ export function omitNullish<T extends object>(obj: T): OmitNullish<T> {
   const result = {} as OmitNullish<T>;
 
   for (const key of Object.keys(obj) as Array<keyof T>) {
-    const value = obj[key as keyof T];
+    const value = obj[key];
 
     if (value !== null && value !== undefined) {
       (result as T)[key] = value;

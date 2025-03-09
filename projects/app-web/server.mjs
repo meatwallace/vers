@@ -13,12 +13,13 @@ app.get('/assets/*', serveStatic({ root: './build/client/assets' }));
 app.get('/*', serveStatic({ root: './build/client' }));
 
 app.use(
-  '*',
+  /* eslint-disable unicorn/no-abusive-eslint-disable */
+  /* eslint-disable */
   remix({
     build: await import('./build/server/index.js'),
-    // eslint-disable-next-line no-undef
     mode: process.env.NODE_ENV,
   }),
+  /* eslint-enable */
 );
 
 serve(app);

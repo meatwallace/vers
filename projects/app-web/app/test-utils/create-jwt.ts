@@ -1,12 +1,12 @@
 import * as jose from 'jose';
 
-type JWTConfig = {
+interface JWTConfig {
   sub: string;
   issuer: string;
   audience: string;
   expirationTime?: string;
   alg?: string;
-};
+}
 
 export async function createJWT(config: JWTConfig): Promise<string> {
   const signingKey = new TextEncoder().encode('secret');

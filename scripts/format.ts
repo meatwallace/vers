@@ -1,25 +1,11 @@
 #!/usr/bin/env node
 
 import { Command } from 'commander';
-import { execa, ExecaError } from 'execa';
+import { execa } from 'execa';
 import { oraPromise } from 'ora';
 import { parseCommaSeperatedStrings } from './utils/parse-comma-seperated-strings.ts';
 
-const defaultFilesToFormat = [
-  '*.graphql',
-  '*.js',
-  '*.json',
-  '*.md',
-  '*.yml',
-  '.github/**/*.yml',
-  '"projects/**/*.html"',
-  '"projects/**/*.js"',
-  '"projects/**/*.json"',
-  '"projects/**/*.mjs"',
-  '"projects/**/*.ts"',
-  '"projects/**/*.tsx"',
-  '"scripts/**/*.ts"',
-];
+const defaultFilesToFormat = ['.'];
 
 const prettierSpinnerConfig = {
   text: 'Formatting files with Prettier...',
@@ -27,10 +13,10 @@ const prettierSpinnerConfig = {
   failText: 'Prettier failed',
 };
 
-type FormatArgs = {
-  files: Array<string>;
+interface FormatArgs {
+  files: Array<string> | undefined;
   check: boolean;
-};
+}
 
 const program = new Command()
   .name('format')
@@ -41,14 +27,20 @@ const program = new Command()
     await formatFiles(files, check);
   });
 
-async function formatFiles(commaSeperatedFiles: Array<string>, check: boolean) {
+async function formatFiles(
+  commaSeperatedFiles: Array<string> | undefined,
+  check: boolean,
+) {
   let files = defaultFilesToFormat.join(' ');
 
   if (commaSeperatedFiles) {
-    files = commaSeperatedFiles.join(' ');
+    // some of our folders include $ so we need to escape it to pass it as a shell argument
+    files = commaSeperatedFiles.join(' ').replaceAll('$', String.raw`\$`);
   }
 
   const modeArg = check ? '-c' : '-w';
+
+  console.log(`prettier ${modeArg} ${files}`);
 
   try {
     await oraPromise(

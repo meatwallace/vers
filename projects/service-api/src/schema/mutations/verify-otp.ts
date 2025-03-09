@@ -1,21 +1,27 @@
-import { Context, StandardMutationPayload } from '~/types';
+import { GraphQLError } from 'graphql';
+import { logger } from '~/logger';
+import { Context } from '~/types';
+import { createTransactionToken } from '~/utils/create-transaction-token';
+import { trackTransactionAttempt } from '~/utils/track-transaction-attempt';
 import { builder } from '../builder';
 import { MutationErrorPayload } from '../types/mutation-error-payload';
-import { Verification } from '../types/verification';
+import { TwoFactorSuccessPayload } from '../types/two-factor-success-payload';
 import { VerificationType } from '../types/verification-type';
 import { createPayloadResolver } from '../utils/create-payload-resolver';
 import { resolveVerificationType } from '../utils/resolve-verification-type';
 
-type Args = {
+interface Args {
   input: typeof VerifyOTPInput.$inferInput;
-};
+}
 
 export async function verifyOTP(
   _: object,
   args: Args,
   ctx: Context,
-): Promise<StandardMutationPayload<typeof Verification.$inferType>> {
+): Promise<typeof VerifyOTPPayload.$inferType> {
   try {
+    trackTransactionAttempt(args.input.transactionID);
+
     const verification = await ctx.services.verification.verifyCode({
       code: args.input.code,
       type: resolveVerificationType(args.input.type),
@@ -28,12 +34,29 @@ export async function verifyOTP(
       };
     }
 
-    return verification;
-  } catch (error: unknown) {
-    console.log('error', error);
+    const transactionToken = await createTransactionToken(
+      {
+        target: verification.target,
+        action: args.input.type,
+        ipAddress: ctx.ipAddress,
+        transactionID: args.input.transactionID,
+        sessionID: args.input.sessionID ?? null,
+      },
+      ctx,
+    );
 
+    return { transactionToken };
+  } catch (error: unknown) {
     // TODO(#16): capture via Sentry
-    throw error;
+    if (error instanceof Error) {
+      logger.error(error.message);
+    }
+
+    throw new GraphQLError('An unknown error occurred', {
+      extensions: {
+        code: 'INTERNAL_SERVER_ERROR',
+      },
+    });
   }
 }
 
@@ -42,12 +65,14 @@ const VerifyOTPInput = builder.inputType('VerifyOTPInput', {
     code: t.string({ required: true }),
     type: t.field({ type: VerificationType, required: true }),
     target: t.string({ required: true }),
+    transactionID: t.string({ required: true }),
+    sessionID: t.string({ required: false }),
   }),
 });
 
 const VerifyOTPPayload = builder.unionType('VerifyOTPPayload', {
-  types: [Verification, MutationErrorPayload],
-  resolveType: createPayloadResolver(Verification),
+  types: [TwoFactorSuccessPayload, MutationErrorPayload],
+  resolveType: createPayloadResolver(TwoFactorSuccessPayload),
 });
 
 export const resolve = verifyOTP;

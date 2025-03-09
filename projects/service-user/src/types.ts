@@ -5,6 +5,6 @@ import { envSchema } from './env';
 
 export type Env = z.infer<typeof envSchema>;
 
-export type HandlerContext = {
+export interface HandlerContext {
   db: PostgresJsDatabase<typeof schema>;
-};
+}

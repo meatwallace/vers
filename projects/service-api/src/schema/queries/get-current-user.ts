@@ -1,18 +1,16 @@
-import invariant from 'tiny-invariant';
-import { Context } from '~/types';
+import { AuthedContext } from '~/types';
 import { builder } from '../builder';
 import { User } from '../types/user';
 import { requireAuth } from '../utils/require-auth';
 
 type Args = Record<PropertyKey, never>;
 
+// eslint-disable-next-line @typescript-eslint/require-await
 export async function getCurrentUser(
   _: object,
-  args: Args,
-  ctx: Context,
+  __: Args,
+  ctx: AuthedContext,
 ): Promise<typeof User.$inferType> {
-  invariant(ctx.user, 'user is required in an authed resolver');
-
   // we can return the user from the context directly as it was fetched when we instantiated our context
   return ctx.user;
 }

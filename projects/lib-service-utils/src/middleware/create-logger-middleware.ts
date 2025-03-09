@@ -2,8 +2,15 @@ import type { Context, MiddlewareHandler, Next } from 'hono';
 import type { Logger } from 'pino';
 import { getPath } from 'hono/utils/url';
 
+interface ContextVariables {
+  requestId: string;
+}
+
 export function createLoggerMiddleware(logger: Logger): MiddlewareHandler {
-  return async function loggerMiddleware(ctx: Context, next: Next) {
+  return async function loggerMiddleware(
+    ctx: Context<{ Variables: ContextVariables }>,
+    next: Next,
+  ) {
     const path = getPath(ctx.req.raw);
     const requestID = ctx.get('requestId');
     const shortRequestID = requestID.slice(0, 8);

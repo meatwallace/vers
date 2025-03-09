@@ -45,20 +45,41 @@ export type DeleteWorldInput = {
 
 export type DeleteWorldPayload = MutationErrorPayload | MutationSuccess;
 
+export type FinishDisable2FaInput = {
+  transactionToken: Scalars['String']['input'];
+};
+
+export type FinishDisable2FaPayload = MutationErrorPayload | MutationSuccess;
+
 export type FinishEmailSignupInput = {
   email: Scalars['String']['input'];
   name: Scalars['String']['input'];
   password: Scalars['String']['input'];
   rememberMe: Scalars['Boolean']['input'];
+  transactionToken: Scalars['String']['input'];
   username: Scalars['String']['input'];
 };
 
 export type FinishEmailSignupPayload = AuthPayload | MutationErrorPayload;
 
+export type FinishEnable2FaInput = {
+  transactionToken: Scalars['String']['input'];
+};
+
+export type FinishEnable2FaPayload = MutationErrorPayload | MutationSuccess;
+
+export type FinishLoginWith2FaInput = {
+  target: Scalars['String']['input'];
+  transactionToken: Scalars['String']['input'];
+};
+
+export type FinishLoginWith2FaPayload = AuthPayload | MutationErrorPayload;
+
 export type FinishPasswordResetInput = {
   email: Scalars['String']['input'];
   password: Scalars['String']['input'];
   resetToken: Scalars['String']['input'];
+  transactionToken?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type FinishPasswordResetPayload = MutationErrorPayload | MutationSuccess;
@@ -85,19 +106,24 @@ export type LoginWithPasswordInput = {
   rememberMe: Scalars['Boolean']['input'];
 };
 
-export type LoginWithPasswordPayload = AuthPayload | MutationErrorPayload;
+export type LoginWithPasswordPayload = AuthPayload | MutationErrorPayload | TwoFactorRequiredPayload;
 
 export type Mutation = {
   __typename?: 'Mutation';
   createWorld: CreateWorldPayload;
   deleteSession: DeleteSessionPayload;
   deleteWorld: DeleteWorldPayload;
+  finishDisable2FA: FinishDisable2FaPayload;
   finishEmailSignup: FinishEmailSignupPayload;
+  finishEnable2FA: FinishEnable2FaPayload;
+  finishLoginWith2FA: FinishLoginWith2FaPayload;
   finishPasswordReset: FinishPasswordResetPayload;
   loginWithPassword: LoginWithPasswordPayload;
   refreshAccessToken: RefreshAccessTokenPayload;
+  startDisable2FA: StartDisable2FaPayload;
   startEmailSignup: StartEmailSignupPayload;
-  startPasswordReset: StartPasswordResetPayloadUnion;
+  startEnable2FA: StartEnable2FaPayload;
+  startPasswordReset: StartPasswordResetPayload;
   updateWorld: UpdateWorldPayload;
   verifyOTP: VerifyOtpPayload;
 };
@@ -118,8 +144,23 @@ export type MutationDeleteWorldArgs = {
 };
 
 
+export type MutationFinishDisable2FaArgs = {
+  input: FinishDisable2FaInput;
+};
+
+
 export type MutationFinishEmailSignupArgs = {
   input: FinishEmailSignupInput;
+};
+
+
+export type MutationFinishEnable2FaArgs = {
+  input: FinishEnable2FaInput;
+};
+
+
+export type MutationFinishLoginWith2FaArgs = {
+  input: FinishLoginWith2FaInput;
 };
 
 
@@ -138,8 +179,18 @@ export type MutationRefreshAccessTokenArgs = {
 };
 
 
+export type MutationStartDisable2FaArgs = {
+  input: StartDisable2FaInput;
+};
+
+
 export type MutationStartEmailSignupArgs = {
   input: StartEmailSignupInput;
+};
+
+
+export type MutationStartEnable2FaArgs = {
+  input: StartEnable2FaInput;
 };
 
 
@@ -177,6 +228,7 @@ export type Query = {
   __typename?: 'Query';
   generateWorldNames: Array<Scalars['String']['output']>;
   getCurrentUser: User;
+  getEnable2FAVerification: TwoFactorVerification;
   getSessions: Array<Session>;
   getWorld: World;
   getWorlds: Array<World>;
@@ -216,22 +268,45 @@ export type Session = {
   user: User;
 };
 
+export type StartDisable2FaInput = {
+  placeholder?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type StartDisable2FaPayload = MutationErrorPayload | TwoFactorRequiredPayload;
+
 export type StartEmailSignupInput = {
   email: Scalars['String']['input'];
 };
 
-export type StartEmailSignupPayload = MutationErrorPayload | MutationSuccess;
+export type StartEmailSignupPayload = MutationErrorPayload | TwoFactorRequiredPayload;
+
+export type StartEnable2FaInput = {
+  placeholder?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type StartEnable2FaPayload = MutationErrorPayload | TwoFactorRequiredPayload;
 
 export type StartPasswordResetInput = {
   email: Scalars['String']['input'];
 };
 
-export type StartPasswordResetPayload = {
-  __typename?: 'StartPasswordResetPayload';
-  success: Scalars['Boolean']['output'];
+export type StartPasswordResetPayload = MutationErrorPayload | MutationSuccess | TwoFactorRequiredPayload;
+
+export type TwoFactorRequiredPayload = {
+  __typename?: 'TwoFactorRequiredPayload';
+  sessionID?: Maybe<Scalars['String']['output']>;
+  transactionID: Scalars['String']['output'];
 };
 
-export type StartPasswordResetPayloadUnion = MutationErrorPayload | StartPasswordResetPayload;
+export type TwoFactorSuccessPayload = {
+  __typename?: 'TwoFactorSuccessPayload';
+  transactionToken: Scalars['String']['output'];
+};
+
+export type TwoFactorVerification = {
+  __typename?: 'TwoFactorVerification';
+  otpURI: Scalars['String']['output'];
+};
 
 export type UpdateWorldInput = {
   archetype?: InputMaybe<Scalars['String']['input']>;
@@ -252,31 +327,32 @@ export type User = {
   createdAt: Scalars['DateTime']['output'];
   email: Scalars['String']['output'];
   id: Scalars['ID']['output'];
+  is2FAEnabled: Scalars['Boolean']['output'];
   name: Scalars['String']['output'];
   updatedAt: Scalars['DateTime']['output'];
   username: Scalars['String']['output'];
 };
 
-export type Verification = {
-  __typename?: 'Verification';
-  id: Scalars['ID']['output'];
-  target: Scalars['String']['output'];
-};
-
 export enum VerificationType {
   ChangeEmail = 'CHANGE_EMAIL',
+  ChangeEmailConfirmation = 'CHANGE_EMAIL_CONFIRMATION',
+  ChangePassword = 'CHANGE_PASSWORD',
   Onboarding = 'ONBOARDING',
   ResetPassword = 'RESET_PASSWORD',
-  TwoFactorAuth = 'TWO_FACTOR_AUTH'
+  TwoFactorAuth = 'TWO_FACTOR_AUTH',
+  TwoFactorAuthDisable = 'TWO_FACTOR_AUTH_DISABLE',
+  TwoFactorAuthSetup = 'TWO_FACTOR_AUTH_SETUP'
 }
 
 export type VerifyOtpInput = {
   code: Scalars['String']['input'];
+  sessionID?: InputMaybe<Scalars['String']['input']>;
   target: Scalars['String']['input'];
+  transactionID: Scalars['String']['input'];
   type: VerificationType;
 };
 
-export type VerifyOtpPayload = MutationErrorPayload | Verification;
+export type VerifyOtpPayload = MutationErrorPayload | TwoFactorSuccessPayload;
 
 export type World = {
   __typename?: 'World';
@@ -293,10 +369,17 @@ export type World = {
   updatedAt: Scalars['DateTime']['output'];
 };
 
+export type VerifyOtpMutationVariables = Exact<{
+  input: VerifyOtpInput;
+}>;
+
+
+export type VerifyOtpMutation = { __typename?: 'Mutation', verifyOTP: { __typename?: 'MutationErrorPayload', error: { __typename?: 'MutationError', title: string, message: string } } | { __typename?: 'TwoFactorSuccessPayload', transactionToken: string } };
+
 export type GetCurrentUserQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetCurrentUserQuery = { __typename?: 'Query', getCurrentUser: { __typename?: 'User', id: string, username: string, name: string } };
+export type GetCurrentUserQuery = { __typename?: 'Query', getCurrentUser: { __typename?: 'User', id: string, username: string, name: string, email: string, is2FAEnabled: boolean } };
 
 export type GetWorldsQueryVariables = Exact<{
   input: GetWorldsInput;
@@ -310,14 +393,14 @@ export type StartPasswordResetMutationVariables = Exact<{
 }>;
 
 
-export type StartPasswordResetMutation = { __typename?: 'Mutation', startPasswordReset: { __typename?: 'MutationErrorPayload', error: { __typename?: 'MutationError', title: string, message: string } } | { __typename?: 'StartPasswordResetPayload', success: boolean } };
+export type StartPasswordResetMutation = { __typename?: 'Mutation', startPasswordReset: { __typename?: 'MutationErrorPayload', error: { __typename?: 'MutationError', title: string, message: string } } | { __typename?: 'MutationSuccess', success: boolean } | { __typename?: 'TwoFactorRequiredPayload', transactionID: string } };
 
 export type LoginWithPasswordMutationVariables = Exact<{
   input: LoginWithPasswordInput;
 }>;
 
 
-export type LoginWithPasswordMutation = { __typename?: 'Mutation', loginWithPassword: { __typename?: 'AuthPayload', accessToken: string, refreshToken: string, session: { __typename?: 'Session', id: string, expiresAt: string } } | { __typename?: 'MutationErrorPayload', error: { __typename?: 'MutationError', title: string, message: string } } };
+export type LoginWithPasswordMutation = { __typename?: 'Mutation', loginWithPassword: { __typename?: 'AuthPayload', accessToken: string, refreshToken: string, session: { __typename?: 'Session', id: string, expiresAt: string } } | { __typename?: 'MutationErrorPayload', error: { __typename?: 'MutationError', title: string, message: string } } | { __typename?: 'TwoFactorRequiredPayload', transactionID: string, sessionID?: string | null } };
 
 export type FinishEmailSignupMutationVariables = Exact<{
   input: FinishEmailSignupInput;
@@ -325,6 +408,32 @@ export type FinishEmailSignupMutationVariables = Exact<{
 
 
 export type FinishEmailSignupMutation = { __typename?: 'Mutation', finishEmailSignup: { __typename?: 'AuthPayload', accessToken: string, refreshToken: string, session: { __typename?: 'Session', id: string, expiresAt: string } } | { __typename?: 'MutationErrorPayload', error: { __typename?: 'MutationError', title: string, message: string } } };
+
+export type StartEnable2FaMutationVariables = Exact<{
+  input: StartEnable2FaInput;
+}>;
+
+
+export type StartEnable2FaMutation = { __typename?: 'Mutation', startEnable2FA: { __typename?: 'MutationErrorPayload', error: { __typename?: 'MutationError', title: string, message: string } } | { __typename?: 'TwoFactorRequiredPayload', transactionID: string } };
+
+export type StartDisable2FaMutationVariables = Exact<{
+  input: StartDisable2FaInput;
+}>;
+
+
+export type StartDisable2FaMutation = { __typename?: 'Mutation', startDisable2FA: { __typename?: 'MutationErrorPayload', error: { __typename?: 'MutationError', title: string, message: string } } | { __typename?: 'TwoFactorRequiredPayload', transactionID: string } };
+
+export type GetEnable2FaVerificationQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetEnable2FaVerificationQuery = { __typename?: 'Query', getEnable2FAVerification: { __typename?: 'TwoFactorVerification', otpURI: string } };
+
+export type FinishEnable2FaMutationVariables = Exact<{
+  input: FinishEnable2FaInput;
+}>;
+
+
+export type FinishEnable2FaMutation = { __typename?: 'Mutation', finishEnable2FA: { __typename?: 'MutationErrorPayload', error: { __typename?: 'MutationError', title: string, message: string } } | { __typename?: 'MutationSuccess', success: boolean } };
 
 export type FinishPasswordResetMutationVariables = Exact<{
   input: FinishPasswordResetInput;
@@ -338,21 +447,21 @@ export type StartEmailSignupMutationVariables = Exact<{
 }>;
 
 
-export type StartEmailSignupMutation = { __typename?: 'Mutation', startEmailSignup: { __typename?: 'MutationErrorPayload', error: { __typename?: 'MutationError', message: string } } | { __typename?: 'MutationSuccess', success: boolean } };
+export type StartEmailSignupMutation = { __typename?: 'Mutation', startEmailSignup: { __typename?: 'MutationErrorPayload', error: { __typename?: 'MutationError', title: string, message: string } } | { __typename?: 'TwoFactorRequiredPayload', transactionID: string } };
 
-export type VerifyOtpMutationVariables = Exact<{
-  input: VerifyOtpInput;
+export type FinishDisable2FaMutationVariables = Exact<{
+  input: FinishDisable2FaInput;
 }>;
 
 
-export type VerifyOtpMutation = { __typename?: 'Mutation', verifyOTP: { __typename?: 'MutationErrorPayload', error: { __typename?: 'MutationError', message: string } } | { __typename?: 'Verification', id: string, target: string } };
+export type FinishDisable2FaMutation = { __typename?: 'Mutation', finishDisable2FA: { __typename?: 'MutationErrorPayload', error: { __typename?: 'MutationError', title: string, message: string } } | { __typename?: 'MutationSuccess', success: boolean } };
 
-export type GetCreatedWorldQueryVariables = Exact<{
-  input: GetWorldInput;
+export type FinishLoginWith2FaMutationVariables = Exact<{
+  input: FinishLoginWith2FaInput;
 }>;
 
 
-export type GetCreatedWorldQuery = { __typename?: 'Query', getWorld: { __typename?: 'World', id: string, name: string, fantasyType: string, technologyLevel: string, archetype?: string | null, population: string, geographyType: string, geographyFeatures: Array<string>, createdAt: string, updatedAt: string } };
+export type FinishLoginWith2FaMutation = { __typename?: 'Mutation', finishLoginWith2FA: { __typename?: 'AuthPayload', accessToken: string, refreshToken: string, session: { __typename?: 'Session', id: string, expiresAt: string } } | { __typename?: 'MutationErrorPayload', error: { __typename?: 'MutationError', title: string, message: string } } };
 
 export type CreateWorldMutationVariables = Exact<{
   input: CreateWorldInput;
@@ -360,6 +469,13 @@ export type CreateWorldMutationVariables = Exact<{
 
 
 export type CreateWorldMutation = { __typename?: 'Mutation', createWorld: { __typename?: 'MutationErrorPayload', error: { __typename?: 'MutationError', title: string, message: string } } | { __typename?: 'World', id: string } };
+
+export type GetCreatedWorldQueryVariables = Exact<{
+  input: GetWorldInput;
+}>;
+
+
+export type GetCreatedWorldQuery = { __typename?: 'Query', getWorld: { __typename?: 'World', id: string, name: string, fantasyType: string, technologyLevel: string, archetype?: string | null, population: string, geographyType: string, geographyFeatures: Array<string>, createdAt: string, updatedAt: string } };
 
 export type DeleteWorldMutationVariables = Exact<{
   input: DeleteWorldInput;
@@ -383,16 +499,22 @@ export type RefreshAccessTokenMutationVariables = Exact<{
 export type RefreshAccessTokenMutation = { __typename?: 'Mutation', refreshAccessToken: { __typename?: 'AuthPayload', accessToken: string, refreshToken: string, session: { __typename?: 'Session', id: string } } | { __typename?: 'MutationErrorPayload', error: { __typename?: 'MutationError', title: string, message: string } } };
 
 
-export const GetCurrentUserDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetCurrentUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"getCurrentUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]} as unknown as DocumentNode<GetCurrentUserQuery, GetCurrentUserQueryVariables>;
+export const VerifyOtpDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"VerifyOTP"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"VerifyOTPInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"verifyOTP"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"TwoFactorSuccessPayload"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"transactionToken"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"MutationErrorPayload"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"error"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"message"}}]}}]}}]}}]}}]} as unknown as DocumentNode<VerifyOtpMutation, VerifyOtpMutationVariables>;
+export const GetCurrentUserDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetCurrentUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"getCurrentUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"is2FAEnabled"}}]}}]}}]} as unknown as DocumentNode<GetCurrentUserQuery, GetCurrentUserQueryVariables>;
 export const GetWorldsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetWorlds"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"GetWorldsInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"getWorlds"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]}}]} as unknown as DocumentNode<GetWorldsQuery, GetWorldsQueryVariables>;
-export const StartPasswordResetDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"StartPasswordReset"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"StartPasswordResetInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"startPasswordReset"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"MutationErrorPayload"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"error"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"message"}}]}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"StartPasswordResetPayload"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"success"}}]}}]}}]}}]} as unknown as DocumentNode<StartPasswordResetMutation, StartPasswordResetMutationVariables>;
-export const LoginWithPasswordDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"LoginWithPassword"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"LoginWithPasswordInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"loginWithPassword"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"AuthPayload"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"accessToken"}},{"kind":"Field","name":{"kind":"Name","value":"refreshToken"}},{"kind":"Field","name":{"kind":"Name","value":"session"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"expiresAt"}}]}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"MutationErrorPayload"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"error"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"message"}}]}}]}}]}}]}}]} as unknown as DocumentNode<LoginWithPasswordMutation, LoginWithPasswordMutationVariables>;
+export const StartPasswordResetDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"StartPasswordReset"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"StartPasswordResetInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"startPasswordReset"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"MutationSuccess"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"success"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"TwoFactorRequiredPayload"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"transactionID"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"MutationErrorPayload"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"error"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"message"}}]}}]}}]}}]}}]} as unknown as DocumentNode<StartPasswordResetMutation, StartPasswordResetMutationVariables>;
+export const LoginWithPasswordDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"LoginWithPassword"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"LoginWithPasswordInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"loginWithPassword"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"AuthPayload"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"accessToken"}},{"kind":"Field","name":{"kind":"Name","value":"refreshToken"}},{"kind":"Field","name":{"kind":"Name","value":"session"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"expiresAt"}}]}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"TwoFactorRequiredPayload"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"transactionID"}},{"kind":"Field","name":{"kind":"Name","value":"sessionID"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"MutationErrorPayload"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"error"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"message"}}]}}]}}]}}]}}]} as unknown as DocumentNode<LoginWithPasswordMutation, LoginWithPasswordMutationVariables>;
 export const FinishEmailSignupDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"FinishEmailSignup"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"FinishEmailSignupInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"finishEmailSignup"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"AuthPayload"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"accessToken"}},{"kind":"Field","name":{"kind":"Name","value":"refreshToken"}},{"kind":"Field","name":{"kind":"Name","value":"session"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"expiresAt"}}]}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"MutationErrorPayload"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"error"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"message"}}]}}]}}]}}]}}]} as unknown as DocumentNode<FinishEmailSignupMutation, FinishEmailSignupMutationVariables>;
+export const StartEnable2FaDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"StartEnable2FA"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"StartEnable2FAInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"startEnable2FA"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"TwoFactorRequiredPayload"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"transactionID"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"MutationErrorPayload"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"error"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"message"}}]}}]}}]}}]}}]} as unknown as DocumentNode<StartEnable2FaMutation, StartEnable2FaMutationVariables>;
+export const StartDisable2FaDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"StartDisable2FA"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"StartDisable2FAInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"startDisable2FA"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"TwoFactorRequiredPayload"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"transactionID"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"MutationErrorPayload"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"error"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"message"}}]}}]}}]}}]}}]} as unknown as DocumentNode<StartDisable2FaMutation, StartDisable2FaMutationVariables>;
+export const GetEnable2FaVerificationDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetEnable2FAVerification"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"getEnable2FAVerification"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"otpURI"}}]}}]}}]} as unknown as DocumentNode<GetEnable2FaVerificationQuery, GetEnable2FaVerificationQueryVariables>;
+export const FinishEnable2FaDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"FinishEnable2FA"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"FinishEnable2FAInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"finishEnable2FA"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"MutationSuccess"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"success"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"MutationErrorPayload"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"error"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"message"}}]}}]}}]}}]}}]} as unknown as DocumentNode<FinishEnable2FaMutation, FinishEnable2FaMutationVariables>;
 export const FinishPasswordResetDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"FinishPasswordReset"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"FinishPasswordResetInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"finishPasswordReset"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"MutationSuccess"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"success"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"MutationErrorPayload"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"error"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"message"}}]}}]}}]}}]}}]} as unknown as DocumentNode<FinishPasswordResetMutation, FinishPasswordResetMutationVariables>;
-export const StartEmailSignupDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"StartEmailSignup"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"StartEmailSignupInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"startEmailSignup"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"MutationSuccess"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"success"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"MutationErrorPayload"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"error"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"message"}}]}}]}}]}}]}}]} as unknown as DocumentNode<StartEmailSignupMutation, StartEmailSignupMutationVariables>;
-export const VerifyOtpDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"VerifyOTP"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"VerifyOTPInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"verifyOTP"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Verification"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"target"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"MutationErrorPayload"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"error"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"message"}}]}}]}}]}}]}}]} as unknown as DocumentNode<VerifyOtpMutation, VerifyOtpMutationVariables>;
-export const GetCreatedWorldDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetCreatedWorld"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"GetWorldInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"getWorld"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"fantasyType"}},{"kind":"Field","name":{"kind":"Name","value":"technologyLevel"}},{"kind":"Field","name":{"kind":"Name","value":"archetype"}},{"kind":"Field","name":{"kind":"Name","value":"population"}},{"kind":"Field","name":{"kind":"Name","value":"geographyType"}},{"kind":"Field","name":{"kind":"Name","value":"geographyFeatures"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]}}]} as unknown as DocumentNode<GetCreatedWorldQuery, GetCreatedWorldQueryVariables>;
+export const StartEmailSignupDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"StartEmailSignup"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"StartEmailSignupInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"startEmailSignup"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"TwoFactorRequiredPayload"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"transactionID"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"MutationErrorPayload"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"error"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"message"}}]}}]}}]}}]}}]} as unknown as DocumentNode<StartEmailSignupMutation, StartEmailSignupMutationVariables>;
+export const FinishDisable2FaDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"FinishDisable2FA"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"FinishDisable2FAInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"finishDisable2FA"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"MutationSuccess"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"success"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"MutationErrorPayload"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"error"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"message"}}]}}]}}]}}]}}]} as unknown as DocumentNode<FinishDisable2FaMutation, FinishDisable2FaMutationVariables>;
+export const FinishLoginWith2FaDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"FinishLoginWith2FA"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"FinishLoginWith2FAInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"finishLoginWith2FA"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"AuthPayload"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"accessToken"}},{"kind":"Field","name":{"kind":"Name","value":"refreshToken"}},{"kind":"Field","name":{"kind":"Name","value":"session"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"expiresAt"}}]}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"MutationErrorPayload"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"error"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"message"}}]}}]}}]}}]}}]} as unknown as DocumentNode<FinishLoginWith2FaMutation, FinishLoginWith2FaMutationVariables>;
 export const CreateWorldDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreateWorld"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CreateWorldInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createWorld"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"World"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"MutationErrorPayload"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"error"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"message"}}]}}]}}]}}]}}]} as unknown as DocumentNode<CreateWorldMutation, CreateWorldMutationVariables>;
+export const GetCreatedWorldDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetCreatedWorld"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"GetWorldInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"getWorld"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"fantasyType"}},{"kind":"Field","name":{"kind":"Name","value":"technologyLevel"}},{"kind":"Field","name":{"kind":"Name","value":"archetype"}},{"kind":"Field","name":{"kind":"Name","value":"population"}},{"kind":"Field","name":{"kind":"Name","value":"geographyType"}},{"kind":"Field","name":{"kind":"Name","value":"geographyFeatures"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]}}]} as unknown as DocumentNode<GetCreatedWorldQuery, GetCreatedWorldQueryVariables>;
 export const DeleteWorldDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"DeleteWorld"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"DeleteWorldInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deleteWorld"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"MutationSuccess"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"success"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"MutationErrorPayload"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"error"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"message"}}]}}]}}]}}]}}]} as unknown as DocumentNode<DeleteWorldMutation, DeleteWorldMutationVariables>;
 export const DeleteSessionDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"DeleteSession"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"DeleteSessionInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deleteSession"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"MutationSuccess"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"success"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"MutationErrorPayload"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"error"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"message"}}]}}]}}]}}]}}]} as unknown as DocumentNode<DeleteSessionMutation, DeleteSessionMutationVariables>;
 export const RefreshAccessTokenDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"RefreshAccessToken"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"RefreshAccessTokenInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"refreshAccessToken"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"AuthPayload"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"accessToken"}},{"kind":"Field","name":{"kind":"Name","value":"refreshToken"}},{"kind":"Field","name":{"kind":"Name","value":"session"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"MutationErrorPayload"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"error"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"message"}}]}}]}}]}}]}}]} as unknown as DocumentNode<RefreshAccessTokenMutation, RefreshAccessTokenMutationVariables>;

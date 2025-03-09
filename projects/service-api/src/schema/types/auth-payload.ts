@@ -1,11 +1,11 @@
 import { builder } from '../builder';
 import { Session } from './session';
 
-export type AuthPayloadData = {
+export interface AuthPayloadData {
   refreshToken: string;
   accessToken: string;
   session: typeof Session.$inferType;
-};
+}
 
 export const AuthPayload = builder.objectRef<AuthPayloadData>('AuthPayload');
 

@@ -1,13 +1,13 @@
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { defineConfig, devices } from '@playwright/test';
-import { nxE2EPreset } from '@nx/playwright/preset';
 import { workspaceRoot } from '@nx/devkit';
+import { nxE2EPreset } from '@nx/playwright/preset';
+import { defineConfig, devices } from '@playwright/test';
 
 // patch cjs
 const __filename = fileURLToPath(import.meta.url);
 
-const baseURL = process.env['BASE_URL'] || 'http://localhost:4000';
+const baseURL = process.env.BASE_URL ?? 'http://localhost:4000';
 
 // having a million issues trying to use __dirname to establish a reliable path
 // so it's easier to do this to handle the case when this file gets parsed for
@@ -19,6 +19,7 @@ const projectRoot = process.cwd().includes('app-web-e2e')
 const dotEnvFile = path.join(projectRoot, '.env');
 
 process.loadEnvFile(dotEnvFile);
+
 export default defineConfig({
   ...nxE2EPreset(__filename, { testDir: './src' }),
   outputDir: '.test-results',

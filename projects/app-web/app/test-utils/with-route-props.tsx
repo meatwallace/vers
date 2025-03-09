@@ -16,7 +16,7 @@ type RouteProps = T.CreateComponentProps<{
 export function withRouteProps<T extends RouteProps = RouteProps>(
   WrappedComponent: React.ComponentType<T>,
 ) {
-  const displayName = WrappedComponent.displayName || WrappedComponent.name;
+  const displayName = WrappedComponent.displayName ?? WrappedComponent.name;
 
   const ComponentWithRouteProps = () => {
     const actionData = useActionData();

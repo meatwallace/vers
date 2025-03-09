@@ -7,12 +7,12 @@ import { useIsFormPending } from './use-is-form-pending';
 type FormMethod = 'POST' | 'GET' | 'PUT' | 'PATCH' | 'DELETE';
 type HTMLFormMethod = 'post' | 'get' | 'put' | 'patch' | 'delete';
 
-type Props = {
+interface Props {
   isPendingAction: string;
   isPendingMethod: HTMLFormMethod;
   formAction: string;
   formMethod: HTMLFormMethod;
-};
+}
 
 function TestForm(props: Props) {
   const isPending = useIsFormPending({
@@ -30,14 +30,14 @@ function TestForm(props: Props) {
   );
 }
 
-type TestConfig = {
+interface TestConfig {
   isPendingAction: string;
   isPendingMethod: HTMLFormMethod;
   formAction: string;
   formMethod: HTMLFormMethod;
-};
+}
 
-async function setupTest(config: TestConfig) {
+function setupTest(config: TestConfig) {
   const user = userEvent.setup();
 
   const router = createMemoryRouter([
@@ -73,8 +73,8 @@ async function setupTest(config: TestConfig) {
   return { user };
 }
 
-test('it returns false when no form submission is pending', async () => {
-  await setupTest({
+test('it returns false when no form submission is pending', () => {
+  setupTest({
     isPendingAction: '/test',
     isPendingMethod: 'post',
     formAction: '/test',
@@ -88,7 +88,7 @@ test('it returns false when no form submission is pending', async () => {
 });
 
 test('it returns true when form submission matches the action and method', async () => {
-  const { user } = await setupTest({
+  const { user } = setupTest({
     isPendingAction: '/test',
     isPendingMethod: 'post',
     formAction: '/test',
@@ -104,7 +104,7 @@ test('it returns true when form submission matches the action and method', async
 });
 
 test('it returns false when form submission uses a different method', async () => {
-  const { user } = await setupTest({
+  const { user } = setupTest({
     isPendingAction: '/test',
     isPendingMethod: 'post',
     formAction: '/test',
@@ -120,7 +120,7 @@ test('it returns false when form submission uses a different method', async () =
 });
 
 test('it returns false when form submission uses a different action', async () => {
-  const { user } = await setupTest({
+  const { user } = setupTest({
     isPendingAction: '/test',
     isPendingMethod: 'post',
     formAction: '/other',
@@ -136,7 +136,7 @@ test('it returns false when form submission uses a different action', async () =
 });
 
 test('it returns true when form submission matches a custom action and method', async () => {
-  const { user } = await setupTest({
+  const { user } = setupTest({
     isPendingAction: '/custom',
     isPendingMethod: 'put',
     formAction: '/custom',

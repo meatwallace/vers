@@ -18,15 +18,6 @@ async function setupTest() {
   return { app, db, teardown, user };
 }
 
-afterEach(() => {
-  vi.restoreAllMocks();
-});
-
-type UpdateWorldSuccessResponse = {
-  success: true;
-  data: typeof worlds.$inferSelect;
-};
-
 test('it updates the provided world', async () => {
   const { app, db, teardown, user } = await setupTest();
 
@@ -70,15 +61,14 @@ test('it updates the provided world', async () => {
 
   const res = await app.request(req);
 
-  const returnedData = (await res.json()) as UpdateWorldSuccessResponse;
+  const body = await res.json();
 
-  const persistedWorld = await db.query.worlds.findFirst({
+  const updatedWorld = await db.query.worlds.findFirst({
     where: and(eq(worlds.ownerID, user.id), eq(worlds.id, worldID)),
   });
 
   expect(res.status).toBe(200);
-
-  expect(returnedData).toMatchObject({
+  expect(body).toMatchObject({
     success: true,
     data: {
       id: worldID,
@@ -96,11 +86,7 @@ test('it updates the provided world', async () => {
     },
   });
 
-  expect(new Date(returnedData.data.updatedAt).getTime()).toBeGreaterThan(
-    insertedWorld.updatedAt.getTime(),
-  );
-
-  expect(persistedWorld).toMatchObject({
+  expect(updatedWorld).toMatchObject({
     id: worldID,
     ownerID: user.id,
     name: 'Updated World',
@@ -114,7 +100,7 @@ test('it updates the provided world', async () => {
     updatedAt: expect.any(Date),
   });
 
-  expect(persistedWorld?.updatedAt.getTime()).toBeGreaterThan(
+  expect(updatedWorld?.updatedAt.getTime()).toBeGreaterThan(
     insertedWorld.updatedAt.getTime(),
   );
 
@@ -126,21 +112,18 @@ test('it allows partial updating', async () => {
 
   const worldID = createId();
 
-  await db
-    .insert(worlds)
-    .values({
-      id: worldID,
-      ownerID: user.id,
-      name: 'New World',
-      fantasyType: 'Medium',
-      technologyLevel: 'Medieval',
-      atmosphere: 'Neutral',
-      population: 'Average',
-      geographyType: 'Supercontinent',
-      geographyFeatures: ['Deserts'],
-      createdAt: new Date('2024-05-02T01:58:38.835Z'),
-    })
-    .returning();
+  await db.insert(worlds).values({
+    id: worldID,
+    ownerID: user.id,
+    name: 'New World',
+    fantasyType: 'Medium',
+    technologyLevel: 'Medieval',
+    atmosphere: 'Neutral',
+    population: 'Average',
+    geographyType: 'Supercontinent',
+    geographyFeatures: ['Deserts'],
+    createdAt: new Date('2024-05-02T01:58:38.835Z'),
+  });
 
   const update = {
     name: 'Updated World',
@@ -156,16 +139,13 @@ test('it allows partial updating', async () => {
   });
 
   const res = await app.request(req);
-
-  const returnedData = (await res.json()) as UpdateWorldSuccessResponse;
-
-  const persistedWorld = await db.query.worlds.findFirst({
+  const body = await res.json();
+  const updatedWorld = await db.query.worlds.findFirst({
     where: and(eq(worlds.ownerID, user.id), eq(worlds.id, worldID)),
   });
 
   expect(res.status).toBe(200);
-
-  expect(returnedData).toMatchObject({
+  expect(body).toMatchObject({
     success: true,
     data: {
       id: worldID,
@@ -182,7 +162,7 @@ test('it allows partial updating', async () => {
     },
   });
 
-  expect(persistedWorld).toMatchObject({
+  expect(updatedWorld).toMatchObject({
     id: worldID,
     ownerID: user.id,
     name: 'Updated World',

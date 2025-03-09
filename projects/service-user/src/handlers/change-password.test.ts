@@ -1,14 +1,14 @@
 import bcrypt from 'bcryptjs';
+import { Hono } from 'hono';
 import invariant from 'tiny-invariant';
 import * as schema from '@chrono/postgres-schema';
-import { Hono } from 'hono';
-import { createTestUser, PostgresTestUtils } from '@chrono/service-test-utils';
-import { changePassword } from './change-password';
+import { PostgresTestUtils, createTestUser } from '@chrono/service-test-utils';
 import { pgTestConfig } from '../pg-test-config';
+import { changePassword } from './change-password';
 
-type TestConfig = {
+interface TestConfig {
   user?: Partial<typeof schema.users.$inferInsert>;
-};
+}
 
 async function setupTest(config: TestConfig = {}) {
   const app = new Hono();

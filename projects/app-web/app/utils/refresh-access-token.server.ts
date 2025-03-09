@@ -26,16 +26,16 @@ const RefreshAccessTokenMutation = graphql(/* GraphQL */ `
   }
 `);
 
-type AuthPayload = {
+interface AuthPayload {
   accessToken: string;
   refreshToken: string;
   sessionID: string;
-};
+}
 
-type Context = {
+interface Context {
   client: GraphQLClient;
   refreshToken: string;
-};
+}
 
 export async function refreshAccessToken(
   request: Request,

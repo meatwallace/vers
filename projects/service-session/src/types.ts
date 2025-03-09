@@ -5,31 +5,31 @@ import { envSchema } from './env';
 
 export type Env = z.infer<typeof envSchema>;
 
-export type HandlerContext = {
+export interface HandlerContext {
   db: PostgresJsDatabase<typeof schema>;
-};
+}
 
-export type CreateSessionInput = {
+export interface CreateSessionInput {
   userID: string;
   ipAddress: string;
   rememberMe: boolean;
-};
+}
 
-export type RefreshTokensInput = {
+export interface RefreshTokensInput {
   refreshToken: string;
-};
+}
 
-export type Session = {
+export interface Session {
   id: string;
   refreshToken: string;
   expiresAt: Date;
   createdAt: Date;
   updatedAt: Date;
   userID: string;
-};
+}
 
-export type TokenPayload = {
+export interface TokenPayload {
   accessToken: string;
   refreshToken: string;
   session: Session;
-};
+}

@@ -5,9 +5,9 @@ import { builder } from '../builder';
 import { World } from '../types/world';
 import { requireAuth } from '../utils/require-auth';
 
-type Args = {
+interface Args {
   input: typeof GetWorldInput.$inferInput;
-};
+}
 
 export async function getWorld(
   _: object,

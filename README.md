@@ -26,11 +26,11 @@ yarn stack:start
 yarn stack:build
 
 # generate and run our postgres migrations
-yarn postgres:migrations-generate
-yarn postgres:migrations-run:dev
+yarn pg:migrations-generate
+yarn pg:migrations-run:dev
 
 # update our postgres migrations after updating drizzle
-yarn postgres:migrations-update
+yarn pg:migrations-update
 
 # install e2e browsers
 yarn playwright install
@@ -57,7 +57,7 @@ all of our cursor rules & agentic process is stored in the [.cursor](.cursor) di
 
 consider prompting an agentic composer like:
 
-> We are working on a new feature for the <project-name> project.
-> At a high level, we want to <describe-feature>.
+> We are working on a new feature for the \<project-name> project.  
+> At a high level, we want to \<describe-feature>.
 >
-> Please review the @001-initialization.md file to get proceed.
+> Read @001-initialization.md and related files and confirm you're ready to proceed.

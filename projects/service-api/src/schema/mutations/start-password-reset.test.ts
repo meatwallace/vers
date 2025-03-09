@@ -1,14 +1,39 @@
 import { afterEach, expect, test } from 'vitest';
+import { HttpResponse, http } from 'msw';
+import { SendEmailRequest } from '@chrono/service-types';
 import { drop } from '@mswjs/data';
-import { createMockGQLContext } from '~/test-utils/create-mock-gql-context';
 import { db } from '~/mocks/db';
+import { ENDPOINT_URL } from '~/mocks/handlers/http/send-email';
+import { server } from '~/mocks/node';
+import { createMockGQLContext } from '~/test-utils/create-mock-gql-context';
 import { resolve } from './start-password-reset';
 
+let emailTemplate: string | null = null;
+
+const sendEmailHandler = vi.fn(async ({ request }: { request: Request }) => {
+  const body = (await request.json()) as SendEmailRequest;
+
+  emailTemplate = body.html;
+
+  return HttpResponse.json({ success: true });
+});
+
+function setupTest() {
+  server.use(http.post(ENDPOINT_URL, sendEmailHandler));
+}
+
 afterEach(() => {
+  emailTemplate = null;
+
+  server.resetHandlers();
+  vi.clearAllMocks();
+
   drop(db);
 });
 
-test('it creates a verification for an existing user', async () => {
+test('it sets a reset token, sends an email then returns success for an existing user', async () => {
+  setupTest();
+
   db.user.create({
     email: 'test@example.com',
     passwordHash: 'hashed_password',
@@ -26,31 +51,57 @@ test('it creates a verification for an existing user', async () => {
 
   const result = await resolve({}, args, ctx);
 
-  expect(result).toMatchObject({
-    success: true,
-  });
-
-  const verification = db.verification.findFirst({
-    where: {
-      target: { equals: 'test@example.com' },
-      type: {
-        equals: 'reset-password',
-      },
-    },
-  });
-
   const user = db.user.findFirst({
     where: {
       email: { equals: 'test@example.com' },
     },
   });
 
-  expect(verification?.createdAt).toBeDefined();
   expect(user?.passwordResetToken).toBeDefined();
   expect(user?.passwordResetTokenExpiresAt).toBeDefined();
+
+  expect(result).toMatchObject({ success: true });
+  expect(sendEmailHandler).toHaveBeenCalled();
+  expect(emailTemplate).toContain(
+    `http://localhost:4000/reset-password?token=${user?.passwordResetToken}&amp;email=test%40example.com`,
+  );
+});
+
+test('it directs the user to verify an OTP when 2FA is enabled', async () => {
+  setupTest();
+
+  db.user.create({
+    email: 'test@example.com',
+    passwordHash: 'hashed_password',
+    passwordResetToken: null,
+    passwordResetTokenExpiresAt: null,
+  });
+
+  db.verification.create({
+    type: '2fa',
+    target: 'test@example.com',
+  });
+
+  const ctx = createMockGQLContext({});
+
+  const args = {
+    input: {
+      email: 'test@example.com',
+    },
+  };
+
+  const result = await resolve({}, args, ctx);
+
+  expect(result).toMatchObject({ transactionID: expect.any(String) });
+  expect(sendEmailHandler).toHaveBeenCalled();
+  expect(emailTemplate).toContain(
+    'http://localhost:4000/verify-otp?type=RESET_PASSWORD',
+  );
 });
 
 test('it returns success for non-existent user (to prevent user enumeration)', async () => {
+  setupTest();
+
   const ctx = createMockGQLContext({});
 
   const args = {

@@ -1,9 +1,9 @@
 import { useFormAction, useNavigation } from 'react-router';
 
-type IsFormPendingOptions = {
+interface IsFormPendingOptions {
   formAction?: string;
   formMethod?: 'POST' | 'GET' | 'PUT' | 'PATCH' | 'DELETE';
-};
+}
 
 const defaultOptions: IsFormPendingOptions = {
   formMethod: 'POST',

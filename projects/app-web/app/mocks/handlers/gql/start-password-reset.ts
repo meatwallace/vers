@@ -1,22 +1,23 @@
-import { graphql, HttpResponse } from 'msw';
-import { MutationSuccess } from '~/gql/graphql';
-import { type MutationResponse } from './types';
+import { HttpResponse, graphql } from 'msw';
+import {
+  StartPasswordResetInput,
+  StartPasswordResetPayload,
+  VerificationType,
+} from '~/gql/graphql';
 import { db } from '~/mocks/db';
 
-type StartPasswordResetResponse = MutationResponse<{
-  startPasswordReset: MutationSuccess;
-}>;
+interface StartPasswordResetVariables {
+  input: StartPasswordResetInput;
+}
 
-type StartPasswordResetVariables = {
-  input: {
-    email: string;
-  };
-};
+interface StartPasswordResetResponse {
+  startPasswordReset: StartPasswordResetPayload;
+}
 
 export const StartPasswordReset = graphql.mutation<
   StartPasswordResetResponse,
   StartPasswordResetVariables
->('StartPasswordReset', async ({ variables }) => {
+>('StartPasswordReset', ({ variables }) => {
   const user = db.user.findFirst({
     where: {
       email: { equals: variables.input.email },
@@ -37,7 +38,7 @@ export const StartPasswordReset = graphql.mutation<
   // Create a verification record
   db.verification.create({
     target: variables.input.email,
-    type: 'RESET_PASSWORD',
+    type: VerificationType.ResetPassword,
   });
 
   return HttpResponse.json({

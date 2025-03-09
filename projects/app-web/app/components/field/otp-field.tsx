@@ -4,11 +4,11 @@ import { Label } from './label.tsx';
 import { InputOTP } from './input-otp.tsx';
 import * as styles from './otp-field.css.ts';
 
-type Props = {
+interface Props {
   labelProps: React.LabelHTMLAttributes<HTMLLabelElement>;
   inputProps: Omit<OTPInputProps, 'maxLength' | 'render'>;
   errors: Array<string>;
-};
+}
 
 export function OTPField(props: Props) {
   const fallbackID = React.useId();

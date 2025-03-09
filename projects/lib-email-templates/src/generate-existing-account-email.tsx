@@ -2,9 +2,9 @@ import * as E from '@react-email/components';
 import { generateEmail } from './generate-email.ts';
 import { ExistingAccountEmail } from './templates/existing-account-email.tsx';
 
-type Config = {
+interface Config {
   email: string;
-};
+}
 
 export async function generateExistingAccountEmail(config: Config) {
   return generateEmail({

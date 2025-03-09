@@ -1,17 +1,19 @@
-import { graphql, HttpResponse } from 'msw';
-import { World } from '~/gql/graphql';
+import { HttpResponse, graphql } from 'msw';
+import { GetWorldsInput, World } from '~/gql/graphql';
 import { db } from '../../db';
 import { decodeMockJWT } from '../../utils/decode-mock-jwt';
 
-type GetWorldsResponse = {
-  getWorlds: Array<World>;
-};
+interface GetWorldsVariables {
+  input: GetWorldsInput;
+}
 
-type GetWorldsVariables = Record<PropertyKey, never>;
+interface GetWorldsResponse {
+  getWorlds: Array<World>;
+}
 
 export const GetWorlds = graphql.query<GetWorldsResponse, GetWorldsVariables>(
   'GetWorlds',
-  async ({ request }) => {
+  ({ request }) => {
     const authHeader = request.headers.get('authorization');
 
     if (!authHeader) {

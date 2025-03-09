@@ -1,18 +1,19 @@
-import { graphql, HttpResponse } from 'msw';
-import { User } from '~/gql/graphql';
+import { HttpResponse, graphql } from 'msw';
+import { GetCurrentUserQueryVariables, User } from '~/gql/graphql';
 import { db } from '../../db';
 import { decodeMockJWT } from '../../utils/decode-mock-jwt';
+import { addUserResolvedFields } from './utils/add-user-resolved-fields';
 
-type GetCurrentUserResponse = {
+type GetCurrentUserVariables = GetCurrentUserQueryVariables;
+
+interface GetCurrentUserResponse {
   getCurrentUser: User;
-};
-
-type GetCurrentUserVariables = Record<PropertyKey, never>;
+}
 
 export const GetCurrentUser = graphql.query<
   GetCurrentUserResponse,
   GetCurrentUserVariables
->('GetCurrentUser', async ({ request }) => {
+>('GetCurrentUser', ({ request }) => {
   const authHeader = request.headers.get('authorization');
 
   if (!authHeader) {
@@ -36,7 +37,7 @@ export const GetCurrentUser = graphql.query<
 
   return HttpResponse.json({
     data: {
-      getCurrentUser: user,
+      getCurrentUser: addUserResolvedFields(user),
     },
   });
 });

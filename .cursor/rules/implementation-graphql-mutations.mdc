@@ -1,0 +1,186 @@
+---
+description: GraphQL Mutation Implementation Standards using Pothos
+globs: "**/schema/mutations/**/*.ts"
+alwaysApply: false
+---
+
+# GraphQL Mutation Implementation Standards
+
+Standards for implementing GraphQL mutations using Pothos Schema Builder.
+
+<rule>
+name: implementation_standards_graphql_mutations
+description: Standards for implementing GraphQL mutations
+filters:
+  - type: file_path
+    pattern: ".*/schema/mutations/.*\\.ts$"
+  - type: file_path
+    pattern: "!.*\\.test\\.ts$"
+
+actions:
+  - type: suggest
+    message: |
+      GraphQL Mutation Implementation Standards:
+
+      1. File Organization:
+         - Place mutations in `schema/mutations/` directory
+         - Use kebab-case for filenames matching the operation (e.g. `create-user.ts`)
+         - Co-locate test files with mutations
+         - One mutation per file
+         - Export mutations from index files
+
+      2. Input Types:
+         - All mutations must have an input type, even for simple operations
+         - Name input types as `OperationNameInput` (e.g. `CreateUserInput`)
+         - Use `t.string()`, `t.boolean()`, etc. for scalar fields
+         - Mark required fields using `required: true`
+         - Use TypeScript inference via `$inferInput`
+
+      3. Payload Types:
+         - All mutations must return a union type
+         - Name payload types as `OperationNamePayload` (e.g. `CreateUserPayload`)
+         - Union must include `MutationErrorPayload`
+         - Use `createPayloadResolver` utility for union type resolution
+         - Use TypeScript inference via `$inferType`
+
+      4. Resolver Implementation:
+         - Export standalone async resolver function
+         - Export wrapped resolver function
+         - Accept standard resolver parameters (`parent`, `args`, `ctx`)
+         - Use service layer methods from `ctx.services`
+         - Return standardized success/error shape for expected errors
+         - For unexpected errors, throw a GraphQLError with INTERNAL_SERVER_ERROR code
+         - Add TODO comment for Sentry error capture
+         - Never expose raw error messages in responses
+
+      5. Context Usage:
+         - Access services via `ctx.services`
+         - Access request data via `ctx.request`
+         - Access auth data via `ctx.user`
+         - Document required context properties
+         - Use type-safe context access
+
+      6. Documentation:
+         - Include JSDoc documentation for mutations
+         - Document permissions using `@permission`
+         - Include usage example in documentation
+         - Document error cases
+         - Follow example format below
+
+      7. Authorization:
+         - Use authorization wrapper functions
+         - Available wrappers:
+           - `requireAuth` - Requires authenticated user
+
+examples:
+  - input: |
+      ```ts
+      import { GraphQLError } from 'graphql';
+      import { logger } from '~/logger';
+      import { Context } from '~/types';
+      import { builder } from '../builder';
+      import { AuthPayload } from '../types/auth-payload';
+      import { MutationErrorPayload } from '../types/mutation-error-payload';
+      import { createPayloadResolver } from '../utils/create-payload-resolver';
+      import { requireAuth } from '../utils/require-auth';
+
+      // Good - documentation with example usage
+      /**
+       * @description Creates a new world for the authenticated user
+       * 
+       * @permission authenticated - Requires user to be logged in
+       * 
+       * @example
+       * ```gql
+       * mutation CreateWorld {
+       *   createWorld(input: { 
+       *     name: "New World",
+       *     fantasyType: "HIGH_FANTASY",
+       *     technologyLevel: "MEDIEVAL"
+       *   }) {
+       *     ... on World {
+       *       id
+       *       name
+       *       fantasyType
+       *       technologyLevel
+       *     }
+       *
+       *     ... on MutationErrorPayload {
+       *       error {
+       *         title
+       *         message
+       *       }
+       *     }
+       *   }
+       * }
+       * ```
+       */
+
+      interface Args {
+        // Good - use `$inferInput`
+        input: typeof CreateWorldInput.$inferInput;
+      };
+
+      // Good - wrap the basic resolver
+      export async function createWorld(
+        _: object,
+        args: Args,
+        ctx: AuthedContext,
+      ): Promise<typeof CreateWorldPayload.$inferType> {
+        try {
+          const world = await ctx.services.world.createWorld({
+            ownerID: ctx.user.id,
+            name: args.input.name,
+            fantasyType: args.input.fantasyType,
+            technologyLevel: args.input.technologyLevel,
+          });
+
+          return world;
+        } catch (error: unknown) {
+          // TODO(#16): capture via Sentry
+          if (error instanceof Error) {
+            // Good - log errors
+            logger.error(error.message);
+          }
+
+          // Good - don't leak our unhandled errors
+          throw new GraphQLError('An unknown error occurred', {
+            extensions: {
+              code: 'INTERNAL_SERVER_ERROR',
+            },
+          });
+        }
+      }
+
+      const CreateWorldInput = builder.inputType('CreateWorldInput', {
+        fields: (t) => ({
+          name: t.string({ required: true }),
+          fantasyType: t.string({ required: true }),
+          technologyLevel: t.string({ required: true }),
+        }),
+      });
+
+      const CreateWorldPayload = builder.unionType('CreateWorldPayload', {
+        types: [World, MutationErrorPayload],
+        resolveType: createPayloadResolver(World),
+      });
+
+      // Good - export the wrapped resolver for testing
+      export const resolve = requireAuth(createWorld);
+
+      builder.mutationField('createWorld', (t) =>
+        t.field({
+          type: CreateWorldPayload,
+          args: {
+            input: t.arg({ type: CreateWorldInput, required: true }),
+          },
+          resolve,
+        }),
+      );
+      ```
+    output: "GraphQL mutation following implementation standards"
+
+metadata:
+  priority: high
+  version: 1.0
+</rule>

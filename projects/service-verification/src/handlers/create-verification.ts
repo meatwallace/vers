@@ -1,24 +1,36 @@
-import { Context } from 'hono';
+import { and, eq } from 'drizzle-orm';
 import { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
-import { generateTOTP } from '@epic-web/totp';
-import { eq, and } from 'drizzle-orm';
-import { createId } from '@paralleldrive/cuid2';
+import { Context } from 'hono';
+import { Jsonify } from 'type-fest';
 import * as schema from '@chrono/postgres-schema';
 import {
   CreateVerificationRequest,
   CreateVerificationResponse,
+  VerificationType,
 } from '@chrono/service-types';
+import { generateTOTP } from '@epic-web/totp';
+import { createId } from '@paralleldrive/cuid2';
 
 // alphanumeirc excluding 0, O, and I on purpose to avoid confusing users
 const TOTP_CHARSET = 'ABCDEFGHJKLMNPQRSTUVWXYZ123456789';
+
+// standard charset used by 2FA apps
+const TWO_FACTOR_CHARSET = '0123456789';
+
+const VERIFICATION_TYPE_TO_CHARSET: Record<VerificationType, string> = {
+  '2fa-setup': TWO_FACTOR_CHARSET,
+  '2fa': TWO_FACTOR_CHARSET,
+  onboarding: TOTP_CHARSET,
+  'change-email': TOTP_CHARSET,
+};
 
 export async function createVerification(
   ctx: Context,
   db: PostgresJsDatabase<typeof schema>,
 ) {
   try {
-    const { type, target, period } =
-      await ctx.req.json<CreateVerificationRequest>();
+    const { type, target, period, expiresAt } =
+      await ctx.req.json<Jsonify<CreateVerificationRequest>>();
 
     // delete any existing verifications for this target and type to invalidate previous codes
     await db
@@ -32,7 +44,7 @@ export async function createVerification(
 
     const { otp, ...verificationConfig } = await generateTOTP({
       algorithm: 'SHA-256',
-      charSet: TOTP_CHARSET,
+      charSet: VERIFICATION_TYPE_TO_CHARSET[type],
       period,
     });
 
@@ -40,7 +52,7 @@ export async function createVerification(
       id: createId(),
       type,
       target,
-      expiresAt: new Date(Date.now() + verificationConfig.period * 1000),
+      expiresAt: expiresAt ? new Date(expiresAt) : null,
       createdAt: new Date(),
       ...verificationConfig,
     };

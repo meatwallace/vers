@@ -1,24 +1,24 @@
-import invariant from 'tiny-invariant';
 import { afterEach, expect, test } from 'vitest';
-import { createRoutesStub, LoaderFunctionArgs } from 'react-router';
-import { render, screen } from '@testing-library/react';
 import { GraphQLClient } from 'graphql-request';
+import { LoaderFunctionArgs, createRoutesStub } from 'react-router';
+import invariant from 'tiny-invariant';
 import { drop } from '@mswjs/data';
+import { render, screen } from '@testing-library/react';
 import { db } from '~/mocks/db.ts';
 import { authSessionStorage } from '~/session/auth-session-storage.server.ts';
 import {
   SESSION_KEY_AUTH_ACCESS_TOKEN,
   SESSION_KEY_AUTH_SESSION_ID,
 } from '~/session/consts.ts';
+import { withAuthedUser } from '~/test-utils/with-authed-user.ts';
 import { Routes } from '~/types.ts';
 import { logout } from './logout.server.ts';
-import { withAuthedUser } from '~/test-utils/with-authed-user.ts';
 
-type TestConfig = {
+interface TestConfig {
   sessionID?: string;
   userID?: string;
   redirectTo?: string;
-};
+}
 
 let setCookieHeader: null | string = null;
 
@@ -36,7 +36,7 @@ vi.stubGlobal(
   }),
 );
 
-async function setupTest(config: Partial<TestConfig> = {}) {
+function setupTest(config: TestConfig = {}) {
   const client = new GraphQLClient('http://localhost:3000/graphql');
   const loader = async ({ request }: LoaderFunctionArgs) => {
     await logout(request, {
@@ -74,7 +74,7 @@ afterEach(() => {
 });
 
 test('it redirects to index route by default', async () => {
-  await setupTest();
+  setupTest();
 
   const indexRoute = await screen.findByText('INDEX_ROUTE');
 
@@ -82,7 +82,7 @@ test('it redirects to index route by default', async () => {
 });
 
 test('it redirects to the specified route', async () => {
-  await setupTest({
+  setupTest({
     redirectTo: '/custom',
   });
 
@@ -92,7 +92,7 @@ test('it redirects to the specified route', async () => {
 });
 
 test('it clears the auth session', async () => {
-  await setupTest();
+  setupTest();
 
   await screen.findByText('INDEX_ROUTE');
 
@@ -105,7 +105,7 @@ test('it clears the auth session', async () => {
 });
 
 test('it deletes the session from the database', async () => {
-  await setupTest({
+  setupTest({
     sessionID: 'test_session_id',
     userID: 'test_user_id',
   });
@@ -124,7 +124,7 @@ test('it deletes the session from the database', async () => {
 });
 
 test('it continues logout flow even if session deletion fails', async () => {
-  await setupTest({
+  setupTest({
     sessionID: 'invalid_session_id',
   });
 

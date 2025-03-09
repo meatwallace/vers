@@ -2,7 +2,7 @@ import SchemaBuilder from '@pothos/core';
 import { DateResolver, DateTimeResolver } from 'graphql-scalars';
 import { Context } from '~/types';
 
-type SchemaConfig = {
+interface SchemaConfig {
   DefaultFieldNullability: false;
   Scalars: {
     DateTime: {
@@ -15,7 +15,7 @@ type SchemaConfig = {
     };
   };
   Context: Context;
-};
+}
 
 export const builder = new SchemaBuilder<SchemaConfig>({
   defaultFieldNullability: false,

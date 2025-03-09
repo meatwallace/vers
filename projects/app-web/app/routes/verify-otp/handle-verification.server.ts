@@ -1,9 +1,10 @@
 import { VerificationType } from '~/gql/graphql.ts';
-import { type HandleVerificationContext } from './types.ts';
+import { handle2FADisable } from './handle-2fa-disable.server.ts';
+import { handle2FA } from './handle-2fa.server.ts';
 import { handleOnboarding } from './handle-onboarding.server.ts';
 import { handleResetPassword } from './handle-reset-password.server.ts';
-import { handleChangeEmail } from './handle-change-email.server.ts';
-import { handle2FA } from './handle-2fa.server.ts';
+import { handleUnsupported } from './handle-unsupported.server.ts';
+import { type HandleVerificationContext } from './types.ts';
 
 export async function handleVerification(
   type: VerificationType,
@@ -14,9 +15,25 @@ export async function handleVerification(
   return handleVerification(context);
 }
 
-const HANDLE_VERIFICATION_TYPE_STRATEGY = {
+type VerificationHandlerStrategy = (
+  ctx: HandleVerificationContext,
+) => Promise<Response>;
+
+type StrategyMap = Record<VerificationType, VerificationHandlerStrategy>;
+
+const HANDLE_VERIFICATION_TYPE_STRATEGY: StrategyMap = {
   [VerificationType.Onboarding]: handleOnboarding,
   [VerificationType.ResetPassword]: handleResetPassword,
-  [VerificationType.ChangeEmail]: handleChangeEmail,
   [VerificationType.TwoFactorAuth]: handle2FA,
+  [VerificationType.TwoFactorAuthSetup]: handleUnsupported,
+  [VerificationType.TwoFactorAuthDisable]: handle2FADisable,
+  [VerificationType.ChangeEmailConfirmation]: noop,
+  [VerificationType.ChangePassword]: noop,
+  [VerificationType.ChangeEmail]: noop,
 };
+
+// eslint-disable-next-line @typescript-eslint/require-await
+async function noop(): Promise<Response> {
+  // TODO(#42): requires implementation
+  throw new Error('Not implemented');
+}

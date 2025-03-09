@@ -9,7 +9,7 @@ export const container = style({
   padding: '4px 16px',
 });
 
-export const userName = style({
+export const profileLink = style({
   color: '#ddefff',
   fontFamily: 'Karla, sans-serif',
   fontSize: '16px',
