@@ -1,4 +1,4 @@
-import { UserData } from '@chrono/service-types';
+import { UserData } from '@vers/service-types';
 import { Jsonify } from 'type-fest';
 
 export function marshal(data: Jsonify<UserData>): UserData {

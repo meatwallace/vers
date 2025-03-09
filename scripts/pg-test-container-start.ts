@@ -1,4 +1,4 @@
-import { PostgresTestUtils } from '@chrono/service-test-utils';
+import { PostgresTestUtils } from '@vers/service-test-utils';
 
 await PostgresTestUtils.startContainer({
   migrationPath: './projects/db-postgres/migrations',

@@ -57,6 +57,13 @@
       "when": 1741315026547,
       "tag": "0007_public_mesmero",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1741497084326,
+      "tag": "0008_slim_wolfsbane",
+      "breakpoints": true
     }
   ]
 }

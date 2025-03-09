@@ -1,8 +1,4 @@
-import {
-  addEnvUtils,
-  LoggingSchema,
-  NodeEnvSchema,
-} from '@chrono/service-utils';
+import { addEnvUtils, LoggingSchema, NodeEnvSchema } from '@vers/service-utils';
 import { z } from 'zod';
 
 export const envSchema = z

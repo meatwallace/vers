@@ -1,7 +1,7 @@
-import { createTestJWT } from '@chrono/service-test-utils';
-import { ServiceID } from '@chrono/service-types';
 import { drop } from '@mswjs/data';
 import { createId } from '@paralleldrive/cuid2';
+import { createTestJWT } from '@vers/service-test-utils';
+import { ServiceID } from '@vers/service-types';
 import { env } from '~/env';
 import { db } from '~/mocks/db';
 import { createServiceContext } from '../utils';
@@ -31,7 +31,7 @@ test('it updates a verification', async () => {
     accessToken,
     apiURL: env.VERIFICATIONS_SERVICE_URL,
     requestID: createId(),
-    serviceID: ServiceID.ServiceWorld,
+    serviceID: ServiceID.ServiceVerification,
   });
 
   const args = {

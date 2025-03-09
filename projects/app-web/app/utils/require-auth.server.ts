@@ -1,11 +1,6 @@
 import { redirect } from 'react-router';
 import { GraphQLClient } from 'graphql-request';
 import { authSessionStorage } from '~/session/auth-session-storage.server.ts';
-import {
-  SESSION_KEY_AUTH_ACCESS_TOKEN,
-  SESSION_KEY_AUTH_REFRESH_TOKEN,
-  SESSION_KEY_AUTH_SESSION_ID,
-} from '~/session/consts.ts';
 import { Routes } from '~/types';
 import { isExpiredJWT } from './is-expired-jwt.server.ts';
 import { logout } from './logout.server.ts';
@@ -29,9 +24,9 @@ export async function requireAuth(
     request.headers.get('cookie'),
   );
 
-  const sessionID = authSession.get(SESSION_KEY_AUTH_SESSION_ID);
-  const accessToken = authSession.get(SESSION_KEY_AUTH_ACCESS_TOKEN);
-  const refreshToken = authSession.get(SESSION_KEY_AUTH_REFRESH_TOKEN);
+  const sessionID = authSession.get('sessionID');
+  const accessToken = authSession.get('accessToken');
+  const refreshToken = authSession.get('refreshToken');
 
   if (!sessionID || !accessToken || !refreshToken) {
     throw redirect(Routes.Login);
@@ -58,9 +53,9 @@ export async function requireAuth(
       refreshToken,
     });
 
-    authSession.set(SESSION_KEY_AUTH_ACCESS_TOKEN, authPayload.accessToken);
-    authSession.set(SESSION_KEY_AUTH_REFRESH_TOKEN, authPayload.refreshToken);
-    authSession.set(SESSION_KEY_AUTH_SESSION_ID, authPayload.sessionID);
+    authSession.set('accessToken', authPayload.accessToken);
+    authSession.set('refreshToken', authPayload.refreshToken);
+    authSession.set('sessionID', authPayload.sessionID);
 
     const setCookieHeader = await authSessionStorage.commitSession(authSession);
 

@@ -1,7 +1,7 @@
 import {
   VerifyPasswordRequest,
   VerifyPasswordResponse,
-} from '@chrono/service-types';
+} from '@vers/service-types';
 import { UserServiceContext, VerifyPasswordPayload } from './types';
 
 export async function verifyPassword(

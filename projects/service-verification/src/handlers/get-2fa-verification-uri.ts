@@ -1,9 +1,9 @@
-import * as schema from '@chrono/postgres-schema';
+import { getTOTPAuthUri } from '@epic-web/totp';
+import * as schema from '@vers/postgres-schema';
 import {
   Get2FAVerificationURIRequest,
   Get2FAVerificationURIResponse,
-} from '@chrono/service-types';
-import { getTOTPAuthUri } from '@epic-web/totp';
+} from '@vers/service-types';
 import { and, eq } from 'drizzle-orm';
 import { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
 import { Context } from 'hono';
@@ -33,7 +33,7 @@ export async function get2FAVerificationURI(
       accountName: target,
       algorithm: verification.algorithm,
       digits: verification.digits,
-      issuer: 'Chrononomicon',
+      issuer: 'vers',
       period: verification.period,
       secret: verification.secret,
     });

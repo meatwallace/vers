@@ -1,4 +1,4 @@
-import { createAuthMiddleware } from '@chrono/service-utils';
+import { createAuthMiddleware } from '@vers/service-utils';
 import { createYoga } from 'graphql-yoga';
 import { app } from './app';
 import { createYogaContext } from './create-yoga-context';

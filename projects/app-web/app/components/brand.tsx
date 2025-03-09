@@ -11,13 +11,7 @@ export function Brand(props: Props) {
     <h1
       className={clsx(styles.container({ size: props.size }), props.className)}
     >
-      Chron
-      <img
-        alt="Chrononomicon brand icon"
-        className={styles.icon({ size: props.size })}
-        src="/assets/images/brand-icon-light.png"
-      />
-      nomicon
+      vers
     </h1>
   );
 }

@@ -1,5 +1,5 @@
-import { createTestJWT } from '@chrono/service-test-utils';
 import { drop } from '@mswjs/data';
+import { createTestJWT } from '@vers/service-test-utils';
 import { env } from '~/env';
 import { db } from '~/mocks/db';
 import { createMockGQLContext } from '~/test-utils/create-mock-gql-context';

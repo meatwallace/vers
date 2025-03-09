@@ -1,6 +1,6 @@
 import { expect, test } from 'vitest';
-import * as schema from '@chrono/postgres-schema';
-import { PostgresTestUtils } from '@chrono/service-test-utils';
+import * as schema from '@vers/postgres-schema';
+import { PostgresTestUtils } from '@vers/service-test-utils';
 import { and, eq } from 'drizzle-orm';
 import { Hono } from 'hono';
 import { pgTestConfig } from '../pg-test-config';

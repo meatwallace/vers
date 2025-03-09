@@ -5,7 +5,6 @@
     "arcanis.vscode-zipfs",
     "dbaeumer.vscode-eslint",
     "bierner.markdown-mermaid",
-    "kumar-harsh.graphql-for-vscode",
-    "dozerg.tsimportsorter"
+    "kumar-harsh.graphql-for-vscode"
   ]
 }

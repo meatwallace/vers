@@ -4,15 +4,15 @@ import { WelcomeEmail } from './welcome-email';
 test('it renders a welcome email with provided configuration', () => {
   const props = {
     verificationCode: '123456',
-    verificationURL: 'https://chrononomicon.com/verification?token=123456',
+    verificationURL: 'https://vers.com/verification?token=123456',
   };
 
   render(<WelcomeEmail {...props} />);
 
-  const welcomeMessage = screen.getByText('Welcome to Chrononomicon.');
+  const welcomeMessage = screen.getByText('Welcome to vers.');
   const verificationCode = screen.getByText('123456');
   const verificationLink = screen.getByText(
-    'https://chrononomicon.com/verification?token=123456',
+    'https://vers.com/verification?token=123456',
   );
 
   expect(welcomeMessage).toBeInTheDocument();

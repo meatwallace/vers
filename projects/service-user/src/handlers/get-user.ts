@@ -1,5 +1,5 @@
-import * as schema from '@chrono/postgres-schema';
-import { GetUserRequest, GetUserResponse } from '@chrono/service-types';
+import * as schema from '@vers/postgres-schema';
+import { GetUserRequest, GetUserResponse } from '@vers/service-types';
 import { eq, or } from 'drizzle-orm';
 import { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
 import { Context } from 'hono';

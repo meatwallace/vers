@@ -6,10 +6,6 @@ import { GraphQLClient } from 'graphql-request';
 import invariant from 'tiny-invariant';
 import { db } from '~/mocks/db.ts';
 import { authSessionStorage } from '~/session/auth-session-storage.server.ts';
-import {
-  SESSION_KEY_AUTH_ACCESS_TOKEN,
-  SESSION_KEY_AUTH_SESSION_ID,
-} from '~/session/consts.ts';
 import { withAuthedUser } from '~/test-utils/with-authed-user.ts';
 import { Routes } from '~/types.ts';
 import { logout } from './logout.server.ts';
@@ -100,8 +96,8 @@ test('it clears the auth session', async () => {
 
   const authSession = await authSessionStorage.getSession(setCookieHeader);
 
-  expect(authSession.get(SESSION_KEY_AUTH_SESSION_ID)).toBeUndefined();
-  expect(authSession.get(SESSION_KEY_AUTH_ACCESS_TOKEN)).toBeUndefined();
+  expect(authSession.get('sessionID')).toBeUndefined();
+  expect(authSession.get('accessToken')).toBeUndefined();
 });
 
 test('it deletes the session from the database', async () => {
@@ -136,6 +132,6 @@ test('it continues logout flow even if session deletion fails', async () => {
 
   const authSession = await authSessionStorage.getSession(setCookieHeader);
 
-  expect(authSession.get(SESSION_KEY_AUTH_SESSION_ID)).toBeUndefined();
-  expect(authSession.get(SESSION_KEY_AUTH_ACCESS_TOKEN)).toBeUndefined();
+  expect(authSession.get('sessionID')).toBeUndefined();
+  expect(authSession.get('accessToken')).toBeUndefined();
 });

@@ -4,13 +4,13 @@
     "baseUrl": ".",
     "paths": {
       "~/*": ["./projects/service-api/src/*"],
-      "@chrono/email-templates": ["projects/lib-email-templates/src/index.ts"],
-      "@chrono/postgres-schema": ["projects/lib-postgres-schema/src/index.ts"],
-      "@chrono/service-test-utils": [
+      "@vers/email-templates": ["projects/lib-email-templates/src/index.ts"],
+      "@vers/postgres-schema": ["projects/lib-postgres-schema/src/index.ts"],
+      "@vers/service-test-utils": [
         "projects/lib-service-test-utils/src/index.ts"
       ],
-      "@chrono/service-types": ["projects/lib-service-types/src/index.ts"],
-      "@chrono/service-utils": ["projects/lib-service-utils/src/index.ts"]
+      "@vers/service-types": ["projects/lib-service-types/src/index.ts"],
+      "@vers/service-utils": ["projects/lib-service-utils/src/index.ts"]
     }
   }
 }

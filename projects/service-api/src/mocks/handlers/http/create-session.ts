@@ -1,4 +1,4 @@
-import { CreateSessionRequest } from '@chrono/service-types';
+import { CreateSessionRequest } from '@vers/service-types';
 import { http, HttpResponse } from 'msw';
 import { env } from '~/env';
 import { db } from '../../db';

@@ -1,4 +1,4 @@
-import { PostgresTestUtils } from '@chrono/service-test-utils';
+import { PostgresTestUtils } from '@vers/service-test-utils';
 
 // if the container is running, this does nothing except create a reference to it
 // so we can stop it

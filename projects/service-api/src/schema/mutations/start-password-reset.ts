@@ -1,4 +1,4 @@
-import { generateResetPasswordEmail } from '@chrono/email-templates';
+import { generateResetPasswordEmail } from '@vers/email-templates';
 import { GraphQLError } from 'graphql';
 import { env } from '~/env.ts';
 import { logger } from '~/logger.ts';

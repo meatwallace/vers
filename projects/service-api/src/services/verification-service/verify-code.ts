@@ -1,4 +1,4 @@
-import { VerifyCodeRequest, VerifyCodeResponse } from '@chrono/service-types';
+import { VerifyCodeRequest, VerifyCodeResponse } from '@vers/service-types';
 import { marshal } from './marshal';
 import { VerificationData, VerificationServiceContext } from './types';
 

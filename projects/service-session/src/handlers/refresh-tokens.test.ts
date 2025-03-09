@@ -1,7 +1,7 @@
 import { expect, test, vi } from 'vitest';
-import * as schema from '@chrono/postgres-schema';
-import { createTestUser, PostgresTestUtils } from '@chrono/service-test-utils';
 import { createId } from '@paralleldrive/cuid2';
+import * as schema from '@vers/postgres-schema';
+import { createTestUser, PostgresTestUtils } from '@vers/service-test-utils';
 import { eq } from 'drizzle-orm';
 import { Hono } from 'hono';
 import * as consts from '../consts';

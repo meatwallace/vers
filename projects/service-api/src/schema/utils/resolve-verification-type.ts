@@ -1,4 +1,4 @@
-import { verifications } from '@chrono/postgres-schema';
+import { verifications } from '@vers/postgres-schema';
 import { VerificationType } from '../types/verification-type';
 
 /**

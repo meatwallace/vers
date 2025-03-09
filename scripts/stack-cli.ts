@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { ServiceID } from '@chrono/service-types';
+import { ServiceID } from '@vers/service-types';
 import { Command } from 'commander';
 import { exec } from './stack/commands/exec.ts';
 import { logs } from './stack/commands/logs.ts';

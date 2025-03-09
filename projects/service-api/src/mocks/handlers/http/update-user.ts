@@ -1,4 +1,4 @@
-import { UpdateUserRequest } from '@chrono/service-types';
+import { UpdateUserRequest } from '@vers/service-types';
 import { http, HttpResponse } from 'msw';
 import { env } from '~/env';
 import { omitNullish } from '~/utils/omit-nullish';

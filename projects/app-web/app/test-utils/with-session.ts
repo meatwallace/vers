@@ -1,10 +1,4 @@
 import { ActionFunction, LoaderFunction } from 'react-router';
-import {
-  SESSION_KEY_VERIFY_ONBOARDING_EMAIL,
-  SESSION_KEY_VERIFY_TRANSACTION_ID,
-  SESSION_KEY_VERIFY_TRANSACTION_TOKEN,
-  SESSION_KEY_VERIFY_UNVERIFIED_SESSION_ID,
-} from '~/session/consts';
 import { verifySessionStorage } from '~/session/verify-session-storage.server';
 import { combineCookies } from './combine-cookies';
 
@@ -32,31 +26,19 @@ export function withSession(
     );
 
     if (config.onboardingEmail) {
-      verifySession.set(
-        SESSION_KEY_VERIFY_ONBOARDING_EMAIL,
-        config.onboardingEmail,
-      );
+      verifySession.set('onboardingEmail', config.onboardingEmail);
     }
 
     if (config.transactionID) {
-      verifySession.set(
-        SESSION_KEY_VERIFY_TRANSACTION_ID,
-        config.transactionID,
-      );
+      verifySession.set('transactionID', config.transactionID);
     }
 
     if (config.transactionToken) {
-      verifySession.set(
-        SESSION_KEY_VERIFY_TRANSACTION_TOKEN,
-        config.transactionToken,
-      );
+      verifySession.set('transactionToken', config.transactionToken);
     }
 
     if (config.unverifiedSessionID) {
-      verifySession.set(
-        SESSION_KEY_VERIFY_UNVERIFIED_SESSION_ID,
-        config.unverifiedSessionID,
-      );
+      verifySession.set('unverifiedSessionID', config.unverifiedSessionID);
     }
 
     const setCookieHeader =

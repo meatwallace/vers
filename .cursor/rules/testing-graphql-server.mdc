@@ -67,7 +67,7 @@ examples:
 
       // Good - proper GraphQL testing
       import { drop } from '@mswjs/data';
-      import { createTestJWT } from '@chrono/service-test-utils';
+      import { createTestJWT } from '@vers/service-test-utils';
       import { db } from '~/mocks/db';
       import { createMockGQLContext } from '~/test-utils/create-mock-gql-context';
       import { loginWithPassword } from './login-with-password';

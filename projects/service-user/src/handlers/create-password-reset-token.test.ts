@@ -1,7 +1,7 @@
 import { expect, test } from 'vitest';
-import * as schema from '@chrono/postgres-schema';
-import { createTestUser, PostgresTestUtils } from '@chrono/service-test-utils';
-import { CreatePasswordResetTokenResponse } from '@chrono/service-types';
+import * as schema from '@vers/postgres-schema';
+import { createTestUser, PostgresTestUtils } from '@vers/service-test-utils';
+import { CreatePasswordResetTokenResponse } from '@vers/service-types';
 import { Hono } from 'hono';
 import invariant from 'tiny-invariant';
 import { pgTestConfig } from '../pg-test-config';

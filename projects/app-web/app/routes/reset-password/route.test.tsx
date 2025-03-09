@@ -5,11 +5,10 @@ import { createRoutesStub } from 'react-router';
 import { drop } from '@mswjs/data';
 import { VerificationType } from '~/gql/graphql.ts';
 import { db } from '~/mocks/db.ts';
-import { SESSION_KEY_VERIFY_TRANSACTION_TOKEN } from '~/session/consts.ts';
 import { verifySessionStorage } from '~/session/verify-session-storage.server.ts';
 import { withRouteProps } from '~/test-utils/with-route-props.tsx';
 import { Routes } from '~/types.ts';
-import { type Route } from './+types/route.ts';
+import type { Route } from './+types/route.ts';
 import { action, loader, ResetPassword } from './route.tsx';
 
 interface TestConfig {
@@ -23,10 +22,7 @@ async function setupTest(config: TestConfig) {
   const verifySession = await verifySessionStorage.getSession();
 
   if (config.transactionToken) {
-    verifySession.set(
-      SESSION_KEY_VERIFY_TRANSACTION_TOKEN,
-      config.transactionToken,
-    );
+    verifySession.set('transactionToken', config.transactionToken);
   }
 
   const cookie = await verifySessionStorage.commitSession(verifySession);
@@ -35,27 +31,13 @@ async function setupTest(config: TestConfig) {
   const loaderWithCookie = async ({ request, ...rest }: Route.LoaderArgs) => {
     request.headers.set('cookie', cookie);
 
-    return loader({
-      request,
-      ...rest,
-      context: {
-        ...rest.context,
-        session: verifySession,
-      },
-    });
+    return loader({ ...rest, params: {}, request });
   };
 
   const actionWithCookie = async ({ request, ...rest }: Route.ActionArgs) => {
     request.headers.set('cookie', cookie);
 
-    return action({
-      request,
-      ...rest,
-      context: {
-        ...rest.context,
-        session: verifySession,
-      },
-    });
+    return action({ ...rest, request });
   };
 
   const ResetPasswordStub = createRoutesStub([

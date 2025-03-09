@@ -1,4 +1,4 @@
-import { data, Form, MetaFunction, redirect } from 'react-router';
+import { data, Form, redirect } from 'react-router';
 import { getFormProps, getInputProps, useForm } from '@conform-to/react';
 import { getZodConstraint, parseWithZod } from '@conform-to/zod';
 import QRCode from 'qrcode';
@@ -12,12 +12,12 @@ import { GetCurrentUser } from '~/data/queries/get-current-user.ts';
 import { graphql } from '~/gql';
 import { VerificationType } from '~/gql/graphql.ts';
 import { useIsFormPending } from '~/hooks/use-is-form-pending.ts';
-import { SESSION_KEY_VERIFY_TRANSACTION_ID } from '~/session/consts.ts';
 import { verifySessionStorage } from '~/session/verify-session-storage.server.ts';
 import { Routes } from '~/types';
 import { createGQLClient } from '~/utils/create-gql-client.server.ts';
 import { isMutationError } from '~/utils/is-mutation-error.ts';
 import { requireAuth } from '~/utils/require-auth.server.ts';
+import { withErrorHandling } from '~/utils/with-error-handling.ts';
 import type { Route } from './+types/route.ts';
 import * as styles from './route.css.ts';
 
@@ -51,7 +51,16 @@ const VerifyOTPFormSchema = z.object({
   target: z.string().min(1),
 });
 
-export async function loader({ request }: Route.LoaderArgs) {
+export const meta: Route.MetaFunction = () => [
+  {
+    description: '',
+    title: 'Vers | Verify 2FA',
+  },
+];
+
+export const loader = withErrorHandling(async (args: Route.LoaderArgs) => {
+  const { request } = args;
+
   const client = createGQLClient();
 
   await requireAuth(request, { client });
@@ -75,9 +84,11 @@ export async function loader({ request }: Route.LoaderArgs) {
     qrCode,
     target: getCurrentUser.email,
   };
-}
+});
 
-export async function action({ request }: Route.ActionArgs) {
+export const action = withErrorHandling(async (args: Route.ActionArgs) => {
+  const { request } = args;
+
   const client = createGQLClient();
 
   const { sessionID } = await requireAuth(request, { client });
@@ -97,7 +108,7 @@ export async function action({ request }: Route.ActionArgs) {
     request.headers.get('cookie'),
   );
 
-  const transactionID = verifySession.get(SESSION_KEY_VERIFY_TRANSACTION_ID);
+  const transactionID = verifySession.get('transactionID');
 
   // if we don't have a transaction ID then we really shouldn't be here.
   if (!transactionID) {
@@ -149,28 +160,18 @@ export async function action({ request }: Route.ActionArgs) {
   return redirect(Routes.Profile, {
     headers: { 'Set-Cookie': setCookieHeader },
   });
-}
+});
 
-export const meta: MetaFunction = () => [
-  {
-    description: 'Verify your 2FA setup',
-    title: 'Verify 2FA',
-  },
-];
-
-export function ProfileVerify2FARoute({
-  actionData,
-  loaderData,
-}: Route.ComponentProps) {
+export function ProfileVerify2FARoute(props: Route.ComponentProps) {
   const isFormPending = useIsFormPending();
 
   const [form, fields] = useForm({
     constraint: getZodConstraint(VerifyOTPFormSchema),
     defaultValue: {
-      target: loaderData.target,
+      target: props.loaderData.target,
     },
     id: 'verify-2fa-form',
-    lastResult: actionData?.result,
+    lastResult: props.actionData?.result,
     onValidate({ formData }) {
       return parseWithZod(formData, { schema: VerifyOTPFormSchema });
     },
@@ -201,7 +202,7 @@ export function ProfileVerify2FARoute({
             <img
               alt="QR code for 2FA"
               className={styles.qrCode}
-              src={loaderData.qrCode}
+              src={props.loaderData.qrCode}
             />
           </div>
 
@@ -210,7 +211,7 @@ export function ProfileVerify2FARoute({
               If you cannot scan the QR code, you can manually add this account
               to your authenticator app using this code:
             </p>
-            <code className={styles.code}>{loaderData.otpURI}</code>
+            <code className={styles.code}>{props.loaderData.otpURI}</code>
           </div>
 
           <Form method="POST" {...getFormProps(form)}>
@@ -238,8 +239,8 @@ export function ProfileVerify2FARoute({
   );
 }
 
-export default ProfileVerify2FARoute;
-
 export function ErrorBoundary() {
   return <RouteErrorBoundary />;
 }
+
+export default ProfileVerify2FARoute;

@@ -1,8 +1,8 @@
-import * as schema from '@chrono/postgres-schema';
+import * as schema from '@vers/postgres-schema';
 import {
   RefreshTokensRequest,
   RefreshTokensResponse,
-} from '@chrono/service-types';
+} from '@vers/service-types';
 import { eq } from 'drizzle-orm';
 import { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
 import { Context } from 'hono';

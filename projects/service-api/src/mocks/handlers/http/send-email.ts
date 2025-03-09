@@ -1,4 +1,4 @@
-import { SendEmailRequest } from '@chrono/service-types';
+import { SendEmailRequest } from '@vers/service-types';
 import { http, HttpResponse } from 'msw';
 import { env } from '~/env';
 

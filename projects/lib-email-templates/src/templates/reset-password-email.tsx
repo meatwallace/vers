@@ -1,4 +1,4 @@
-import { type ReactElement } from 'react';
+import type { ReactElement } from 'react';
 import * as E from '@react-email/components';
 
 interface Props {

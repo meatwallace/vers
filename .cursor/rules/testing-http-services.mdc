@@ -70,7 +70,7 @@ examples:
 
       // Good - proper service handler testing
       import { Hono } from 'hono';
-      import { PostgresTestUtils } from '@chrono/service-test-utils';
+      import { PostgresTestUtils } from '@vers/service-test-utils';
       import { createUser } from './create-user';
       import { pgTestConfig } from '../pg-test-config';
 

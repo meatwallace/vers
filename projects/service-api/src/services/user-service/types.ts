@@ -1,4 +1,4 @@
-import { users } from '@chrono/postgres-schema';
+import { users } from '@vers/postgres-schema';
 import {
   ChangePasswordRequest,
   CreatePasswordResetTokenRequest,
@@ -6,7 +6,7 @@ import {
   GetUserRequest,
   UpdateUserRequest,
   VerifyPasswordRequest,
-} from '@chrono/service-types';
+} from '@vers/service-types';
 import { ServiceContext } from '../utils/types';
 
 export type UserServiceContext = ServiceContext;

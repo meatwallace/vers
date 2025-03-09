@@ -36,7 +36,7 @@ examples:
   - input: |
       ```ts
       import { z } from 'zod';
-      import { addEnvUtils } from '@chrono/service-utils';
+      import { addEnvUtils } from '@vers/service-utils';
 
       const envSchema = z
         .object({

@@ -1,6 +1,6 @@
 import { afterEach, expect, test } from 'vitest';
-import { SendEmailRequest } from '@chrono/service-types';
 import { drop } from '@mswjs/data';
+import { SendEmailRequest } from '@vers/service-types';
 import { http, HttpResponse } from 'msw';
 import { db } from '~/mocks/db';
 import { ENDPOINT_URL } from '~/mocks/handlers/http/send-email';

@@ -1,21 +1,25 @@
 import { Form } from 'react-router';
 import { Brand } from '~/components/brand.tsx';
 import { Button } from '~/components/button.tsx';
+import { RouteErrorBoundary } from '~/components/route-error-boundary.tsx';
 import { Routes } from '~/types.ts';
 import { requireAnonymous } from '~/utils/require-anonymous.server.ts';
-import { type Route } from './+types/route.ts';
+import { withErrorHandling } from '~/utils/with-error-handling.ts';
+import type { Route } from './+types/route.ts';
 import * as styles from './route.css.ts';
 
 export const meta: Route.MetaFunction = () => [
   {
     description: '',
-    title: '',
+    title: 'Vers',
   },
 ];
 
-export async function loader({ request }: Route.LoaderArgs) {
+export const loader = withErrorHandling(async (args: Route.LoaderArgs) => {
+  const { request } = args;
+
   return requireAnonymous(request);
-}
+});
 
 export function Index() {
   return (
@@ -23,14 +27,7 @@ export function Index() {
       <main className={styles.container}>
         <section className={styles.heroSection}>
           <Brand className={styles.brand} size="large" />
-          <img
-            alt="Book icon"
-            className={styles.heroDescriptionIcon}
-            src="/assets/images/icon-book.png"
-          />
-          <p className={styles.heroDescription}>
-            Create immersive worlds and run your tabletop campaigns with ease.
-          </p>
+          <p className={styles.heroDescription}>A tagline goes here.</p>
         </section>
 
         <section className={styles.authSection}>
@@ -49,6 +46,10 @@ export function Index() {
       </main>
     </>
   );
+}
+
+export function ErrorBoundary() {
+  return <RouteErrorBoundary />;
 }
 
 export default Index;

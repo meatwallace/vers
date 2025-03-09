@@ -51,7 +51,7 @@ export const GetEnable2FAVerification = graphql.query<
     });
   }
 
-  const otpURI = `otpauth://totp/Chrononomicon:${user.email}?secret=JBSWY3DPEHPK3PXP&issuer=Chrononomicon`;
+  const otpURI = `otpauth://totp/vers:${user.email}?secret=JBSWY3DPEHPK3PXP&issuer=vers`;
 
   return HttpResponse.json({
     data: {

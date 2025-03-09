@@ -9,15 +9,15 @@ import { RouteErrorBoundary } from '~/components/route-error-boundary.tsx';
 import { StatusButton } from '~/components/status-button.tsx';
 import { graphql } from '~/gql';
 import { useIsFormPending } from '~/hooks/use-is-form-pending';
-import { SESSION_KEY_VERIFY_TRANSACTION_TOKEN } from '~/session/consts.ts';
 import { verifySessionStorage } from '~/session/verify-session-storage.server.ts';
 import { Routes } from '~/types.ts';
 import { checkHoneypot } from '~/utils/check-honeypot.server.ts';
 import { createGQLClient } from '~/utils/create-gql-client.server.ts';
 import { isMutationError } from '~/utils/is-mutation-error';
 import { requireAnonymous } from '~/utils/require-anonymous.server.ts';
+import { withErrorHandling } from '~/utils/with-error-handling.ts';
 import { ConfirmPasswordSchema } from '~/validation/confirm-password-schema.ts';
-import { type Route } from './+types/route.ts';
+import type { Route } from './+types/route.ts';
 import * as styles from './route.css.ts';
 
 const finishPasswordResetMutation = graphql(/* GraphQL */ `
@@ -44,7 +44,16 @@ const ResetPasswordFormSchema = z.intersection(
   ConfirmPasswordSchema,
 );
 
-export async function loader({ request }: Route.LoaderArgs) {
+export const meta: Route.MetaFunction = () => [
+  {
+    description: '',
+    title: 'Vers | Reset Password',
+  },
+];
+
+export const loader = withErrorHandling(async (args: Route.LoaderArgs) => {
+  const { request } = args;
+
   await requireAnonymous(request);
 
   const url = new URL(request.url);
@@ -56,9 +65,11 @@ export async function loader({ request }: Route.LoaderArgs) {
   }
 
   return { email };
-}
+});
 
-export async function action({ request }: Route.ActionArgs) {
+export const action = withErrorHandling(async (args: Route.ActionArgs) => {
+  const { request } = args;
+
   await requireAnonymous(request);
 
   const url = new URL(request.url);
@@ -86,73 +97,51 @@ export async function action({ request }: Route.ActionArgs) {
     return data({ result }, { status });
   }
 
-  try {
-    const verifySession = await verifySessionStorage.getSession(
-      request.headers.get('cookie'),
-    );
+  const verifySession = await verifySessionStorage.getSession(
+    request.headers.get('cookie'),
+  );
 
-    // attach our transaction token incase 2FA was required for this reset
-    const transactionToken = verifySession.get(
-      SESSION_KEY_VERIFY_TRANSACTION_TOKEN,
-    );
+  // attach our transaction token incase 2FA was required for this reset
+  const transactionToken = verifySession.get('transactionToken');
 
-    const { finishPasswordReset } = await client.request(
-      finishPasswordResetMutation,
-      {
-        input: {
-          email,
-          password: submission.value.password,
-          resetToken,
-          transactionToken,
-        },
+  const { finishPasswordReset } = await client.request(
+    finishPasswordResetMutation,
+    {
+      input: {
+        email,
+        password: submission.value.password,
+        resetToken,
+        transactionToken,
       },
-    );
+    },
+  );
 
-    if (isMutationError(finishPasswordReset)) {
-      const result = submission.reply({
-        formErrors: [finishPasswordReset.error.message],
-      });
-
-      return data({ result }, { status: 400 });
-    }
-
-    // Clear the verification session since we're done with it
-    return redirect(Routes.Login, {
-      headers: {
-        'set-cookie': await verifySessionStorage.destroySession(verifySession),
-      },
+  if (isMutationError(finishPasswordReset)) {
+    const result = submission.reply({
+      formErrors: [finishPasswordReset.error.message],
     });
-  } catch (error) {
-    // TODO(#16): capture error
-    if (error instanceof Error) {
-      console.error('error', error.message);
-    }
+
+    return data({ result }, { status: 400 });
   }
 
-  const result = submission.reply({
-    formErrors: ['Something went wrong'],
+  // Clear the verification session since we're done with it
+  return redirect(Routes.Login, {
+    headers: {
+      'set-cookie': await verifySessionStorage.destroySession(verifySession),
+    },
   });
+});
 
-  return data({ result }, { status: 500 });
-}
-
-export const meta: Route.MetaFunction = () => {
-  return [{ title: 'Reset Password' }];
-};
-
-export function ResetPassword({
-  actionData,
-  loaderData,
-}: Route.ComponentProps) {
+export function ResetPassword(props: Route.ComponentProps) {
   const isFormPending = useIsFormPending();
 
   const [form, fields] = useForm({
     constraint: getZodConstraint(ResetPasswordFormSchema),
     defaultValue: {
-      email: loaderData.email,
+      email: props.loaderData.email,
     },
     id: 'reset-password-form',
-    lastResult: actionData?.result,
+    lastResult: props.actionData?.result,
     onValidate({ formData }) {
       return parseWithZod(formData, { schema: ResetPasswordFormSchema });
     },

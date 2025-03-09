@@ -1,4 +1,4 @@
-app = 'chrononomicon-pg'
+app = 'vers-pg'
 primary_region = 'syd'
 
 [env]

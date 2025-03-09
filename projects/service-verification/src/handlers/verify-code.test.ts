@@ -1,8 +1,8 @@
 import { expect, test } from 'vitest';
-import * as schema from '@chrono/postgres-schema';
-import { PostgresTestUtils } from '@chrono/service-test-utils';
-import { CreateVerificationResponse } from '@chrono/service-types';
 import { createId } from '@paralleldrive/cuid2';
+import * as schema from '@vers/postgres-schema';
+import { PostgresTestUtils } from '@vers/service-test-utils';
+import { CreateVerificationResponse } from '@vers/service-types';
 import { eq } from 'drizzle-orm';
 import { Hono } from 'hono';
 import invariant from 'tiny-invariant';

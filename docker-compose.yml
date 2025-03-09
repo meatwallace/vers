@@ -5,7 +5,7 @@ services:
     environment:
       - POSTGRES_USER=admin
       - POSTGRES_PASSWORD=password
-      - POSTGRES_DB=chrononomicon
+      - POSTGRES_DB=vers
       - PGPORT=5433
     volumes:
       - postgres:/var/lib/postgresql/data
@@ -27,7 +27,6 @@ services:
       - SESSIONS_SERVICE_URL=http://service-session:3002/
       - USERS_SERVICE_URL=http://service-user:3003/
       - VERIFICATIONS_SERVICE_URL=http://service-verification:3004/
-      - WORLDS_SERVICE_URL=http://service-world:3005/
     expose:
       - '3000'
     ports:
@@ -43,7 +42,7 @@ services:
       - projects/service-email/.env.development
       - projects/service-email/.env.development.local
     environment:
-      - POSTGRES_URL=postgresql://admin:password@postgres:5433/chrononomicon
+      - POSTGRES_URL=postgresql://admin:password@postgres:5433/vers
     ports:
       - '3001:3001'
     depends_on:
@@ -58,7 +57,7 @@ services:
     env_file:
       - projects/service-session/.env.development
     environment:
-      - POSTGRES_URL=postgresql://admin:password@postgres:5433/chrononomicon
+      - POSTGRES_URL=postgresql://admin:password@postgres:5433/vers
     ports:
       - '3002:3002'
     depends_on:
@@ -73,7 +72,7 @@ services:
     env_file:
       - projects/service-user/.env.development
     environment:
-      - POSTGRES_URL=postgresql://admin:password@postgres:5433/chrononomicon
+      - POSTGRES_URL=postgresql://admin:password@postgres:5433/vers
     ports:
       - '3003:3003'
     depends_on:
@@ -88,24 +87,9 @@ services:
     env_file:
       - projects/service-verification/.env.development
     environment:
-      - POSTGRES_URL=postgresql://admin:password@postgres:5433/chrononomicon
+      - POSTGRES_URL=postgresql://admin:password@postgres:5433/vers
     ports:
       - '3004:3004'
-    depends_on:
-      - postgres
-  service-world:
-    build:
-      context: .
-      dockerfile: projects/service-world/Dockerfile
-      args:
-        BUILD_MODE: development
-    restart: always
-    env_file:
-      - projects/service-world/.env.development
-    environment:
-      - POSTGRES_URL=postgresql://admin:password@postgres:5433/chrononomicon
-    ports:
-      - '3005:3005'
     depends_on:
       - postgres
 volumes:

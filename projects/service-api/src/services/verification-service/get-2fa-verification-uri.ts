@@ -1,7 +1,7 @@
 import {
   Get2FAVerificationURIRequest,
   Get2FAVerificationURIResponse,
-} from '@chrono/service-types';
+} from '@vers/service-types';
 import { VerificationServiceContext } from './types';
 
 export async function get2FAVerificationURI(

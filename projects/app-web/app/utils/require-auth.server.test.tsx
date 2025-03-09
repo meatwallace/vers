@@ -8,11 +8,6 @@ import { db } from '~/mocks/db.ts';
 import { decodeMockJWT } from '~/mocks/utils/decode-mock-jwt.ts';
 import { encodeMockJWT } from '~/mocks/utils/encode-mock-jwt.ts';
 import { authSessionStorage } from '~/session/auth-session-storage.server.ts';
-import {
-  SESSION_KEY_AUTH_ACCESS_TOKEN,
-  SESSION_KEY_AUTH_REFRESH_TOKEN,
-  SESSION_KEY_AUTH_SESSION_ID,
-} from '~/session/consts.ts';
 import { Routes } from '~/types.ts';
 import { requireAuth } from './require-auth.server.ts';
 
@@ -45,15 +40,15 @@ async function setupTest(config: Partial<TestConfig> = {}) {
   const session = await authSessionStorage.getSession();
 
   if (config.sessionID) {
-    session.set(SESSION_KEY_AUTH_SESSION_ID, config.sessionID);
+    session.set('sessionID', config.sessionID);
   }
 
   if (config.accessToken) {
-    session.set(SESSION_KEY_AUTH_ACCESS_TOKEN, config.accessToken);
+    session.set('accessToken', config.accessToken);
   }
 
   if (config.refreshToken) {
-    session.set(SESSION_KEY_AUTH_REFRESH_TOKEN, config.refreshToken);
+    session.set('refreshToken', config.refreshToken);
   }
 
   const initialCookieHeader = await authSessionStorage.commitSession(session);
@@ -238,7 +233,7 @@ test('it refreshes the session when access token is expired', async () => {
   expect(testRoute).toBeInTheDocument();
 
   const authSession = await authSessionStorage.getSession(setCookieHeader);
-  const accessToken = authSession.get(SESSION_KEY_AUTH_ACCESS_TOKEN);
+  const accessToken = authSession.get('accessToken');
 
   invariant(accessToken, 'access token must be set');
 

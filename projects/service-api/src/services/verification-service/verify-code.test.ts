@@ -1,6 +1,6 @@
-import { ServiceID } from '@chrono/service-types';
 import { generateTOTP } from '@epic-web/totp';
 import { drop } from '@mswjs/data';
+import { ServiceID } from '@vers/service-types';
 import { env } from '~/env';
 import { db } from '~/mocks/db';
 import { createServiceContext } from '../utils';

@@ -7,7 +7,7 @@ import {
   useLoaderData,
 } from 'react-router';
 import { HoneypotProvider } from 'remix-utils/honeypot/react';
-import { type Route } from './+types/root.ts';
+import type { Route } from './+types/root.ts';
 import * as styles from './global.css.ts';
 import { honeypot } from './honeypot.server.ts';
 
@@ -36,7 +36,7 @@ export const meta: Route.MetaFunction = () => [
   {
     // eslint-disable-next-line unicorn/text-encoding-identifier-case
     charset: 'utf-8',
-    title: 'Chrononomicon',
+    title: 'vers',
     viewport: 'width=device-width,initial-scale=1',
   },
 ];

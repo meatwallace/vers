@@ -13,6 +13,7 @@ import { action, loader, Login } from './route.tsx';
 const client = createGQLClient();
 
 interface TestConfig {
+  initialPath?: string;
   isAuthed: boolean;
   user?: {
     email?: string;
@@ -21,6 +22,7 @@ interface TestConfig {
 }
 
 function setupTest(config: TestConfig) {
+  const initialPath = config.initialPath ?? '/';
   const user = userEvent.setup();
 
   const LoginStub = createRoutesStub([
@@ -46,9 +48,13 @@ function setupTest(config: TestConfig) {
       Component: () => 'SIGN_UP_ROUTE',
       path: Routes.Signup,
     },
+    {
+      Component: () => 'CUSTOM_REDIRECT_ROUTE',
+      path: '/custom-redirect-route',
+    },
   ]);
 
-  render(<LoginStub />);
+  render(<LoginStub initialEntries={[initialPath]} />);
 
   return { user };
 }
@@ -126,6 +132,28 @@ test('it redirects to dashboard on successful login', async () => {
   await user.click(submitButton);
 
   expect(await screen.findByText('DASHBOARD_ROUTE')).toBeInTheDocument();
+});
+
+test('it redirects to the specified route when provided', async () => {
+  db.user.create({
+    email: 'test@example.com',
+    password: 'password123',
+  });
+
+  const { user } = setupTest({
+    initialPath: '/?redirect=/custom-redirect-route',
+    isAuthed: false,
+  });
+
+  const emailInput = await screen.findByLabelText('Email');
+  const passwordInput = screen.getByLabelText('Password');
+  const submitButton = screen.getByRole('button', { name: 'Sign in' });
+
+  await user.type(emailInput, 'test@example.com');
+  await user.type(passwordInput, 'password123');
+  await user.click(submitButton);
+
+  expect(await screen.findByText('CUSTOM_REDIRECT_ROUTE')).toBeInTheDocument();
 });
 
 test('it shows error message for invalid credentials', async () => {

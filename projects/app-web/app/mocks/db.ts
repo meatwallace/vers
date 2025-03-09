@@ -1,4 +1,4 @@
-import { factory, nullable, primaryKey } from '@mswjs/data';
+import { factory, primaryKey } from '@mswjs/data';
 import { createId } from '@paralleldrive/cuid2';
 import { VerificationType } from '~/gql/graphql';
 import { encodeMockJWT } from './utils/encode-mock-jwt';
@@ -31,26 +31,5 @@ export const db = factory({
     id: primaryKey(() => createId()),
     target: () => 'user@test.com',
     type: () => VerificationType.Onboarding,
-  },
-  world: {
-    archetype: nullable<string>(() => null),
-    atmosphere: () => 'Neutral',
-    createdAt: () => new Date().toISOString(),
-    fantasyType: () => 'Medium',
-    geographyFeatures: () => [
-      'Deserts',
-      'Forest',
-      'Mountains',
-      'Plains',
-      'Swamps',
-      'Tundra',
-    ],
-    geographyType: () => 'Supercontinent',
-    id: primaryKey(() => createId()),
-    name: () => 'New World',
-    ownerID: () => createId(),
-    population: () => 'Average',
-    technologyLevel: () => 'Medieval',
-    updatedAt: () => new Date().toISOString(),
   },
 });

@@ -1,4 +1,4 @@
-import { GetSessionRequest, GetSessionResponse } from '@chrono/service-types';
+import { GetSessionRequest, GetSessionResponse } from '@vers/service-types';
 import { Jsonify } from 'type-fest';
 import { marshal } from './marshal';
 import { SessionData, SessionServiceContext } from './types';

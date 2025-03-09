@@ -1,10 +1,5 @@
 import { redirect } from 'react-router';
 import invariant from 'tiny-invariant';
-import {
-  SESSION_KEY_VERIFY_ONBOARDING_EMAIL,
-  SESSION_KEY_VERIFY_TRANSACTION_ID,
-  SESSION_KEY_VERIFY_TRANSACTION_TOKEN,
-} from '~/session/consts.ts';
 import { verifySessionStorage } from '~/session/verify-session-storage.server.ts';
 import { Routes } from '~/types.ts';
 import { HandleVerificationContext } from './types.ts';
@@ -20,12 +15,9 @@ export async function handleOnboarding(ctx: HandleVerificationContext) {
   );
 
   // clean up the pending transaction ID & capture our transaction token
-  verifySession.unset(SESSION_KEY_VERIFY_TRANSACTION_ID);
-  verifySession.set(SESSION_KEY_VERIFY_TRANSACTION_TOKEN, ctx.transactionToken);
-  verifySession.set(
-    SESSION_KEY_VERIFY_ONBOARDING_EMAIL,
-    ctx.submission.value.target,
-  );
+  verifySession.unset('transactionID');
+  verifySession.set('transactionToken', ctx.transactionToken);
+  verifySession.set('onboardingEmail', ctx.submission.value.target);
 
   return redirect(Routes.Onboarding, {
     headers: {

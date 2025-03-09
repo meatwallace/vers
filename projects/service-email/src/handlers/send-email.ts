@@ -1,4 +1,4 @@
-import { SendEmailRequest, SendEmailResponse } from '@chrono/service-types';
+import { SendEmailRequest, SendEmailResponse } from '@vers/service-types';
 import { Context } from 'hono';
 import { Resend } from 'resend';
 import { env } from '../env';
@@ -14,7 +14,7 @@ export async function sendEmail(ctx: Context) {
       await ctx.req.json<SendEmailRequest>();
 
     const result = await resend.emails.send({
-      from: 'noreply@transactional.chrononomicon.com',
+      from: 'noreply@transactional.vers.com',
       html,
       subject,
       text: plainText,

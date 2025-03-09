@@ -1,5 +1,5 @@
 import { expect, test } from 'vitest';
-import { PostgresTestUtils } from '@chrono/service-test-utils';
+import { PostgresTestUtils } from '@vers/service-test-utils';
 import bcrypt from 'bcryptjs';
 import { Hono } from 'hono';
 import invariant from 'tiny-invariant';

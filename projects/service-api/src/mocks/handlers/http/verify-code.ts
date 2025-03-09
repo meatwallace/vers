@@ -1,5 +1,5 @@
-import { VerifyCodeRequest } from '@chrono/service-types';
 import { verifyTOTP } from '@epic-web/totp';
+import { VerifyCodeRequest } from '@vers/service-types';
 import { http, HttpResponse } from 'msw';
 import { env } from '~/env';
 import { db } from '../../db';

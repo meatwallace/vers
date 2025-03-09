@@ -31,7 +31,7 @@ actions:
       2. Handler Structure:
          - Export async functions with consistent naming
          - Accept `Context` and `PostgresJsDatabase` parameters
-         - Use type-safe request/response types from `@chrono/service-types`
+         - Use type-safe request/response types from `@vers/service-types`
          - Follow consistent error handling patterns
          - Return JSON responses via `ctx.json()`
          - Use proper HTTP status codes
@@ -89,11 +89,11 @@ examples:
 
       // Good - proper handler implementation
       import { Context } from 'hono';
-      import * as schema from '@chrono/postgres-schema';
-      import { CreateUserRequest, CreateUserResponse } from '@chrono/service-types';
+      import * as schema from '@vers/postgres-schema';
+      import { CreateUserRequest, CreateUserResponse } from '@vers/service-types';
       import { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
       import { createId } from '@paralleldrive/cuid2';
-      import { isUniqueConstraintError } from '@chrono/service-utils';
+      import { isUniqueConstraintError } from '@vers/service-utils';
 
       export async function createUser(
         ctx: Context,

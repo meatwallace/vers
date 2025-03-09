@@ -1,4 +1,4 @@
-import { SendEmailRequest } from '@chrono/service-types';
+import { SendEmailRequest } from '@vers/service-types';
 import { ServiceContext } from '../utils/types';
 
 export type EmailServiceContext = ServiceContext;

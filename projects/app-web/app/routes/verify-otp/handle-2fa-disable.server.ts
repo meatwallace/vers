@@ -1,7 +1,6 @@
 import { redirect } from 'react-router';
 import invariant from 'tiny-invariant';
 import { graphql } from '~/gql/gql.ts';
-import { SESSION_KEY_VERIFY_TRANSACTION_ID } from '~/session/consts.ts';
 import { verifySessionStorage } from '~/session/verify-session-storage.server.ts';
 import { Routes } from '~/types.ts';
 import { type HandleVerificationContext } from './types.ts';
@@ -34,7 +33,7 @@ export async function handle2FADisable(ctx: HandleVerificationContext) {
   );
 
   // clean up the pending transaction ID
-  verifySession.unset(SESSION_KEY_VERIFY_TRANSACTION_ID);
+  verifySession.unset('transactionID');
 
   await ctx.client.request(FinishDisable2FAMutation, {
     input: {

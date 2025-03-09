@@ -1,7 +1,7 @@
 import {
   generateExistingAccountEmail,
   generateWelcomeEmail,
-} from '@chrono/email-templates';
+} from '@vers/email-templates';
 import { GraphQLError } from 'graphql';
 import { env } from '~/env';
 import { logger } from '~/logger';
@@ -74,7 +74,7 @@ export async function startEmailSignup(
     });
 
     await ctx.services.email.sendEmail({
-      subject: 'Welcome to Chrononomicon!',
+      subject: 'Welcome to vers!',
       to: args.input.email,
       ...email,
     });

@@ -1,4 +1,4 @@
-import { type ReactElement } from 'react';
+import type { ReactElement } from 'react';
 import * as E from '@react-email/components';
 
 interface Props {
@@ -24,7 +24,7 @@ export function ExistingAccountEmail(props: Props): ReactElement {
         </E.Text>
       </p>
       <E.Button
-        href="https://chrononomicon.com/forgot-password"
+        href="https://vers.com/forgot-password"
         style={{
           backgroundColor: '#000',
           borderRadius: '4px',

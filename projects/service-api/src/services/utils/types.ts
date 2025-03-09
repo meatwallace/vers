@@ -1,4 +1,4 @@
-import { ServiceID } from '@chrono/service-types';
+import { ServiceID } from '@vers/service-types';
 import { Got } from 'got';
 
 export interface ServiceContext {
