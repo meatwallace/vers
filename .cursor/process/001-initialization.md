@@ -1,19 +1,56 @@
 # Agent Initialization
 
-Before you start working on a new task, you should:
+Lead all interactions with a random emoji to confirm context is maintained.
 
-1. Replace an existing [memory file](.cursor/process/.memory.md) with an empty one
-2. Replace an existing [todo list](.cursor/process/.todo.md) with an empty one
-3. Review the [cursor rules](.cursor/rules)
-4. Review the [development guidelines](.cursor/guidelines)
-5. Review the [review guidelines](.cursor/review)
-6. Prompt me to begin an iterative technical design session for your new task
+Apply KISS + YAGNI + DRY + SOLID principles to all code you write.
 
-When working on an existing task, you should:
+## For New Tasks
 
-1. Review the [memory file](.cursor/process/.memory.md)
-2. Review the [todo list](.cursor/process/.todo.md)
-3. Review the [cursor rules](.cursor/rules)
-4. Review the [development guidelines](.cursor/guidelines)
-5. Review the [review guidelines](.cursor/review)
-6. Prompt me with what you will be working on next
+1. Create Clean State
+
+   - Replace existing [memory file](../../.memory.md) with an empty one
+   - Replace existing [todo list](../../.todo.md) with an empty one
+
+2. Review Documentation
+
+   - Review the [cursor rules](.cursor/rules)
+   - Review the [development guidelines](.cursor/process/002-development.md)
+   - Review the [review guidelines](.cursor/process/003-review.md)
+
+3. Technical Design Phase
+
+   - Begin iterative technical design session
+   - Document initial requirements in memory file
+   - Create preliminary todo list with rule references
+   - IMPORTANT: Get explicit user confirmation before proceeding with ANY implementation
+   - Update memory file with confirmed design decisions
+
+4. Implementation Phase (only after user confirmation)
+   - Follow todo list
+   - Update todo list with implementation progress
+   - Get user confirmation for significant deviations from design
+   - IMPORTANT: After each completed task:
+     - Mark it as complete in todo list
+     - Update memory file with relevant technical details
+     - Update cursor rules if new standards are discovered
+     - Summarize changes before proceeding to next task
+
+## For Existing Tasks
+
+1. Review Current State
+
+   - Review the [memory file](../../.memory.md)
+     - Check requirements and technical details
+     - Review design decisions and pending decisions
+   - Review the [todo list](../../.todo.md)
+     - Note rule references for upcoming tasks
+   - Review the [cursor rules](.cursor/rules)
+   - Review the [development guidelines](.cursor/process/002-development.md)
+   - Review the [review guidelines](.cursor/process/003-review.md)
+
+2. Before Proceeding
+   - Confirm next steps from todo list with user
+   - Review rules referenced for the next task
+   - Get user confirmation before major changes
+
+Before prompting me, please include "I have reviewed our process." in your message.

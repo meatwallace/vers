@@ -10,7 +10,7 @@
     "importHelpers": true,
     "target": "ES2017",
     "module": "ESNext",
-    "lib": ["ES2020"],
+    "lib": ["ESNext"],
     "jsx": "react-jsx",
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
@@ -28,5 +28,6 @@
       "@chrono/service-utils": ["projects/lib-service-utils/src/index.ts"]
     }
   },
-  "exclude": ["node_modules", "tmp"]
+  "exclude": ["node_modules", "tmp"],
+  "include": ["types/**/*.d.ts", "eslint.config.ts"]
 }

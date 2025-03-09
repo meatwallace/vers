@@ -2,20 +2,23 @@ import { type RouteConfig, index, route } from '@react-router/dev/routes';
 import { Routes } from './types.ts';
 
 export default [
-  index('routes/_index.tsx'),
+  index('routes/_index/route.tsx'),
 
-  route(Routes.Dashboard, 'routes/dashboard.tsx'),
+  route(Routes.Dashboard, 'routes/dashboard/route.tsx'),
 
-  route(Routes.Login, 'routes/login.tsx'),
-  route(Routes.Signup, 'routes/signup.tsx'),
-  route(Routes.Onboarding, 'routes/onboarding/onboarding.tsx'),
-  route(Routes.VerifyOTP, 'routes/verify-otp/verify-otp.tsx'),
-  route(Routes.Logout, 'routes/logout.tsx'),
-  route(Routes.ForgotPassword, 'routes/forgot-password.tsx'),
-  route(Routes.ResetPassword, 'routes/reset-password.tsx'),
-  route(Routes.ResetPasswordStarted, 'routes/reset-password-started.tsx'),
+  route(Routes.Profile, 'routes/profile/route.tsx'),
+  route(Routes.ProfileVerify2FA, 'routes/profile_verify-2fa/route.tsx'),
 
-  route(Routes.CreateWorld, 'routes/worlds/create.tsx'),
-  route(Routes.CreateWorldWizard, 'routes/worlds/create.$worldID.tsx'),
-  route(Routes.DeleteWorld, 'routes/worlds/delete.$worldID.tsx'),
+  route(Routes.Login, 'routes/login/route.tsx'),
+  route(Routes.Signup, 'routes/signup/route.tsx'),
+  route(Routes.Onboarding, 'routes/onboarding/route.tsx'),
+  route(Routes.VerifyOTP, 'routes/verify-otp/route.tsx'),
+  route(Routes.Logout, 'routes/logout/route.tsx'),
+  route(Routes.ForgotPassword, 'routes/forgot-password/route.tsx'),
+  route(Routes.ResetPassword, 'routes/reset-password/route.tsx'),
+  route(Routes.ResetPasswordStarted, 'routes/reset-password-started/route.tsx'),
+
+  route(Routes.CreateWorld, 'routes/worlds_create/route.tsx'),
+  route(Routes.CreateWorldWizard, 'routes/worlds_create_$world/route.tsx'),
+  route(Routes.DeleteWorld, 'routes/worlds_delete_$world/route.tsx'),
 ] satisfies RouteConfig;

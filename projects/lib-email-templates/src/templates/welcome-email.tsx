@@ -1,9 +1,9 @@
 import * as E from '@react-email/components';
 
-type Props = {
+interface Props {
   verificationURL: string;
   verificationCode: string;
-};
+}
 
 export function WelcomeEmail(props: Props) {
   return (

@@ -1,28 +1,26 @@
-import { graphql, HttpResponse } from 'msw';
-import { AuthPayload } from '~/gql/graphql';
+import { HttpResponse, graphql } from 'msw';
+import {
+  FinishEmailSignupInput,
+  FinishEmailSignupPayload,
+} from '~/gql/graphql';
 import { db } from '../../db';
 import { encodeMockJWT } from '../../utils/encode-mock-jwt';
-import { MutationResponse } from './types';
+import { addUserResolvedFields } from './utils/add-user-resolved-fields';
 
-type FinishEmailSignupResponse = MutationResponse<{
-  finishEmailSignup: AuthPayload;
-}>;
+interface FinishEmailSignupVariables {
+  input: FinishEmailSignupInput;
+}
 
-type FinishEmailSignupVariables = {
-  input: {
-    email: string;
-    username: string;
-    password: string;
-    name: string;
-  };
-};
+interface FinishEmailSignupResponse {
+  finishEmailSignup: FinishEmailSignupPayload;
+}
 
 const EXPIRATION_IN_MS = 1000 * 60 * 60 * 24; // 1 day
 
 export const FinishEmailSignup = graphql.mutation<
   FinishEmailSignupResponse,
   FinishEmailSignupVariables
->('FinishEmailSignup', async ({ variables }) => {
+>('FinishEmailSignup', ({ variables }) => {
   const existingUser = db.user.findFirst({
     where: { email: { equals: variables.input.email } },
   });
@@ -56,16 +54,14 @@ export const FinishEmailSignup = graphql.mutation<
     exp: Date.now() + EXPIRATION_IN_MS,
   });
 
-  return HttpResponse.json({
-    data: {
-      finishEmailSignup: {
-        refreshToken: session.refreshToken,
-        accessToken,
-        session: {
-          ...session,
-          user: user,
-        },
-      },
+  const finishEmailSignup: FinishEmailSignupPayload = {
+    refreshToken: session.refreshToken,
+    accessToken,
+    session: {
+      ...session,
+      user: addUserResolvedFields(user),
     },
-  });
+  };
+
+  return HttpResponse.json({ data: { finishEmailSignup } });
 });

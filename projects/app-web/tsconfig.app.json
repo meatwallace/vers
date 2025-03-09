@@ -2,6 +2,7 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "jsx": "react-jsx",
+    "allowJs": false,
     "types": ["node", "vite/client", "vitest"],
     "module": "ESNext",
     "moduleResolution": "Bundler",

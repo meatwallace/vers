@@ -32,20 +32,41 @@ input DeleteWorldInput {
 
 union DeleteWorldPayload = MutationErrorPayload | MutationSuccess
 
+input FinishDisable2FAInput {
+  transactionToken: String!
+}
+
+union FinishDisable2FAPayload = MutationErrorPayload | MutationSuccess
+
 input FinishEmailSignupInput {
   email: String!
   name: String!
   password: String!
   rememberMe: Boolean!
+  transactionToken: String!
   username: String!
 }
 
 union FinishEmailSignupPayload = AuthPayload | MutationErrorPayload
 
+input FinishEnable2FAInput {
+  transactionToken: String!
+}
+
+union FinishEnable2FAPayload = MutationErrorPayload | MutationSuccess
+
+input FinishLoginWith2FAInput {
+  target: String!
+  transactionToken: String!
+}
+
+union FinishLoginWith2FAPayload = AuthPayload | MutationErrorPayload
+
 input FinishPasswordResetInput {
   email: String!
   password: String!
   resetToken: String!
+  transactionToken: String
 }
 
 union FinishPasswordResetPayload = MutationErrorPayload | MutationSuccess
@@ -72,18 +93,23 @@ input LoginWithPasswordInput {
   rememberMe: Boolean!
 }
 
-union LoginWithPasswordPayload = AuthPayload | MutationErrorPayload
+union LoginWithPasswordPayload = AuthPayload | MutationErrorPayload | TwoFactorRequiredPayload
 
 type Mutation {
   createWorld(input: CreateWorldInput!): CreateWorldPayload!
   deleteSession(input: DeleteSessionInput!): DeleteSessionPayload!
   deleteWorld(input: DeleteWorldInput!): DeleteWorldPayload!
+  finishDisable2FA(input: FinishDisable2FAInput!): FinishDisable2FAPayload!
   finishEmailSignup(input: FinishEmailSignupInput!): FinishEmailSignupPayload!
+  finishEnable2FA(input: FinishEnable2FAInput!): FinishEnable2FAPayload!
+  finishLoginWith2FA(input: FinishLoginWith2FAInput!): FinishLoginWith2FAPayload!
   finishPasswordReset(input: FinishPasswordResetInput!): FinishPasswordResetPayload!
   loginWithPassword(input: LoginWithPasswordInput!): LoginWithPasswordPayload!
   refreshAccessToken(input: RefreshAccessTokenInput!): RefreshAccessTokenPayload!
+  startDisable2FA(input: StartDisable2FAInput!): StartDisable2FAPayload!
   startEmailSignup(input: StartEmailSignupInput!): StartEmailSignupPayload!
-  startPasswordReset(input: StartPasswordResetInput!): StartPasswordResetPayloadUnion!
+  startEnable2FA(input: StartEnable2FAInput!): StartEnable2FAPayload!
+  startPasswordReset(input: StartPasswordResetInput!): StartPasswordResetPayload!
   updateWorld(input: UpdateWorldInput!): UpdateWorldPayload!
   verifyOTP(input: VerifyOTPInput!): VerifyOTPPayload!
 }
@@ -104,6 +130,7 @@ type MutationSuccess {
 type Query {
   generateWorldNames(input: GenerateWorldNamesInput!): [String!]!
   getCurrentUser: User!
+  getEnable2FAVerification: TwoFactorVerification!
   getSessions(input: GetSessionsInput!): [Session!]!
   getWorld(input: GetWorldInput!): World!
   getWorlds(input: GetWorldsInput!): [World!]!
@@ -122,21 +149,42 @@ type Session {
   user: User!
 }
 
+input StartDisable2FAInput {
+  placeholder: String
+}
+
+union StartDisable2FAPayload = MutationErrorPayload | TwoFactorRequiredPayload
+
 input StartEmailSignupInput {
   email: String!
 }
 
-union StartEmailSignupPayload = MutationErrorPayload | MutationSuccess
+union StartEmailSignupPayload = MutationErrorPayload | TwoFactorRequiredPayload
+
+input StartEnable2FAInput {
+  placeholder: String
+}
+
+union StartEnable2FAPayload = MutationErrorPayload | TwoFactorRequiredPayload
 
 input StartPasswordResetInput {
   email: String!
 }
 
-type StartPasswordResetPayload {
-  success: Boolean!
+union StartPasswordResetPayload = MutationErrorPayload | MutationSuccess | TwoFactorRequiredPayload
+
+type TwoFactorRequiredPayload {
+  sessionID: String
+  transactionID: String!
 }
 
-union StartPasswordResetPayloadUnion = MutationErrorPayload | StartPasswordResetPayload
+type TwoFactorSuccessPayload {
+  transactionToken: String!
+}
+
+type TwoFactorVerification {
+  otpURI: String!
+}
 
 input UpdateWorldInput {
   archetype: String
@@ -156,30 +204,32 @@ type User {
   createdAt: DateTime!
   email: String!
   id: ID!
+  is2FAEnabled: Boolean!
   name: String!
   updatedAt: DateTime!
   username: String!
 }
 
-type Verification {
-  id: ID!
-  target: String!
-}
-
 enum VerificationType {
   CHANGE_EMAIL
+  CHANGE_EMAIL_CONFIRMATION
+  CHANGE_PASSWORD
   ONBOARDING
   RESET_PASSWORD
   TWO_FACTOR_AUTH
+  TWO_FACTOR_AUTH_DISABLE
+  TWO_FACTOR_AUTH_SETUP
 }
 
 input VerifyOTPInput {
   code: String!
+  sessionID: String
   target: String!
+  transactionID: String!
   type: VerificationType!
 }
 
-union VerifyOTPPayload = MutationErrorPayload | Verification
+union VerifyOTPPayload = MutationErrorPayload | TwoFactorSuccessPayload
 
 type World {
   archetype: String

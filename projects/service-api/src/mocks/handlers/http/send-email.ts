@@ -4,12 +4,12 @@ import { env } from '~/env';
 
 export const ENDPOINT_URL = `${env.EMAILS_SERVICE_URL}send-email`;
 
-export const sendEmail = http.post(ENDPOINT_URL, async ({ request }) => {
-  const body = (await request.json()) as SendEmailRequest;
+export const sendEmail = http.post<never, SendEmailRequest>(
+  ENDPOINT_URL,
+  async ({ request }) => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const body = await request.json();
 
-  if (!body.to || !body.subject || !body.html || !body.plainText) {
-    return new HttpResponse(null, { status: 400 });
-  }
-
-  return HttpResponse.json({ success: true });
-});
+    return HttpResponse.json({ success: true });
+  },
+);

@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
-    "lib": ["ES2020", "DOM", "DOM.Iterable"],
-    "allowJs": false,
+    "lib": ["ESNext", "DOM", "DOM.Iterable"],
+    "allowJs": true,
     "esModuleInterop": false,
     "allowSyntheticDefaultImports": true,
     "noEmit": true,
@@ -20,7 +20,11 @@
     }
   },
   "files": [],
-  "include": [".react-router/types/**/*"],
+  "include": [
+    ".react-router/types/**/*",
+    "react-router.config.ts",
+    "server.mjs"
+  ],
   "references": [
     {
       "path": "./tsconfig.app.json"

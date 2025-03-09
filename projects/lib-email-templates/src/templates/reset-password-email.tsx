@@ -1,10 +1,9 @@
 import { type ReactElement } from 'react';
 import * as E from '@react-email/components';
 
-type Props = {
-  verificationURL: string;
-  otp: string;
-};
+interface Props {
+  resetURL: string;
+}
 
 export function ResetPasswordEmail(props: Props): ReactElement {
   return (
@@ -12,11 +11,7 @@ export function ResetPasswordEmail(props: Props): ReactElement {
       <E.Heading as="h1">
         <E.Text>Password Reset</E.Text>
       </E.Heading>
-      <E.Text>
-        Here&apos;s your verification code: <strong>{props.otp}</strong>
-      </E.Text>
-      <E.Text>Or click the link:</E.Text>
-      <E.Link href={props.verificationURL}>{props.verificationURL}</E.Link>
+      <E.Link href={props.resetURL}>{props.resetURL}</E.Link>
     </E.Container>
   );
 }

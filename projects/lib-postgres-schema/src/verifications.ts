@@ -1,10 +1,10 @@
-import { pgEnum, pgTable, integer, text, timestamp } from 'drizzle-orm/pg-core';
+import { integer, pgEnum, pgTable, text, timestamp } from 'drizzle-orm/pg-core';
 
 export const verificationTypeEnum = pgEnum('verification_type', [
   '2fa',
-  'change-email',
+  '2fa-setup',
   'onboarding',
-  'reset-password',
+  'change-email',
 ]);
 
 export const verifications = pgTable('verifications', {
@@ -33,5 +33,5 @@ export const verifications = pgTable('verifications', {
   charSet: text('char_set').notNull(),
 
   // when it's safe to delete this verification
-  expiresAt: timestamp('expires_at').notNull(),
+  expiresAt: timestamp('expires_at'),
 });

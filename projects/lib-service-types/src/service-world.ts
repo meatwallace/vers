@@ -1,9 +1,9 @@
 import * as schema from '@chrono/postgres-schema';
 import { ServiceResponse } from './service-response';
 
-export type CreateWorldRequest = {
+export interface CreateWorldRequest {
   ownerID: string;
-};
+}
 
 export type CreateWorldResponse = ServiceResponse<{
   id: string;
@@ -15,14 +15,14 @@ export type CreateWorldResponse = ServiceResponse<{
   atmosphere: string;
   population: string;
   geographyType: string;
-  geographyFeatures: string[];
+  geographyFeatures: Array<string>;
   createdAt: Date;
   updatedAt: Date;
 }>;
 
 type World = typeof schema.worlds.$inferSelect;
 
-export type UpdateWorldRequest = {
+export interface UpdateWorldRequest {
   ownerID: string;
   worldID: string;
   name?: string;
@@ -33,7 +33,7 @@ export type UpdateWorldRequest = {
   population?: World['population'];
   geographyType?: World['geographyType'];
   geographyFeatures?: World['geographyFeatures'];
-};
+}
 
 export type UpdateWorldResponse = ServiceResponse<{
   id: string;
@@ -50,19 +50,19 @@ export type UpdateWorldResponse = ServiceResponse<{
   updatedAt: Date;
 }>;
 
-export type DeleteWorldRequest = {
+export interface DeleteWorldRequest {
   ownerID: string;
   worldID: string;
-};
+}
 
 export type DeleteWorldResponse = ServiceResponse<{
   deletedID: string;
 }>;
 
-export type GetWorldRequest = {
+export interface GetWorldRequest {
   ownerID: string;
   worldID: string;
-};
+}
 
 export type GetWorldResponse = ServiceResponse<{
   id: string;
@@ -79,9 +79,9 @@ export type GetWorldResponse = ServiceResponse<{
   updatedAt: Date;
 } | null>;
 
-export type GetWorldsRequest = {
+export interface GetWorldsRequest {
   ownerID: string;
-};
+}
 
 export type GetWorldsResponse = ServiceResponse<
   Array<{
@@ -100,9 +100,9 @@ export type GetWorldsResponse = ServiceResponse<
   }>
 >;
 
-export type GenerateWorldNamesRequest = {
+export interface GenerateWorldNamesRequest {
   ownerID: string;
   worldID: string;
-};
+}
 
 export type GenerateWorldNamesResponse = ServiceResponse<Array<string>>;

@@ -30,7 +30,7 @@ export async function changePassword(
       });
     }
 
-    const isTokenMismatch = user?.passwordResetToken !== resetToken;
+    const isTokenMismatch = user.passwordResetToken !== resetToken;
 
     if (isTokenMismatch) {
       return ctx.json({
@@ -40,7 +40,7 @@ export async function changePassword(
     }
 
     const isTokenExpired =
-      user?.passwordResetTokenExpiresAt &&
+      user.passwordResetTokenExpiresAt &&
       user.passwordResetTokenExpiresAt < new Date();
 
     if (isTokenExpired) {

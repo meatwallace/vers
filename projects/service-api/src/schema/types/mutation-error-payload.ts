@@ -1,9 +1,9 @@
 import { builder } from '../builder';
 import { MutationError } from './mutation-error';
 
-export type MutationErrorPayloadData = {
+export interface MutationErrorPayloadData {
   error: typeof MutationError.$inferType;
-};
+}
 
 export const MutationErrorPayload = builder.objectRef<MutationErrorPayloadData>(
   'MutationErrorPayload',

@@ -45,10 +45,6 @@ const verifyToken = createTokenVerifier({
   signingKey: TEST_SIGNING_KEY,
 });
 
-afterEach(() => {
-  vi.restoreAllMocks();
-});
-
 test('it authorizes a valid token and extracts the payload', async () => {
   const token = await createTestJWT({
     sub: TEST_TOKEN_PAYLOAD.sub,

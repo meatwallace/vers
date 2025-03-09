@@ -15,7 +15,6 @@ export async function generateWorldNames(
     const { ownerID, worldID } =
       await ctx.req.json<GenerateWorldNamesRequest>();
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const world = await db.query.worlds.findFirst({
       where: and(
         eq(schema.worlds.id, worldID),

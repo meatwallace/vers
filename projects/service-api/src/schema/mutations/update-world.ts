@@ -1,5 +1,4 @@
-import invariant from 'tiny-invariant';
-import { Context, StandardMutationPayload } from '~/types';
+import { AuthedContext } from '~/types';
 import { omitNullish } from '~/utils/omit-nullish';
 import { builder } from '../builder';
 import { MutationErrorPayload } from '../types/mutation-error-payload';
@@ -7,17 +6,15 @@ import { World } from '../types/world';
 import { createPayloadResolver } from '../utils/create-payload-resolver';
 import { requireAuth } from '../utils/require-auth';
 
-type Args = {
+interface Args {
   input: typeof UpdateWorldInput.$inferInput;
-};
+}
 
 export async function updateWorld(
   _: object,
   args: Args,
-  ctx: Context,
-): Promise<StandardMutationPayload<typeof World.$inferType>> {
-  invariant(ctx.user, 'user is required in an authed resolver');
-
+  ctx: AuthedContext,
+): Promise<typeof UpdateWorldPayload.$inferType> {
   // eslint-disable-next-line no-useless-catch
   try {
     const { worldID, ...update } = omitNullish(args.input);

@@ -5,23 +5,23 @@ import { envSchema } from './env';
 
 export type Env = z.infer<typeof envSchema>;
 
-export type HandlerContext = {
+export interface HandlerContext {
   db: PostgresJsDatabase<typeof schema>;
-};
+}
 
-export type CreateVerificationInput = {
+export interface CreateVerificationInput {
   type: string;
   target: string;
   period: number;
-};
+}
 
-export type VerifyCodeInput = {
+export interface VerifyCodeInput {
   code: string;
   type: string;
   target: string;
-};
+}
 
-export type Verification = {
+export interface Verification {
   id: string;
   code: string;
   type: string;
@@ -29,4 +29,4 @@ export type Verification = {
   expiresAt: Date;
   createdAt: Date;
   updatedAt: Date;
-};
+}

@@ -16,12 +16,12 @@ import {
 import { Routes } from '~/types.ts';
 import { requireAuth } from './require-auth.server.ts';
 
-type TestConfig = {
+interface TestConfig {
   initialPath?: string;
   sessionID?: string;
   accessToken?: string;
   refreshToken?: string;
-};
+}
 
 let setCookieHeader: null | string = null;
 
@@ -67,7 +67,7 @@ async function setupTest(config: Partial<TestConfig> = {}) {
     if (isFirstCall) {
       request.headers.set('cookie', initialCookieHeader);
       // if it isn't our first call, we might've set a cookie, so manually set it
-    } else if (!isFirstCall && setCookieHeader) {
+    } else if (setCookieHeader) {
       request.headers.set('cookie', setCookieHeader);
     }
 
@@ -168,7 +168,7 @@ test('it logs the user out if the access and refresh token are expired', async (
 
   expect(loginRoute).toBeInTheDocument();
 
-  const deletedSession = await db.session.findFirst({
+  const deletedSession = db.session.findFirst({
     where: {
       id: {
         equals: session.id,
@@ -200,7 +200,7 @@ test('it logs the user out when refreshing the access token fails', async () => 
 
   expect(loginRoute).toBeInTheDocument();
 
-  const deletedSession = await db.session.findFirst({
+  const deletedSession = db.session.findFirst({
     where: {
       id: {
         equals: session.id,

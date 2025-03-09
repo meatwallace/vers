@@ -1,27 +1,29 @@
-import { Context } from 'hono';
 import { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
+import { Context } from 'hono';
+import * as schema from '@chrono/postgres-schema';
 import {
   CreateSessionRequest,
   CreateSessionResponse,
 } from '@chrono/service-types';
-import * as schema from '@chrono/postgres-schema';
 import { createId } from '@paralleldrive/cuid2';
-import { createJWT } from '../utils/create-jwt';
 import * as consts from '../consts';
+import { createJWT } from '../utils/create-jwt';
 
 export async function createSession(
   ctx: Context,
   db: PostgresJsDatabase<typeof schema>,
 ) {
   try {
-    const { userID, ipAddress, rememberMe } =
+    const { userID, ipAddress, rememberMe, expiresAt } =
       await ctx.req.json<CreateSessionRequest>();
 
     const refreshTokenDuration = rememberMe
       ? consts.REFRESH_TOKEN_DURATION_LONG
       : consts.REFRESH_TOKEN_DURATION;
 
-    const refreshTokenExpiresAt = new Date(Date.now() + refreshTokenDuration);
+    const refreshTokenExpiresAt = expiresAt
+      ? new Date(expiresAt)
+      : new Date(Date.now() + refreshTokenDuration);
 
     const refreshToken = await createJWT({
       userID,
@@ -33,7 +35,6 @@ export async function createSession(
       expiresAt: new Date(Date.now() + consts.ACCESS_TOKEN_DURATION),
     });
 
-    // store session record
     const session: typeof schema.sessions.$inferSelect = {
       id: createId(),
       refreshToken,

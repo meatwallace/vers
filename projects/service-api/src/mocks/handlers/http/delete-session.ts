@@ -5,19 +5,21 @@ import { db } from '../../db';
 
 const ENDPOINT_URL = `${env.SESSIONS_SERVICE_URL}delete-session`;
 
-export const deleteSession = http.post(ENDPOINT_URL, async ({ request }) => {
-  const { id, userID } = (await request.json()) as DeleteSessionRequest;
+export const deleteSession = http.post<never, DeleteSessionRequest>(
+  ENDPOINT_URL,
+  async ({ request }) => {
+    const body = await request.json();
 
-  // eslint-disable-next-line drizzle/enforce-delete-with-where
-  db.session.delete({
-    where: {
-      id: { equals: id },
-      userID: { equals: userID },
-    },
-  });
+    db.session.delete({
+      where: {
+        id: { equals: body.id },
+        userID: { equals: body.userID },
+      },
+    });
 
-  return HttpResponse.json({
-    success: true,
-    data: {},
-  });
-});
+    return HttpResponse.json({
+      success: true,
+      data: {},
+    });
+  },
+);

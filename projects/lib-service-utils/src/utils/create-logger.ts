@@ -1,10 +1,10 @@
 import type { Logger } from 'pino';
 import pino from 'pino';
 
-export type CreateLoggerOptions = {
+export interface CreateLoggerOptions {
   level: string;
   pretty?: boolean;
-};
+}
 
 export function createLogger(options: CreateLoggerOptions): Logger {
   if (options.pretty) {

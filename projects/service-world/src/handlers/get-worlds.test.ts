@@ -4,6 +4,7 @@ import { createId } from '@paralleldrive/cuid2';
 import { worlds } from '@chrono/postgres-schema';
 import { getWorlds } from './get-worlds';
 import { pgTestConfig } from '../pg-test-config';
+
 async function setupTest() {
   const app = new Hono();
 
@@ -15,10 +16,6 @@ async function setupTest() {
 
   return { app, db, teardown, user };
 }
-
-afterEach(() => {
-  vi.restoreAllMocks();
-});
 
 test('it returns all the worlds for the given owner', async () => {
   const { app, db, teardown, user } = await setupTest();

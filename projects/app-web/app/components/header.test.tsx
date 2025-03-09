@@ -4,10 +4,10 @@ import { render, screen, waitFor } from '@testing-library/react';
 import { Header } from './header';
 import { Routes } from '~/types';
 
-type TestConfig = {
+interface TestConfig {
   username: string;
   name?: string;
-};
+}
 
 function setupTest(config: TestConfig) {
   const user = userEvent.setup();

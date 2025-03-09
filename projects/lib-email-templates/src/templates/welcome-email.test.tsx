@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import { WelcomeEmail } from './welcome-email';
 
-test('it renders a welcome email with provided configuration', async () => {
+test('it renders a welcome email with provided configuration', () => {
   const props = {
     verificationURL: 'https://chrononomicon.com/verification?token=123456',
     verificationCode: '123456',

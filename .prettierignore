@@ -3,5 +3,7 @@
 /.nx/cache
 /.nx/workspace-data
 /projects/app-web/app/gql
+.yarn
+.pnp.cjs
 .pnp.loader.mjs
 schema.graphql

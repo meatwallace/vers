@@ -1,21 +1,21 @@
 import { type ReactNode } from 'react';
 import * as styles from './card.css.ts';
 
-type CardProps = {
+interface CardProps {
   children: ReactNode;
-};
+}
 
-type HeaderProps = {
+interface HeaderProps {
   children: ReactNode;
-};
+}
 
-type TitleProps = {
+interface TitleProps {
   children: ReactNode;
-};
+}
 
-type BodyProps = {
+interface BodyProps {
   children: ReactNode;
-};
+}
 
 export function Card({ children }: CardProps) {
   return <div className={styles.card}>{children}</div>;

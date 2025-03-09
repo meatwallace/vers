@@ -1,20 +1,17 @@
-import invariant from 'tiny-invariant';
-import { Context } from '~/types';
+import { AuthedContext } from '~/types';
 import { builder } from '../builder';
 import { World } from '../types/world';
 import { requireAuth } from '../utils/require-auth';
 
-type Args = {
+interface Args {
   input: typeof GetWorldsInput.$inferInput;
-};
+}
 
 export async function getWorlds(
   _: object,
   args: Args,
-  ctx: Context,
+  ctx: AuthedContext,
 ): Promise<Array<typeof World.$inferType>> {
-  invariant(ctx.user, 'user is required in an authed resolver');
-
   // eslint-disable-next-line no-useless-catch
   try {
     const worlds = await ctx.services.world.getWorlds({

@@ -6,7 +6,7 @@ test('it renders a label and an OTP input', () => {
   render(
     <OTPField
       labelProps={{ children: 'Enter code' }}
-      inputProps={{ value: '', onChange: () => {} }}
+      inputProps={{ value: '', onChange: vi.fn() }}
       errors={[]}
     />,
   );
@@ -36,7 +36,7 @@ test('it displays error messages', () => {
   render(
     <OTPField
       labelProps={{ children: 'Enter code' }}
-      inputProps={{ value: '', onChange: () => {} }}
+      inputProps={{ value: '', onChange: vi.fn() }}
       errors={['Invalid code']}
     />,
   );

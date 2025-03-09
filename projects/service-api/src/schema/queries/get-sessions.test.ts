@@ -1,8 +1,8 @@
-import { drop } from '@mswjs/data';
-import { createTestJWT } from '@chrono/service-test-utils';
 import { env } from '~/env';
-import { createMockGQLContext } from '~/test-utils/create-mock-gql-context';
 import { db } from '~/mocks/db';
+import { createMockGQLContext } from '~/test-utils/create-mock-gql-context';
+import { createTestJWT } from '@chrono/service-test-utils';
+import { drop } from '@mswjs/data';
 import { resolve } from './get-sessions';
 
 test('it returns all sessions for the authenticated user', async () => {
@@ -22,7 +22,8 @@ test('it returns all sessions for the authenticated user', async () => {
     issuer: `https://${env.API_IDENTIFIER}/`,
   });
 
-  const ctx = createMockGQLContext({ accessToken, user });
+  const ctx = createMockGQLContext({ accessToken, user, session: session1 });
+
   const args = { input: {} };
 
   const result = await resolve({}, args, ctx);

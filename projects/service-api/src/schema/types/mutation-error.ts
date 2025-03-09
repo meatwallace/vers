@@ -1,9 +1,9 @@
 import { builder } from '../builder';
 
-type MutationErrorData = {
+interface MutationErrorData {
   title: string;
   message: string;
-};
+}
 
 export const MutationError =
   builder.objectRef<MutationErrorData>('MutationError');

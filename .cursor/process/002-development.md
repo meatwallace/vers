@@ -15,11 +15,29 @@ When the tests pass:
 
 ## Retain Memory
 
-There will be a memory file for every project you can store in `.cursor/process/.memory.md`.
+There will be a [memory file](../../.memory.md) for can maintain.
 
-The memory file will contain the state of the task, and any notes or relevant details you'd need to remember between chats, including a todo list of sub-tasks to complete.
+The memory file will contain:
 
-Keep it up to date based on the task's current state.
+- Requirements and specifications
+- Technical details of the implementation
+- Security research findings
+- Design decisions
+- Pending decisions
+- Questions for the user
+
+Keep it succint and up to date based on the task's current state.
+
+## Track Relevant Rules
+
+For each major task or feature area:
+
+1. Reference relevant cursor rules in the todo list items
+2. Review referenced rules before starting each task
+3. Update rules when:
+   - New implementation standards are discovered
+   - Tasks require additional standards
+   - File changes trigger automatic rule attachments
 
 ## Update cursor rules
 

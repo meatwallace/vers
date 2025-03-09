@@ -3,11 +3,11 @@ import * as styles from './field.css.ts';
 import { Label } from './label';
 import { Input } from './input';
 
-type Props = {
+interface Props {
   labelProps: React.LabelHTMLAttributes<HTMLLabelElement> & { key?: string };
   inputProps: React.InputHTMLAttributes<HTMLInputElement> & { key?: string };
   errors: Array<string>;
-};
+}
 
 export function Field(props: Props) {
   const fallbackID = React.useId();

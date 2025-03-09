@@ -5,17 +5,20 @@ import { db } from '../../db';
 
 const ENDPOINT_URL = `${env.USERS_SERVICE_URL}create-user`;
 
-export const createUser = http.post(ENDPOINT_URL, async ({ request }) => {
-  const { email, name, username } = (await request.json()) as CreateUserRequest;
+export const createUser = http.post<never, CreateUserRequest>(
+  ENDPOINT_URL,
+  async ({ request }) => {
+    const body = await request.json();
 
-  const user = db.user.create({
-    email,
-    name,
-    username,
-  });
+    const user = db.user.create({
+      email: body.email,
+      name: body.name,
+      username: body.username,
+    });
 
-  return HttpResponse.json({
-    success: true,
-    data: user,
-  });
-});
+    return HttpResponse.json({
+      success: true,
+      data: user,
+    });
+  },
+);

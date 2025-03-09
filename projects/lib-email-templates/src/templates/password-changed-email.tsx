@@ -1,9 +1,9 @@
 import { type ReactElement } from 'react';
 import * as E from '@react-email/components';
 
-type Props = {
+interface Props {
   email: string;
-};
+}
 
 export function PasswordChangedEmail(props: Props): ReactElement {
   return (

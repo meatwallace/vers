@@ -2,12 +2,12 @@ import { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
 import * as schema from '@chrono/postgres-schema';
 import { hashPassword } from '@chrono/service-utils';
 
-type TestUserConfig = {
+interface TestUserConfig {
   db: PostgresJsDatabase<typeof schema>;
   user?: Partial<Omit<typeof schema.users.$inferSelect, 'passwordHash'>> & {
     password?: string | null;
   };
-};
+}
 
 export async function createTestUser(
   config: TestUserConfig,

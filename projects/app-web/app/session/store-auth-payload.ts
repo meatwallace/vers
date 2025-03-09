@@ -5,14 +5,14 @@ import {
   SESSION_KEY_AUTH_REFRESH_TOKEN,
 } from './consts.ts';
 
-type AuthPayload = {
+interface AuthPayload {
   accessToken: string;
   refreshToken: string;
   session: {
     id: string;
     expiresAt: string;
   };
-};
+}
 
 export function storeAuthPayload(
   authSession: Session,

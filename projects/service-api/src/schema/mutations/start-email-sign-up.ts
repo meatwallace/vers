@@ -1,26 +1,35 @@
+import { GraphQLError } from 'graphql';
 import {
   generateExistingAccountEmail,
   generateWelcomeEmail,
 } from '@chrono/email-templates';
-import { Context, StandardMutationPayload } from '~/types';
 import { env } from '~/env';
+import { logger } from '~/logger';
+import { Context } from '~/types';
+import { createPendingTransaction } from '~/utils/create-pending-transaction';
 import { builder } from '../builder';
 import { MutationErrorPayload } from '../types/mutation-error-payload';
-import { MutationSuccess } from '../types/mutation-success';
+import { TwoFactorRequiredPayload } from '../types/two-factor-required-payload';
 import { VerificationType } from '../types/verification-type';
 import { createPayloadResolver } from '../utils/create-payload-resolver';
 
-type Args = {
+interface Args {
   input: typeof StartEmailSignupInput.$inferInput;
-};
+}
 
 export async function startEmailSignup(
   _: object,
   args: Args,
   ctx: Context,
-): Promise<StandardMutationPayload<typeof MutationSuccess.$inferType>> {
-  // eslint-disable-next-line no-useless-catch
+): Promise<typeof StartEmailSignupPayload.$inferType> {
   try {
+    const transactionID = createPendingTransaction({
+      target: args.input.email,
+      ipAddress: ctx.ipAddress,
+      action: VerificationType.ONBOARDING,
+      sessionID: null,
+    });
+
     const existingUser = await ctx.services.user.getUser({
       email: args.input.email,
     });
@@ -39,13 +48,17 @@ export async function startEmailSignup(
         ...email,
       });
 
-      return { success: true };
+      return {
+        transactionID,
+        sessionID: null,
+      };
     }
 
     const verification = await ctx.services.verification.createVerification({
       type: 'onboarding',
       target: args.input.email,
       period: 10 * 60, // 10 minutes
+      expiresAt: new Date(Date.now() + 10 * 60 * 1000), // 10 minutes from now
     });
 
     const verificationURL = new URL(`${env.APP_WEB_URL}/verify-otp`);
@@ -53,6 +66,7 @@ export async function startEmailSignup(
     verificationURL.searchParams.set('type', VerificationType.ONBOARDING);
     verificationURL.searchParams.set('target', args.input.email);
     verificationURL.searchParams.set('code', verification.code);
+    verificationURL.searchParams.set('transactionID', transactionID);
 
     const email = await generateWelcomeEmail({
       verificationURL: verificationURL.toString(),
@@ -65,12 +79,21 @@ export async function startEmailSignup(
       ...email,
     });
 
-    return { success: true };
+    return {
+      transactionID,
+      sessionID: null,
+    };
   } catch (error: unknown) {
     // TODO(#16): capture via Sentry
-    // console.error(error);
+    if (error instanceof Error) {
+      logger.error(error.message);
+    }
 
-    throw error;
+    throw new GraphQLError('An unknown error occurred', {
+      extensions: {
+        code: 'INTERNAL_SERVER_ERROR',
+      },
+    });
   }
 }
 
@@ -81,8 +104,8 @@ const StartEmailSignupInput = builder.inputType('StartEmailSignupInput', {
 });
 
 const StartEmailSignupPayload = builder.unionType('StartEmailSignupPayload', {
-  types: [MutationSuccess, MutationErrorPayload],
-  resolveType: createPayloadResolver(MutationSuccess),
+  types: [TwoFactorRequiredPayload, MutationErrorPayload],
+  resolveType: createPayloadResolver(TwoFactorRequiredPayload),
 });
 
 export const resolve = startEmailSignup;

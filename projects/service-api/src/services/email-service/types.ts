@@ -3,6 +3,6 @@ import { ServiceContext } from '../utils/types';
 
 export type EmailServiceContext = ServiceContext;
 
-export type EmailService = {
+export interface EmailService {
   sendEmail: (args: SendEmailRequest) => Promise<void>;
-};
+}

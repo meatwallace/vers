@@ -1,8 +1,8 @@
 import { builder } from '../builder';
 
-type MutationSuccessData = {
+interface MutationSuccessData {
   success: true;
-};
+}
 
 // simple type for when we don't want to return a more complex object from a mutation
 export const MutationSuccess =

@@ -1,10 +1,10 @@
 import * as jose from 'jose';
 import { env } from '../env';
 
-type Data = {
+interface Data {
   userID: string;
   expiresAt: Date;
-};
+}
 
 export async function createJWT(data: Data): Promise<string> {
   const alg = 'RS256';

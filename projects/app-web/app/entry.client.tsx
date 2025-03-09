@@ -1,6 +1,6 @@
-import { HydratedRouter } from 'react-router/dom';
-import { startTransition, StrictMode } from 'react';
+import { StrictMode, startTransition } from 'react';
 import { hydrateRoot } from 'react-dom/client';
+import { HydratedRouter } from 'react-router/dom';
 
 const SILENCED_UNHANDLED_URLS = [
   '/__manifest',
@@ -27,12 +27,10 @@ async function prepareApp() {
       },
     });
   }
-
-  return;
 }
 
 // eslint-disable-next-line unicorn/prefer-top-level-await
-prepareApp().then(() =>
+void prepareApp().then(() =>
   startTransition(() => {
     hydrateRoot(
       document,

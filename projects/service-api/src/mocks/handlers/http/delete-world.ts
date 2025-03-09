@@ -5,11 +5,16 @@ import { db } from '../../db';
 
 const ENDPOINT_URL = `${env.WORLDS_SERVICE_URL}delete-world`;
 
-export const deleteWorld = http.post(ENDPOINT_URL, async ({ request }) => {
-  const { worldID } = (await request.json()) as DeleteWorldRequest;
+export const deleteWorld = http.post<never, DeleteWorldRequest>(
+  ENDPOINT_URL,
+  async ({ request }) => {
+    const body = await request.json();
 
-  // eslint-disable-next-line drizzle/enforce-delete-with-where
-  db.world.delete({ where: { id: { equals: worldID } } });
+    db.world.delete({ where: { id: { equals: body.worldID } } });
 
-  return HttpResponse.json({ success: true, data: { deletedID: worldID } });
-});
+    return HttpResponse.json({
+      success: true,
+      data: { deletedID: body.worldID },
+    });
+  },
+);

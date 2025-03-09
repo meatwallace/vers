@@ -13,7 +13,7 @@ type World = typeof worlds.$inferSelect;
 
 export type WorldData = World;
 
-export type RawWorldData = {
+export interface RawWorldData {
   id: string;
   ownerID: string;
   name: string;
@@ -26,11 +26,11 @@ export type RawWorldData = {
   geographyFeatures: World['geographyFeatures'];
   createdAt: string;
   updatedAt: string;
-};
+}
 
 export type WorldServiceContext = ServiceContext;
 
-export type WorldService = {
+export interface WorldService {
   getWorld: (args: GetWorldRequest) => Promise<WorldData | null>;
 
   getWorlds: (args: GetWorldsRequest) => Promise<Array<WorldData>>;
@@ -44,4 +44,4 @@ export type WorldService = {
   generateWorldNames: (
     args: GenerateWorldNamesRequest,
   ) => Promise<Array<string>>;
-};
+}

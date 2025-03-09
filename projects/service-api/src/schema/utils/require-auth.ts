@@ -1,4 +1,5 @@
-import { Context } from '~/types';
+import { AuthedContext, Context } from '~/types';
+import { isAuthed } from '~/utils/is-authed';
 
 type Resolver<TParent, TArgs, TReturn> = (
   parent: TParent,
@@ -6,11 +7,17 @@ type Resolver<TParent, TArgs, TReturn> = (
   ctx: Context,
 ) => Promise<TReturn>;
 
+type AuthedResolver<TParent, TArgs, TReturn> = (
+  parent: TParent,
+  args: TArgs,
+  ctx: AuthedContext,
+) => Promise<TReturn>;
+
 export function requireAuth<TParent, TArgs, TReturn>(
-  resolver: Resolver<TParent, TArgs, TReturn>,
+  resolver: AuthedResolver<TParent, TArgs, TReturn>,
 ): Resolver<TParent, TArgs, TReturn> {
   return async (parent, args, ctx) => {
-    if (!ctx.user) {
+    if (!isAuthed(ctx)) {
       throw new Error('Unauthorized');
     }
 

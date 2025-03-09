@@ -1,27 +1,26 @@
-import { graphql, HttpResponse } from 'msw';
-import { AuthPayload } from '~/gql/graphql';
+import { HttpResponse, graphql } from 'msw';
+import {
+  LoginWithPasswordInput,
+  LoginWithPasswordPayload,
+} from '~/gql/graphql';
 import { db } from '../../db';
 import { encodeMockJWT } from '../../utils/encode-mock-jwt';
-import { MutationResponse } from './types';
+import { addUserResolvedFields } from './utils/add-user-resolved-fields';
 
-type LoginWithPasswordResponse = MutationResponse<{
-  loginWithPassword: AuthPayload;
-}>;
+interface LoginWithPasswordVariables {
+  input: LoginWithPasswordInput;
+}
 
-type LoginWithPasswordVariables = {
-  input: {
-    email: string;
-    password: string;
-    rememberMe: boolean;
-  };
-};
+interface LoginWithPasswordResponse {
+  loginWithPassword: LoginWithPasswordPayload;
+}
 
 const EXPIRATION_IN_MS = 1000 * 60 * 60 * 24; // 24 hours
 
 export const LoginWithPassword = graphql.mutation<
   LoginWithPasswordResponse,
   LoginWithPasswordVariables
->('LoginWithPassword', async ({ variables }) => {
+>('LoginWithPassword', ({ variables }) => {
   const { email, password } = variables.input;
 
   const user = db.user.findFirst({
@@ -76,7 +75,7 @@ export const LoginWithPassword = graphql.mutation<
         refreshToken: session.refreshToken,
         session: {
           ...session,
-          user,
+          user: addUserResolvedFields(user),
         },
       },
     },

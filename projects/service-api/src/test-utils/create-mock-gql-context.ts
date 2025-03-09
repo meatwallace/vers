@@ -1,18 +1,20 @@
-import { createId } from '@paralleldrive/cuid2';
+import { db } from '~/mocks/db';
 import { ServiceID } from '@chrono/service-types';
-import { Context } from '../types';
-import { createEmailService } from '../services/email-service/create-email-service';
-import { createUserService } from '../services/user-service/create-user-service';
-import { createWorldService } from '../services/world-service/create-world-service';
-import { createSessionService } from '../services/session-service/create-session-service';
-import { createVerificationService } from '../services/verification-service/create-verification-service';
+import { createId } from '@paralleldrive/cuid2';
 import { env } from '../env';
+import { createEmailService } from '../services/email-service/create-email-service';
+import { createSessionService } from '../services/session-service/create-session-service';
+import { createUserService } from '../services/user-service/create-user-service';
+import { createVerificationService } from '../services/verification-service/create-verification-service';
+import { createWorldService } from '../services/world-service/create-world-service';
+import { AuthedContext, Context } from '../types';
 
-type MockContextConfig = {
+interface MockContextConfig {
   accessToken?: string;
   ipAddress?: string;
-  user?: Context['user'];
-};
+  user?: AuthedContext['user'];
+  session?: AuthedContext['session'];
+}
 
 export function createMockGQLContext(config: MockContextConfig): Context {
   const request = new Request('https://test.com/');
@@ -23,10 +25,12 @@ export function createMockGQLContext(config: MockContextConfig): Context {
 
   const requestID = createId();
 
-  return {
+  const ipAddress =
+    config.session?.ipAddress ?? config.ipAddress ?? '127.0.0.1';
+
+  const sharedContext = {
     request,
-    user: config.user ?? null,
-    ipAddress: config.ipAddress ?? '127.0.0.1',
+    ipAddress,
     services: {
       email: createEmailService({
         serviceID: ServiceID.ServiceEmail,
@@ -59,5 +63,22 @@ export function createMockGQLContext(config: MockContextConfig): Context {
         requestID,
       }),
     },
+  };
+
+  if (!config.user && !config.session) {
+    return {
+      ...sharedContext,
+      user: null,
+      session: null,
+    };
+  }
+
+  const user = config.user ?? db.user.create({ email: 'test@example.com' });
+  const session = config.session ?? db.session.create({ userID: user.id });
+
+  return {
+    ...sharedContext,
+    user,
+    session,
   };
 }

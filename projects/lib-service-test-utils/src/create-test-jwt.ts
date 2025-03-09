@@ -1,12 +1,12 @@
 import * as jose from 'jose';
 
-type TestTokenConfig = {
+interface TestTokenConfig {
   sub: string;
   audience: string;
   issuer: string;
-  signingKey?: Uint8Array<ArrayBufferLike> | jose.KeyLike;
+  signingKey?: Uint8Array | jose.KeyLike;
   alg?: string;
-};
+}
 
 export async function createTestJWT(config: TestTokenConfig): Promise<string> {
   const signingKey = config.signingKey ?? new TextEncoder().encode('secret');

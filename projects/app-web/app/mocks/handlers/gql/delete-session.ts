@@ -1,22 +1,19 @@
-import { graphql, HttpResponse } from 'msw';
-import { MutationSuccess } from '~/gql/graphql';
+import { HttpResponse, graphql } from 'msw';
+import { DeleteSessionInput, DeleteSessionPayload } from '~/gql/graphql';
 import { db } from '~/mocks/db.ts';
-import { MutationResponse } from './types';
 
-type DeleteSessionResponse = MutationResponse<{
-  deleteSession: MutationSuccess;
-}>;
+interface DeleteSessionVariables {
+  input: DeleteSessionInput;
+}
 
-type DeleteSessionVariables = {
-  input: {
-    id: string;
-  };
-};
+interface DeleteSessionResponse {
+  deleteSession: DeleteSessionPayload;
+}
 
 export const DeleteSession = graphql.mutation<
   DeleteSessionResponse,
   DeleteSessionVariables
->('DeleteSession', async ({ variables }) => {
+>('DeleteSession', ({ variables }) => {
   db.session.delete({
     where: {
       id: {

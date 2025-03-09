@@ -4,11 +4,11 @@ import { builder } from '../builder';
 import { Session } from '../types/session';
 import { requireAuth } from '../utils/require-auth';
 
-type Args = {
+interface Args {
   input: {
     placeholder?: string | null | undefined;
   };
-};
+}
 
 export async function getSessions(
   _: object,

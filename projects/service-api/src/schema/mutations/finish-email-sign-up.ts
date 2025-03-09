@@ -1,32 +1,51 @@
-import { Context, StandardMutationPayload } from '~/types';
+import { logger } from '~/logger';
+import { Context } from '~/types';
+import { verifyTransactionToken } from '~/utils/verify-transaction-token';
 import { builder } from '../builder';
 import { AuthPayload } from '../types/auth-payload';
 import { MutationErrorPayload } from '../types/mutation-error-payload';
+import { VerificationType } from '../types/verification-type';
 import { createPayloadResolver } from '../utils/create-payload-resolver';
 
-type Args = {
+interface Args {
   input: typeof FinishEmailSignupInput.$inferInput;
+}
+
+const AMBIGUOUS_UNKNOWN_ERROR = {
+  title: 'An unknown error occurred',
+  message: 'An unknown error occurred',
+};
+
+const AMBIGUOUS_FAILED_VERIFICATION_ERROR = {
+  title: 'Failed Verification',
+  message: 'Verification for this operation is invalid or has expired.',
 };
 
 export async function finishEmailSignup(
   _: object,
   args: Args,
   ctx: Context,
-): Promise<StandardMutationPayload<typeof AuthPayload.$inferType>> {
-  // eslint-disable-next-line no-useless-catch
+): Promise<typeof FinishEmailSignupPayload.$inferType> {
   try {
+    const isValidTransaction = await verifyTransactionToken(
+      {
+        token: args.input.transactionToken,
+        action: VerificationType.ONBOARDING,
+        target: args.input.email,
+      },
+      ctx,
+    );
+
+    if (!isValidTransaction) {
+      return { error: AMBIGUOUS_FAILED_VERIFICATION_ERROR };
+    }
+
     const existingUser = await ctx.services.user.getUser({
       email: args.input.email,
     });
 
     if (existingUser) {
-      // TODO: extract to shared error object/i18n
-      return {
-        error: {
-          title: 'User already exists',
-          message: 'A user already exists with this email',
-        },
-      };
+      return { error: AMBIGUOUS_UNKNOWN_ERROR };
     }
 
     const user = await ctx.services.user.createUser({
@@ -49,7 +68,11 @@ export async function finishEmailSignup(
     return tokens;
   } catch (error: unknown) {
     // TODO(#16): capture via Sentry
-    throw error;
+    if (error instanceof Error) {
+      logger.error(error.message);
+    }
+
+    return { error: AMBIGUOUS_UNKNOWN_ERROR };
   }
 }
 
@@ -60,6 +83,7 @@ const FinishEmailSignupInput = builder.inputType('FinishEmailSignupInput', {
     username: t.string({ required: true }),
     password: t.string({ required: true }),
     rememberMe: t.boolean({ required: true }),
+    transactionToken: t.string({ required: true }),
   }),
 });
 

@@ -1,9 +1,9 @@
-import { Context } from 'hono';
-import { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
 import { and, eq } from 'drizzle-orm';
-import { verifyTOTP } from '@epic-web/totp';
+import { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
+import { Context } from 'hono';
 import * as schema from '@chrono/postgres-schema';
 import { VerifyCodeRequest, VerifyCodeResponse } from '@chrono/service-types';
+import { verifyTOTP } from '@epic-web/totp';
 
 export async function verifyCode(
   ctx: Context,
@@ -26,7 +26,7 @@ export async function verifyCode(
       });
     }
 
-    if (verification.expiresAt < new Date()) {
+    if (verification.expiresAt && verification.expiresAt < new Date()) {
       await db
         .delete(schema.verifications)
         .where(eq(schema.verifications.id, verification.id));
@@ -49,9 +49,14 @@ export async function verifyCode(
       });
     }
 
-    await db
-      .delete(schema.verifications)
-      .where(eq(schema.verifications.id, verification.id));
+    const is2FAVerification =
+      verification.type === '2fa-setup' || verification.type === '2fa';
+
+    if (!is2FAVerification) {
+      await db
+        .delete(schema.verifications)
+        .where(eq(schema.verifications.id, verification.id));
+    }
 
     const response: VerifyCodeResponse = {
       success: true,

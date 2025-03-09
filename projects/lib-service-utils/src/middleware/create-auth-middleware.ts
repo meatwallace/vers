@@ -6,10 +6,10 @@ import {
 } from '../utils/create-token-verifier.ts';
 import { getTokenFromHeader } from '../utils/get-token-from-header.ts';
 
-type AuthMiddlewareConfig = {
+interface AuthMiddlewareConfig {
   isAuthRequired?: boolean;
   tokenVerifierConfig: TokenVerifierConfig;
-};
+}
 
 // this is adapted from the generic jwt middleware for hono
 // ref: https://github.com/honojs/hono/blob/d091c6a180887d69715abcd84ea88a123c876305/src/middleware/jwt/index.test.ts
@@ -82,12 +82,12 @@ export function createAuthMiddleware(config: AuthMiddlewareConfig) {
   };
 }
 
-type ErrorParts = {
+interface ErrorParts {
   error: string;
   description: string;
   statusText?: string;
   ctx: Context;
-};
+}
 
 function createUnauthorizedResponse(error: ErrorParts) {
   return new Response('Unauthorized', {

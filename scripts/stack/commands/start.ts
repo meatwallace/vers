@@ -1,11 +1,11 @@
 import { ServiceID } from '@chrono/service-types';
-import { execa } from '../../utils/execa.js';
-import { DOCKER_COMPOSE_FILE } from '../consts.js';
+import { execa } from '../../utils/execa.ts';
+import { DOCKER_COMPOSE_FILE } from '../consts.ts';
 
-export type StartOptions = {
+export interface StartOptions {
   build?: boolean;
   forceRecreate?: boolean;
-};
+}
 
 export async function start(
   service?: ServiceID,

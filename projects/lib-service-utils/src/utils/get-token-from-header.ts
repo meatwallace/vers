@@ -5,7 +5,13 @@ export function getTokenFromHeader(
     return null;
   }
 
-  const [, token] = header.split(/\s+/);
+  const headerParts = header.split(/\s+/);
 
-  return token ?? null;
+  if (headerParts.length !== 2) {
+    return null;
+  }
+
+  const [, token] = headerParts;
+
+  return token;
 }

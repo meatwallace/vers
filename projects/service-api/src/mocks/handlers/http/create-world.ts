@@ -5,17 +5,20 @@ import { db } from '../../db';
 
 const ENDPOINT_URL = `${env.WORLDS_SERVICE_URL}create-world`;
 
-export const createWorld = http.post(ENDPOINT_URL, async ({ request }) => {
-  const body = (await request.json()) as CreateWorldRequest;
+export const createWorld = http.post<never, CreateWorldRequest>(
+  ENDPOINT_URL,
+  async ({ request }) => {
+    const body = await request.json();
 
-  const world = db.world.create({
-    ownerID: body.ownerID,
-  });
+    const world = db.world.create({
+      ownerID: body.ownerID,
+    });
 
-  const response: CreateWorldResponse = {
-    success: true,
-    data: world,
-  };
+    const response: CreateWorldResponse = {
+      success: true,
+      data: world,
+    };
 
-  return HttpResponse.json(response);
-});
+    return HttpResponse.json(response);
+  },
+);

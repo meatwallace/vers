@@ -1,4 +1,5 @@
 import { YogaInitialContext } from 'graphql-yoga';
+import { Context as HonoContext } from 'hono';
 import { ServiceID } from '@chrono/service-types';
 import { getTokenFromHeader } from '@chrono/service-utils';
 import { createEmailService } from '~/services/email-service/create-email-service';
@@ -6,10 +7,8 @@ import { createSessionService } from '~/services/session-service/create-session-
 import { createUserService } from '~/services/user-service/create-user-service';
 import { createVerificationService } from '~/services/verification-service/create-verification-service';
 import { createWorldService } from '~/services/world-service/create-world-service';
-import { UserData } from '~/services/user-service/types';
-import { Context as HonoContext } from 'hono';
-import { Context } from './types';
 import { env } from './env';
+import { AuthedContext, Context, UnverifiedAuthContext } from './types';
 
 export async function createYogaContext(
   yogaCtx: YogaInitialContext,
@@ -54,17 +53,11 @@ export async function createYogaContext(
     accessToken,
   });
 
-  let user: UserData | null = null;
-
   const userID = honoCtx.get('userID');
+  const sessionID = honoCtx.get('sessionID');
 
-  if (userID) {
-    user = await userService.getUser({ id: userID });
-  }
-
-  return {
+  const sharedContext = {
     request: yogaCtx.request,
-    user,
     ipAddress: honoCtx.get('ipAddress'),
     services: {
       email: emailService,
@@ -73,5 +66,47 @@ export async function createYogaContext(
       verification: verificationService,
       world: worldService,
     },
+  };
+
+  // if we're missing a user ID, attempt to return an unverified auth context
+  if (sessionID && !userID) {
+    const session = await sessionService.getSession({ id: sessionID });
+
+    if (!session) {
+      throw new Error('Invalid request');
+    }
+
+    const unverifiedAuthContext: UnverifiedAuthContext = {
+      ...sharedContext,
+      user: null,
+      session,
+    };
+
+    return unverifiedAuthContext;
+  }
+
+  // if we have both userID and sessionID, attempt to return an authed context
+  if (sessionID && userID) {
+    const session = await sessionService.getSession({ id: sessionID });
+    const user = await userService.getUser({ id: userID });
+
+    if (!user || !session) {
+      throw new Error('Invalid request');
+    }
+
+    const authedContext: AuthedContext = {
+      ...sharedContext,
+      user,
+      session,
+    };
+
+    return authedContext;
+  }
+
+  // if both userID or sessionID are missing, return an anonymous context
+  return {
+    ...sharedContext,
+    user: null,
+    session: null,
   };
 }

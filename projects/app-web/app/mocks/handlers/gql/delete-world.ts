@@ -1,24 +1,20 @@
-import { graphql, HttpResponse } from 'msw';
+import { HttpResponse, graphql } from 'msw';
+import { DeleteWorldInput, DeleteWorldPayload } from '~/gql/graphql';
 import { db } from '../../db';
 import { decodeMockJWT } from '../../utils/decode-mock-jwt';
-import { MutationResponse } from './types';
 
-type DeleteWorldResponse = MutationResponse<{
-  deleteWorld: {
-    success: boolean;
-  };
-}>;
+interface DeleteWorldVariables {
+  input: DeleteWorldInput;
+}
 
-type DeleteWorldVariables = {
-  input: {
-    worldID: string;
-  };
-};
+interface DeleteWorldResponse {
+  deleteWorld: DeleteWorldPayload;
+}
 
 export const DeleteWorld = graphql.mutation<
   DeleteWorldResponse,
   DeleteWorldVariables
->('DeleteWorld', async ({ request, variables }) => {
+>('DeleteWorld', ({ request, variables }) => {
   const authHeader = request.headers.get('authorization');
 
   if (!authHeader) {

@@ -5,19 +5,18 @@ import { db } from '../../db';
 
 const ENDPOINT_URL = `${env.SESSIONS_SERVICE_URL}get-sessions`;
 
-export const getSessions = http.post(ENDPOINT_URL, async ({ request }) => {
-  const { userID } = (await request.json()) as GetSessionsRequest;
+export const getSessions = http.post<never, GetSessionsRequest>(
+  ENDPOINT_URL,
+  async ({ request }) => {
+    const body = await request.json();
 
-  const sessions = db.session.findMany({
-    where: { userID: { equals: userID } },
-  });
+    const sessions = db.session.findMany({
+      where: { userID: { equals: body.userID } },
+    });
 
-  const sessionsWithoutRefreshTokens = sessions.map(
-    ({ refreshToken, ...session }) => session,
-  );
-
-  return HttpResponse.json({
-    success: true,
-    data: sessionsWithoutRefreshTokens,
-  });
-});
+    return HttpResponse.json({
+      success: true,
+      data: sessions,
+    });
+  },
+);

@@ -5,12 +5,7 @@ import { oraPromise } from 'ora';
 import { execa } from './utils/execa.ts';
 import { parseCommaSeperatedStrings } from './utils/parse-comma-seperated-strings.ts';
 
-const filesToLint = [
-  'projects/**/*.mjs',
-  'projects/**/*.ts',
-  'projects/**/*.tsx',
-  'scripts/**/*.ts',
-];
+const filesToLint = ['projects/', 'scripts/'];
 
 const eslintSpinnerConfig = {
   text: 'Checking files with ESLint...',
@@ -18,10 +13,10 @@ const eslintSpinnerConfig = {
   failText: 'ESLint failed',
 };
 
-type LintArgs = {
-  files: Array<string>;
+interface LintArgs {
+  files: Array<string> | undefined;
   fix: boolean;
-};
+}
 
 const program = new Command()
   .name('lint')
@@ -32,11 +27,15 @@ const program = new Command()
     await lintFiles(files, fix);
   });
 
-async function lintFiles(commaSeperatedFiles: Array<string>, fix: boolean) {
+async function lintFiles(
+  commaSeperatedFiles: Array<string> | undefined,
+  fix: boolean,
+) {
   let files = filesToLint.join(' ');
 
   if (commaSeperatedFiles) {
-    files = commaSeperatedFiles.join(' ');
+    // some of our folders include $ so we need to escape it to pass it as a shell argument
+    files = commaSeperatedFiles.join(' ').replaceAll('$', String.raw`\$`);
   }
 
   const fixArg = fix ? '--fix' : '';

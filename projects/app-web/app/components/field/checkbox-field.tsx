@@ -3,11 +3,11 @@ import * as styles from './checkbox-field.css.ts';
 import { Label } from './label.tsx';
 import { Input } from './input.tsx';
 
-type Props = {
+interface Props {
   labelProps: React.LabelHTMLAttributes<HTMLLabelElement>;
   checkboxProps: React.InputHTMLAttributes<HTMLInputElement>;
   errors: Array<string>;
-};
+}
 
 // TODO(#31): rework to a custom styled checkbox component
 export function CheckboxField(props: Props) {

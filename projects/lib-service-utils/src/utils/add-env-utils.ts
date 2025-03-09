@@ -1,6 +1,6 @@
-type Env = {
+interface Env {
   NODE_ENV: 'development' | 'test' | 'production' | 'e2e';
-};
+}
 
 /**
  *

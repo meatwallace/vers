@@ -4,11 +4,15 @@ import { MutationErrorPayload } from '../types/mutation-error-payload';
 import { AuthPayload } from '../types/auth-payload';
 import { createPayloadResolver } from '../utils/create-payload-resolver';
 
-type Args = {
+interface Args {
   input: typeof RefreshAccessTokenInput.$inferInput;
-};
+}
 
-export async function refreshAccessToken(_: object, args: Args, ctx: Context) {
+export async function refreshAccessToken(
+  _: object,
+  args: Args,
+  ctx: Context,
+): Promise<typeof RefreshAccessTokenPayload.$inferType> {
   // eslint-disable-next-line no-useless-catch
   try {
     const payload = await ctx.services.session.refreshTokens({
