@@ -1,12 +1,12 @@
-import { type Context } from '~/types';
 import { generatePasswordChangedEmail } from '@chrono/email-templates';
 import { logger } from '~/logger';
+import { type Context } from '~/types';
 import { verifyTransactionToken } from '~/utils/verify-transaction-token';
 import { builder } from '../builder';
 import { MutationErrorPayload } from '../types/mutation-error-payload';
-import { createPayloadResolver } from '../utils/create-payload-resolver';
 import { MutationSuccess } from '../types/mutation-success';
 import { VerificationType } from '../types/verification-type';
+import { createPayloadResolver } from '../utils/create-payload-resolver';
 
 /**
  * @description Completes a password reset by updating the user's password and sending a confirmation email
@@ -58,15 +58,15 @@ export async function finishPasswordReset(
 
     const twoFactorVerification =
       await ctx.services.verification.getVerification({
-        type: '2fa',
         target: args.input.email,
+        type: '2fa',
       });
 
     const isValidTransaction = await verifyTransactionToken(
       {
-        token: args.input.transactionToken,
         action: VerificationType.RESET_PASSWORD,
         target: args.input.email,
+        token: args.input.transactionToken,
       },
       ctx,
     );
@@ -76,9 +76,9 @@ export async function finishPasswordReset(
     }
 
     await ctx.services.user.changePassword({
-      resetToken: args.input.resetToken,
       id: user.id,
       password: args.input.password,
+      resetToken: args.input.resetToken,
     });
 
     const email = await generatePasswordChangedEmail({
@@ -86,10 +86,10 @@ export async function finishPasswordReset(
     });
 
     await ctx.services.email.sendEmail({
-      to: user.email,
-      subject: 'Password Changed',
       html: email.html,
       plainText: email.plainText,
+      subject: 'Password Changed',
+      to: user.email,
     });
 
     return AMBIGUOUS_SUCCESS_RESPONSE;
@@ -115,8 +115,8 @@ const FinishPasswordResetInput = builder.inputType('FinishPasswordResetInput', {
 const FinishPasswordResetPayload = builder.unionType(
   'FinishPasswordResetPayload',
   {
-    types: [MutationSuccess, MutationErrorPayload],
     resolveType: createPayloadResolver(MutationSuccess),
+    types: [MutationSuccess, MutationErrorPayload],
   },
 );
 
@@ -124,10 +124,10 @@ export const resolve = finishPasswordReset;
 
 builder.mutationField('finishPasswordReset', (t) =>
   t.field({
-    type: FinishPasswordResetPayload,
     args: {
-      input: t.arg({ type: FinishPasswordResetInput, required: true }),
+      input: t.arg({ required: true, type: FinishPasswordResetInput }),
     },
     resolve: finishPasswordReset,
+    type: FinishPasswordResetPayload,
   }),
 );

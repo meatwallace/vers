@@ -1,16 +1,16 @@
-import * as jose from 'jose';
 import { createId } from '@paralleldrive/cuid2';
+import * as jose from 'jose';
 import { VerificationType } from '~/schema/types/verification-type';
 import { Context } from '~/types';
 import { env } from '../env';
 import { pendingTransactionCache } from './pending-transaction-cache';
 
 interface Data {
-  target: string;
-  ipAddress: string;
   action: VerificationType;
+  ipAddress: string;
+  sessionID: null | string;
+  target: string;
   transactionID: string;
-  sessionID: string | null;
 }
 
 /**
@@ -60,14 +60,14 @@ export async function createTransactionToken(
   }
 
   const payload = {
-    sub: data.target,
-    amr: ['otp'],
-    mfa_verified: true,
-    ip_address: data.ipAddress,
-    auth_time: Math.floor(Date.now() / 1000),
     action: data.action,
-    transaction_id: data.transactionID,
+    amr: ['otp'],
+    auth_time: Math.floor(Date.now() / 1000),
+    ip_address: data.ipAddress,
+    mfa_verified: true,
     session_id: data.sessionID,
+    sub: data.target,
+    transaction_id: data.transactionID,
   };
 
   const jti = createId();
@@ -99,18 +99,18 @@ export async function createTransactionToken(
  * generation -> action completion & security requirements.
  */
 const VERIFICATION_TYPE_EXPIRATION_TIME: Record<VerificationType, string> = {
-  // low risk operations i.e. email verification
-  [VerificationType.ONBOARDING]: '20 minutes',
+  [VerificationType.CHANGE_EMAIL]: '5 minutes',
   [VerificationType.CHANGE_EMAIL_CONFIRMATION]: '20 minutes',
 
+  [VerificationType.CHANGE_PASSWORD]: '5 minutes',
+  // low risk operations i.e. email verification
+  [VerificationType.ONBOARDING]: '20 minutes',
   // med risk operations i.e. password resets/changes
   [VerificationType.RESET_PASSWORD]: '5 minutes',
-  [VerificationType.CHANGE_EMAIL]: '5 minutes',
-  [VerificationType.CHANGE_PASSWORD]: '5 minutes',
 
   // high risk operations / operations that are expected to be completed immediately
   // i.e. 2FA login & initial setup
   [VerificationType.TWO_FACTOR_AUTH]: '2 minutes',
-  [VerificationType.TWO_FACTOR_AUTH_SETUP]: '2 minutes',
   [VerificationType.TWO_FACTOR_AUTH_DISABLE]: '2 minutes',
+  [VerificationType.TWO_FACTOR_AUTH_SETUP]: '2 minutes',
 };

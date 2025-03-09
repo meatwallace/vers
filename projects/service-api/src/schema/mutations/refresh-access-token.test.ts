@@ -1,14 +1,14 @@
 import { drop } from '@mswjs/data';
-import { createMockGQLContext } from '~/test-utils/create-mock-gql-context';
 import { db } from '~/mocks/db';
+import { createMockGQLContext } from '~/test-utils/create-mock-gql-context';
 import { resolve } from './refresh-access-token';
 
 test('it refreshes access token with valid refresh token', async () => {
   const user = db.user.create({});
 
   const session = db.session.create({
-    userID: user.id,
     refreshToken: 'valid_refresh_token',
+    userID: user.id,
   });
 
   const ctx = createMockGQLContext({
@@ -27,10 +27,10 @@ test('it refreshes access token with valid refresh token', async () => {
     accessToken: expect.any(String),
     refreshToken: expect.any(String),
     session: {
-      id: expect.any(String),
-      userID: user.id,
-      ipAddress: session.ipAddress,
       expiresAt: expect.any(Date),
+      id: expect.any(String),
+      ipAddress: session.ipAddress,
+      userID: user.id,
     },
   });
 

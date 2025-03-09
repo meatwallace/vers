@@ -1,10 +1,10 @@
 export enum Command {
-  Start = 'start',
   Build = 'build',
-  Stop = 'stop',
-  Logs = 'logs',
-  Status = 'status',
   Exec = 'exec',
+  Logs = 'logs',
+  Start = 'start',
+  Status = 'status',
+  Stop = 'stop',
 }
 
 export enum ServiceID {

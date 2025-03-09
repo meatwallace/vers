@@ -1,11 +1,11 @@
 import { SyntheticEvent } from 'react';
 import { Form, useFetcher } from 'react-router';
 import type { ArrayValues } from 'type-fest';
+import type { GetWorldsQuery as GetWorldsQueryResponse } from '~/gql/graphql.ts';
 import { Button } from '~/components/button.tsx';
 import { Header } from '~/components/header.tsx';
 import { GetCurrentUser } from '~/data/queries/get-current-user';
 import { graphql } from '~/gql';
-import type { GetWorldsQuery as GetWorldsQueryResponse } from '~/gql/graphql.ts';
 import { Routes } from '~/types.ts';
 import { createGQLClient } from '~/utils/create-gql-client.server.ts';
 import { getDistanceFromNow } from '~/utils/get-distance-from-now.ts';
@@ -38,8 +38,8 @@ export async function loader({ request }: Route.LoaderArgs) {
 
 export const meta: Route.MetaFunction = () => [
   {
-    title: '',
     description: '',
+    title: '',
   },
 ];
 
@@ -78,8 +78,8 @@ export function Dashboard({ loaderData }: Route.ComponentProps) {
                 You haven&apos;t created a world yet.
               </p>
               <createWorldFetcher.Form
-                method="post"
                 action={Routes.CreateWorld}
+                method="post"
               >
                 <Button className={styles.noWorldCreateWorldButton}>
                   {isCreatingWorld ? 'Creating...' : 'Create world'}
@@ -113,7 +113,7 @@ function WorldListItem(props: WorldListItemProps) {
   const isDeleting = deleteWorldFetcher.state !== 'idle';
 
   return (
-    <div className={styles.worldsListItem} key={props.id}>
+    <div key={props.id} className={styles.worldsListItem}>
       <span className={styles.worldName}>{props.name}</span>
       <span className={styles.singleLine}>
         <span className={styles.updatedAtLabel}>Updated: </span>
@@ -124,11 +124,11 @@ function WorldListItem(props: WorldListItemProps) {
       <span className={styles.worldID}>{props.id}</span>
       {/* TODO: popout menu */}
       <deleteWorldFetcher.Form
-        method="post"
         action={Routes.DeleteWorld.replace(':worldID', props.id)}
+        method="post"
         onSubmit={handleDeleteWorld}
       >
-        <Button size="small" className={styles.deleteWorldButton}>
+        <Button className={styles.deleteWorldButton} size="small">
           {isDeleting ? 'Deleting...' : 'Delete'}
         </Button>
       </deleteWorldFetcher.Form>

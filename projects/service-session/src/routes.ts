@@ -1,10 +1,10 @@
 import { app } from './app';
+import { db } from './db';
 import { createSession } from './handlers/create-session';
 import { deleteSession } from './handlers/delete-session';
 import { getSession } from './handlers/get-session';
 import { getSessions } from './handlers/get-sessions';
 import { refreshTokens } from './handlers/refresh-tokens';
-import { db } from './db';
 
 app.post('/create-session', async (ctx) => createSession(ctx, db));
 

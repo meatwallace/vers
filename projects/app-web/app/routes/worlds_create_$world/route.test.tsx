@@ -1,7 +1,7 @@
 import { afterEach, expect, test } from 'vitest';
+import { render, screen } from '@testing-library/react';
 import { createRoutesStub } from 'react-router';
 import { drop } from '@mswjs/data';
-import { render, screen } from '@testing-library/react';
 import { db } from '~/mocks/db';
 import { withAuthedUser } from '~/test-utils/with-authed-user.ts';
 import { withRouteProps } from '~/test-utils/with-route-props.tsx';
@@ -21,17 +21,17 @@ function setupTest(config: TestConfig) {
 
   const CreateWorldWizardStub = createRoutesStub([
     {
-      path: '/:worldID',
       Component: withRouteProps(CreateWorldWizard),
       // @ts-expect-error(#35) - react router test types are out of date
       loader: config.isAuthed
         ? // @ts-expect-error(#35) - react router test types are out of date
           withAuthedUser(loader, { userID })
         : loader,
+      path: '/:worldID',
     },
     {
-      path: Routes.Login,
       Component: () => 'LOGIN_ROUTE',
+      path: Routes.Login,
     },
   ]);
 

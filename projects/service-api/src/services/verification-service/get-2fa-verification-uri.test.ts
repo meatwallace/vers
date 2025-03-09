@@ -12,19 +12,19 @@ afterEach(() => {
 
 test('it retrieves a 2FA verification URI', async () => {
   db.verification.create({
-    type: '2fa-setup',
-    target: 'test@example.com',
-    secret: 'ABCDEFGHIJKLMNOP',
     algorithm: 'SHA-1',
+    charSet: 'ABCDEFGHJKLMNPQRSTUVWXYZ123456789',
     digits: 6,
     period: 30,
-    charSet: 'ABCDEFGHJKLMNPQRSTUVWXYZ123456789',
+    secret: 'ABCDEFGHIJKLMNOP',
+    target: 'test@example.com',
+    type: '2fa-setup',
   });
 
   const ctx = createServiceContext({
+    apiURL: env.VERIFICATIONS_SERVICE_URL,
     requestID: createId(),
     serviceID: ServiceID.ServiceVerification,
-    apiURL: env.VERIFICATIONS_SERVICE_URL,
   });
 
   const args = {

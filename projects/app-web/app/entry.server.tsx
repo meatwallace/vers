@@ -1,9 +1,9 @@
-import { PassThrough } from 'node:stream';
-import type { EntryContext } from 'react-router';
-import { createReadableStreamFromReadable } from '@react-router/node';
-import { ServerRouter } from 'react-router';
-import { isbot } from 'isbot';
 import { renderToPipeableStream } from 'react-dom/server';
+import type { EntryContext } from 'react-router';
+import { ServerRouter } from 'react-router';
+import { createReadableStreamFromReadable } from '@react-router/node';
+import { isbot } from 'isbot';
+import { PassThrough } from 'node:stream';
 
 export const streamTimeout = 5000;
 
@@ -43,7 +43,7 @@ export default function handleRequest(
       );
 }
 
-function isBotRequest(userAgent: string | null) {
+function isBotRequest(userAgent: null | string) {
   if (!userAgent) {
     return false;
   }
@@ -60,7 +60,7 @@ function handleBotRequest(
   return new Promise((resolve, reject) => {
     let shellRendered = false;
 
-    const { pipe, abort } = renderToPipeableStream(
+    const { abort, pipe } = renderToPipeableStream(
       <ServerRouter context={reactRouterContext} url={request.url} />,
       {
         onAllReady() {
@@ -80,9 +80,6 @@ function handleBotRequest(
 
           pipe(body);
         },
-        onShellError(error: unknown) {
-          reject(error as Error);
-        },
         onError(error: unknown) {
           responseStatusCode = 500;
 
@@ -92,6 +89,9 @@ function handleBotRequest(
           if (shellRendered) {
             console.error(error);
           }
+        },
+        onShellError(error: unknown) {
+          reject(error as Error);
         },
       },
     );
@@ -109,9 +109,22 @@ function handleBrowserRequest(
   return new Promise((resolve, reject) => {
     let shellRendered = false;
 
-    const { pipe, abort } = renderToPipeableStream(
+    const { abort, pipe } = renderToPipeableStream(
       <ServerRouter context={reactRouterContext} url={request.url} />,
       {
+        onError(error: unknown) {
+          responseStatusCode = 500;
+
+          // Log streaming rendering errors from inside the shell.  Don't log
+          // errors encountered during initial shell rendering since they'll
+          // reject and get logged in handleDocumentRequest.
+          if (shellRendered) {
+            console.error(error);
+          }
+        },
+        onShellError(error: unknown) {
+          reject(error as Error);
+        },
         onShellReady() {
           shellRendered = true;
 
@@ -128,19 +141,6 @@ function handleBrowserRequest(
           );
 
           pipe(body);
-        },
-        onShellError(error: unknown) {
-          reject(error as Error);
-        },
-        onError(error: unknown) {
-          responseStatusCode = 500;
-
-          // Log streaming rendering errors from inside the shell.  Don't log
-          // errors encountered during initial shell rendering since they'll
-          // reject and get logged in handleDocumentRequest.
-          if (shellRendered) {
-            console.error(error);
-          }
         },
       },
     );

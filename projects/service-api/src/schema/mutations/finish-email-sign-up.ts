@@ -12,13 +12,13 @@ interface Args {
 }
 
 const AMBIGUOUS_UNKNOWN_ERROR = {
-  title: 'An unknown error occurred',
   message: 'An unknown error occurred',
+  title: 'An unknown error occurred',
 };
 
 const AMBIGUOUS_FAILED_VERIFICATION_ERROR = {
-  title: 'Failed Verification',
   message: 'Verification for this operation is invalid or has expired.',
+  title: 'Failed Verification',
 };
 
 export async function finishEmailSignup(
@@ -29,9 +29,9 @@ export async function finishEmailSignup(
   try {
     const isValidTransaction = await verifyTransactionToken(
       {
-        token: args.input.transactionToken,
         action: VerificationType.ONBOARDING,
         target: args.input.email,
+        token: args.input.transactionToken,
       },
       ctx,
     );
@@ -51,14 +51,14 @@ export async function finishEmailSignup(
     const user = await ctx.services.user.createUser({
       email: args.input.email,
       name: args.input.name,
-      username: args.input.username,
       password: args.input.password,
+      username: args.input.username,
     });
 
     const authPayload = await ctx.services.session.createSession({
-      userID: user.id,
       ipAddress: ctx.ipAddress,
       rememberMe: args.input.rememberMe,
+      userID: user.id,
     });
 
     const tokens = await ctx.services.session.refreshTokens({
@@ -80,26 +80,26 @@ const FinishEmailSignupInput = builder.inputType('FinishEmailSignupInput', {
   fields: (t) => ({
     email: t.string({ required: true }),
     name: t.string({ required: true }),
-    username: t.string({ required: true }),
     password: t.string({ required: true }),
     rememberMe: t.boolean({ required: true }),
     transactionToken: t.string({ required: true }),
+    username: t.string({ required: true }),
   }),
 });
 
 const FinishEmailSignupPayload = builder.unionType('FinishEmailSignupPayload', {
-  types: [AuthPayload, MutationErrorPayload],
   resolveType: createPayloadResolver(AuthPayload),
+  types: [AuthPayload, MutationErrorPayload],
 });
 
 export const resolve = finishEmailSignup;
 
 builder.mutationField('finishEmailSignup', (t) =>
   t.field({
-    type: FinishEmailSignupPayload,
     args: {
-      input: t.arg({ type: FinishEmailSignupInput, required: true }),
+      input: t.arg({ required: true, type: FinishEmailSignupInput }),
     },
     resolve: finishEmailSignup,
+    type: FinishEmailSignupPayload,
   }),
 );

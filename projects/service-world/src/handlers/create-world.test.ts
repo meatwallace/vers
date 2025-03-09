@@ -1,7 +1,7 @@
+import { createTestUser, PostgresTestUtils } from '@chrono/service-test-utils';
 import { Hono } from 'hono';
-import { PostgresTestUtils, createTestUser } from '@chrono/service-test-utils';
-import { createWorld } from './create-world';
 import { pgTestConfig } from '../pg-test-config';
+import { createWorld } from './create-world';
 
 async function setupTest() {
   const app = new Hono();
@@ -19,27 +19,20 @@ test('it returns a new world with logical defaults', async () => {
   const { app, teardown, user } = await setupTest();
 
   const req = new Request('http://localhost/create-world', {
-    method: 'POST',
     body: JSON.stringify({
       ownerID: user.id,
     }),
+    method: 'POST',
   });
 
   const res = await app.request(req);
 
   expect(res.status).toBe(200);
   expect(await res.json()).toMatchObject({
-    success: true,
     data: {
-      id: expect.any(String),
-      ownerID: user.id,
-      name: 'New World',
-      fantasyType: 'Medium',
-      technologyLevel: 'Medieval',
       archetype: null,
       atmosphere: 'Neutral',
-      population: 'Average',
-      geographyType: 'Supercontinent',
+      fantasyType: 'Medium',
       geographyFeatures: [
         'Deserts',
         'Forest',
@@ -48,7 +41,14 @@ test('it returns a new world with logical defaults', async () => {
         'Swamps',
         'Tundra',
       ],
+      geographyType: 'Supercontinent',
+      id: expect.any(String),
+      name: 'New World',
+      ownerID: user.id,
+      population: 'Average',
+      technologyLevel: 'Medieval',
     },
+    success: true,
   });
 
   await teardown();

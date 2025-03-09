@@ -3,11 +3,11 @@ import { SessionData } from './types';
 
 export function marshal(raw: Jsonify<SessionData>): SessionData {
   return {
-    id: raw.id,
-    userID: raw.userID,
-    ipAddress: raw.ipAddress,
-    expiresAt: new Date(raw.expiresAt),
     createdAt: new Date(raw.createdAt),
+    expiresAt: new Date(raw.expiresAt),
+    id: raw.id,
+    ipAddress: raw.ipAddress,
     updatedAt: new Date(raw.updatedAt),
+    userID: raw.userID,
   };
 }

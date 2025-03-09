@@ -1,13 +1,13 @@
-import userEvent from '@testing-library/user-event';
 import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { CheckboxField } from './checkbox-field';
 
 test('it renders a label and a checkbox input', () => {
   render(
     <CheckboxField
-      labelProps={{ children: 'Remember me' }}
       checkboxProps={{ type: 'checkbox' }}
       errors={[]}
+      labelProps={{ children: 'Remember me' }}
     />,
   );
 
@@ -23,9 +23,9 @@ test('it handles checkbox state changes', async () => {
 
   render(
     <CheckboxField
-      labelProps={{ children: 'Remember me' }}
-      checkboxProps={{ type: 'checkbox', onChange: handleChange }}
+      checkboxProps={{ onChange: handleChange, type: 'checkbox' }}
       errors={[]}
+      labelProps={{ children: 'Remember me' }}
     />,
   );
 
@@ -37,9 +37,9 @@ test('it handles checkbox state changes', async () => {
 test('it displays error messages', () => {
   render(
     <CheckboxField
-      labelProps={{ children: 'Remember me' }}
       checkboxProps={{ type: 'checkbox' }}
       errors={['This field is required']}
+      labelProps={{ children: 'Remember me' }}
     />,
   );
 

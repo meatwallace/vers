@@ -1,5 +1,5 @@
-import invariant from 'tiny-invariant';
 import { drop } from '@mswjs/data';
+import invariant from 'tiny-invariant';
 import { db } from '~/mocks/db';
 import { createMockGQLContext } from '~/test-utils/create-mock-gql-context';
 import { pendingTransactionCache } from '~/utils/pending-transaction-cache';
@@ -26,10 +26,10 @@ test('it creates a verification record for 2FA setup with a pending transaction'
 
   const verification = db.verification.findFirst({
     where: {
+      target: { equals: user.email },
       type: {
         equals: '2fa-setup',
       },
-      target: { equals: user.email },
     },
   });
 
@@ -42,10 +42,10 @@ test('it creates a verification record for 2FA setup with a pending transaction'
   const pendingTransaction = pendingTransactionCache.get(result.transactionID);
 
   expect(pendingTransaction).toMatchObject({
-    target: user.email,
     action: VerificationType.TWO_FACTOR_AUTH_SETUP,
     ipAddress: ctx.ipAddress,
     sessionID: ctx.session?.id,
+    target: user.email,
   });
 });
 
@@ -55,8 +55,8 @@ test('it returns an error if 2FA is already enabled', async () => {
   });
 
   db.verification.create({
-    type: '2fa',
     target: user.email,
+    type: '2fa',
   });
 
   const ctx = createMockGQLContext({ user });
@@ -65,8 +65,8 @@ test('it returns an error if 2FA is already enabled', async () => {
 
   expect(result).toEqual({
     error: {
-      title: 'Two-factor authentication already enabled',
       message: 'Two-factor authentication is already enabled for your account.',
+      title: 'Two-factor authentication already enabled',
     },
   });
 });
@@ -77,8 +77,8 @@ test('it replaces an existing 2FA setup verification record', async () => {
   });
 
   const firstVerification = db.verification.create({
-    type: '2fa-setup',
     target: user.email,
+    type: '2fa-setup',
   });
 
   const ctx = createMockGQLContext({ user });
@@ -92,10 +92,10 @@ test('it replaces an existing 2FA setup verification record', async () => {
 
   const verifications = db.verification.findMany({
     where: {
+      target: { equals: user.email },
       type: {
         equals: '2fa-setup',
       },
-      target: { equals: user.email },
     },
   });
 

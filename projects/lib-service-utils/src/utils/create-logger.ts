@@ -11,11 +11,11 @@ export function createLogger(options: CreateLoggerOptions): Logger {
     return pino({
       level: options.level,
       transport: {
-        target: 'pino-pretty',
         options: {
-          ignore: 'pid,hostname,requestID,response',
           colorize: true,
+          ignore: 'pid,hostname,requestID,response',
         },
+        target: 'pino-pretty',
       },
     });
   }

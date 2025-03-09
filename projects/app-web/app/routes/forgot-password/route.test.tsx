@@ -1,11 +1,11 @@
-import { createRoutesStub } from 'react-router';
 import { afterEach, expect, test } from 'vitest';
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { createRoutesStub } from 'react-router';
+import { drop } from '@mswjs/data';
 import { db } from '~/mocks/db.ts';
 import { withRouteProps } from '~/test-utils/with-route-props.tsx';
 import { Routes } from '~/types.ts';
-import { drop } from '@mswjs/data';
-import { render, screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 import { action, ForgotPassword, loader } from './route.tsx';
 
 function setupTest() {
@@ -13,21 +13,14 @@ function setupTest() {
 
   const ForgotPasswordStub = createRoutesStub([
     {
-      path: '/',
-      Component: withRouteProps(ForgotPassword),
       // @ts-expect-error(#35) - react router test types are out of date
       action,
+      Component: withRouteProps(ForgotPassword),
       // @ts-expect-error(#35) - react router test types are out of date
       loader,
+      path: '/',
     },
     {
-      path: Routes.ResetPasswordStarted,
-      loader: ({ request }: { request: Request }) => {
-        const url = new URL(request.url);
-        const email = url.searchParams.get('email');
-
-        return { email };
-      },
       Component: withRouteProps((props) => {
         return (
           <div>
@@ -36,6 +29,13 @@ function setupTest() {
           </div>
         );
       }),
+      loader: ({ request }: { request: Request }) => {
+        const url = new URL(request.url);
+        const email = url.searchParams.get('email');
+
+        return { email };
+      },
+      path: Routes.ResetPasswordStarted,
     },
   ]);
 

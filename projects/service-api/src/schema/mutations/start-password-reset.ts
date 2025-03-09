@@ -1,5 +1,5 @@
-import { GraphQLError } from 'graphql';
 import { generateResetPasswordEmail } from '@chrono/email-templates';
+import { GraphQLError } from 'graphql';
 import { env } from '~/env.ts';
 import { logger } from '~/logger.ts';
 import { Context } from '~/types.ts';
@@ -62,8 +62,8 @@ export async function startPasswordReset(
 
     const twoFactorVerification =
       await ctx.services.verification.getVerification({
-        type: '2fa',
         target: args.input.email,
+        type: '2fa',
       });
 
     let resetURL: URL;
@@ -71,8 +71,8 @@ export async function startPasswordReset(
     // if we have 2FA enabled the user needs to verify a OTP prior to resetting their password
     if (twoFactorVerification) {
       const resetURLSearchParams = new URLSearchParams({
-        token: resetToken,
         email: args.input.email,
+        token: resetToken,
       });
 
       const redirectPath = `/reset-password?${resetURLSearchParams.toString()}`;
@@ -80,10 +80,10 @@ export async function startPasswordReset(
       resetURL = new URL(`${env.APP_WEB_URL}/verify-otp`);
 
       const transactionID = createPendingTransaction({
-        target: args.input.email,
-        ipAddress: ctx.ipAddress,
         action: VerificationType.RESET_PASSWORD,
+        ipAddress: ctx.ipAddress,
         sessionID: null,
+        target: args.input.email,
       });
 
       resetURL.searchParams.set('type', VerificationType.RESET_PASSWORD);
@@ -103,21 +103,21 @@ export async function startPasswordReset(
     });
 
     await ctx.services.email.sendEmail({
-      to: args.input.email,
-      subject: 'Reset Your Password',
       html,
       plainText,
+      subject: 'Reset Your Password',
+      to: args.input.email,
     });
 
     const transactionID = createPendingTransaction({
-      target: args.input.email,
-      ipAddress: ctx.ipAddress,
       action: VerificationType.RESET_PASSWORD,
+      ipAddress: ctx.ipAddress,
       sessionID: null,
+      target: args.input.email,
     });
 
     if (twoFactorVerification) {
-      return { transactionID, sessionID: null };
+      return { sessionID: null, transactionID };
     }
 
     return { success: true };
@@ -144,8 +144,8 @@ const StartPasswordResetInput = builder.inputType('StartPasswordResetInput', {
 const StartPasswordResetPayload = builder.unionType(
   'StartPasswordResetPayload',
   {
-    types: [MutationSuccess, TwoFactorRequiredPayload, MutationErrorPayload],
     resolveType: createPayloadResolver(MutationSuccess),
+    types: [MutationSuccess, TwoFactorRequiredPayload, MutationErrorPayload],
   },
 );
 
@@ -153,10 +153,10 @@ export const resolve = startPasswordReset;
 
 builder.mutationField('startPasswordReset', (t) =>
   t.field({
-    type: StartPasswordResetPayload,
     args: {
-      input: t.arg({ type: StartPasswordResetInput, required: true }),
+      input: t.arg({ required: true, type: StartPasswordResetInput }),
     },
     resolve: startPasswordReset,
+    type: StartPasswordResetPayload,
   }),
 );

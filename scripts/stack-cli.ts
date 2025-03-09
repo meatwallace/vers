@@ -1,11 +1,11 @@
 #!/usr/bin/env node
 
-import { Command } from 'commander';
 import { ServiceID } from '@chrono/service-types';
+import { Command } from 'commander';
 import { exec } from './stack/commands/exec.ts';
 import { logs } from './stack/commands/logs.ts';
 import { rm } from './stack/commands/rm.ts';
-import { type StartOptions, start } from './stack/commands/start.ts';
+import { start, type StartOptions } from './stack/commands/start.ts';
 import { status } from './stack/commands/status.ts';
 import { stop } from './stack/commands/stop.ts';
 import { parseServiceArg } from './stack/utils/parse-service-arg.ts';

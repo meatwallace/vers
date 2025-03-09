@@ -1,10 +1,10 @@
 import { redirect } from 'react-router';
-import { type Route } from './+types/route.ts';
-import { createGQLClient } from '~/utils/create-gql-client.server.ts';
 import { graphql } from '~/gql';
 import { Routes } from '~/types';
+import { createGQLClient } from '~/utils/create-gql-client.server.ts';
 import { isMutationError } from '~/utils/is-mutation-error';
 import { requireAuth } from '~/utils/require-auth.server.ts';
+import { type Route } from './+types/route.ts';
 
 const DeleteWorldMutation = graphql(/* GraphQL */ `
   mutation DeleteWorld($input: DeleteWorldInput!) {

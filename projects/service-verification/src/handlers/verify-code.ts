@@ -1,16 +1,16 @@
-import { and, eq } from 'drizzle-orm';
-import { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
-import { Context } from 'hono';
 import * as schema from '@chrono/postgres-schema';
 import { VerifyCodeRequest, VerifyCodeResponse } from '@chrono/service-types';
 import { verifyTOTP } from '@epic-web/totp';
+import { and, eq } from 'drizzle-orm';
+import { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
+import { Context } from 'hono';
 
 export async function verifyCode(
   ctx: Context,
   db: PostgresJsDatabase<typeof schema>,
 ) {
   try {
-    const { type, target, code } = await ctx.req.json<VerifyCodeRequest>();
+    const { code, target, type } = await ctx.req.json<VerifyCodeRequest>();
 
     const verification = await db.query.verifications.findFirst({
       where: and(
@@ -21,8 +21,8 @@ export async function verifyCode(
 
     if (!verification) {
       return ctx.json({
-        success: false,
         error: 'Invalid verification code',
+        success: false,
       });
     }
 
@@ -32,8 +32,8 @@ export async function verifyCode(
         .where(eq(schema.verifications.id, verification.id));
 
       return ctx.json({
-        success: false,
         error: 'Verification code has expired',
+        success: false,
       });
     }
 
@@ -44,8 +44,8 @@ export async function verifyCode(
 
     if (!result) {
       return ctx.json({
-        success: false,
         error: 'Invalid verification code',
+        success: false,
       });
     }
 
@@ -59,12 +59,12 @@ export async function verifyCode(
     }
 
     const response: VerifyCodeResponse = {
-      success: true,
       data: {
         id: verification.id,
-        type: verification.type,
         target: verification.target,
+        type: verification.type,
       },
+      success: true,
     };
 
     return ctx.json(response);
@@ -72,8 +72,8 @@ export async function verifyCode(
     // TODO(#16): capture via Sentry
     if (error instanceof Error) {
       const response = {
-        success: false,
         error: 'An unknown error occurred',
+        success: false,
       };
 
       return ctx.json(response);

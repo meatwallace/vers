@@ -1,11 +1,11 @@
-import { Context } from 'hono';
-import { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
-import { eq } from 'drizzle-orm';
 import * as schema from '@chrono/postgres-schema';
 import {
   UpdateVerificationRequest,
   UpdateVerificationResponse,
 } from '@chrono/service-types';
+import { eq } from 'drizzle-orm';
+import { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
+import { Context } from 'hono';
 
 export async function updateVerification(
   ctx: Context,
@@ -23,10 +23,10 @@ export async function updateVerification(
       });
 
     const response: UpdateVerificationResponse = {
-      success: true,
       data: {
         updatedID: verification.updatedID,
       },
+      success: true,
     };
 
     return ctx.json(response);
@@ -34,8 +34,8 @@ export async function updateVerification(
     // TODO(#16): capture via Sentry
     if (error instanceof Error) {
       const response = {
-        success: false,
         error: 'An unknown error occurred',
+        success: false,
       };
 
       return ctx.json(response);

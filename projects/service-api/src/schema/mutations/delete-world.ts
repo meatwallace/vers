@@ -35,18 +35,18 @@ const DeleteWorldInput = builder.inputType('DeleteWorldInput', {
 });
 
 const DeleteWorldPayload = builder.unionType('DeleteWorldPayload', {
-  types: [MutationSuccess, MutationErrorPayload],
   resolveType: createPayloadResolver(MutationSuccess),
+  types: [MutationSuccess, MutationErrorPayload],
 });
 
 export const resolve = requireAuth(deleteWorld);
 
 builder.mutationField('deleteWorld', (t) =>
   t.field({
-    type: DeleteWorldPayload,
     args: {
-      input: t.arg({ type: DeleteWorldInput, required: true }),
+      input: t.arg({ required: true, type: DeleteWorldInput }),
     },
     resolve,
+    type: DeleteWorldPayload,
   }),
 );

@@ -15,14 +15,14 @@ import { builder } from '../builder';
  * @property {string} CHANGE_EMAIL - Used to step-up authorization to allow a user to change their email address.
  */
 export enum VerificationType {
-  ONBOARDING = 'ONBOARDING',
+  CHANGE_EMAIL = 'CHANGE_EMAIL',
   CHANGE_EMAIL_CONFIRMATION = 'CHANGE_EMAIL_CONFIRMATION',
+  CHANGE_PASSWORD = 'CHANGE_PASSWORD',
+  ONBOARDING = 'ONBOARDING',
   RESET_PASSWORD = 'RESET_PASSWORD',
   TWO_FACTOR_AUTH = 'TWO_FACTOR_AUTH',
-  TWO_FACTOR_AUTH_SETUP = 'TWO_FACTOR_AUTH_SETUP',
   TWO_FACTOR_AUTH_DISABLE = 'TWO_FACTOR_AUTH_DISABLE',
-  CHANGE_EMAIL = 'CHANGE_EMAIL',
-  CHANGE_PASSWORD = 'CHANGE_PASSWORD',
+  TWO_FACTOR_AUTH_SETUP = 'TWO_FACTOR_AUTH_SETUP',
 }
 
 builder.enumType(VerificationType, {

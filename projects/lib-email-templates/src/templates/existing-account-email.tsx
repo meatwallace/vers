@@ -26,10 +26,10 @@ export function ExistingAccountEmail(props: Props): ReactElement {
       <E.Button
         href="https://chrononomicon.com/forgot-password"
         style={{
-          padding: '12px 20px',
           backgroundColor: '#000',
-          color: '#fff',
           borderRadius: '4px',
+          color: '#fff',
+          padding: '12px 20px',
           textDecoration: 'none',
         }}
       >

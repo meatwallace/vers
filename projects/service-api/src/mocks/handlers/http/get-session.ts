@@ -1,5 +1,5 @@
-import { http, HttpResponse } from 'msw';
 import { GetSessionRequest } from '@chrono/service-types';
+import { http, HttpResponse } from 'msw';
 import { env } from '~/env';
 import { db } from '../../db';
 
@@ -14,6 +14,6 @@ export const getSession = http.post<never, GetSessionRequest>(
       where: { id: { equals: body.id } },
     });
 
-    return HttpResponse.json({ success: true, data: session });
+    return HttpResponse.json({ data: session, success: true });
   },
 );

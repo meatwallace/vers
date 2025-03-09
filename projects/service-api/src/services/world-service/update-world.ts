@@ -1,6 +1,6 @@
-import { Jsonify } from 'type-fest';
 import { worlds } from '@chrono/postgres-schema';
 import { UpdateWorldRequest, UpdateWorldResponse } from '@chrono/service-types';
+import { Jsonify } from 'type-fest';
 import { marshal } from './marshal';
 import { WorldServiceContext } from './types';
 

@@ -1,5 +1,5 @@
-import invariant from 'tiny-invariant';
 import { drop } from '@mswjs/data';
+import invariant from 'tiny-invariant';
 import { db } from '~/mocks/db';
 import { createMockGQLContext } from '~/test-utils/create-mock-gql-context';
 import { pendingTransactionCache } from '~/utils/pending-transaction-cache';
@@ -16,14 +16,14 @@ test('it successfully creates a pending transaction when 2FA is enabled', async 
   });
 
   db.verification.create({
-    id: 'verification-id',
-    type: '2fa',
-    target: user.email,
-    secret: 'ABCDEFGHIJKLMNOP',
     algorithm: 'SHA-1',
-    digits: 6,
-    period: 30,
     charSet: 'ABCDEFGHJKLMNPQRSTUVWXYZ123456789',
+    digits: 6,
+    id: 'verification-id',
+    period: 30,
+    secret: 'ABCDEFGHIJKLMNOP',
+    target: user.email,
+    type: '2fa',
   });
 
   const ctx = createMockGQLContext({ user });
@@ -35,8 +35,8 @@ test('it successfully creates a pending transaction when 2FA is enabled', async 
   const result = await resolve({}, args, ctx);
 
   expect(result).toMatchObject({
-    transactionID: expect.any(String),
     sessionID: null,
+    transactionID: expect.any(String),
   });
 
   invariant('transactionID' in result);
@@ -44,10 +44,10 @@ test('it successfully creates a pending transaction when 2FA is enabled', async 
   const pendingTransaction = pendingTransactionCache.get(result.transactionID);
 
   expect(pendingTransaction).toMatchObject({
-    target: user.email,
     action: VerificationType.TWO_FACTOR_AUTH_DISABLE,
     ipAddress: ctx.ipAddress,
     sessionID: ctx.session?.id,
+    target: user.email,
   });
 });
 
@@ -66,8 +66,8 @@ test('it returns an error if 2FA is not enabled', async () => {
 
   expect(result).toMatchObject({
     error: {
-      title: '2FA not enabled',
       message: '2FA is not enabled for your account.',
+      title: '2FA not enabled',
     },
   });
 });

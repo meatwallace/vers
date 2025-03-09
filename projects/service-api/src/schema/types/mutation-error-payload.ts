@@ -12,8 +12,8 @@ export const MutationErrorPayload = builder.objectRef<MutationErrorPayloadData>(
 MutationErrorPayload.implement({
   fields: (t) => ({
     error: t.field({
-      type: MutationError,
       resolve: (source) => source.error,
+      type: MutationError,
     }),
   }),
 });

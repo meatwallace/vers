@@ -1,8 +1,8 @@
-import { http, HttpResponse } from 'msw';
-import { drop } from '@mswjs/data';
 import { createTestJWT } from '@chrono/service-test-utils';
-import { createId } from '@paralleldrive/cuid2';
 import { ServiceID } from '@chrono/service-types';
+import { drop } from '@mswjs/data';
+import { createId } from '@paralleldrive/cuid2';
+import { http, HttpResponse } from 'msw';
 import { env } from '~/env';
 import { db } from '~/mocks/db';
 import { server } from '~/mocks/node';
@@ -19,62 +19,62 @@ afterEach(() => {
 
 test('it returns the session data', async () => {
   const user = db.user.create({
-    id: 'test_id',
     email: 'user@test.com',
+    id: 'test_id',
   });
 
   const now = Date.now();
 
   const session = db.session.create({
-    id: 'test_session',
-    userID: user.id,
-    refreshToken: 'test_refresh_token',
-    ipAddress: '127.0.0.1',
     expiresAt: new Date(now + 1000 * 60 * 60 * 24),
+    id: 'test_session',
+    ipAddress: '127.0.0.1',
+    refreshToken: 'test_refresh_token',
+    userID: user.id,
   });
 
   const accessToken = await createTestJWT({
-    sub: user.id,
     audience: env.API_IDENTIFIER,
     issuer: ISSUER,
+    sub: user.id,
   });
 
   const ctx = createServiceContext({
+    accessToken,
+    apiURL: env.SESSIONS_SERVICE_URL,
     requestID: createId(),
     serviceID: ServiceID.ServiceSession,
-    apiURL: env.SESSIONS_SERVICE_URL,
-    accessToken,
   });
 
   const result = await getSession({ id: session.id }, ctx);
 
   expect(result).toMatchObject({
-    id: session.id,
-    userID: user.id,
-    ipAddress: '127.0.0.1',
-    expiresAt: new Date(now + 1000 * 60 * 60 * 24),
     createdAt: expect.any(Date),
+    expiresAt: new Date(now + 1000 * 60 * 60 * 24),
+    id: session.id,
+    ipAddress: '127.0.0.1',
     updatedAt: expect.any(Date),
+    userID: user.id,
   });
 });
 
 test('it returns null when session is not found', async () => {
   const user = db.user.create({
-    id: 'test_id',
     email: 'user@test.com',
+    id: 'test_id',
   });
 
   const accessToken = await createTestJWT({
-    sub: user.id,
     audience: env.API_IDENTIFIER,
     issuer: ISSUER,
+    sub: user.id,
   });
 
   const ctx = createServiceContext({
+    accessToken,
+    apiURL: env.SESSIONS_SERVICE_URL,
     requestID: createId(),
     serviceID: ServiceID.ServiceSession,
-    apiURL: env.SESSIONS_SERVICE_URL,
-    accessToken,
   });
 
   const result = await getSession({ id: createId() }, ctx);
@@ -92,21 +92,21 @@ test('it throws an error when the request fails', async () => {
   );
 
   const user = db.user.create({
-    id: 'test_id',
     email: 'user@test.com',
+    id: 'test_id',
   });
 
   const accessToken = await createTestJWT({
-    sub: user.id,
     audience: env.API_IDENTIFIER,
     issuer: ISSUER,
+    sub: user.id,
   });
 
   const ctx = createServiceContext({
+    accessToken,
+    apiURL: env.SESSIONS_SERVICE_URL,
     requestID: createId(),
     serviceID: ServiceID.ServiceSession,
-    apiURL: env.SESSIONS_SERVICE_URL,
-    accessToken,
   });
 
   await expect(getSession({ id: 'error' }, ctx)).rejects.toThrow(

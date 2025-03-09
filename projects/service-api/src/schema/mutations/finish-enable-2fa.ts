@@ -37,8 +37,8 @@ interface Args {
 
 // ensure we use the same error message for all failures to avoid enumeration
 const AMBIGUOUS_FAILED_VERIFICATION_ERROR = {
-  title: 'Failed Verification',
   message: 'Verification for this operation is invalid or has expired.',
+  title: 'Failed Verification',
 };
 
 export async function finishEnable2FA(
@@ -49,9 +49,9 @@ export async function finishEnable2FA(
   try {
     const isValidTransactionToken = await verifyTransactionToken(
       {
-        token: args.input.transactionToken,
         action: VerificationType.TWO_FACTOR_AUTH_SETUP,
         target: ctx.user.email,
+        token: args.input.transactionToken,
       },
       ctx,
     );
@@ -64,8 +64,8 @@ export async function finishEnable2FA(
 
     const twoFactorVerification =
       await ctx.services.verification.getVerification({
-        type: '2fa-setup',
         target: ctx.user.email,
+        type: '2fa-setup',
       });
 
     if (!twoFactorVerification) {
@@ -101,18 +101,18 @@ const FinishEnable2FAInput = builder.inputType('FinishEnable2FAInput', {
 });
 
 const FinishEnable2FAPayload = builder.unionType('FinishEnable2FAPayload', {
-  types: [MutationSuccess, MutationErrorPayload],
   resolveType: createPayloadResolver(MutationSuccess),
+  types: [MutationSuccess, MutationErrorPayload],
 });
 
 export const resolve = requireAuth(finishEnable2FA);
 
 builder.mutationField('finishEnable2FA', (t) =>
   t.field({
-    type: FinishEnable2FAPayload,
     args: {
-      input: t.arg({ type: FinishEnable2FAInput, required: true }),
+      input: t.arg({ required: true, type: FinishEnable2FAInput }),
     },
     resolve: resolve,
+    type: FinishEnable2FAPayload,
   }),
 );

@@ -1,4 +1,4 @@
-import { HttpResponse, graphql } from 'msw';
+import { graphql, HttpResponse } from 'msw';
 import { GetCurrentUserQueryVariables, User } from '~/gql/graphql';
 import { db } from '../../db';
 import { decodeMockJWT } from '../../utils/decode-mock-jwt';

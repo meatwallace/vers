@@ -6,7 +6,7 @@ import { requireAuth } from '../utils/require-auth';
 
 interface Args {
   input: {
-    placeholder?: string | null | undefined;
+    placeholder?: null | string | undefined;
   };
 }
 
@@ -40,10 +40,10 @@ export const resolve = requireAuth(getSessions);
 
 builder.queryField('getSessions', (t) =>
   t.field({
-    type: [Session],
     args: {
-      input: t.arg({ type: GetSessionsInput, required: true }),
+      input: t.arg({ required: true, type: GetSessionsInput }),
     },
     resolve,
+    type: [Session],
   }),
 );

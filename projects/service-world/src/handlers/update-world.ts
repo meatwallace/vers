@@ -1,8 +1,8 @@
-import { and, eq } from 'drizzle-orm';
-import { Context } from 'hono';
 import * as schema from '@chrono/postgres-schema';
-import { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
 import { UpdateWorldRequest, UpdateWorldResponse } from '@chrono/service-types';
+import { and, eq } from 'drizzle-orm';
+import { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
+import { Context } from 'hono';
 
 export async function updateWorld(
   ctx: Context,
@@ -24,8 +24,8 @@ export async function updateWorld(
       .returning();
 
     const response: UpdateWorldResponse = {
-      success: true,
       data: world,
+      success: true,
     };
 
     return ctx.json(response);
@@ -33,8 +33,8 @@ export async function updateWorld(
     // TODO(#16): capture via Sentry
     if (error instanceof Error) {
       const response = {
-        success: false,
         error: 'An unknown error occurred',
+        success: false,
       };
 
       return ctx.json(response);

@@ -1,5 +1,5 @@
-import { drop } from '@mswjs/data';
 import { createTestJWT } from '@chrono/service-test-utils';
+import { drop } from '@mswjs/data';
 import { env } from '~/env';
 import { db } from '~/mocks/db';
 import { createMockGQLContext } from '~/test-utils/create-mock-gql-context';
@@ -10,20 +10,20 @@ test('it returns all the worlds for the provided owner', async () => {
 
   db.world.create({
     id: 'test_id_1',
-    ownerID: user.id,
     name: 'New World #1',
+    ownerID: user.id,
   });
 
   db.world.create({
     id: 'test_id_2',
-    ownerID: user.id,
     name: 'New World #2',
+    ownerID: user.id,
   });
 
   const accessToken = await createTestJWT({
-    sub: user.id,
     audience: env.API_IDENTIFIER,
     issuer: `https://${env.API_IDENTIFIER}/`,
+    sub: user.id,
   });
 
   const ctx = createMockGQLContext({ accessToken, user });
@@ -32,15 +32,10 @@ test('it returns all the worlds for the provided owner', async () => {
 
   expect(result).toIncludeAllMembers([
     {
-      id: 'test_id_1',
-      ownerID: user.id,
-      name: 'New World #1',
-      fantasyType: 'Medium',
-      technologyLevel: 'Medieval',
       archetype: null,
       atmosphere: 'Neutral',
-      population: 'Average',
-      geographyType: 'Supercontinent',
+      createdAt: expect.any(Date),
+      fantasyType: 'Medium',
       geographyFeatures: [
         'Deserts',
         'Forest',
@@ -49,19 +44,19 @@ test('it returns all the worlds for the provided owner', async () => {
         'Swamps',
         'Tundra',
       ],
-      createdAt: expect.any(Date),
+      geographyType: 'Supercontinent',
+      id: 'test_id_1',
+      name: 'New World #1',
+      ownerID: user.id,
+      population: 'Average',
+      technologyLevel: 'Medieval',
       updatedAt: expect.any(Date),
     },
     {
-      id: 'test_id_2',
-      ownerID: user.id,
-      name: 'New World #2',
-      fantasyType: 'Medium',
-      technologyLevel: 'Medieval',
       archetype: null,
       atmosphere: 'Neutral',
-      population: 'Average',
-      geographyType: 'Supercontinent',
+      createdAt: expect.any(Date),
+      fantasyType: 'Medium',
       geographyFeatures: [
         'Deserts',
         'Forest',
@@ -70,7 +65,12 @@ test('it returns all the worlds for the provided owner', async () => {
         'Swamps',
         'Tundra',
       ],
-      createdAt: expect.any(Date),
+      geographyType: 'Supercontinent',
+      id: 'test_id_2',
+      name: 'New World #2',
+      ownerID: user.id,
+      population: 'Average',
+      technologyLevel: 'Medieval',
       updatedAt: expect.any(Date),
     },
   ]);

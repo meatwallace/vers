@@ -8,30 +8,30 @@ export const verificationTypeEnum = pgEnum('verification_type', [
 ]);
 
 export const verifications = pgTable('verifications', {
-  id: text('id').notNull().primaryKey(),
-  createdAt: timestamp('created_at').notNull().defaultNow(),
-
-  // type of verification i.e. email, phone, etc.
-  type: verificationTypeEnum('type').notNull(),
-
-  // the thing we're trying to verify i.e. a user's email or phone number
-  target: text('target').notNull(),
-
-  // the secret key used to generate the otp
-  secret: text('secret').notNull(),
-
   // the algorithm used to generate the otp
   algorithm: text('algorithm').notNull(),
+  // the valid characters for the otp
+  charSet: text('char_set').notNull(),
+
+  createdAt: timestamp('created_at').notNull().defaultNow(),
 
   // the number of digits in the otp
   digits: integer('digits').notNull(),
 
+  // when it's safe to delete this verification
+  expiresAt: timestamp('expires_at'),
+
+  id: text('id').notNull().primaryKey(),
+
   // the number of seconds the otp is valid for
   period: integer('period').notNull(),
 
-  // the valid characters for the otp
-  charSet: text('char_set').notNull(),
+  // the secret key used to generate the otp
+  secret: text('secret').notNull(),
 
-  // when it's safe to delete this verification
-  expiresAt: timestamp('expires_at'),
+  // the thing we're trying to verify i.e. a user's email or phone number
+  target: text('target').notNull(),
+
+  // type of verification i.e. email, phone, etc.
+  type: verificationTypeEnum('type').notNull(),
 });

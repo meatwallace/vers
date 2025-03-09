@@ -3,17 +3,17 @@ import { generateEmail } from './generate-email.ts';
 import { WelcomeEmail } from './templates/welcome-email.tsx';
 
 interface Config {
-  verificationURL: string;
   verificationCode: string;
+  verificationURL: string;
 }
 
 export async function generateWelcomeEmail(config: Config) {
   return generateEmail({
     component: (
-      <E.Html lang="en" dir="ltr">
+      <E.Html dir="ltr" lang="en">
         <WelcomeEmail
-          verificationURL={config.verificationURL}
           verificationCode={config.verificationCode}
+          verificationURL={config.verificationURL}
         />
       </E.Html>
     ),

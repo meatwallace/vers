@@ -1,10 +1,10 @@
-import { Hono } from 'hono';
-import { PostgresTestUtils, createTestUser } from '@chrono/service-test-utils';
 import { worlds } from '@chrono/postgres-schema';
+import { createTestUser, PostgresTestUtils } from '@chrono/service-test-utils';
 import { createId } from '@paralleldrive/cuid2';
 import { eq } from 'drizzle-orm';
-import { deleteWorld } from './delete-world';
+import { Hono } from 'hono';
 import { pgTestConfig } from '../pg-test-config';
+import { deleteWorld } from './delete-world';
 
 async function setupTest() {
   const app = new Hono();
@@ -24,33 +24,33 @@ test('it deletes the given world', async () => {
   const worldID = createId();
 
   await db.insert(worlds).values({
-    id: worldID,
-    ownerID: user.id,
-    name: 'New World',
-    fantasyType: 'Medium',
-    technologyLevel: 'Medieval',
     atmosphere: 'Neutral',
-    population: 'Average',
-    geographyType: 'Supercontinent',
+    fantasyType: 'Medium',
     geographyFeatures: ['Deserts'],
+    geographyType: 'Supercontinent',
+    id: worldID,
+    name: 'New World',
+    ownerID: user.id,
+    population: 'Average',
+    technologyLevel: 'Medieval',
   });
 
   const req = new Request('http://localhost/delete-world', {
-    method: 'POST',
     body: JSON.stringify({
-      worldID,
       ownerID: user.id,
+      worldID,
     }),
+    method: 'POST',
   });
 
   const res = await app.request(req);
 
   expect(res.status).toBe(200);
   expect(await res.json()).toMatchObject({
-    success: true,
     data: {
       deletedID: worldID,
     },
+    success: true,
   });
 
   const deletedWorld = await db.query.worlds.findFirst({

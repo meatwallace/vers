@@ -3,18 +3,18 @@ import { DateResolver, DateTimeResolver } from 'graphql-scalars';
 import { Context } from '~/types';
 
 interface SchemaConfig {
+  Context: Context;
   DefaultFieldNullability: false;
   Scalars: {
-    DateTime: {
-      Input: Date;
-      Output: Date;
-    };
     Date: {
       Input: Date;
       Output: Date;
     };
+    DateTime: {
+      Input: Date;
+      Output: Date;
+    };
   };
-  Context: Context;
 }
 
 export const builder = new SchemaBuilder<SchemaConfig>({

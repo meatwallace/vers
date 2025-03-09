@@ -6,15 +6,15 @@ export type VerificationType =
 
 interface VerificationData {
   id: string;
-  type: VerificationType;
   target: string;
+  type: VerificationType;
 }
 
 export interface CreateVerificationRequest {
-  type: VerificationType;
-  target: string;
-  period?: number;
   expiresAt?: Date | null;
+  period?: number;
+  target: string;
+  type: VerificationType;
 }
 
 export type CreateVerificationResponse = ServiceResponse<
@@ -22,19 +22,19 @@ export type CreateVerificationResponse = ServiceResponse<
 >;
 
 export interface VerifyCodeRequest {
-  type: VerificationType;
-  target: string;
   code: string;
+  target: string;
+  type: VerificationType;
 }
 
 export type VerifyCodeResponse = ServiceResponse<VerificationData>;
 
 export interface GetVerificationRequest {
-  type: VerificationType;
   target: string;
+  type: VerificationType;
 }
 
-export type GetVerificationResponse = ServiceResponse<VerificationData | null>;
+export type GetVerificationResponse = ServiceResponse<null | VerificationData>;
 
 export interface UpdateVerificationRequest {
   id: string;

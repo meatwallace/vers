@@ -10,46 +10,46 @@ export const container = recipe({
     lineHeight: 1,
     textTransform: 'uppercase',
   },
+  defaultVariants: {
+    size: 'medium',
+  },
   variants: {
     size: {
-      small: {
-        fontSize: '24px',
+      large: {
+        fontSize: '72px',
       },
       medium: {
         fontSize: '48px',
       },
-      large: {
-        fontSize: '72px',
+      small: {
+        fontSize: '24px',
       },
     },
-  },
-  defaultVariants: {
-    size: 'medium',
   },
 });
 
 export const icon = recipe({
   base: {},
+  defaultVariants: {
+    size: 'medium',
+  },
   variants: {
     size: {
-      small: {
-        height: '22px',
-        marginTop: '-2px',
-        width: '22px',
+      large: {
+        height: '68px',
+        marginTop: '-6px',
+        width: '68px',
       },
       medium: {
         height: '42px',
         marginTop: '-2px',
         width: '42px',
       },
-      large: {
-        height: '68px',
-        marginTop: '-6px',
-        width: '68px',
+      small: {
+        height: '22px',
+        marginTop: '-2px',
+        width: '22px',
       },
     },
-  },
-  defaultVariants: {
-    size: 'medium',
   },
 });

@@ -38,24 +38,24 @@ export async function startEnable2FA(
 ): Promise<typeof StartEnable2FAPayload.$inferType> {
   try {
     const is2FAEnabled = await ctx.services.verification.getVerification({
-      type: '2fa',
       target: ctx.user.email,
+      type: '2fa',
     });
 
     if (is2FAEnabled) {
       return {
         error: {
-          title: 'Two-factor authentication already enabled',
           message:
             'Two-factor authentication is already enabled for your account.',
+          title: 'Two-factor authentication already enabled',
         },
       };
     }
 
     const existing2FASetupVerification =
       await ctx.services.verification.getVerification({
-        type: '2fa-setup',
         target: ctx.user.email,
+        type: '2fa-setup',
       });
 
     // If there's an existing 2FA setup verification, delete it
@@ -66,18 +66,18 @@ export async function startEnable2FA(
     }
 
     await ctx.services.verification.createVerification({
-      type: '2fa-setup',
       target: ctx.user.email,
+      type: '2fa-setup',
     });
 
     const transactionID = createPendingTransaction({
-      target: ctx.user.email,
       action: VerificationType.TWO_FACTOR_AUTH_SETUP,
       ipAddress: ctx.ipAddress,
       sessionID: ctx.session.id,
+      target: ctx.user.email,
     });
 
-    return { transactionID, sessionID: null };
+    return { sessionID: null, transactionID };
   } catch (error) {
     // TODO(#16): capture via Sentry
     if (error instanceof Error) {
@@ -99,18 +99,18 @@ const StartEnable2FAInput = builder.inputType('StartEnable2FAInput', {
 });
 
 const StartEnable2FAPayload = builder.unionType('StartEnable2FAPayload', {
-  types: [TwoFactorRequiredPayload, MutationErrorPayload],
   resolveType: createPayloadResolver(TwoFactorRequiredPayload),
+  types: [TwoFactorRequiredPayload, MutationErrorPayload],
 });
 
 export const resolve = requireAuth(startEnable2FA);
 
 builder.mutationField('startEnable2FA', (t) =>
   t.field({
-    type: StartEnable2FAPayload,
     args: {
-      input: t.arg({ type: StartEnable2FAInput, required: true }),
+      input: t.arg({ required: true, type: StartEnable2FAInput }),
     },
     resolve: resolve,
+    type: StartEnable2FAPayload,
   }),
 );

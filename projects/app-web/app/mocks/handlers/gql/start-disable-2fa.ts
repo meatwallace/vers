@@ -1,4 +1,4 @@
-import { HttpResponse, graphql } from 'msw';
+import { graphql, HttpResponse } from 'msw';
 import {
   StartDisable2FaInput,
   StartDisable2FaPayload,
@@ -39,8 +39,8 @@ export const StartDisable2FA = graphql.mutation<
       data: {
         startDisable2FA: {
           error: {
-            title: 'User not found',
             message: 'User not found',
+            title: 'User not found',
           },
         },
       },
@@ -49,8 +49,8 @@ export const StartDisable2FA = graphql.mutation<
 
   const is2FAEnabled = db.verification.findFirst({
     where: {
-      type: { equals: VerificationType.TwoFactorAuth },
       target: { equals: user.email },
+      type: { equals: VerificationType.TwoFactorAuth },
     },
   });
 
@@ -59,8 +59,8 @@ export const StartDisable2FA = graphql.mutation<
       data: {
         startDisable2FA: {
           error: {
-            title: '2FA not enabled',
             message: '2FA is not enabled for your account.',
+            title: '2FA not enabled',
           },
         },
       },
@@ -69,8 +69,8 @@ export const StartDisable2FA = graphql.mutation<
 
   const existingVerification = db.verification.findFirst({
     where: {
-      type: { equals: VerificationType.TwoFactorAuthDisable },
       target: { equals: user.email },
+      type: { equals: VerificationType.TwoFactorAuthDisable },
     },
   });
 
@@ -83,15 +83,15 @@ export const StartDisable2FA = graphql.mutation<
   }
 
   db.verification.create({
-    type: VerificationType.TwoFactorAuthDisable,
     target: user.email,
+    type: VerificationType.TwoFactorAuthDisable,
   });
 
   return HttpResponse.json({
     data: {
       startDisable2FA: {
-        transactionID: 'valid-transaction-id',
         sessionID: null,
+        transactionID: 'valid-transaction-id',
       },
     },
   });

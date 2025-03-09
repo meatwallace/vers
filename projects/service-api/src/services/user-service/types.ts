@@ -17,7 +17,7 @@ export type UserData = Omit<
 >;
 
 export type VerifyPasswordPayload =
-  | { success: false; error: string }
+  | { error: string; success: false }
   | { success: true };
 
 export interface UserService {
@@ -29,7 +29,7 @@ export interface UserService {
 
   createUser: (args: CreateUserRequest) => Promise<UserData>;
 
-  getUser: (args: GetUserRequest) => Promise<UserData | null>;
+  getUser: (args: GetUserRequest) => Promise<null | UserData>;
 
   updateUser: (args: UpdateUserRequest) => Promise<{ success: boolean }>;
 

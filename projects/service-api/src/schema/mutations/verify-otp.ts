@@ -24,23 +24,23 @@ export async function verifyOTP(
 
     const verification = await ctx.services.verification.verifyCode({
       code: args.input.code,
-      type: resolveVerificationType(args.input.type),
       target: args.input.target,
+      type: resolveVerificationType(args.input.type),
     });
 
     if (!verification) {
       return {
-        error: { title: 'Invalid OTP', message: 'Invalid verification code' },
+        error: { message: 'Invalid verification code', title: 'Invalid OTP' },
       };
     }
 
     const transactionToken = await createTransactionToken(
       {
-        target: verification.target,
         action: args.input.type,
         ipAddress: ctx.ipAddress,
-        transactionID: args.input.transactionID,
         sessionID: args.input.sessionID ?? null,
+        target: verification.target,
+        transactionID: args.input.transactionID,
       },
       ctx,
     );
@@ -63,26 +63,26 @@ export async function verifyOTP(
 const VerifyOTPInput = builder.inputType('VerifyOTPInput', {
   fields: (t) => ({
     code: t.string({ required: true }),
-    type: t.field({ type: VerificationType, required: true }),
+    sessionID: t.string({ required: false }),
     target: t.string({ required: true }),
     transactionID: t.string({ required: true }),
-    sessionID: t.string({ required: false }),
+    type: t.field({ required: true, type: VerificationType }),
   }),
 });
 
 const VerifyOTPPayload = builder.unionType('VerifyOTPPayload', {
-  types: [TwoFactorSuccessPayload, MutationErrorPayload],
   resolveType: createPayloadResolver(TwoFactorSuccessPayload),
+  types: [TwoFactorSuccessPayload, MutationErrorPayload],
 });
 
 export const resolve = verifyOTP;
 
 builder.mutationField('verifyOTP', (t) =>
   t.field({
-    type: VerifyOTPPayload,
     args: {
-      input: t.arg({ type: VerifyOTPInput, required: true }),
+      input: t.arg({ required: true, type: VerifyOTPInput }),
     },
     resolve: verifyOTP,
+    type: VerifyOTPPayload,
   }),
 );

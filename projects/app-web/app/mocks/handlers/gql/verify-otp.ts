@@ -1,4 +1,4 @@
-import { HttpResponse, graphql } from 'msw';
+import { graphql, HttpResponse } from 'msw';
 import {
   VerificationType,
   VerifyOtpInput,
@@ -30,8 +30,8 @@ export const VerifyOTP = graphql.mutation<
       data: {
         verifyOTP: {
           error: {
-            title: 'Invalid OTP',
             message: 'Invalid verification code',
+            title: 'Invalid OTP',
           },
         },
       },
@@ -43,8 +43,8 @@ export const VerifyOTP = graphql.mutation<
       data: {
         verifyOTP: {
           error: {
-            title: 'Invalid OTP',
             message: 'Invalid verification code',
+            title: 'Invalid OTP',
           },
         },
       },

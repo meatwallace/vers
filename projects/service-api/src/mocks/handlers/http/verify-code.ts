@@ -1,6 +1,6 @@
-import { http, HttpResponse } from 'msw';
 import { VerifyCodeRequest } from '@chrono/service-types';
 import { verifyTOTP } from '@epic-web/totp';
+import { http, HttpResponse } from 'msw';
 import { env } from '~/env';
 import { db } from '../../db';
 
@@ -13,15 +13,15 @@ export const verifyCode = http.post<never, VerifyCodeRequest>(
 
     const verification = db.verification.findFirst({
       where: {
-        type: { equals: body.type },
         target: { equals: body.target },
+        type: { equals: body.type },
       },
     });
 
     if (!verification) {
       return HttpResponse.json({
-        success: false,
         error: 'Invalid verification code',
+        success: false,
       });
     }
 
@@ -33,24 +33,24 @@ export const verifyCode = http.post<never, VerifyCodeRequest>(
       });
 
       return HttpResponse.json({
-        success: false,
         error: 'Verification code has expired',
+        success: false,
       });
     }
 
     const isValid = await verifyTOTP({
-      otp: body.code,
-      secret: verification.secret,
       algorithm: verification.algorithm,
-      period: verification.period,
-      digits: verification.digits,
       charSet: verification.charSet,
+      digits: verification.digits,
+      otp: body.code,
+      period: verification.period,
+      secret: verification.secret,
     });
 
     if (!isValid) {
       return HttpResponse.json({
-        success: false,
         error: 'Invalid verification code',
+        success: false,
       });
     }
 
@@ -63,12 +63,12 @@ export const verifyCode = http.post<never, VerifyCodeRequest>(
     });
 
     return HttpResponse.json({
-      success: true,
       data: {
         id: verification.id,
-        type: verification.type,
         target: verification.target,
+        type: verification.type,
       },
+      success: true,
     });
   },
 );

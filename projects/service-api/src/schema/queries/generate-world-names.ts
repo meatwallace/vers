@@ -36,7 +36,7 @@ export const resolve = requireAuth(generateWorldNames);
 builder.queryField('generateWorldNames', (t) =>
   t.stringList({
     args: {
-      input: t.arg({ type: GenerateWorldNamesInput, required: true }),
+      input: t.arg({ required: true, type: GenerateWorldNamesInput }),
     },
     resolve,
   }),

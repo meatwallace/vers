@@ -1,4 +1,4 @@
-import { HttpResponse, graphql } from 'msw';
+import { graphql, HttpResponse } from 'msw';
 import {
   StartEnable2FaInput,
   StartEnable2FaPayload,
@@ -39,8 +39,8 @@ export const StartEnable2FA = graphql.mutation<
       data: {
         startEnable2FA: {
           error: {
-            title: 'User not found',
             message: 'User not found',
+            title: 'User not found',
           },
         },
       },
@@ -49,8 +49,8 @@ export const StartEnable2FA = graphql.mutation<
 
   const is2FAEnabled = db.verification.findFirst({
     where: {
-      type: { equals: VerificationType.TwoFactorAuth },
       target: { equals: user.email },
+      type: { equals: VerificationType.TwoFactorAuth },
     },
   });
 
@@ -59,9 +59,9 @@ export const StartEnable2FA = graphql.mutation<
       data: {
         startEnable2FA: {
           error: {
-            title: 'Two-factor authentication already enabled',
             message:
               'Two-factor authentication is already enabled for your account.',
+            title: 'Two-factor authentication already enabled',
           },
         },
       },
@@ -70,8 +70,8 @@ export const StartEnable2FA = graphql.mutation<
 
   const existingVerification = db.verification.findFirst({
     where: {
-      type: { equals: VerificationType.TwoFactorAuthSetup },
       target: { equals: user.email },
+      type: { equals: VerificationType.TwoFactorAuthSetup },
     },
   });
 
@@ -84,15 +84,15 @@ export const StartEnable2FA = graphql.mutation<
   }
 
   db.verification.create({
-    type: VerificationType.TwoFactorAuthSetup,
     target: user.email,
+    type: VerificationType.TwoFactorAuthSetup,
   });
 
   return HttpResponse.json({
     data: {
       startEnable2FA: {
-        transactionID: 'valid-transaction-id',
         sessionID: null,
+        transactionID: 'valid-transaction-id',
       },
     },
   });

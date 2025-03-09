@@ -1,6 +1,6 @@
-import invariant from 'tiny-invariant';
-import type { MiddlewareHandler, Context, Next } from 'hono';
+import type { Context, MiddlewareHandler, Next } from 'hono';
 import { HttpBindings } from '@hono/node-server';
+import invariant from 'tiny-invariant';
 
 export const createRemoteAddressMiddleware = (): MiddlewareHandler => {
   return async (ctx: Context, next: Next) => {

@@ -1,9 +1,9 @@
 import { redirect } from 'react-router';
-import { type Route } from './+types/route.ts';
 import { graphql } from '~/gql';
 import { Routes } from '~/types.ts';
 import { createGQLClient } from '~/utils/create-gql-client.server.ts';
 import { requireAuth } from '~/utils/require-auth.server.ts';
+import { type Route } from './+types/route.ts';
 import * as styles from './route.css.ts';
 
 const GetCreatedWorldQuery = graphql(/* GraphQL */ `
@@ -42,8 +42,8 @@ export async function loader({ params, request }: Route.LoaderArgs) {
 
 export const meta: Route.MetaFunction = () => [
   {
-    title: '',
     description: '',
+    title: '',
   },
 ];
 

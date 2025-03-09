@@ -21,12 +21,12 @@ type VerificationTypeMap = Record<
  * @remarks This is used to ensure consistent mapping between GraphQL and database enums.
  */
 const VERIFICATION_TYPE_MAP: VerificationTypeMap = {
-  [VerificationType.TWO_FACTOR_AUTH]: '2fa',
-  [VerificationType.RESET_PASSWORD]: '2fa',
-  [VerificationType.CHANGE_PASSWORD]: '2fa',
   [VerificationType.CHANGE_EMAIL]: '2fa',
+  [VerificationType.CHANGE_EMAIL_CONFIRMATION]: 'change-email',
+  [VerificationType.CHANGE_PASSWORD]: '2fa',
+  [VerificationType.ONBOARDING]: 'onboarding',
+  [VerificationType.RESET_PASSWORD]: '2fa',
+  [VerificationType.TWO_FACTOR_AUTH]: '2fa',
   [VerificationType.TWO_FACTOR_AUTH_DISABLE]: '2fa',
   [VerificationType.TWO_FACTOR_AUTH_SETUP]: '2fa-setup',
-  [VerificationType.ONBOARDING]: 'onboarding',
-  [VerificationType.CHANGE_EMAIL_CONFIRMATION]: 'change-email',
 } as const;

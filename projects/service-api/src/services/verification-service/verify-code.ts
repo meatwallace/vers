@@ -5,7 +5,7 @@ import { VerificationData, VerificationServiceContext } from './types';
 export async function verifyCode(
   args: VerifyCodeRequest,
   ctx: VerificationServiceContext,
-): Promise<VerificationData | null> {
+): Promise<null | VerificationData> {
   const response = await ctx.client.post<VerifyCodeResponse>('verify-code', {
     body: JSON.stringify(args),
     resolveBodyOnly: true,

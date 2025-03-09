@@ -34,18 +34,18 @@ const CreateWorldInput = builder.inputType('CreateWorldInput', {
 });
 
 const CreateWorldPayload = builder.unionType('CreateWorldPayload', {
-  types: [World, MutationErrorPayload],
   resolveType: createPayloadResolver(World),
+  types: [World, MutationErrorPayload],
 });
 
 export const resolve = requireAuth(createWorld);
 
 builder.mutationField('createWorld', (t) =>
   t.field({
-    type: CreateWorldPayload,
     args: {
-      input: t.arg({ type: CreateWorldInput, required: true }),
+      input: t.arg({ required: true, type: CreateWorldInput }),
     },
     resolve,
+    type: CreateWorldPayload,
   }),
 );

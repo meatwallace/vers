@@ -1,29 +1,29 @@
 import { ServiceResponse } from './service-response';
 
 export interface UserData {
-  id: string;
-  email: string;
-  name: string;
-  username: string;
   createdAt: Date;
+  email: string;
+  id: string;
+  name: string;
   updatedAt: Date;
+  username: string;
 }
 
 export interface CreateUserRequest {
   email: string;
   name: string;
-  username: string;
   password: string;
+  username: string;
 }
 
 export type CreateUserResponse = ServiceResponse<UserData>;
 
 export interface GetUserRequest {
-  id?: string;
   email?: string;
+  id?: string;
 }
 
-export type GetUserResponse = ServiceResponse<UserData | null>;
+export type GetUserResponse = ServiceResponse<null | UserData>;
 
 export interface VerifyPasswordRequest {
   email: string;
@@ -49,8 +49,8 @@ export type CreatePasswordResetTokenResponse = ServiceResponse<{
 }>;
 
 export interface UpdateUserRequest {
-  id: string;
   email?: string;
+  id: string;
   name?: string;
   username?: string;
 }

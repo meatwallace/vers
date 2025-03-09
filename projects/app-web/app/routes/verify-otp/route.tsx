@@ -1,8 +1,8 @@
-import { Form, data, redirect, useSearchParams } from 'react-router';
-import { HoneypotInputs } from 'remix-utils/honeypot/react';
-import { z } from 'zod';
+import { data, Form, redirect, useSearchParams } from 'react-router';
 import { getFormProps, getInputProps, useForm } from '@conform-to/react';
 import { getZodConstraint, parseWithZod } from '@conform-to/zod';
+import { HoneypotInputs } from 'remix-utils/honeypot/react';
+import { z } from 'zod';
 import { OTPField } from '~/components/field/index.ts';
 import { FormErrorList } from '~/components/form-error-list.tsx';
 import { RouteErrorBoundary } from '~/components/route-error-boundary.tsx';
@@ -30,9 +30,9 @@ const VerificationTypeSchema = z.nativeEnum(VerificationType);
 
 export const VerifyOTPFormSchema = z.object({
   [QueryParam.Code]: z.string().length(6, 'Invalid code'),
+  [QueryParam.RedirectTo]: z.string().optional(),
   [QueryParam.Target]: z.string().min(1),
   [QueryParam.Type]: VerificationTypeSchema,
-  [QueryParam.RedirectTo]: z.string().optional(),
 });
 
 export function loader({ request }: Route.LoaderArgs) {
@@ -101,10 +101,10 @@ export async function action({ request }: Route.ActionArgs) {
     const { verifyOTP } = await client.request(VerifyOTP, {
       input: {
         code: submission.value.code,
-        target: submission.value.target,
-        type: submission.value.type,
-        transactionID,
         sessionID,
+        target: submission.value.target,
+        transactionID,
+        type: submission.value.type,
       },
     });
 
@@ -117,11 +117,11 @@ export async function action({ request }: Route.ActionArgs) {
     }
 
     return await handleVerification(submission.value.type, {
+      body: formData,
       client,
       request,
       submission,
       transactionToken: verifyOTP.transactionToken,
-      body: formData,
     });
   } catch (error) {
     // TODO(#16): capture error
@@ -146,17 +146,17 @@ export function VerifyOTPRoute({ actionData }: Route.ComponentProps) {
   const type = typeParsedWithZod.success ? typeParsedWithZod.data : null;
 
   const [form, fields] = useForm({
-    id: 'verify-otp-form',
     constraint: getZodConstraint(VerifyOTPFormSchema),
+    defaultValue: {
+      [QueryParam.Code]: searchParams.get(QueryParam.Code),
+      [QueryParam.RedirectTo]: searchParams.get(QueryParam.RedirectTo),
+      [QueryParam.Target]: searchParams.get(QueryParam.Target),
+      [QueryParam.Type]: type,
+    },
+    id: 'verify-otp-form',
     lastResult: actionData?.result,
     onValidate({ formData }) {
       return parseWithZod(formData, { schema: VerifyOTPFormSchema });
-    },
-    defaultValue: {
-      [QueryParam.Code]: searchParams.get(QueryParam.Code),
-      [QueryParam.Target]: searchParams.get(QueryParam.Target),
-      [QueryParam.Type]: type,
-      [QueryParam.RedirectTo]: searchParams.get(QueryParam.RedirectTo),
     },
   });
 
@@ -169,16 +169,16 @@ export function VerifyOTPRoute({ actionData }: Route.ComponentProps) {
       <Form method="POST" {...getFormProps(form)}>
         <HoneypotInputs />
         <OTPField
-          labelProps={{
-            htmlFor: fields[QueryParam.Code].id,
-            children: 'Code',
-          }}
+          errors={fields[QueryParam.Code].errors ?? []}
           inputProps={{
             ...getInputProps(fields[QueryParam.Code], { type: 'text' }),
             autoComplete: 'one-time-code',
             autoFocus: true,
           }}
-          errors={fields[QueryParam.Code].errors ?? []}
+          labelProps={{
+            children: 'Code',
+            htmlFor: fields[QueryParam.Code].id,
+          }}
         />
         <input
           {...getInputProps(fields[QueryParam.Type], { type: 'hidden' })}
@@ -190,9 +190,9 @@ export function VerifyOTPRoute({ actionData }: Route.ComponentProps) {
           {...getInputProps(fields[QueryParam.RedirectTo], { type: 'hidden' })}
         />
         <StatusButton
-          type="submit"
-          status={submitButtonStatus}
           disabled={isFormPending}
+          status={submitButtonStatus}
+          type="submit"
         >
           Verify
         </StatusButton>

@@ -1,7 +1,7 @@
 import { afterEach, expect, test } from 'vitest';
-import { type LoaderFunction, createRoutesStub } from 'react-router';
-import { drop } from '@mswjs/data';
 import { render, screen } from '@testing-library/react';
+import { createRoutesStub, type LoaderFunction } from 'react-router';
+import { drop } from '@mswjs/data';
 import { db } from '~/mocks/db.ts';
 import { withAuthedUser } from '~/test-utils/with-authed-user.ts';
 import { Routes } from '~/types.ts';
@@ -20,13 +20,13 @@ const loader: LoaderFunction = async ({ request }) => {
 function setupTest(config: TestConfig = {}) {
   const TestRoutesStub = createRoutesStub([
     {
-      path: '/',
       Component: () => 'TEST_ROUTE',
       loader: config.isAuthed ? withAuthedUser(loader) : undefined,
+      path: '/',
     },
     {
-      path: Routes.Dashboard,
       Component: () => 'DASHBOARD_ROUTE',
+      path: Routes.Dashboard,
     },
   ]);
 

@@ -1,7 +1,7 @@
 import { Context } from '~/types';
 import { builder } from '../builder';
-import { MutationErrorPayload } from '../types/mutation-error-payload';
 import { AuthPayload } from '../types/auth-payload';
+import { MutationErrorPayload } from '../types/mutation-error-payload';
 import { createPayloadResolver } from '../utils/create-payload-resolver';
 
 interface Args {
@@ -35,8 +35,8 @@ const RefreshAccessTokenInput = builder.inputType('RefreshAccessTokenInput', {
 const RefreshAccessTokenPayload = builder.unionType(
   'RefreshAccessTokenPayload',
   {
-    types: [AuthPayload, MutationErrorPayload],
     resolveType: createPayloadResolver(AuthPayload),
+    types: [AuthPayload, MutationErrorPayload],
   },
 );
 
@@ -44,10 +44,10 @@ export const resolve = refreshAccessToken;
 
 builder.mutationField('refreshAccessToken', (t) =>
   t.field({
-    type: RefreshAccessTokenPayload,
     args: {
-      input: t.arg({ type: RefreshAccessTokenInput, required: true }),
+      input: t.arg({ required: true, type: RefreshAccessTokenInput }),
     },
     resolve: refreshAccessToken,
+    type: RefreshAccessTokenPayload,
   }),
 );

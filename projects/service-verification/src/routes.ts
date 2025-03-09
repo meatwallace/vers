@@ -1,11 +1,11 @@
 import { app } from './app';
+import { db } from './db';
 import { createVerification } from './handlers/create-verification';
 import { deleteVerification } from './handlers/delete-verification';
+import { get2FAVerificationURI } from './handlers/get-2fa-verification-uri';
 import { getVerification } from './handlers/get-verification';
 import { updateVerification } from './handlers/update-verification';
 import { verifyCode } from './handlers/verify-code';
-import { get2FAVerificationURI } from './handlers/get-2fa-verification-uri';
-import { db } from './db';
 
 app.post('/create-verification', async (ctx) => createVerification(ctx, db));
 

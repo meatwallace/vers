@@ -26,41 +26,41 @@ globalStyle('body', {
 });
 
 globalFontFace('Josefin Sans', {
+  fontWeight: 'semi-bold',
   src: [
     'url("/assets/fonts/josefin-sans-semi-bold.woff2") format("woff2")',
     'url("/assets/fonts/josefin-sans-semi-bold.woff") format("woff")',
   ],
-  fontWeight: 'semi-bold',
 });
 
 globalFontFace('Josefin Slab', {
+  fontWeight: 'bold',
   src: [
     'url("/assets/fonts/josefin-slab-bold.woff2") format("woff2")',
     'url("/assets/fonts/josefin-slab-bold.woff") format("woff")',
   ],
-  fontWeight: 'bold',
 });
 
 globalFontFace('Karla', [
   {
+    fontWeight: 'light',
     src: [
       'url("/assets/fonts/karla-light.woff2") format("woff2")',
       'url("/assets/fonts/karla-light.woff") format("woff")',
     ],
-    fontWeight: 'light',
   },
   {
+    fontWeight: 'regular',
     src: [
       'url("/assets/fonts/karla-regular.woff2") format("woff2")',
       'url("/assets/fonts/karla-regular.woff") format("woff")',
     ],
-    fontWeight: 'regular',
   },
   {
+    fontWeight: 'bold',
     src: [
       'url("/assets/fonts/karla-bold.woff2") format("woff2")',
       'url("/assets/fonts/karla-bold.woff") format("woff")',
     ],
-    fontWeight: 'bold',
   },
 ]);

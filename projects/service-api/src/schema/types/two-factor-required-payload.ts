@@ -1,8 +1,8 @@
 import { builder } from '../builder';
 
 export interface TwoFactorRequiredPayloadData {
+  sessionID: null | string;
   transactionID: string;
-  sessionID: string | null;
 }
 
 export const TwoFactorRequiredPayload =
@@ -10,7 +10,7 @@ export const TwoFactorRequiredPayload =
 
 TwoFactorRequiredPayload.implement({
   fields: (t) => ({
-    transactionID: t.exposeString('transactionID'),
     sessionID: t.exposeString('sessionID', { nullable: true }),
+    transactionID: t.exposeString('transactionID'),
   }),
 });

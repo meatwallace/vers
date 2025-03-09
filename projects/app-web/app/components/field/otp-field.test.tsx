@@ -5,9 +5,9 @@ import { OTPField } from './otp-field';
 test('it renders a label and an OTP input', () => {
   render(
     <OTPField
-      labelProps={{ children: 'Enter code' }}
-      inputProps={{ value: '', onChange: vi.fn() }}
       errors={[]}
+      inputProps={{ onChange: vi.fn(), value: '' }}
+      labelProps={{ children: 'Enter code' }}
     />,
   );
 
@@ -21,9 +21,9 @@ test('it handles input changes', async () => {
 
   render(
     <OTPField
-      labelProps={{ children: 'Enter code' }}
-      inputProps={{ value: '', onChange: handleChange }}
       errors={[]}
+      inputProps={{ onChange: handleChange, value: '' }}
+      labelProps={{ children: 'Enter code' }}
     />,
   );
 
@@ -35,9 +35,9 @@ test('it handles input changes', async () => {
 test('it displays error messages', () => {
   render(
     <OTPField
-      labelProps={{ children: 'Enter code' }}
-      inputProps={{ value: '', onChange: vi.fn() }}
       errors={['Invalid code']}
+      inputProps={{ onChange: vi.fn(), value: '' }}
+      labelProps={{ children: 'Enter code' }}
     />,
   );
 

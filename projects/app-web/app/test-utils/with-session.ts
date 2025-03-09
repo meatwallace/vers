@@ -23,9 +23,9 @@ interface SessionConfig {
  * @returns The wrapped loader or action function.
  */
 export function withSession(
-  dataFn: LoaderFunction | ActionFunction,
+  dataFn: ActionFunction | LoaderFunction,
   config: SessionConfig,
-): LoaderFunction | ActionFunction {
+): ActionFunction | LoaderFunction {
   return async ({ request, ...rest }) => {
     const verifySession = await verifySessionStorage.getSession(
       request.headers.get('cookie'),

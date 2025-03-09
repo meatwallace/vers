@@ -1,8 +1,8 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { createRoutesStub } from 'react-router';
-import { Routes } from '~/types.ts';
 import { withAuthedUser } from '~/test-utils/with-authed-user.ts';
+import { Routes } from '~/types.ts';
 import { Index, loader } from './route.tsx';
 
 interface TestConfig {
@@ -14,24 +14,24 @@ function setupTest(config: TestConfig) {
 
   const IndexStub = createRoutesStub([
     {
-      path: '/',
       Component: Index,
       // @ts-expect-error(#35) - react router test types are out of date
       loader: config.isAuthed ? withAuthedUser(loader) : loader,
+      path: '/',
     },
     {
-      path: Routes.Signup,
+      action: () => null,
       Component: () => 'SIGN_UP_ROUTE',
-      action: () => null,
+      path: Routes.Signup,
     },
     {
-      path: Routes.Login,
+      action: () => null,
       Component: () => 'LOG_IN_ROUTE',
-      action: () => null,
+      path: Routes.Login,
     },
     {
-      path: Routes.Dashboard,
       Component: () => 'DASHBOARD_ROUTE',
+      path: Routes.Dashboard,
     },
   ]);
 

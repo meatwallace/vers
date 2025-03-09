@@ -1,7 +1,7 @@
 import { SendEmailRequest } from '@chrono/service-types';
 import { ServiceResponse } from '@chrono/service-types';
-import { EmailServiceContext } from './types';
 import { logger } from '~/logger';
+import { EmailServiceContext } from './types';
 
 type SendEmailResponse = ServiceResponse<void>;
 

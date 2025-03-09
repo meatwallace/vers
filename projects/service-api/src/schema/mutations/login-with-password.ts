@@ -15,8 +15,8 @@ interface Args {
 
 // ensure we use the same error message for all failures to avoid enumeration
 const AMBIGUOUS_CREDENTIALS_ERROR = {
-  title: 'Invalid credentials',
   message: 'Wrong email or password',
+  title: 'Invalid credentials',
 };
 
 export async function loginWithPassword(
@@ -48,28 +48,28 @@ export async function loginWithPassword(
 
     // Check if 2FA is enabled for this user by looking for a verification record
     const verification = await ctx.services.verification.getVerification({
-      type: '2fa',
       target: user.email,
+      type: '2fa',
     });
 
     // create a session regardless if the user requires 2FA as we need it to
     // bind the transaction to the session
     const authPayload = await ctx.services.session.createSession({
-      userID: user.id,
       ipAddress: ctx.ipAddress,
       rememberMe: args.input.rememberMe,
+      userID: user.id,
     });
 
     // If 2FA is enabled, return the two factor required payload
     if (verification) {
       const transactionID = createPendingTransaction({
-        target: user.email,
-        ipAddress: ctx.ipAddress,
         action: VerificationType.TWO_FACTOR_AUTH,
+        ipAddress: ctx.ipAddress,
         sessionID: authPayload.session.id,
+        target: user.email,
       });
 
-      return { transactionID, sessionID: authPayload.session.id };
+      return { sessionID: authPayload.session.id, transactionID };
     }
 
     return authPayload;
@@ -96,18 +96,18 @@ const LoginWithPasswordInput = builder.inputType('LoginWithPasswordInput', {
 });
 
 const LoginWithPasswordPayload = builder.unionType('LoginWithPasswordPayload', {
-  types: [AuthPayload, TwoFactorRequiredPayload, MutationErrorPayload],
   resolveType: createPayloadResolver(AuthPayload),
+  types: [AuthPayload, TwoFactorRequiredPayload, MutationErrorPayload],
 });
 
 export const resolve = loginWithPassword;
 
 builder.mutationField('loginWithPassword', (t) =>
   t.field({
-    type: LoginWithPasswordPayload,
     args: {
-      input: t.arg({ type: LoginWithPasswordInput, required: true }),
+      input: t.arg({ required: true, type: LoginWithPasswordInput }),
     },
     resolve: loginWithPassword,
+    type: LoginWithPasswordPayload,
   }),
 );

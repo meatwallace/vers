@@ -1,8 +1,8 @@
-import { Context } from 'hono';
-import { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
-import { eq, or } from 'drizzle-orm';
 import * as schema from '@chrono/postgres-schema';
 import { GetUserRequest, GetUserResponse } from '@chrono/service-types';
+import { eq, or } from 'drizzle-orm';
+import { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
+import { Context } from 'hono';
 
 export async function getUser(
   ctx: Context,
@@ -13,8 +13,8 @@ export async function getUser(
 
     if (!email && !id) {
       return ctx.json({
-        success: false,
         error: 'Either email or id must be provided',
+        success: false,
       });
     }
 
@@ -28,8 +28,8 @@ export async function getUser(
     });
 
     const response: GetUserResponse = {
-      success: true,
       data: user ?? null,
+      success: true,
     };
 
     return ctx.json(response);
@@ -37,8 +37,8 @@ export async function getUser(
     // TODO(#16): capture via Sentry
     if (error instanceof Error) {
       const response = {
-        success: false,
         error: 'An unknown error occurred',
+        success: false,
       };
 
       return ctx.json(response);

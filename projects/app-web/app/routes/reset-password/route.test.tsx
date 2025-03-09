@@ -1,8 +1,8 @@
 import { afterEach, expect, test } from 'vitest';
-import { createRoutesStub } from 'react-router';
-import { drop } from '@mswjs/data';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { createRoutesStub } from 'react-router';
+import { drop } from '@mswjs/data';
 import { VerificationType } from '~/gql/graphql.ts';
 import { db } from '~/mocks/db.ts';
 import { SESSION_KEY_VERIFY_TRANSACTION_TOKEN } from '~/session/consts.ts';
@@ -10,7 +10,7 @@ import { verifySessionStorage } from '~/session/verify-session-storage.server.ts
 import { withRouteProps } from '~/test-utils/with-route-props.tsx';
 import { Routes } from '~/types.ts';
 import { type Route } from './+types/route.ts';
-import { ResetPassword, action, loader } from './route.tsx';
+import { action, loader, ResetPassword } from './route.tsx';
 
 interface TestConfig {
   initialPath: string;
@@ -60,16 +60,16 @@ async function setupTest(config: TestConfig) {
 
   const ResetPasswordStub = createRoutesStub([
     {
-      path: '/',
+      // @ts-expect-error(#35) - react router test types are out of date
+      action: actionWithCookie,
       Component: withRouteProps(ResetPassword),
       // @ts-expect-error(#35) - react router test types are out of date
       loader: loaderWithCookie,
-      // @ts-expect-error(#35) - react router test types are out of date
-      action: actionWithCookie,
+      path: '/',
     },
     {
-      path: Routes.Login,
       Component: () => 'LOGIN_ROUTE',
+      path: Routes.Login,
     },
   ]);
 
@@ -185,8 +185,8 @@ test('it passes the transaction token if 2FA was required for the reset', async 
   });
 
   db.verification.create({
-    type: VerificationType.TwoFactorAuth,
     target: 'test@example.com',
+    type: VerificationType.TwoFactorAuth,
   });
 
   const newPasswordInput = await screen.findByLabelText(/new password/i);

@@ -1,7 +1,7 @@
-import { expect, test, afterEach } from 'vitest';
-import { http, HttpResponse } from 'msw';
-import { createId } from '@paralleldrive/cuid2';
+import { afterEach, expect, test } from 'vitest';
 import { ServiceID } from '@chrono/service-types';
+import { createId } from '@paralleldrive/cuid2';
+import { http, HttpResponse } from 'msw';
 import { env } from '~/env';
 import { server } from '~/mocks/node';
 import { createServiceContext } from '../utils/create-service-context.ts';
@@ -15,9 +15,9 @@ afterEach(() => {
 
 test('it returns generated world names on successful response', async () => {
   const ctx = createServiceContext({
+    apiURL: env.WORLDS_SERVICE_URL,
     requestID: createId(),
     serviceID: ServiceID.ServiceWorld,
-    apiURL: env.WORLDS_SERVICE_URL,
   });
 
   const request = {
@@ -39,9 +39,9 @@ test('it throws an error when the request fails', async () => {
   );
 
   const ctx = createServiceContext({
+    apiURL: env.WORLDS_SERVICE_URL,
     requestID: createId(),
     serviceID: ServiceID.ServiceWorld,
-    apiURL: env.WORLDS_SERVICE_URL,
   });
 
   const request = {

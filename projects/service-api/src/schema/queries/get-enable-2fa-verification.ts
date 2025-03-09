@@ -1,5 +1,5 @@
-import invariant from 'tiny-invariant';
 import { GraphQLError } from 'graphql';
+import invariant from 'tiny-invariant';
 import { logger } from '~/logger';
 import { Context } from '~/types';
 import { builder } from '../builder';
@@ -63,7 +63,7 @@ export const resolve = requireAuth(getEnable2FAVerification);
 
 builder.queryField('getEnable2FAVerification', (t) =>
   t.field({
-    type: TwoFactorVerification,
     resolve: resolve,
+    type: TwoFactorVerification,
   }),
 );

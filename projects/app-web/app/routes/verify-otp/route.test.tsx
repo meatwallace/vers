@@ -1,8 +1,8 @@
 import { afterEach, expect, test } from 'vitest';
-import { createRoutesStub } from 'react-router';
-import { drop } from '@mswjs/data';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { createRoutesStub } from 'react-router';
+import { drop } from '@mswjs/data';
 import { VerificationType } from '~/gql/graphql.ts';
 import { db } from '~/mocks/db.ts';
 import { server } from '~/mocks/node.ts';
@@ -15,13 +15,13 @@ import { withAuthedUser } from '~/test-utils/with-authed-user.ts';
 import { withRouteProps } from '~/test-utils/with-route-props.tsx';
 import { withSession } from '~/test-utils/with-session.ts';
 import { Routes } from '~/types.ts';
-import { VerifyOTPRoute, action, loader } from './route.tsx';
+import { action, loader, VerifyOTPRoute } from './route.tsx';
 
 interface TestConfig {
   initialPath?: string;
+  isAuthed?: boolean;
   transactionID?: string;
   unverifiedSessionID?: string;
-  isAuthed?: boolean;
   user?: {
     email?: string;
   };
@@ -55,31 +55,31 @@ function setupTest(config: TestConfig = {}) {
 
   const VerifyOTPStub = createRoutesStub([
     {
-      path: '/',
-      Component: withRouteProps(VerifyOTPRoute),
       action: wrappedAction,
+      Component: withRouteProps(VerifyOTPRoute),
       // @ts-expect-error(#35) - react router test types are out of date
       loader,
+      path: '/',
     },
     {
-      path: Routes.ResetPassword,
       Component: () => 'RESET_PASSWORD_ROUTE',
+      path: Routes.ResetPassword,
     },
     {
-      path: Routes.Onboarding,
       Component: () => 'ONBOARDING_ROUTE',
+      path: Routes.Onboarding,
     },
     {
-      path: Routes.Signup,
       Component: () => 'SIGNUP_ROUTE',
+      path: Routes.Signup,
     },
     {
-      path: Routes.Profile,
       Component: () => 'PROFILE_ROUTE',
+      path: Routes.Profile,
     },
     {
-      path: Routes.Dashboard,
       Component: () => 'DASHBOARD_ROUTE',
+      path: Routes.Dashboard,
     },
   ]);
 
@@ -134,8 +134,8 @@ test('it handles reset password verification and redirects to the reset password
   });
 
   db.verification.create({
-    type: VerificationType.ResetPassword,
     target: 'test@example.com',
+    type: VerificationType.ResetPassword,
   });
 
   const codeInput = await screen.findByRole('textbox', { name: /code/i });
@@ -162,8 +162,8 @@ test('it handles onboarding verification and redirects to the onboarding route o
   });
 
   db.verification.create({
-    type: VerificationType.Onboarding,
     target: 'test@example.com',
+    type: VerificationType.Onboarding,
   });
 
   const codeInput = await screen.findByRole('textbox', { name: /code/i });
@@ -194,8 +194,8 @@ test('it handles 2FA setup verification and returns an error', async () => {
   });
 
   db.verification.create({
-    type: VerificationType.TwoFactorAuthSetup,
     target: 'test@example.com',
+    type: VerificationType.TwoFactorAuthSetup,
   });
 
   const codeInput = await screen.findByRole('textbox', { name: /code/i });
@@ -212,21 +212,21 @@ test('it handles 2FA setup verification and returns an error', async () => {
 test('it handles 2FA disable verification and redirects to the profile route on success', async () => {
   const { user } = setupTest({
     initialPath: '/?type=TWO_FACTOR_AUTH_DISABLE&target=test@example.com',
-    transactionID: 'test_transaction_id',
     isAuthed: true,
+    transactionID: 'test_transaction_id',
     user: {
       email: 'test@example.com',
     },
   });
 
   db.verification.create({
-    type: VerificationType.TwoFactorAuth,
     target: 'test@example.com',
+    type: VerificationType.TwoFactorAuth,
   });
 
   db.verification.create({
-    type: VerificationType.TwoFactorAuthDisable,
     target: 'test@example.com',
+    type: VerificationType.TwoFactorAuthDisable,
   });
 
   const codeInput = await screen.findByRole('textbox', { name: /code/i });
@@ -241,15 +241,15 @@ test('it handles 2FA disable verification and redirects to the profile route on 
 
   const twoFactorAuth = db.verification.findFirst({
     where: {
-      type: { equals: VerificationType.TwoFactorAuth },
       target: { equals: 'test@example.com' },
+      type: { equals: VerificationType.TwoFactorAuth },
     },
   });
 
   const twoFactorAuthDisable = db.verification.findFirst({
     where: {
-      type: { equals: VerificationType.TwoFactorAuthDisable },
       target: { equals: 'test@example.com' },
+      type: { equals: VerificationType.TwoFactorAuthDisable },
     },
   });
 
@@ -269,8 +269,8 @@ test('it handles 2FA login verification and redirects to the dashboard on succes
   });
 
   db.verification.create({
-    type: VerificationType.TwoFactorAuth,
     target: 'test@example.com',
+    type: VerificationType.TwoFactorAuth,
   });
 
   const codeInput = await screen.findByRole('textbox', { name: /code/i });
@@ -298,8 +298,8 @@ test('it shows error for invalid verification code', async () => {
   });
 
   db.verification.create({
-    type: VerificationType.ResetPassword,
     target: 'test@example.com',
+    type: VerificationType.ResetPassword,
   });
 
   const codeInput = await screen.findByRole('textbox', { name: /code/i });

@@ -10,30 +10,30 @@ import { envSchema } from './env';
 export type Env = z.infer<typeof envSchema>;
 
 export interface AuthedContext {
-  request: Request;
-  user: UserData;
-  session: SessionData;
   ipAddress: string;
+  request: Request;
   services: Services;
+  session: SessionData;
+  user: UserData;
 }
 
 export interface UnverifiedAuthContext {
-  request: Request;
-  user: null;
-  session: SessionData;
   ipAddress: string;
+  request: Request;
   services: Services;
+  session: SessionData;
+  user: null;
 }
 
 export interface AnonymousContext {
-  request: Request;
-  user: null;
-  session: null;
   ipAddress: string;
+  request: Request;
   services: Services;
+  session: null;
+  user: null;
 }
 
-export type Context = AuthedContext | UnverifiedAuthContext | AnonymousContext;
+export type Context = AnonymousContext | AuthedContext | UnverifiedAuthContext;
 
 export interface Services {
   email: EmailService;

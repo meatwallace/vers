@@ -1,14 +1,14 @@
 import { afterEach, expect, test } from 'vitest';
-import { HttpResponse, http } from 'msw';
 import { SendEmailRequest } from '@chrono/service-types';
 import { drop } from '@mswjs/data';
+import { http, HttpResponse } from 'msw';
 import { db } from '~/mocks/db';
 import { ENDPOINT_URL } from '~/mocks/handlers/http/send-email';
 import { server } from '~/mocks/node';
 import { createMockGQLContext } from '~/test-utils/create-mock-gql-context';
 import { resolve } from './start-password-reset';
 
-let emailTemplate: string | null = null;
+let emailTemplate: null | string = null;
 
 const sendEmailHandler = vi.fn(async ({ request }: { request: Request }) => {
   const body = (await request.json()) as SendEmailRequest;
@@ -78,8 +78,8 @@ test('it directs the user to verify an OTP when 2FA is enabled', async () => {
   });
 
   db.verification.create({
-    type: '2fa',
     target: 'test@example.com',
+    type: '2fa',
   });
 
   const ctx = createMockGQLContext({});

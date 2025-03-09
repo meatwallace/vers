@@ -10,17 +10,17 @@ export default defineConfig({
     ws: process.env.VITEST === 'true' ? false : undefined,
   },
   test: {
-    watch: false,
-    globals: true,
+    coverage: {
+      provider: 'v8',
+      reportsDirectory: '../../coverage/apps/lib-postgres-schema',
+    },
     environment: 'node',
+    globals: true,
+    include: ['src/**/*.test.ts'],
     passWithNoTests: true,
+    reporters: ['default'],
     setupFiles: ['./vitest.setup.ts'],
     testTimeout: 30 * 1000,
-    include: ['src/**/*.test.ts'],
-    reporters: ['default'],
-    coverage: {
-      reportsDirectory: '../../coverage/apps/lib-postgres-schema',
-      provider: 'v8',
-    },
+    watch: false,
   },
 });

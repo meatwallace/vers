@@ -1,10 +1,10 @@
-import * as jose from 'jose';
 import { createTestJWT } from '@chrono/service-test-utils';
+import * as jose from 'jose';
 import { createTokenVerifier } from './create-token-verifier';
 
 const TEST_TOKEN_PAYLOAD = {
-  sub: 'test_id',
   iss: `https://test.com/`,
+  sub: 'test_id',
 };
 
 const TEST_SIGNING_KEY = `-----BEGIN PRIVATE KEY-----
@@ -47,11 +47,11 @@ const verifyToken = createTokenVerifier({
 
 test('it authorizes a valid token and extracts the payload', async () => {
   const token = await createTestJWT({
-    sub: TEST_TOKEN_PAYLOAD.sub,
+    alg: 'RS256',
     audience: 'test.com',
     issuer: 'https://test.com/',
     signingKey,
-    alg: 'RS256',
+    sub: TEST_TOKEN_PAYLOAD.sub,
   });
 
   const payload = await verifyToken(token);

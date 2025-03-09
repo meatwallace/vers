@@ -1,5 +1,5 @@
-import { http, HttpResponse } from 'msw';
 import { GenerateWorldNamesRequest } from '@chrono/service-types';
+import { http, HttpResponse } from 'msw';
 import { env } from '~/env';
 
 const ENDPOINT_URL = `${env.WORLDS_SERVICE_URL}generate-world-names`;
@@ -18,6 +18,6 @@ export const generateWorldNames = http.post<never, GenerateWorldNamesRequest>(
       'The Forgotten Realm',
     ];
 
-    return HttpResponse.json({ success: true, data: names });
+    return HttpResponse.json({ data: names, success: true });
   },
 );

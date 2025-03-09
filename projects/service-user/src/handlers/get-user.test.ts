@@ -1,8 +1,8 @@
+import { expect, test } from 'vitest';
+import { createTestUser, PostgresTestUtils } from '@chrono/service-test-utils';
 import { Hono } from 'hono';
-import { test, expect } from 'vitest';
-import { PostgresTestUtils, createTestUser } from '@chrono/service-test-utils';
-import { getUser } from './get-user';
 import { pgTestConfig } from '../pg-test-config';
+import { getUser } from './get-user';
 
 async function setupTest() {
   const app = new Hono();
@@ -17,13 +17,13 @@ async function setupTest() {
 }
 
 test('it gets a user by ID', async () => {
-  const { app, user, teardown } = await setupTest();
+  const { app, teardown, user } = await setupTest();
 
   const req = new Request('http://localhost/get-user', {
-    method: 'POST',
     body: JSON.stringify({
       id: user.id,
     }),
+    method: 'POST',
   });
 
   const res = await app.request(req);
@@ -31,25 +31,25 @@ test('it gets a user by ID', async () => {
 
   expect(res.status).toBe(200);
   expect(body).toMatchObject({
-    success: true,
     data: {
-      id: user.id,
-      email: user.email,
       createdAt: expect.any(String),
+      email: user.email,
+      id: user.id,
     },
+    success: true,
   });
 
   await teardown();
 });
 
 test('it gets a user by email', async () => {
-  const { app, user, teardown } = await setupTest();
+  const { app, teardown, user } = await setupTest();
 
   const req = new Request('http://localhost/get-user', {
-    method: 'POST',
     body: JSON.stringify({
       email: user.email,
     }),
+    method: 'POST',
   });
 
   const res = await app.request(req);
@@ -57,12 +57,12 @@ test('it gets a user by email', async () => {
 
   expect(res.status).toBe(200);
   expect(body).toMatchObject({
-    success: true,
     data: {
-      id: user.id,
-      email: user.email,
       createdAt: expect.any(String),
+      email: user.email,
+      id: user.id,
     },
+    success: true,
   });
 
   await teardown();
@@ -72,10 +72,10 @@ test('it handles a non-existent user', async () => {
   const { app, teardown } = await setupTest();
 
   const req = new Request('http://localhost/get-user', {
-    method: 'POST',
     body: JSON.stringify({
       id: 'non-existent-id',
     }),
+    method: 'POST',
   });
 
   const res = await app.request(req);
@@ -83,8 +83,8 @@ test('it handles a non-existent user', async () => {
 
   expect(res.status).toBe(200);
   expect(body).toMatchObject({
-    success: true,
     data: null,
+    success: true,
   });
 
   await teardown();
@@ -94,8 +94,8 @@ test('it handles missing search parameters', async () => {
   const { app, teardown } = await setupTest();
 
   const req = new Request('http://localhost/get-user', {
-    method: 'POST',
     body: JSON.stringify({}),
+    method: 'POST',
   });
 
   const res = await app.request(req);
@@ -103,8 +103,8 @@ test('it handles missing search parameters', async () => {
 
   expect(res.status).toBe(200);
   expect(body).toMatchObject({
-    success: false,
     error: 'Either email or id must be provided',
+    success: false,
   });
 
   await teardown();
@@ -114,8 +114,8 @@ test('it handles an invalid request body', async () => {
   const { app, teardown } = await setupTest();
 
   const req = new Request('http://localhost/get-user', {
-    method: 'POST',
     body: 'invalid json',
+    method: 'POST',
   });
 
   const res = await app.request(req);
@@ -123,8 +123,8 @@ test('it handles an invalid request body', async () => {
 
   expect(res.status).toBe(200);
   expect(body).toMatchObject({
-    success: false,
     error: 'An unknown error occurred',
+    success: false,
   });
 
   await teardown();

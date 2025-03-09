@@ -1,5 +1,5 @@
-import { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
 import * as schema from '@chrono/postgres-schema';
+import { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
 import { z } from 'zod';
 import { envSchema } from './env';
 
@@ -10,23 +10,23 @@ export interface HandlerContext {
 }
 
 export interface CreateVerificationInput {
-  type: string;
-  target: string;
   period: number;
+  target: string;
+  type: string;
 }
 
 export interface VerifyCodeInput {
   code: string;
-  type: string;
   target: string;
+  type: string;
 }
 
 export interface Verification {
-  id: string;
   code: string;
-  type: string;
-  target: string;
-  expiresAt: Date;
   createdAt: Date;
+  expiresAt: Date;
+  id: string;
+  target: string;
+  type: string;
   updatedAt: Date;
 }

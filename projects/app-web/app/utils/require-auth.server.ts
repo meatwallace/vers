@@ -1,5 +1,5 @@
-import { GraphQLClient } from 'graphql-request';
 import { redirect } from 'react-router';
+import { GraphQLClient } from 'graphql-request';
 import { authSessionStorage } from '~/session/auth-session-storage.server.ts';
 import {
   SESSION_KEY_AUTH_ACCESS_TOKEN,
@@ -12,9 +12,9 @@ import { logout } from './logout.server.ts';
 import { refreshAccessToken } from './refresh-access-token.server.ts';
 
 interface AuthResult {
-  sessionID: string;
   accessToken: string;
   refreshToken: string;
+  sessionID: string;
 }
 
 interface Context {
@@ -72,5 +72,5 @@ export async function requireAuth(
     });
   }
 
-  return { sessionID, accessToken, refreshToken };
+  return { accessToken, refreshToken, sessionID };
 }

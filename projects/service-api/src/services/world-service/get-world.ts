@@ -1,12 +1,12 @@
-import { Jsonify } from 'type-fest';
 import { GetWorldRequest, GetWorldResponse } from '@chrono/service-types';
-import { WorldServiceContext, WorldData } from './types';
+import { Jsonify } from 'type-fest';
 import { marshal } from './marshal';
+import { WorldData, WorldServiceContext } from './types';
 
 export async function getWorld(
   args: GetWorldRequest,
   ctx: WorldServiceContext,
-): Promise<WorldData | null> {
+): Promise<null | WorldData> {
   const response = await ctx.client.post<Jsonify<GetWorldResponse>>(
     'get-world',
     {

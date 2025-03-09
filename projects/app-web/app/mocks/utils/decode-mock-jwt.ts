@@ -1,6 +1,6 @@
 interface MockJWTPayload {
-  sub: string;
   exp: number;
+  sub: string;
 }
 
 /**
@@ -12,7 +12,7 @@ export function decodeMockJWT(token: string): MockJWTPayload {
   const payload = JSON.parse(atob(token.split('.')[1])) as MockJWTPayload;
 
   return {
-    sub: payload.sub,
     exp: payload.exp,
+    sub: payload.sub,
   };
 }

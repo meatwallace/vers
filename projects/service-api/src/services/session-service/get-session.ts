@@ -6,7 +6,7 @@ import { SessionData, SessionServiceContext } from './types';
 export async function getSession(
   args: GetSessionRequest,
   ctx: SessionServiceContext,
-): Promise<SessionData | null> {
+): Promise<null | SessionData> {
   const response = await ctx.client.post<Jsonify<GetSessionResponse>>(
     `get-session`,
     {

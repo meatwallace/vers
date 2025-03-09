@@ -1,9 +1,9 @@
+import { expect, test, vi } from 'vitest';
+import { createTestUser, PostgresTestUtils } from '@chrono/service-test-utils';
 import { Hono } from 'hono';
-import { test, expect, vi } from 'vitest';
-import { PostgresTestUtils, createTestUser } from '@chrono/service-test-utils';
-import { createSession } from './create-session';
 import { pgTestConfig } from '../pg-test-config';
 import { createJWT } from '../utils/create-jwt';
+import { createSession } from './create-session';
 
 vi.mock('../utils/create-jwt');
 
@@ -24,19 +24,19 @@ afterEach(() => {
 });
 
 test('it creates a session with default refresh token duration', async () => {
-  const { app, user, teardown } = await setupTest();
+  const { app, teardown, user } = await setupTest();
 
   vi.mocked(createJWT)
     .mockResolvedValueOnce('mock-refresh-token')
     .mockResolvedValueOnce('mock-access-token');
 
   const req = new Request('http://localhost/create-session', {
-    method: 'POST',
     body: JSON.stringify({
-      userID: user.id,
       ipAddress: '127.0.0.1',
       rememberMe: false,
+      userID: user.id,
     }),
+    method: 'POST',
   });
 
   const res = await app.request(req);
@@ -44,16 +44,16 @@ test('it creates a session with default refresh token duration', async () => {
 
   expect(res.status).toBe(200);
   expect(body).toMatchObject({
-    success: true,
     data: {
+      accessToken: 'mock-access-token',
+      createdAt: expect.any(String),
+      expiresAt: expect.any(String),
       id: expect.any(String),
-      userID: user.id,
       ipAddress: '127.0.0.1',
       refreshToken: 'mock-refresh-token',
-      accessToken: 'mock-access-token',
-      expiresAt: expect.any(String),
-      createdAt: expect.any(String),
+      userID: user.id,
     },
+    success: true,
   });
 
   const refreshTokenCall = vi.mocked(createJWT).mock.calls[0][0];
@@ -70,19 +70,19 @@ test('it creates a session with default refresh token duration', async () => {
 });
 
 test('it creates a session with extended refresh token duration', async () => {
-  const { app, user, teardown } = await setupTest();
+  const { app, teardown, user } = await setupTest();
 
   vi.mocked(createJWT)
     .mockResolvedValueOnce('mock-refresh-token')
     .mockResolvedValueOnce('mock-access-token');
 
   const req = new Request('http://localhost/create-session', {
-    method: 'POST',
     body: JSON.stringify({
-      userID: user.id,
       ipAddress: '127.0.0.1',
       rememberMe: true,
+      userID: user.id,
     }),
+    method: 'POST',
   });
 
   const res = await app.request(req);
@@ -90,16 +90,16 @@ test('it creates a session with extended refresh token duration', async () => {
 
   expect(res.status).toBe(200);
   expect(body).toMatchObject({
-    success: true,
     data: {
+      accessToken: 'mock-access-token',
+      createdAt: expect.any(String),
+      expiresAt: expect.any(String),
       id: expect.any(String),
-      userID: user.id,
       ipAddress: '127.0.0.1',
       refreshToken: 'mock-refresh-token',
-      accessToken: 'mock-access-token',
-      expiresAt: expect.any(String),
-      createdAt: expect.any(String),
+      userID: user.id,
     },
+    success: true,
   });
 
   const refreshTokenCall = vi.mocked(createJWT).mock.calls[0][0];
@@ -116,8 +116,8 @@ test('handles an invalid request body', async () => {
   const { app, teardown } = await setupTest();
 
   const req = new Request('http://localhost/create-session', {
-    method: 'POST',
     body: 'invalid json',
+    method: 'POST',
   });
 
   const res = await app.request(req);
@@ -125,8 +125,8 @@ test('handles an invalid request body', async () => {
 
   expect(res.status).toBe(200);
   expect(body).toMatchObject({
-    success: false,
     error: 'An unknown error occurred',
+    success: false,
   });
 
   await teardown();

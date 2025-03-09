@@ -1,6 +1,6 @@
+import { ServiceID } from '@chrono/service-types';
 import { drop } from '@mswjs/data';
 import { createId } from '@paralleldrive/cuid2';
-import { ServiceID } from '@chrono/service-types';
 import { env } from '~/env';
 import { db } from '~/mocks/db';
 import { createServiceContext } from '../utils';
@@ -12,15 +12,15 @@ test('it creates a new session', async () => {
   });
 
   const ctx = createServiceContext({
+    apiURL: env.SESSIONS_SERVICE_URL,
     requestID: createId(),
     serviceID: ServiceID.ServiceSession,
-    apiURL: env.SESSIONS_SERVICE_URL,
   });
 
   const args = {
-    userID: user.id,
     ipAddress: '127.0.0.1',
     rememberMe: true,
+    userID: user.id,
   };
 
   const result = await createSession(args, ctx);
@@ -29,10 +29,10 @@ test('it creates a new session', async () => {
     accessToken: expect.any(String),
     refreshToken: expect.any(String),
     session: {
-      id: expect.any(String),
-      userID: user.id,
-      ipAddress: '127.0.0.1',
       expiresAt: expect.any(Date),
+      id: expect.any(String),
+      ipAddress: '127.0.0.1',
+      userID: user.id,
     },
   });
 

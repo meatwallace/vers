@@ -1,9 +1,9 @@
-import { http, HttpResponse } from 'msw';
-import { env } from '~/env.ts';
 import {
   DeleteVerificationRequest,
   DeleteVerificationResponse,
 } from '@chrono/service-types';
+import { http, HttpResponse } from 'msw';
+import { env } from '~/env.ts';
 import { db } from '../../db.ts';
 
 const ENDPOINT_URL = `${env.VERIFICATIONS_SERVICE_URL}delete-verification`;
@@ -19,8 +19,8 @@ export const deleteVerification = http.post<never, DeleteVerificationRequest>(
 
     if (!verification) {
       const response: DeleteVerificationResponse = {
-        success: false,
         error: 'Verification not found',
+        success: false,
       };
 
       return HttpResponse.json(response);
@@ -32,8 +32,8 @@ export const deleteVerification = http.post<never, DeleteVerificationRequest>(
     });
 
     const response: DeleteVerificationResponse = {
-      success: true,
       data: { deletedID: verification.id },
+      success: true,
     };
 
     return HttpResponse.json(response);

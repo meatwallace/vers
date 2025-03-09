@@ -17,8 +17,8 @@ export interface VerificationPayload {
 
 export interface VerificationData {
   id: string;
-  type: string;
   target: string;
+  type: string;
 }
 
 export interface VerificationService {
@@ -26,19 +26,19 @@ export interface VerificationService {
     args: CreateVerificationRequest,
   ) => Promise<VerificationPayload>;
 
+  deleteVerification: (args: DeleteVerificationRequest) => Promise<true>;
+
+  get2FAVerificationURI: (
+    args: Get2FAVerificationURIRequest,
+  ) => Promise<string>;
+
   getVerification: (
     args: GetVerificationRequest,
-  ) => Promise<VerificationData | null>;
+  ) => Promise<null | VerificationData>;
 
   updateVerification: (
     args: UpdateVerificationRequest,
   ) => Promise<{ success: boolean }>;
 
-  deleteVerification: (args: DeleteVerificationRequest) => Promise<true>;
-
-  verifyCode: (args: VerifyCodeRequest) => Promise<VerificationData | null>;
-
-  get2FAVerificationURI: (
-    args: Get2FAVerificationURIRequest,
-  ) => Promise<string>;
+  verifyCode: (args: VerifyCodeRequest) => Promise<null | VerificationData>;
 }

@@ -1,7 +1,7 @@
+import { GetUserRequest } from '@chrono/service-types';
 import { http, HttpResponse } from 'msw';
 import { env } from '~/env';
 import { db } from '../../db';
-import { GetUserRequest } from '@chrono/service-types';
 
 const ENDPOINT_URL = `${env.USERS_SERVICE_URL}get-user`;
 
@@ -21,6 +21,6 @@ export const getUser = http.post<never, GetUserRequest>(
       },
     });
 
-    return HttpResponse.json({ success: true, data: user });
+    return HttpResponse.json({ data: user, success: true });
   },
 );

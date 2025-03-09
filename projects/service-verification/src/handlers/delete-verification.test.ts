@@ -1,8 +1,8 @@
-import { Hono } from 'hono';
 import { expect, test } from 'vitest';
 import * as schema from '@chrono/postgres-schema';
 import { PostgresTestUtils } from '@chrono/service-test-utils';
 import { createId } from '@paralleldrive/cuid2';
+import { Hono } from 'hono';
 import { pgTestConfig } from '../pg-test-config';
 import { deleteVerification } from './delete-verification';
 
@@ -22,35 +22,35 @@ test('it deletes a verification record', async () => {
   const id = createId();
 
   await db.insert(schema.verifications).values({
-    id,
-    type: '2fa',
-    target: 'user@example.com',
-    secret: 'test-secret',
     algorithm: 'SHA-256',
-    digits: 6,
-    period: 30,
     charSet: 'ABCDEFGHJKLMNPQRSTUVWXYZ123456789',
     createdAt: new Date(),
+    digits: 6,
+    id,
+    period: 30,
+    secret: 'test-secret',
+    target: 'user@example.com',
+    type: '2fa',
   });
 
   const response = await app.request('/delete-verification', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
     body: JSON.stringify({
       id,
     }),
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    method: 'POST',
   });
 
   const result = await response.json();
 
   expect(response.status).toBe(200);
   expect(result).toEqual({
-    success: true,
     data: {
       deletedID: id,
     },
+    success: true,
   });
 
   // Verify the record was actually deleted
@@ -67,18 +67,18 @@ test('it handles errors gracefully', async () => {
   const { app, teardown } = await setupTest();
 
   const response = await app.request('/delete-verification', {
-    method: 'POST',
+    body: 'invalid-json',
     headers: {
       'Content-Type': 'application/json',
     },
-    body: 'invalid-json',
+    method: 'POST',
   });
 
   const result = await response.json();
 
   expect(result).toEqual({
-    success: false,
     error: 'An unknown error occurred',
+    success: false,
   });
 
   await teardown();

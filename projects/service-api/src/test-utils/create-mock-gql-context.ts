@@ -1,6 +1,6 @@
-import { db } from '~/mocks/db';
 import { ServiceID } from '@chrono/service-types';
 import { createId } from '@paralleldrive/cuid2';
+import { db } from '~/mocks/db';
 import { env } from '../env';
 import { createEmailService } from '../services/email-service/create-email-service';
 import { createSessionService } from '../services/session-service/create-session-service';
@@ -12,8 +12,8 @@ import { AuthedContext, Context } from '../types';
 interface MockContextConfig {
   accessToken?: string;
   ipAddress?: string;
-  user?: AuthedContext['user'];
   session?: AuthedContext['session'];
+  user?: AuthedContext['user'];
 }
 
 export function createMockGQLContext(config: MockContextConfig): Context {
@@ -29,38 +29,38 @@ export function createMockGQLContext(config: MockContextConfig): Context {
     config.session?.ipAddress ?? config.ipAddress ?? '127.0.0.1';
 
   const sharedContext = {
-    request,
     ipAddress,
+    request,
     services: {
       email: createEmailService({
-        serviceID: ServiceID.ServiceEmail,
+        accessToken: config.accessToken,
         apiURL: env.EMAILS_SERVICE_URL,
-        accessToken: config.accessToken,
         requestID,
-      }),
-      user: createUserService({
-        serviceID: ServiceID.ServiceUser,
-        apiURL: env.USERS_SERVICE_URL,
-        accessToken: config.accessToken,
-        requestID,
-      }),
-      world: createWorldService({
-        serviceID: ServiceID.ServiceWorld,
-        apiURL: env.WORLDS_SERVICE_URL,
-        accessToken: config.accessToken,
-        requestID,
+        serviceID: ServiceID.ServiceEmail,
       }),
       session: createSessionService({
-        serviceID: ServiceID.ServiceSession,
-        apiURL: env.SESSIONS_SERVICE_URL,
         accessToken: config.accessToken,
+        apiURL: env.SESSIONS_SERVICE_URL,
         requestID,
+        serviceID: ServiceID.ServiceSession,
+      }),
+      user: createUserService({
+        accessToken: config.accessToken,
+        apiURL: env.USERS_SERVICE_URL,
+        requestID,
+        serviceID: ServiceID.ServiceUser,
       }),
       verification: createVerificationService({
-        serviceID: ServiceID.ServiceVerification,
-        apiURL: env.VERIFICATIONS_SERVICE_URL,
         accessToken: config.accessToken,
+        apiURL: env.VERIFICATIONS_SERVICE_URL,
         requestID,
+        serviceID: ServiceID.ServiceVerification,
+      }),
+      world: createWorldService({
+        accessToken: config.accessToken,
+        apiURL: env.WORLDS_SERVICE_URL,
+        requestID,
+        serviceID: ServiceID.ServiceWorld,
       }),
     },
   };
@@ -68,8 +68,8 @@ export function createMockGQLContext(config: MockContextConfig): Context {
   if (!config.user && !config.session) {
     return {
       ...sharedContext,
-      user: null,
       session: null,
+      user: null,
     };
   }
 
@@ -78,7 +78,7 @@ export function createMockGQLContext(config: MockContextConfig): Context {
 
   return {
     ...sharedContext,
-    user,
     session,
+    user,
   };
 }

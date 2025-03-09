@@ -7,28 +7,28 @@ import { Context } from '~/types';
 import { transactionJTIBlocklist } from './transaction-jti-blocklist';
 
 const JWTPayloadSchema = z.object({
-  sub: z.string(),
-  amr: z.array(z.string()),
-  mfa_verified: z.boolean(),
-  ip_address: z.string(),
-  auth_time: z.number(),
   action: z.nativeEnum(VerificationType),
-  session_id: z.string().nullable(),
-  transaction_id: z.string(),
+  amr: z.array(z.string()),
+  auth_time: z.number(),
+  ip_address: z.string(),
   jti: z.string(),
+  mfa_verified: z.boolean(),
+  session_id: z.string().nullable(),
+  sub: z.string(),
+  transaction_id: z.string(),
 });
 
 const SESSION_REQUIRED_ACTIONS = new Set([
-  VerificationType.TWO_FACTOR_AUTH,
-  VerificationType.TWO_FACTOR_AUTH_DISABLE,
   VerificationType.CHANGE_EMAIL,
   VerificationType.CHANGE_PASSWORD,
+  VerificationType.TWO_FACTOR_AUTH,
+  VerificationType.TWO_FACTOR_AUTH_DISABLE,
 ]);
 
 interface VerifyTransactionTokenData {
-  token: string | null | undefined;
   action: VerificationType;
   target: string;
+  token: null | string | undefined;
 }
 
 /**
@@ -41,7 +41,7 @@ interface VerifyTransactionTokenData {
 export async function verifyTransactionToken(
   data: VerifyTransactionTokenData,
   ctx: Context,
-): Promise<z.infer<typeof JWTPayloadSchema> | null> {
+): Promise<null | z.infer<typeof JWTPayloadSchema>> {
   // if no token was provided, return true and let the caller handle the logic
   if (!data.token) {
     return null;
@@ -51,9 +51,9 @@ export async function verifyTransactionToken(
 
   try {
     const verifiedJWT = await jose.jwtVerify(data.token, publicKey, {
-      issuer: env.API_IDENTIFIER,
-      audience: env.API_IDENTIFIER,
       algorithms: ['RS256'],
+      audience: env.API_IDENTIFIER,
+      issuer: env.API_IDENTIFIER,
       maxTokenAge: '20 minutes',
       requiredClaims: [
         'amr',

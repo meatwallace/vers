@@ -1,5 +1,5 @@
-import invariant from 'tiny-invariant';
 import { drop } from '@mswjs/data';
+import invariant from 'tiny-invariant';
 import { db } from '~/mocks/db';
 import { createMockGQLContext } from '~/test-utils/create-mock-gql-context';
 import { resolve } from './login-with-password';
@@ -31,10 +31,10 @@ test('it returns an auth payload when credentials are valid and 2FA is not enabl
     accessToken: expect.any(String),
     refreshToken: expect.any(String),
     session: {
-      id: expect.any(String),
-      userID: user.id,
-      ipAddress: ctx.ipAddress,
       expiresAt: expect.any(Date),
+      id: expect.any(String),
+      ipAddress: ctx.ipAddress,
+      userID: user.id,
     },
   });
 
@@ -54,8 +54,8 @@ test('it returns an unverified auth payload when 2FA is enabled', async () => {
   });
 
   db.verification.create({
-    type: '2fa',
     target: user.email,
+    type: '2fa',
   });
 
   const ctx = createMockGQLContext({});
@@ -91,8 +91,8 @@ test('it returns an error when the user does not exist', async () => {
 
   expect(result).toMatchObject({
     error: {
-      title: 'Invalid credentials',
       message: 'Wrong email or password',
+      title: 'Invalid credentials',
     },
   });
 
@@ -118,8 +118,8 @@ test('it returns an error when the password is incorrect', async () => {
 
   expect(result).toMatchObject({
     error: {
-      title: 'Invalid credentials',
       message: 'Wrong email or password',
+      title: 'Invalid credentials',
     },
   });
 

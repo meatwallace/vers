@@ -1,10 +1,10 @@
-import { http, HttpResponse } from 'msw';
-import { createId } from '@paralleldrive/cuid2';
 import { ServiceID } from '@chrono/service-types';
-import { server } from '~/mocks/node';
-import { createServiceContext } from '../utils';
+import { createId } from '@paralleldrive/cuid2';
+import { http, HttpResponse } from 'msw';
 import { env } from '~/env';
 import { ENDPOINT_URL } from '~/mocks/handlers/http/send-email';
+import { server } from '~/mocks/node';
+import { createServiceContext } from '../utils';
 import { sendEmail } from './send-email';
 
 afterEach(() => {
@@ -13,16 +13,16 @@ afterEach(() => {
 
 test('it successfully sends an email', async () => {
   const ctx = createServiceContext({
+    apiURL: env.EMAILS_SERVICE_URL,
     requestID: createId(),
     serviceID: ServiceID.ServiceEmail,
-    apiURL: env.EMAILS_SERVICE_URL,
   });
 
   const args = {
-    to: 'test@example.com',
-    subject: 'Test Email',
     html: '<p>Test content</p>',
     plainText: 'Test content',
+    subject: 'Test Email',
+    to: 'test@example.com',
   };
 
   await expect(sendEmail(args, ctx)).resolves.not.toThrow();
@@ -36,16 +36,16 @@ test('it throws an error when the email service fails', async () => {
   );
 
   const ctx = createServiceContext({
+    apiURL: env.EMAILS_SERVICE_URL,
     requestID: createId(),
     serviceID: ServiceID.ServiceEmail,
-    apiURL: env.EMAILS_SERVICE_URL,
   });
 
   const args = {
-    to: 'test@example.com',
-    subject: 'Test Email',
     html: '<p>Test content</p>',
     plainText: 'Test content',
+    subject: 'Test Email',
+    to: 'test@example.com',
   };
 
   await expect(sendEmail(args, ctx)).rejects.toThrow(

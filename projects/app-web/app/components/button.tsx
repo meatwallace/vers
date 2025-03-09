@@ -1,6 +1,6 @@
 import * as React from 'react';
-import clsx from 'clsx';
 import { RecipeVariants } from '@vanilla-extract/recipes';
+import clsx from 'clsx';
 import * as styles from './button.css.ts';
 
 export type Props = React.ComponentProps<'button'> &

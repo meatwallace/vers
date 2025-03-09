@@ -1,4 +1,4 @@
-import { HttpResponse, graphql } from 'msw';
+import { graphql, HttpResponse } from 'msw';
 import {
   FinishPasswordResetInput,
   FinishPasswordResetPayload,
@@ -36,8 +36,8 @@ export const FinishPasswordReset = graphql.mutation<
 
   const twoFactorVerification = db.verification.findFirst({
     where: {
-      type: { equals: '2fa' },
       target: { equals: variables.input.email },
+      type: { equals: '2fa' },
     },
   });
 
@@ -57,12 +57,12 @@ export const FinishPasswordReset = graphql.mutation<
   }
 
   db.user.update({
-    where: {
-      id: { equals: user.id },
-    },
     data: {
       password: variables.input.password,
       updatedAt: new Date().toISOString(),
+    },
+    where: {
+      id: { equals: user.id },
     },
   });
 

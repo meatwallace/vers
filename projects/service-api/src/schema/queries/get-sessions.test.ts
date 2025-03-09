@@ -1,8 +1,8 @@
+import { createTestJWT } from '@chrono/service-test-utils';
+import { drop } from '@mswjs/data';
 import { env } from '~/env';
 import { db } from '~/mocks/db';
 import { createMockGQLContext } from '~/test-utils/create-mock-gql-context';
-import { createTestJWT } from '@chrono/service-test-utils';
-import { drop } from '@mswjs/data';
 import { resolve } from './get-sessions';
 
 test('it returns all sessions for the authenticated user', async () => {
@@ -17,12 +17,12 @@ test('it returns all sessions for the authenticated user', async () => {
   });
 
   const accessToken = await createTestJWT({
-    sub: user.id,
     audience: env.API_IDENTIFIER,
     issuer: `https://${env.API_IDENTIFIER}/`,
+    sub: user.id,
   });
 
-  const ctx = createMockGQLContext({ accessToken, user, session: session1 });
+  const ctx = createMockGQLContext({ accessToken, session: session1, user });
 
   const args = { input: {} };
 
@@ -32,16 +32,16 @@ test('it returns all sessions for the authenticated user', async () => {
   expect(result).toHaveLength(2);
   expect(result).toIncludeAllPartialMembers([
     {
-      id: session1.id,
-      userID: user.id,
-      ipAddress: session1.ipAddress,
       expiresAt: expect.any(Date),
+      id: session1.id,
+      ipAddress: session1.ipAddress,
+      userID: user.id,
     },
     {
-      id: session2.id,
-      userID: user.id,
-      ipAddress: session2.ipAddress,
       expiresAt: expect.any(Date),
+      id: session2.id,
+      ipAddress: session2.ipAddress,
+      userID: user.id,
     },
   ]);
 

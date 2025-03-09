@@ -1,6 +1,6 @@
-import { PostgresTestUtils } from './postgres-test-utils';
 import { createTestUser } from './create-test-user';
 import { pgTestConfig } from './pg-test-config';
+import { PostgresTestUtils } from './postgres-test-utils';
 
 async function setupTest() {
   const { db, teardown } = await PostgresTestUtils.createTestDB(pgTestConfig);
@@ -14,13 +14,13 @@ test('it creates a test user with the expected data', async () => {
   const user = await createTestUser({ db });
 
   expect(user).toMatchObject({
-    id: expect.any(String),
-    email: 'user@test.com',
-    name: 'Test User',
-    username: 'test_user',
-    passwordHash: expect.any(String),
     createdAt: expect.any(Date),
+    email: 'user@test.com',
+    id: expect.any(String),
+    name: 'Test User',
+    passwordHash: expect.any(String),
     updatedAt: expect.any(Date),
+    username: 'test_user',
   });
 
   await teardown();

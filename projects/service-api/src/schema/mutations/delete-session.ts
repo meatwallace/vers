@@ -16,8 +16,8 @@ const DeleteSessionInput = builder.inputType('DeleteSessionInput', {
 });
 
 const DeleteSessionPayload = builder.unionType('DeleteSessionPayload', {
-  types: [MutationSuccess, MutationErrorPayload],
   resolveType: createPayloadResolver(MutationSuccess),
+  types: [MutationSuccess, MutationErrorPayload],
 });
 
 export async function deleteSession(
@@ -43,10 +43,10 @@ export const resolve = requireAuth(deleteSession);
 
 builder.mutationField('deleteSession', (t) =>
   t.field({
-    type: DeleteSessionPayload,
     args: {
-      input: t.arg({ type: DeleteSessionInput, required: true }),
+      input: t.arg({ required: true, type: DeleteSessionInput }),
     },
     resolve,
+    type: DeleteSessionPayload,
   }),
 );

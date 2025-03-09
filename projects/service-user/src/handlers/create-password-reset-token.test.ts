@@ -1,11 +1,11 @@
-import invariant from 'tiny-invariant';
+import { expect, test } from 'vitest';
 import * as schema from '@chrono/postgres-schema';
-import { Hono } from 'hono';
-import { test, expect } from 'vitest';
-import { PostgresTestUtils, createTestUser } from '@chrono/service-test-utils';
+import { createTestUser, PostgresTestUtils } from '@chrono/service-test-utils';
 import { CreatePasswordResetTokenResponse } from '@chrono/service-types';
-import { createPasswordResetToken } from './create-password-reset-token';
+import { Hono } from 'hono';
+import invariant from 'tiny-invariant';
 import { pgTestConfig } from '../pg-test-config';
+import { createPasswordResetToken } from './create-password-reset-token';
 
 interface TestConfig {
   user?: Partial<typeof schema.users.$inferInsert>;
@@ -26,13 +26,13 @@ async function setupTest(config: TestConfig = {}) {
 }
 
 test('it creates a password reset token for an existing user', async () => {
-  const { app, db, user, teardown } = await setupTest();
+  const { app, db, teardown, user } = await setupTest();
 
   const req = new Request('http://localhost/create-password-reset-token', {
-    method: 'POST',
     body: JSON.stringify({
       id: user.id,
     }),
+    method: 'POST',
   });
 
   const res = await app.request(req);
@@ -40,10 +40,10 @@ test('it creates a password reset token for an existing user', async () => {
 
   expect(res.status).toBe(200);
   expect(body).toMatchObject({
-    success: true,
     data: {
       resetToken: expect.any(String),
     },
+    success: true,
   });
 
   const updatedUser = await db.query.users.findFirst({
@@ -63,13 +63,13 @@ test('it creates a password reset token for an existing user', async () => {
 });
 
 test('it updates the user record with the new reset token', async () => {
-  const { app, db, user, teardown } = await setupTest();
+  const { app, db, teardown, user } = await setupTest();
 
   const firstReq = new Request('http://localhost/create-password-reset-token', {
-    method: 'POST',
     body: JSON.stringify({
       id: user.id,
     }),
+    method: 'POST',
   });
 
   const firstRes = await app.request(firstReq);
@@ -80,10 +80,10 @@ test('it updates the user record with the new reset token', async () => {
   const secondReq = new Request(
     'http://localhost/create-password-reset-token',
     {
-      method: 'POST',
       body: JSON.stringify({
         id: user.id,
       }),
+      method: 'POST',
     },
   );
 
@@ -108,10 +108,10 @@ test('it returns an error if the user does not exist', async () => {
   const { app, teardown } = await setupTest();
 
   const req = new Request('http://localhost/create-password-reset-token', {
-    method: 'POST',
     body: JSON.stringify({
       id: 'nonexistent_id',
     }),
+    method: 'POST',
   });
 
   const res = await app.request(req);
@@ -119,25 +119,25 @@ test('it returns an error if the user does not exist', async () => {
 
   expect(res.status).toBe(200);
   expect(body).toMatchObject({
-    success: false,
     error: 'User not found',
+    success: false,
   });
 
   await teardown();
 });
 
 test('it returns an error if the user has no password', async () => {
-  const { app, user, teardown } = await setupTest({
+  const { app, teardown, user } = await setupTest({
     user: {
       passwordHash: null,
     },
   });
 
   const req = new Request('http://localhost/create-password-reset-token', {
-    method: 'POST',
     body: JSON.stringify({
       id: user.id,
     }),
+    method: 'POST',
   });
 
   const res = await app.request(req);
@@ -145,8 +145,8 @@ test('it returns an error if the user has no password', async () => {
 
   expect(res.status).toBe(200);
   expect(body).toMatchObject({
-    success: false,
     error: 'User has no password',
+    success: false,
   });
 
   await teardown();

@@ -1,11 +1,11 @@
-import { Context } from 'hono';
-import { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
-import { eq } from 'drizzle-orm';
 import * as schema from '@chrono/postgres-schema';
 import {
   DeleteVerificationRequest,
   DeleteVerificationResponse,
 } from '@chrono/service-types';
+import { eq } from 'drizzle-orm';
+import { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
+import { Context } from 'hono';
 
 export async function deleteVerification(
   ctx: Context,
@@ -22,8 +22,8 @@ export async function deleteVerification(
       });
 
     const response: DeleteVerificationResponse = {
-      success: true,
       data: { deletedID: verification.deletedID },
+      success: true,
     };
 
     return ctx.json(response);
@@ -31,8 +31,8 @@ export async function deleteVerification(
     // TODO(#16): capture via Sentry
     if (error instanceof Error) {
       const response = {
-        success: false,
         error: 'An unknown error occurred',
+        success: false,
       };
 
       return ctx.json(response);

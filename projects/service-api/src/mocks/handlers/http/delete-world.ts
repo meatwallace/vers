@@ -1,5 +1,5 @@
-import { http, HttpResponse } from 'msw';
 import { DeleteWorldRequest } from '@chrono/service-types';
+import { http, HttpResponse } from 'msw';
 import { env } from '~/env';
 import { db } from '../../db';
 
@@ -13,8 +13,8 @@ export const deleteWorld = http.post<never, DeleteWorldRequest>(
     db.world.delete({ where: { id: { equals: body.worldID } } });
 
     return HttpResponse.json({
-      success: true,
       data: { deletedID: body.worldID },
+      success: true,
     });
   },
 );

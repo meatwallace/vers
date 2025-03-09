@@ -1,9 +1,9 @@
-import { Hono } from 'hono';
-import { PostgresTestUtils, createTestUser } from '@chrono/service-test-utils';
 import { users } from '@chrono/postgres-schema';
+import { createTestUser, PostgresTestUtils } from '@chrono/service-test-utils';
 import { eq } from 'drizzle-orm';
-import { updateUser } from './update-user';
+import { Hono } from 'hono';
 import { pgTestConfig } from '../pg-test-config';
+import { updateUser } from './update-user';
 
 async function setupTest() {
   const app = new Hono();
@@ -21,17 +21,17 @@ test('it updates the provided user', async () => {
   const { app, db, teardown, user } = await setupTest();
 
   const update = {
+    email: 'updated@example.com',
     name: 'Updated Name',
     username: 'updated_username',
-    email: 'updated@example.com',
   };
 
   const req = new Request('http://localhost/update-user', {
-    method: 'POST',
     body: JSON.stringify({
       id: user.id,
       ...update,
     }),
+    method: 'POST',
   });
 
   const res = await app.request(req);
@@ -42,19 +42,19 @@ test('it updates the provided user', async () => {
 
   expect(res.status).toBe(200);
   expect(body).toMatchObject({
-    success: true,
     data: {
       updatedID: user.id,
     },
+    success: true,
   });
 
   expect(updatedUser).toMatchObject({
+    createdAt: expect.any(Date),
+    email: 'updated@example.com',
     id: user.id,
     name: 'Updated Name',
-    username: 'updated_username',
-    email: 'updated@example.com',
-    createdAt: expect.any(Date),
     updatedAt: expect.any(Date),
+    username: 'updated_username',
   });
 
   expect(updatedUser?.updatedAt.getTime()).toBeGreaterThan(
@@ -72,11 +72,11 @@ test('it allows partial updating', async () => {
   };
 
   const req = new Request('http://localhost/update-user', {
-    method: 'POST',
     body: JSON.stringify({
       id: user.id,
       ...update,
     }),
+    method: 'POST',
   });
 
   const res = await app.request(req);
@@ -88,19 +88,19 @@ test('it allows partial updating', async () => {
   expect(res.status).toBe(200);
 
   expect(body).toMatchObject({
-    success: true,
     data: {
       updatedID: user.id,
     },
+    success: true,
   });
 
   expect(updatedUser).toMatchObject({
+    createdAt: expect.any(Date),
+    email: user.email,
     id: user.id,
     name: 'Updated Name',
-    username: user.username,
-    email: user.email,
-    createdAt: expect.any(Date),
     updatedAt: expect.any(Date),
+    username: user.username,
   });
 
   await teardown();

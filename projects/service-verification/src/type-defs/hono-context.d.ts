@@ -7,7 +7,7 @@ interface JWTPayload {
 
 declare module 'hono' {
   interface ContextVariableMap {
-    token?: string;
     jwtPayload?: JWTPayload;
+    token?: string;
   }
 }

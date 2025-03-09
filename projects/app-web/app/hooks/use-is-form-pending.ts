@@ -2,7 +2,7 @@ import { useFormAction, useNavigation } from 'react-router';
 
 interface IsFormPendingOptions {
   formAction?: string;
-  formMethod?: 'POST' | 'GET' | 'PUT' | 'PATCH' | 'DELETE';
+  formMethod?: 'DELETE' | 'GET' | 'PATCH' | 'POST' | 'PUT';
 }
 
 const defaultOptions: IsFormPendingOptions = {

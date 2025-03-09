@@ -14,19 +14,19 @@ test('it completes the email signup process when transaction token is valid', as
   const ctx = createMockGQLContext({});
 
   const transactionID = createPendingTransaction({
-    target: 'user@test.com',
-    ipAddress: ctx.ipAddress,
     action: VerificationType.ONBOARDING,
+    ipAddress: ctx.ipAddress,
     sessionID: null,
+    target: 'user@test.com',
   });
 
   const transactionToken = await createTransactionToken(
     {
-      target: 'user@test.com',
       action: VerificationType.ONBOARDING,
       ipAddress: ctx.ipAddress,
-      transactionID,
       sessionID: null,
+      target: 'user@test.com',
+      transactionID,
     },
     ctx,
   );
@@ -35,10 +35,10 @@ test('it completes the email signup process when transaction token is valid', as
     input: {
       email: 'user@test.com',
       name: 'Test User',
-      username: 'test_user',
       password: 'password123',
       rememberMe: true,
       transactionToken,
+      username: 'test_user',
     },
   };
 
@@ -48,10 +48,10 @@ test('it completes the email signup process when transaction token is valid', as
     accessToken: expect.any(String),
     refreshToken: expect.any(String),
     session: {
-      id: expect.any(String),
-      userID: expect.any(String),
-      ipAddress: ctx.ipAddress,
       expiresAt: expect.any(Date),
+      id: expect.any(String),
+      ipAddress: ctx.ipAddress,
+      userID: expect.any(String),
     },
   });
 
@@ -72,10 +72,10 @@ test('it returns an error if the transaction token is invalid', async () => {
     input: {
       email: 'user@test.com',
       name: 'Test User',
-      username: 'test_user',
       password: 'password123',
       rememberMe: true,
       transactionToken: 'invalid',
+      username: 'test_user',
     },
   };
 
@@ -83,8 +83,8 @@ test('it returns an error if the transaction token is invalid', async () => {
 
   expect(result).toMatchObject({
     error: {
-      title: 'Failed Verification',
       message: 'Verification for this operation is invalid or has expired.',
+      title: 'Failed Verification',
     },
   });
 
@@ -100,10 +100,10 @@ test('it returns an ambiguous error if the user already exists', async () => {
   const ctx = createMockGQLContext({});
 
   const transactionID = createPendingTransaction({
-    target: 'user@test.com',
-    ipAddress: ctx.ipAddress,
     action: VerificationType.ONBOARDING,
+    ipAddress: ctx.ipAddress,
     sessionID: null,
+    target: 'user@test.com',
   });
 
   db.user.create({
@@ -114,11 +114,11 @@ test('it returns an ambiguous error if the user already exists', async () => {
 
   const transactionToken = await createTransactionToken(
     {
-      target: 'user@test.com',
       action: VerificationType.ONBOARDING,
       ipAddress: ctx.ipAddress,
-      transactionID,
       sessionID: null,
+      target: 'user@test.com',
+      transactionID,
     },
     ctx,
   );
@@ -127,10 +127,10 @@ test('it returns an ambiguous error if the user already exists', async () => {
     input: {
       email: 'user@test.com',
       name: 'Test User',
-      username: 'test_user',
       password: 'password123',
       rememberMe: true,
       transactionToken,
+      username: 'test_user',
     },
   };
 
@@ -138,8 +138,8 @@ test('it returns an ambiguous error if the user already exists', async () => {
 
   expect(result).toMatchObject({
     error: {
-      title: 'An unknown error occurred',
       message: 'An unknown error occurred',
+      title: 'An unknown error occurred',
     },
   });
 

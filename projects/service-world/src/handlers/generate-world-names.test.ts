@@ -1,9 +1,9 @@
-import { Hono } from 'hono';
-import { PostgresTestUtils, createTestUser } from '@chrono/service-test-utils';
 import { worlds } from '@chrono/postgres-schema';
+import { createTestUser, PostgresTestUtils } from '@chrono/service-test-utils';
 import { createId } from '@paralleldrive/cuid2';
-import { generateWorldNames } from './generate-world-names';
+import { Hono } from 'hono';
 import { pgTestConfig } from '../pg-test-config';
+import { generateWorldNames } from './generate-world-names';
 
 async function setupTest() {
   const app = new Hono();
@@ -23,31 +23,31 @@ test('it generates world names for the given world', async () => {
   const worldID = createId();
 
   await db.insert(worlds).values({
-    id: worldID,
-    ownerID: user.id,
-    name: 'New World',
-    fantasyType: 'Medium',
-    technologyLevel: 'Medieval',
     atmosphere: 'Neutral',
-    population: 'Average',
-    geographyType: 'Supercontinent',
+    fantasyType: 'Medium',
     geographyFeatures: ['Deserts'],
+    geographyType: 'Supercontinent',
+    id: worldID,
+    name: 'New World',
+    ownerID: user.id,
+    population: 'Average',
+    technologyLevel: 'Medieval',
   });
 
   const req = new Request('http://localhost/generate-world-names', {
-    method: 'POST',
     body: JSON.stringify({
-      worldID,
       ownerID: user.id,
+      worldID,
     }),
+    method: 'POST',
   });
 
   const res = await app.request(req);
 
   expect(res.status).toBe(200);
   expect(await res.json()).toMatchObject({
-    success: true,
     data: ['Example World'],
+    success: true,
   });
 
   await teardown();

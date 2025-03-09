@@ -1,16 +1,17 @@
+import { type Submission } from '@conform-to/react';
 import { GraphQLClient } from 'graphql-request';
 import { z } from 'zod';
-import { type Submission } from '@conform-to/react';
 import { type VerifyOTPFormSchema } from './route.tsx';
 
 export enum QueryParam {
   Code = 'code',
-  Type = 'type',
-  Target = 'target',
   RedirectTo = 'redirect',
+  Target = 'target',
+  Type = 'type',
 }
 
 export interface HandleVerificationContext {
+  body: FormData | URLSearchParams;
   client: GraphQLClient;
   request: Request;
   submission: Submission<
@@ -19,5 +20,4 @@ export interface HandleVerificationContext {
     z.output<typeof VerifyOTPFormSchema>
   >;
   transactionToken: string;
-  body: FormData | URLSearchParams;
 }

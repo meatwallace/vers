@@ -1,6 +1,6 @@
+import { ServiceID } from '@chrono/service-types';
 import { drop } from '@mswjs/data';
 import { createId } from '@paralleldrive/cuid2';
-import { ServiceID } from '@chrono/service-types';
 import { env } from '~/env';
 import { db } from '~/mocks/db';
 import { createServiceContext } from '../utils';
@@ -10,16 +10,16 @@ test('it changes the password for an existing user', async () => {
   const user = db.user.create({
     email: 'user@test.com',
     name: 'Test User',
-    username: 'test_user',
     passwordHash: 'hashed_password',
     passwordResetToken: 'valid_reset_token',
     passwordResetTokenExpiresAt: new Date(Date.now() + 10 * 60 * 1000),
+    username: 'test_user',
   });
 
   const ctx = createServiceContext({
+    apiURL: env.USERS_SERVICE_URL,
     requestID: createId(),
     serviceID: ServiceID.ServiceUser,
-    apiURL: env.USERS_SERVICE_URL,
   });
 
   const args = {
@@ -45,9 +45,9 @@ test('it changes the password for an existing user', async () => {
 
 test('it throws an error if the user does not exist', async () => {
   const ctx = createServiceContext({
+    apiURL: env.USERS_SERVICE_URL,
     requestID: createId(),
     serviceID: ServiceID.ServiceUser,
-    apiURL: env.USERS_SERVICE_URL,
   });
 
   const args = {
@@ -67,16 +67,16 @@ test('it throws an error if the reset token is invalid', async () => {
   const user = db.user.create({
     email: 'user@test.com',
     name: 'Test User',
-    username: 'test_user',
     passwordHash: 'hashed_password',
     passwordResetToken: 'valid_reset_token',
     passwordResetTokenExpiresAt: new Date(Date.now() + 10 * 60 * 1000),
+    username: 'test_user',
   });
 
   const ctx = createServiceContext({
+    apiURL: env.USERS_SERVICE_URL,
     requestID: createId(),
     serviceID: ServiceID.ServiceUser,
-    apiURL: env.USERS_SERVICE_URL,
   });
 
   const args = {
@@ -96,16 +96,16 @@ test('it throws an error if the reset token is expired', async () => {
   const user = db.user.create({
     email: 'user@test.com',
     name: 'Test User',
-    username: 'test_user',
     passwordHash: 'hashed_password',
     passwordResetToken: 'valid_reset_token',
     passwordResetTokenExpiresAt: new Date(Date.now() - 1000), // expired
+    username: 'test_user',
   });
 
   const ctx = createServiceContext({
+    apiURL: env.USERS_SERVICE_URL,
     requestID: createId(),
     serviceID: ServiceID.ServiceUser,
-    apiURL: env.USERS_SERVICE_URL,
   });
 
   const args = {

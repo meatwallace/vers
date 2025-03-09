@@ -1,11 +1,11 @@
 import * as jose from 'jose';
 
 interface TestTokenConfig {
-  sub: string;
+  alg?: string;
   audience: string;
   issuer: string;
-  signingKey?: Uint8Array | jose.KeyLike;
-  alg?: string;
+  signingKey?: jose.KeyLike | Uint8Array;
+  sub: string;
 }
 
 export async function createTestJWT(config: TestTokenConfig): Promise<string> {

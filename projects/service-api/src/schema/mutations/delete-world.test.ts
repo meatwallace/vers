@@ -1,8 +1,8 @@
-import { drop } from '@mswjs/data';
 import { createTestJWT } from '@chrono/service-test-utils';
+import { drop } from '@mswjs/data';
 import { env } from '~/env';
-import { createMockGQLContext } from '~/test-utils/create-mock-gql-context';
 import { db } from '~/mocks/db';
+import { createMockGQLContext } from '~/test-utils/create-mock-gql-context';
 import { resolve } from './delete-world';
 
 test('it deletes a world', async () => {
@@ -13,9 +13,9 @@ test('it deletes a world', async () => {
   });
 
   const accessToken = await createTestJWT({
-    sub: user.id,
     audience: env.API_IDENTIFIER,
     issuer: `https://${env.API_IDENTIFIER}/`,
+    sub: user.id,
   });
 
   const ctx = createMockGQLContext({ accessToken, user });

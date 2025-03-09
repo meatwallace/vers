@@ -35,10 +35,10 @@ export const resolve = requireAuth(getWorlds);
 
 builder.queryField('getWorlds', (t) =>
   t.field({
-    type: [World],
     args: {
-      input: t.arg({ type: GetWorldsInput, required: true }),
+      input: t.arg({ required: true, type: GetWorldsInput }),
     },
     resolve,
+    type: [World],
   }),
 );

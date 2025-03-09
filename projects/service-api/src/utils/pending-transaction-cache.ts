@@ -2,11 +2,11 @@ import TTLCache from '@isaacs/ttlcache';
 import { VerificationType } from '~/schema/types/verification-type';
 
 interface TransactionData {
-  target: string;
-  ipAddress: string;
   action: VerificationType;
-  sessionID: string | null;
   attempts: number;
+  ipAddress: string;
+  sessionID: null | string;
+  target: string;
 }
 
 /**

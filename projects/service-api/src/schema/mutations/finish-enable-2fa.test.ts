@@ -1,5 +1,5 @@
-import invariant from 'tiny-invariant';
 import { drop } from '@mswjs/data';
+import invariant from 'tiny-invariant';
 import { db } from '~/mocks/db';
 import { createMockGQLContext } from '~/test-utils/create-mock-gql-context';
 import { createPendingTransaction } from '~/utils/create-pending-transaction';
@@ -17,14 +17,14 @@ test('it successfully completes 2FA setup', async () => {
   });
 
   const verification = db.verification.create({
-    id: 'setup-verification-id',
-    type: '2fa-setup',
-    target: user.email,
-    secret: 'ABCDEFGHIJKLMNOP',
     algorithm: 'SHA-1',
-    digits: 6,
-    period: 30,
     charSet: 'ABCDEFGHJKLMNPQRSTUVWXYZ123456789',
+    digits: 6,
+    id: 'setup-verification-id',
+    period: 30,
+    secret: 'ABCDEFGHIJKLMNOP',
+    target: user.email,
+    type: '2fa-setup',
   });
 
   const ctx = createMockGQLContext({ user });
@@ -32,19 +32,19 @@ test('it successfully completes 2FA setup', async () => {
   invariant(ctx.session, 'session is required');
 
   const transactionID = createPendingTransaction({
-    target: user.email,
-    ipAddress: ctx.ipAddress,
     action: VerificationType.TWO_FACTOR_AUTH_SETUP,
+    ipAddress: ctx.ipAddress,
     sessionID: ctx.session.id,
+    target: user.email,
   });
 
   const transactionToken = await createTransactionToken(
     {
-      target: user.email,
       action: VerificationType.TWO_FACTOR_AUTH_SETUP,
       ipAddress: ctx.ipAddress,
-      transactionID,
       sessionID: ctx.session.id,
+      target: user.email,
+      transactionID,
     },
     ctx,
   );
@@ -77,8 +77,8 @@ test('it returns an error if the transaction token is invalid', async () => {
   });
 
   db.verification.create({
-    type: '2fa-setup',
     target: user.email,
+    type: '2fa-setup',
   });
 
   const ctx = createMockGQLContext({ user });
@@ -93,8 +93,8 @@ test('it returns an error if the transaction token is invalid', async () => {
 
   expect(result).toEqual({
     error: {
-      title: 'Failed Verification',
       message: 'Verification for this operation is invalid or has expired.',
+      title: 'Failed Verification',
     },
   });
 });
@@ -109,19 +109,19 @@ test('it returns an error if there is no 2FA verification record', async () => {
   invariant(ctx.session, 'session is required');
 
   const transactionID = createPendingTransaction({
-    target: user.email,
-    ipAddress: ctx.ipAddress,
     action: VerificationType.TWO_FACTOR_AUTH_SETUP,
+    ipAddress: ctx.ipAddress,
     sessionID: ctx.session.id,
+    target: user.email,
   });
 
   const transactionToken = await createTransactionToken(
     {
-      target: user.email,
       action: VerificationType.TWO_FACTOR_AUTH_SETUP,
       ipAddress: ctx.ipAddress,
-      transactionID,
       sessionID: ctx.session.id,
+      target: user.email,
+      transactionID,
     },
     ctx,
   );
@@ -136,8 +136,8 @@ test('it returns an error if there is no 2FA verification record', async () => {
 
   expect(result).toEqual({
     error: {
-      title: 'Failed Verification',
       message: 'Verification for this operation is invalid or has expired.',
+      title: 'Failed Verification',
     },
   });
 });

@@ -6,47 +6,47 @@ export interface CreateWorldRequest {
 }
 
 export type CreateWorldResponse = ServiceResponse<{
-  id: string;
-  ownerID: string;
-  name: string;
-  fantasyType: string;
-  technologyLevel: string;
-  archetype: string | null;
+  archetype: null | string;
   atmosphere: string;
-  population: string;
-  geographyType: string;
-  geographyFeatures: Array<string>;
   createdAt: Date;
+  fantasyType: string;
+  geographyFeatures: Array<string>;
+  geographyType: string;
+  id: string;
+  name: string;
+  ownerID: string;
+  population: string;
+  technologyLevel: string;
   updatedAt: Date;
 }>;
 
 type World = typeof schema.worlds.$inferSelect;
 
 export interface UpdateWorldRequest {
-  ownerID: string;
-  worldID: string;
-  name?: string;
-  fantasyType?: World['fantasyType'];
-  technologyLevel?: World['technologyLevel'];
   archetype?: World['archetype'];
   atmosphere?: World['atmosphere'];
-  population?: World['population'];
-  geographyType?: World['geographyType'];
+  fantasyType?: World['fantasyType'];
   geographyFeatures?: World['geographyFeatures'];
+  geographyType?: World['geographyType'];
+  name?: string;
+  ownerID: string;
+  population?: World['population'];
+  technologyLevel?: World['technologyLevel'];
+  worldID: string;
 }
 
 export type UpdateWorldResponse = ServiceResponse<{
-  id: string;
-  ownerID: string;
-  name: string;
-  fantasyType: World['fantasyType'];
-  technologyLevel: World['technologyLevel'];
   archetype: World['archetype'];
   atmosphere: World['atmosphere'];
-  population: World['population'];
-  geographyType: World['geographyType'];
-  geographyFeatures: World['geographyFeatures'];
   createdAt: Date;
+  fantasyType: World['fantasyType'];
+  geographyFeatures: World['geographyFeatures'];
+  geographyType: World['geographyType'];
+  id: string;
+  name: string;
+  ownerID: string;
+  population: World['population'];
+  technologyLevel: World['technologyLevel'];
   updatedAt: Date;
 }>;
 
@@ -64,20 +64,20 @@ export interface GetWorldRequest {
   worldID: string;
 }
 
-export type GetWorldResponse = ServiceResponse<{
-  id: string;
-  ownerID: string;
-  name: string;
-  fantasyType: World['fantasyType'];
-  technologyLevel: World['technologyLevel'];
+export type GetWorldResponse = ServiceResponse<null | {
   archetype: World['archetype'];
   atmosphere: World['atmosphere'];
-  population: World['population'];
-  geographyType: World['geographyType'];
-  geographyFeatures: World['geographyFeatures'];
   createdAt: Date;
+  fantasyType: World['fantasyType'];
+  geographyFeatures: World['geographyFeatures'];
+  geographyType: World['geographyType'];
+  id: string;
+  name: string;
+  ownerID: string;
+  population: World['population'];
+  technologyLevel: World['technologyLevel'];
   updatedAt: Date;
-} | null>;
+}>;
 
 export interface GetWorldsRequest {
   ownerID: string;
@@ -85,17 +85,17 @@ export interface GetWorldsRequest {
 
 export type GetWorldsResponse = ServiceResponse<
   Array<{
-    id: string;
-    ownerID: string;
-    name: string;
-    fantasyType: World['fantasyType'];
-    technologyLevel: World['technologyLevel'];
     archetype: World['archetype'];
     atmosphere: World['atmosphere'];
-    population: World['population'];
-    geographyType: World['geographyType'];
-    geographyFeatures: World['geographyFeatures'];
     createdAt: Date;
+    fantasyType: World['fantasyType'];
+    geographyFeatures: World['geographyFeatures'];
+    geographyType: World['geographyType'];
+    id: string;
+    name: string;
+    ownerID: string;
+    population: World['population'];
+    technologyLevel: World['technologyLevel'];
     updatedAt: Date;
   }>
 >;

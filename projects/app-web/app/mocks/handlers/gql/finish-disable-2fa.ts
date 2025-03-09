@@ -1,4 +1,4 @@
-import { HttpResponse, graphql } from 'msw';
+import { graphql, HttpResponse } from 'msw';
 import {
   FinishDisable2FaInput,
   FinishDisable2FaPayload,
@@ -16,8 +16,8 @@ interface FinishDisable2FAResponse {
 }
 
 const AMBIGUOUS_INVALID_VERIFICATION_ERROR = {
-  title: 'Invalid code',
   message: '2FA verification is invalid or has expired',
+  title: 'Invalid code',
 };
 
 export const FinishDisable2FA = graphql.mutation<
@@ -43,8 +43,8 @@ export const FinishDisable2FA = graphql.mutation<
     return HttpResponse.json({
       data: {
         finishDisable2FA: {
-          success: false,
           error: AMBIGUOUS_INVALID_VERIFICATION_ERROR,
+          success: false,
         },
       },
     });
@@ -54,8 +54,8 @@ export const FinishDisable2FA = graphql.mutation<
     return HttpResponse.json({
       data: {
         finishDisable2FA: {
-          success: false,
           error: AMBIGUOUS_INVALID_VERIFICATION_ERROR,
+          success: false,
         },
       },
     });
@@ -63,8 +63,8 @@ export const FinishDisable2FA = graphql.mutation<
 
   const twoFactorVerification = db.verification.findFirst({
     where: {
-      type: { equals: VerificationType.TwoFactorAuth },
       target: { equals: user.email },
+      type: { equals: VerificationType.TwoFactorAuth },
     },
   });
 
@@ -72,8 +72,8 @@ export const FinishDisable2FA = graphql.mutation<
     return HttpResponse.json({
       data: {
         finishDisable2FA: {
-          success: false,
           error: AMBIGUOUS_INVALID_VERIFICATION_ERROR,
+          success: false,
         },
       },
     });

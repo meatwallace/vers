@@ -1,18 +1,18 @@
-import { Context } from 'hono';
-import { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
-import { and, eq } from 'drizzle-orm';
 import * as schema from '@chrono/postgres-schema';
 import {
   GetVerificationRequest,
   GetVerificationResponse,
 } from '@chrono/service-types';
+import { and, eq } from 'drizzle-orm';
+import { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
+import { Context } from 'hono';
 
 export async function getVerification(
   ctx: Context,
   db: PostgresJsDatabase<typeof schema>,
 ) {
   try {
-    const { type, target } = await ctx.req.json<GetVerificationRequest>();
+    const { target, type } = await ctx.req.json<GetVerificationRequest>();
 
     const verification = await db.query.verifications.findFirst({
       where: and(
@@ -23,8 +23,8 @@ export async function getVerification(
 
     if (!verification) {
       const response: GetVerificationResponse = {
-        success: true,
         data: null,
+        success: true,
       };
 
       return ctx.json(response);
@@ -37,20 +37,20 @@ export async function getVerification(
         .where(eq(schema.verifications.id, verification.id));
 
       const response: GetVerificationResponse = {
-        success: true,
         data: null,
+        success: true,
       };
 
       return ctx.json(response);
     }
 
     const response: GetVerificationResponse = {
-      success: true,
       data: {
         id: verification.id,
-        type: verification.type,
         target: verification.target,
+        type: verification.type,
       },
+      success: true,
     };
 
     return ctx.json(response);
@@ -58,8 +58,8 @@ export async function getVerification(
     // TODO(#16): capture via Sentry
     if (error instanceof Error) {
       const response = {
-        success: false,
         error: 'An unknown error occurred',
+        success: false,
       };
 
       return ctx.json(response);

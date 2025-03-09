@@ -1,6 +1,6 @@
 export function getTokenFromHeader(
-  header: string | null | undefined,
-): string | null {
+  header: null | string | undefined,
+): null | string {
   if (!header) {
     return null;
   }

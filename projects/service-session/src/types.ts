@@ -1,5 +1,5 @@
-import { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
 import * as schema from '@chrono/postgres-schema';
+import { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
 import { z } from 'zod';
 import { envSchema } from './env';
 
@@ -10,9 +10,9 @@ export interface HandlerContext {
 }
 
 export interface CreateSessionInput {
-  userID: string;
   ipAddress: string;
   rememberMe: boolean;
+  userID: string;
 }
 
 export interface RefreshTokensInput {
@@ -20,10 +20,10 @@ export interface RefreshTokensInput {
 }
 
 export interface Session {
+  createdAt: Date;
+  expiresAt: Date;
   id: string;
   refreshToken: string;
-  expiresAt: Date;
-  createdAt: Date;
   updatedAt: Date;
   userID: string;
 }

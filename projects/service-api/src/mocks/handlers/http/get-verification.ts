@@ -1,5 +1,5 @@
-import { http, HttpResponse } from 'msw';
 import { GetVerificationRequest } from '@chrono/service-types';
+import { http, HttpResponse } from 'msw';
 import { env } from '~/env';
 import { db } from '../../db';
 
@@ -12,15 +12,15 @@ export const getVerification = http.post<never, GetVerificationRequest>(
 
     const verification = db.verification.findFirst({
       where: {
-        type: { equals: body.type },
         target: { equals: body.target },
+        type: { equals: body.type },
       },
     });
 
     if (!verification) {
       return HttpResponse.json({
-        success: true,
         data: null,
+        success: true,
       });
     }
 
@@ -32,18 +32,18 @@ export const getVerification = http.post<never, GetVerificationRequest>(
       });
 
       return HttpResponse.json({
-        success: true,
         data: null,
+        success: true,
       });
     }
 
     return HttpResponse.json({
-      success: true,
       data: {
         id: verification.id,
-        type: verification.type,
         target: verification.target,
+        type: verification.type,
       },
+      success: true,
     });
   },
 );

@@ -13,7 +13,7 @@ export function FormErrorList(props: Props) {
   }
 
   return (
-    <ul id={props.id} className={styles.container}>
+    <ul className={styles.container} id={props.id}>
       {errors.map((error) => (
         <li key={error} className={styles.error}>
           {error}

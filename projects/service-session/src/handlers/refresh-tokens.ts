@@ -1,13 +1,13 @@
-import { Context } from 'hono';
-import { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
-import { eq } from 'drizzle-orm';
 import * as schema from '@chrono/postgres-schema';
 import {
   RefreshTokensRequest,
   RefreshTokensResponse,
 } from '@chrono/service-types';
-import { createJWT } from '../utils/create-jwt';
+import { eq } from 'drizzle-orm';
+import { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
+import { Context } from 'hono';
 import * as consts from '../consts';
+import { createJWT } from '../utils/create-jwt';
 
 export async function refreshTokens(
   ctx: Context,
@@ -22,8 +22,8 @@ export async function refreshTokens(
 
     if (!existingSession) {
       return ctx.json({
-        success: false,
         error: 'Invalid refresh token',
+        success: false,
       });
     }
 
@@ -34,8 +34,8 @@ export async function refreshTokens(
         .where(eq(schema.sessions.id, existingSession.id));
 
       return ctx.json({
-        success: false,
         error: 'Session expired',
+        success: false,
       });
     }
 
@@ -46,8 +46,8 @@ export async function refreshTokens(
     // we can just create a new access token and skip rotating the refresh token
     if (sessionAge < consts.REFRESH_TOKEN_DURATION) {
       const accessToken = await createJWT({
-        userID: existingSession.userID,
         expiresAt: new Date(Date.now() + consts.ACCESS_TOKEN_DURATION),
+        userID: existingSession.userID,
       });
 
       const data = {
@@ -55,18 +55,18 @@ export async function refreshTokens(
         accessToken,
       };
 
-      return ctx.json({ success: true, data });
+      return ctx.json({ data, success: true });
     }
 
     // generate a new refresh token so we can rotate it, using the same expiry as before
     const refreshToken = await createJWT({
-      userID: existingSession.userID,
       expiresAt: existingSession.expiresAt,
+      userID: existingSession.userID,
     });
 
     const accessToken = await createJWT({
-      userID: existingSession.userID,
       expiresAt: new Date(Date.now() + consts.ACCESS_TOKEN_DURATION),
+      userID: existingSession.userID,
     });
 
     const updatedAt = new Date();
@@ -80,21 +80,21 @@ export async function refreshTokens(
       .where(eq(schema.sessions.id, existingSession.id));
 
     const response: RefreshTokensResponse = {
-      success: true,
       data: {
         ...existingSession,
-        refreshToken,
         accessToken,
+        refreshToken,
         updatedAt,
       },
+      success: true,
     };
 
     return ctx.json(response);
   } catch (error: unknown) {
     if (error instanceof Error) {
       const response = {
-        success: false,
         error: 'An unknown error occurred',
+        success: false,
       };
 
       return ctx.json(response);

@@ -1,11 +1,11 @@
 import { app } from './app';
+import { db } from './db';
 import { changePassword } from './handlers/change-password';
 import { createPasswordResetToken } from './handlers/create-password-reset-token';
 import { createUser } from './handlers/create-user';
 import { getUser } from './handlers/get-user';
 import { updateUser } from './handlers/update-user';
 import { verifyPassword } from './handlers/verify-password';
-import { db } from './db';
 
 app.post('/change-password', async (ctx) => changePassword(ctx, db));
 

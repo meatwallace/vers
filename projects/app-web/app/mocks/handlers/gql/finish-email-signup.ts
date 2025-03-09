@@ -1,4 +1,4 @@
-import { HttpResponse, graphql } from 'msw';
+import { graphql, HttpResponse } from 'msw';
 import {
   FinishEmailSignupInput,
   FinishEmailSignupPayload,
@@ -30,8 +30,8 @@ export const FinishEmailSignup = graphql.mutation<
       data: {
         finishEmailSignup: {
           error: {
-            title: 'User already exists',
             message: 'A user already exists with this email',
+            title: 'User already exists',
           },
         },
       },
@@ -40,9 +40,9 @@ export const FinishEmailSignup = graphql.mutation<
 
   const user = db.user.create({
     email: variables.input.email,
-    username: variables.input.username,
-    password: variables.input.password,
     name: variables.input.name,
+    password: variables.input.password,
+    username: variables.input.username,
   });
 
   const session = db.session.create({
@@ -50,13 +50,13 @@ export const FinishEmailSignup = graphql.mutation<
   });
 
   const accessToken = encodeMockJWT({
-    sub: user.id,
     exp: Date.now() + EXPIRATION_IN_MS,
+    sub: user.id,
   });
 
   const finishEmailSignup: FinishEmailSignupPayload = {
-    refreshToken: session.refreshToken,
     accessToken,
+    refreshToken: session.refreshToken,
     session: {
       ...session,
       user: addUserResolvedFields(user),

@@ -20,7 +20,7 @@ export async function verifyPassword(
     // TODO(#16): capture via Sentry
     console.error(response.error);
 
-    return { success: false, error: response.error };
+    return { error: response.error, success: false };
   }
 
   return { success: true };

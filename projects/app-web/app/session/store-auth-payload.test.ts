@@ -1,11 +1,11 @@
 import { expect, test } from 'vitest';
 import { createCookieSessionStorage } from 'react-router';
-import { storeAuthPayload } from './store-auth-payload';
 import {
-  SESSION_KEY_AUTH_SESSION_ID,
   SESSION_KEY_AUTH_ACCESS_TOKEN,
   SESSION_KEY_AUTH_REFRESH_TOKEN,
+  SESSION_KEY_AUTH_SESSION_ID,
 } from './consts';
+import { storeAuthPayload } from './store-auth-payload';
 
 function setupTest() {
   const sessionStorage = createCookieSessionStorage({
@@ -29,8 +29,8 @@ test('it stores the session ID in the session', async () => {
     accessToken: 'test_access_token',
     refreshToken: 'test_refresh_token',
     session: {
-      id: 'test_session_id',
       expiresAt: '2024-02-13T12:00:00Z',
+      id: 'test_session_id',
     },
   };
 
@@ -50,8 +50,8 @@ test('it stores the access token in the session', async () => {
     accessToken: 'test_access_token',
     refreshToken: 'test_refresh_token',
     session: {
-      id: 'test_session_id',
       expiresAt: '2024-02-13T12:00:00Z',
+      id: 'test_session_id',
     },
   };
 
@@ -71,8 +71,8 @@ test('it stores the refresh token in the session', async () => {
     accessToken: 'test_access_token',
     refreshToken: 'test_refresh_token',
     session: {
-      id: 'test_session_id',
       expiresAt: '2024-02-13T12:00:00Z',
+      id: 'test_session_id',
     },
   };
 

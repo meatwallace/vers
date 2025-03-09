@@ -5,9 +5,9 @@ import { Field } from './field';
 test('it renders a label and an input', () => {
   render(
     <Field
-      labelProps={{ children: 'Email' }}
-      inputProps={{ type: 'email' }}
       errors={[]}
+      inputProps={{ type: 'email' }}
+      labelProps={{ children: 'Email' }}
     />,
   );
 
@@ -23,9 +23,9 @@ test('it handles input changes', async () => {
 
   render(
     <Field
-      labelProps={{ children: 'Email' }}
-      inputProps={{ type: 'email', onChange: handleChange }}
       errors={[]}
+      inputProps={{ onChange: handleChange, type: 'email' }}
+      labelProps={{ children: 'Email' }}
     />,
   );
 
@@ -37,9 +37,9 @@ test('it handles input changes', async () => {
 test('it displays error messages', () => {
   render(
     <Field
-      labelProps={{ children: 'Email' }}
-      inputProps={{ type: 'email' }}
       errors={['Invalid email address']}
+      inputProps={{ type: 'email' }}
+      labelProps={{ children: 'Email' }}
     />,
   );
 

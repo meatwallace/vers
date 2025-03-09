@@ -8,9 +8,9 @@ import { parseCommaSeperatedStrings } from './utils/parse-comma-seperated-string
 const filesToLint = ['projects/', 'scripts/'];
 
 const eslintSpinnerConfig = {
-  text: 'Checking files with ESLint...',
-  successText: 'ESLint completed',
   failText: 'ESLint failed',
+  successText: 'ESLint completed',
+  text: 'Checking files with ESLint...',
 };
 
 interface LintArgs {

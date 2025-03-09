@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { expect, test } from '@playwright/test';
 // import { env } from './env';
 
 test('it signs the user up and displays their dashboard', async ({ page }) => {
@@ -9,12 +9,12 @@ test('it signs the user up and displays their dashboard', async ({ page }) => {
   await expect(page).toHaveURL(/localhost:4000\/signup/);
 
   await page.getByLabel('Email').fill(`user_${Date.now()}@example.com`);
-  await page.getByRole('button', { name: 'Signup', exact: true }).click();
+  await page.getByRole('button', { exact: true, name: 'Signup' }).click();
 
   await expect(page).toHaveURL(/localhost:4000\/verify-otp/);
 
   await page.getByLabel('Code').fill('999999');
-  await page.getByRole('button', { name: 'Verify', exact: true }).click();
+  await page.getByRole('button', { exact: true, name: 'Verify' }).click();
 
   await expect(page).toHaveURL(/localhost:4000\/onboarding/);
 

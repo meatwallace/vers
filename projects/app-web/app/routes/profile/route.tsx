@@ -1,6 +1,6 @@
-import { MetaFunction, data, redirect, useFetcher } from 'react-router';
-import { z } from 'zod';
+import { data, MetaFunction, redirect, useFetcher } from 'react-router';
 import { parseWithZod } from '@conform-to/zod';
+import { z } from 'zod';
 import { StatusButton } from '~/components/status-button.tsx';
 import { GetCurrentUser } from '~/data/queries/get-current-user';
 import { graphql } from '~/gql';
@@ -61,8 +61,8 @@ export async function loader({ request }: Route.LoaderArgs) {
 }
 
 enum ActionIntent {
-  Enable2FA = 'enable2FA',
   Disable2FA = 'disable2FA',
+  Enable2FA = 'enable2FA',
 }
 
 const TwoFactorDisableFormSchema = z.object({
@@ -129,8 +129,8 @@ export async function action({ request }: Route.ActionArgs) {
     );
 
     const searchParams = new URLSearchParams({
-      [QueryParam.Type]: VerificationType.TwoFactorAuthDisable,
       [QueryParam.Target]: submission.value.target,
+      [QueryParam.Type]: VerificationType.TwoFactorAuthDisable,
     });
 
     return redirect(`${Routes.VerifyOTP}?${searchParams.toString()}`, {
@@ -145,8 +145,8 @@ export async function action({ request }: Route.ActionArgs) {
 
 export const meta: MetaFunction = () => [
   {
-    title: 'Profile',
     description: 'Manage your profile and security settings',
+    title: 'Profile',
   },
 ];
 
@@ -187,12 +187,12 @@ export function Profile({ loaderData }: Route.ComponentProps) {
               <>
                 <p>You have enabled two-factor authentication.</p>
                 <twoFactorFetcher.Form method="post">
-                  <input type="hidden" name="target" value={user.email} />
+                  <input name="target" type="hidden" value={user.email} />
                   <StatusButton
-                    status={submitButtonStatus}
                     disabled={isFormPending}
-                    type="submit"
                     name="intent"
+                    status={submitButtonStatus}
+                    type="submit"
                     value={ActionIntent.Disable2FA}
                   >
                     Disable 2FA
@@ -215,12 +215,12 @@ export function Profile({ loaderData }: Route.ComponentProps) {
                   <a href="https://1password.com">1Password</a> to log in.
                 </p>
                 <twoFactorFetcher.Form method="post">
-                  <input type="hidden" name="target" value={user.email} />
+                  <input name="target" type="hidden" value={user.email} />
                   <StatusButton
-                    status={submitButtonStatus}
                     disabled={isFormPending}
-                    type="submit"
                     name="intent"
+                    status={submitButtonStatus}
+                    type="submit"
                     value={ActionIntent.Enable2FA}
                   >
                     Enable 2FA

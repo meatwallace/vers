@@ -1,4 +1,4 @@
-import type { MiddlewareHandler, Context, Next } from 'hono';
+import type { Context, MiddlewareHandler, Next } from 'hono';
 
 export const createSessionHeaderMiddleware = (): MiddlewareHandler => {
   return async (ctx: Context, next: Next) => {

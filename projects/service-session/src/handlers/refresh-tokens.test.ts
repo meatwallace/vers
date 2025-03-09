@@ -1,13 +1,13 @@
-import { Hono } from 'hono';
-import { test, expect, vi } from 'vitest';
-import { eq } from 'drizzle-orm';
-import { PostgresTestUtils, createTestUser } from '@chrono/service-test-utils';
-import { createId } from '@paralleldrive/cuid2';
+import { expect, test, vi } from 'vitest';
 import * as schema from '@chrono/postgres-schema';
-import { refreshTokens } from './refresh-tokens';
+import { createTestUser, PostgresTestUtils } from '@chrono/service-test-utils';
+import { createId } from '@paralleldrive/cuid2';
+import { eq } from 'drizzle-orm';
+import { Hono } from 'hono';
+import * as consts from '../consts';
 import { pgTestConfig } from '../pg-test-config';
 import { createJWT } from '../utils/create-jwt';
-import * as consts from '../consts';
+import { refreshTokens } from './refresh-tokens';
 
 vi.mock('../utils/create-jwt');
 
@@ -31,12 +31,12 @@ test('it refreshes tokens for a young session without rotating the refresh token
   const { app, db, teardown, user } = await setupTest();
 
   const session = {
-    id: createId(),
-    refreshToken: 'existing-refresh-token',
-    expiresAt: new Date(Date.now() + consts.REFRESH_TOKEN_DURATION_LONG),
-    ipAddress: '127.0.0.1',
-    userID: user.id,
     createdAt: new Date(),
+    expiresAt: new Date(Date.now() + consts.REFRESH_TOKEN_DURATION_LONG),
+    id: createId(),
+    ipAddress: '127.0.0.1',
+    refreshToken: 'existing-refresh-token',
+    userID: user.id,
   };
 
   await db.insert(schema.sessions).values(session);
@@ -44,10 +44,10 @@ test('it refreshes tokens for a young session without rotating the refresh token
   vi.mocked(createJWT).mockResolvedValueOnce('new-access-token');
 
   const req = new Request('http://localhost/refresh-tokens', {
-    method: 'POST',
     body: JSON.stringify({
       refreshToken: session.refreshToken,
     }),
+    method: 'POST',
   });
 
   const res = await app.request(req);
@@ -55,16 +55,16 @@ test('it refreshes tokens for a young session without rotating the refresh token
 
   expect(res.status).toBe(200);
   expect(body).toMatchObject({
-    success: true,
     data: {
+      accessToken: 'new-access-token',
+      createdAt: expect.any(String),
+      expiresAt: expect.any(String),
       id: session.id,
-      userID: session.userID,
       ipAddress: session.ipAddress,
       refreshToken: session.refreshToken,
-      accessToken: 'new-access-token',
-      expiresAt: expect.any(String),
-      createdAt: expect.any(String),
+      userID: session.userID,
     },
+    success: true,
   });
 
   expect(createJWT).toHaveBeenCalledTimes(1);
@@ -76,12 +76,12 @@ test('it rotates the refresh token if the provided one is older than our short r
   const { app, db, teardown, user } = await setupTest();
 
   const session = {
-    id: createId(),
-    refreshToken: 'existing-refresh-token',
-    expiresAt: new Date(Date.now() + consts.REFRESH_TOKEN_DURATION_LONG),
-    ipAddress: '127.0.0.1',
-    userID: user.id,
     createdAt: new Date(Date.now() - consts.REFRESH_TOKEN_DURATION - 1000),
+    expiresAt: new Date(Date.now() + consts.REFRESH_TOKEN_DURATION_LONG),
+    id: createId(),
+    ipAddress: '127.0.0.1',
+    refreshToken: 'existing-refresh-token',
+    userID: user.id,
   };
 
   await db.insert(schema.sessions).values(session);
@@ -91,10 +91,10 @@ test('it rotates the refresh token if the provided one is older than our short r
     .mockResolvedValueOnce('new-access-token');
 
   const req = new Request('http://localhost/refresh-tokens', {
-    method: 'POST',
     body: JSON.stringify({
       refreshToken: session.refreshToken,
     }),
+    method: 'POST',
   });
 
   const res = await app.request(req);
@@ -102,16 +102,16 @@ test('it rotates the refresh token if the provided one is older than our short r
 
   expect(res.status).toBe(200);
   expect(body).toMatchObject({
-    success: true,
     data: {
+      accessToken: 'new-access-token',
+      createdAt: expect.any(String),
+      expiresAt: expect.any(String),
       id: session.id,
-      userID: session.userID,
       ipAddress: session.ipAddress,
       refreshToken: 'new-refresh-token',
-      accessToken: 'new-access-token',
-      expiresAt: expect.any(String),
-      createdAt: expect.any(String),
+      userID: session.userID,
     },
+    success: true,
   });
 
   expect(createJWT).toHaveBeenCalledTimes(2);
@@ -123,21 +123,21 @@ test('it handles an expired session', async () => {
   const { app, db, teardown, user } = await setupTest();
 
   const session = {
-    id: createId(),
-    refreshToken: 'existing-refresh-token',
-    expiresAt: new Date(Date.now() - 1000),
-    ipAddress: '127.0.0.1',
-    userID: user.id,
     createdAt: new Date(),
+    expiresAt: new Date(Date.now() - 1000),
+    id: createId(),
+    ipAddress: '127.0.0.1',
+    refreshToken: 'existing-refresh-token',
+    userID: user.id,
   };
 
   await db.insert(schema.sessions).values(session);
 
   const req = new Request('http://localhost/refresh-tokens', {
-    method: 'POST',
     body: JSON.stringify({
       refreshToken: session.refreshToken,
     }),
+    method: 'POST',
   });
 
   const res = await app.request(req);
@@ -145,8 +145,8 @@ test('it handles an expired session', async () => {
 
   expect(res.status).toBe(200);
   expect(body).toMatchObject({
-    success: false,
     error: 'Session expired',
+    success: false,
   });
 
   // verify the session was deleted
@@ -164,10 +164,10 @@ test('it handles an invalid refresh token', async () => {
   const { app, teardown } = await setupTest();
 
   const req = new Request('http://localhost/refresh-tokens', {
-    method: 'POST',
     body: JSON.stringify({
       refreshToken: 'invalid-token',
     }),
+    method: 'POST',
   });
 
   const res = await app.request(req);
@@ -175,8 +175,8 @@ test('it handles an invalid refresh token', async () => {
 
   expect(res.status).toBe(200);
   expect(body).toMatchObject({
-    success: false,
     error: 'Invalid refresh token',
+    success: false,
   });
 
   await teardown();
@@ -186,8 +186,8 @@ test('it handles an invalid request body', async () => {
   const { app, teardown } = await setupTest();
 
   const req = new Request('http://localhost/refresh-tokens', {
-    method: 'POST',
     body: 'invalid json',
+    method: 'POST',
   });
 
   const res = await app.request(req);
@@ -195,8 +195,8 @@ test('it handles an invalid request body', async () => {
 
   expect(res.status).toBe(200);
   expect(body).toMatchObject({
-    success: false,
     error: 'An unknown error occurred',
+    success: false,
   });
 
   await teardown();

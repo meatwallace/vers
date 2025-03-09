@@ -1,5 +1,5 @@
-import invariant from 'tiny-invariant';
 import { createCookieSessionStorage } from 'react-router';
+import invariant from 'tiny-invariant';
 
 type SessionData = Record<string, string>;
 
@@ -14,10 +14,10 @@ export const verifySessionStorage = createCookieSessionStorage<
   SessionFlashData
 >({
   cookie: {
-    name: 'en_verification',
     domain: import.meta.env.VITE_DOMAIN,
     httpOnly: true,
     maxAge: 60 * 10,
+    name: 'en_verification',
     path: '/',
     sameSite: 'lax',
     secrets: [process.env.SESSION_SECRET],

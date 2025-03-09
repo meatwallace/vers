@@ -1,4 +1,4 @@
-import { HttpResponse, graphql } from 'msw';
+import { graphql, HttpResponse } from 'msw';
 import {
   LoginWithPasswordInput,
   LoginWithPasswordPayload,
@@ -36,8 +36,8 @@ export const LoginWithPassword = graphql.mutation<
       data: {
         loginWithPassword: {
           error: {
-            title: 'Invalid credentials',
             message: 'No user with that email',
+            title: 'Invalid credentials',
           },
         },
       },
@@ -49,8 +49,8 @@ export const LoginWithPassword = graphql.mutation<
       data: {
         loginWithPassword: {
           error: {
-            title: 'Invalid credentials',
             message: 'Incorrect password',
+            title: 'Invalid credentials',
           },
         },
       },
@@ -62,10 +62,10 @@ export const LoginWithPassword = graphql.mutation<
   });
 
   const accessToken = encodeMockJWT({
-    sub: user.id,
     exp: Number.parseInt(
       (Date.now() + EXPIRATION_IN_MS).toString().slice(0, 10),
     ),
+    sub: user.id,
   });
 
   return HttpResponse.json({

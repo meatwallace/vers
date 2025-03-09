@@ -1,11 +1,11 @@
-import { and, eq } from 'drizzle-orm';
-import { Context } from 'hono';
 import * as schema from '@chrono/postgres-schema';
-import { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
 import {
   GenerateWorldNamesRequest,
   GenerateWorldNamesResponse,
 } from '@chrono/service-types';
+import { and, eq } from 'drizzle-orm';
+import { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
+import { Context } from 'hono';
 
 export async function generateWorldNames(
   ctx: Context,
@@ -23,15 +23,15 @@ export async function generateWorldNames(
     });
 
     if (!world) {
-      return ctx.json({ success: false, error: 'World not found' }, 404);
+      return ctx.json({ error: 'World not found', success: false }, 404);
     }
 
     // TODO(#23): implement world name generation
     const names = ['Example World'];
 
     const response: GenerateWorldNamesResponse = {
-      success: true,
       data: names,
+      success: true,
     };
 
     return ctx.json(response);
@@ -39,8 +39,8 @@ export async function generateWorldNames(
     // TODO(#16): capture via Sentry
     if (error instanceof Error) {
       const response = {
-        success: false,
         error: 'An unknown error occurred',
+        success: false,
       };
 
       return ctx.json(response);

@@ -1,7 +1,7 @@
-import { drop } from '@mswjs/data';
 import { createTestJWT } from '@chrono/service-test-utils';
-import { createId } from '@paralleldrive/cuid2';
 import { ServiceID } from '@chrono/service-types';
+import { drop } from '@mswjs/data';
+import { createId } from '@paralleldrive/cuid2';
 import { env } from '~/env';
 import { db } from '~/mocks/db';
 import { createServiceContext } from '../utils';
@@ -11,31 +11,31 @@ const ISSUER = `https://${env.API_IDENTIFIER}/`;
 
 test('it refreshes the session tokens', async () => {
   const user = db.user.create({
-    id: 'test_id',
     email: 'user@test.com',
+    id: 'test_id',
   });
 
   const expiresAt = new Date(Date.now() + 1000 * 60 * 60);
   const refreshToken = 'test_refresh_token';
 
   const session = db.session.create({
-    id: 'test_session_1',
-    userID: user.id,
-    refreshToken,
     expiresAt,
+    id: 'test_session_1',
+    refreshToken,
+    userID: user.id,
   });
 
   const accessToken = await createTestJWT({
-    sub: user.id,
     audience: env.API_IDENTIFIER,
     issuer: ISSUER,
+    sub: user.id,
   });
 
   const ctx = createServiceContext({
+    accessToken,
+    apiURL: env.SESSIONS_SERVICE_URL,
     requestID: createId(),
     serviceID: ServiceID.ServiceSession,
-    apiURL: env.SESSIONS_SERVICE_URL,
-    accessToken,
   });
 
   const args = { refreshToken };
@@ -46,10 +46,10 @@ test('it refreshes the session tokens', async () => {
     accessToken: expect.any(String),
     refreshToken: expect.any(String),
     session: {
-      id: session.id,
-      userID: user.id,
-      ipAddress: session.ipAddress,
       expiresAt: expect.any(Date),
+      id: session.id,
+      ipAddress: session.ipAddress,
+      userID: user.id,
     },
   });
 

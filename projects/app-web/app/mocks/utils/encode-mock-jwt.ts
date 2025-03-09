@@ -1,6 +1,6 @@
 interface MockJWTPayload {
-  sub: string;
   exp: number;
+  sub: string;
 }
 
 /**
@@ -10,8 +10,8 @@ interface MockJWTPayload {
  */
 export function encodeMockJWT(payload: MockJWTPayload): string {
   const header = {
-    typ: 'JWT',
     alg: 'HS256',
+    typ: 'JWT',
   };
 
   const encodedHeader = btoa(JSON.stringify(header));

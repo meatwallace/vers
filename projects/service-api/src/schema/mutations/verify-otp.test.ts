@@ -1,11 +1,11 @@
-import invariant from 'tiny-invariant';
 import { afterEach, expect, test } from 'vitest';
+import { generateTOTP } from '@epic-web/totp';
+import { drop } from '@mswjs/data';
+import invariant from 'tiny-invariant';
 import { db } from '~/mocks/db';
 import { createMockGQLContext } from '~/test-utils/create-mock-gql-context';
 import { createPendingTransaction } from '~/utils/create-pending-transaction';
 import { verifyTransactionToken } from '~/utils/verify-transaction-token';
-import { generateTOTP } from '@epic-web/totp';
-import { drop } from '@mswjs/data';
 import { VerificationType } from '../types/verification-type';
 import { resolve } from './verify-otp';
 
@@ -17,10 +17,10 @@ test('it verifies a valid onboarding otp and returns a valid transaction token',
   const ctx = createMockGQLContext({});
 
   const transactionID = createPendingTransaction({
-    target: 'test@example.com',
-    ipAddress: ctx.ipAddress,
     action: VerificationType.ONBOARDING,
+    ipAddress: ctx.ipAddress,
     sessionID: null,
+    target: 'test@example.com',
   });
 
   const { otp, ...verificationConfig } = await generateTOTP({
@@ -29,18 +29,18 @@ test('it verifies a valid onboarding otp and returns a valid transaction token',
   });
 
   db.verification.create({
-    type: 'onboarding',
     target: 'test@example.com',
+    type: 'onboarding',
     ...verificationConfig,
   });
 
   const args = {
     input: {
       code: otp,
-      type: VerificationType.ONBOARDING,
+      sessionID: null,
       target: 'test@example.com',
       transactionID,
-      sessionID: null,
+      type: VerificationType.ONBOARDING,
     },
   };
 
@@ -54,9 +54,9 @@ test('it verifies a valid onboarding otp and returns a valid transaction token',
 
   const isValid = await verifyTransactionToken(
     {
-      token: result.transactionToken,
       action: VerificationType.ONBOARDING,
       target: 'test@example.com',
+      token: result.transactionToken,
     },
     ctx,
   );
@@ -72,10 +72,10 @@ test('it verifies a valid change email otp and returns a valid transaction token
   const ctx = createMockGQLContext({ session });
 
   const transactionID = createPendingTransaction({
-    target: 'test@example.com',
-    ipAddress: ctx.ipAddress,
     action: VerificationType.CHANGE_EMAIL,
+    ipAddress: ctx.ipAddress,
     sessionID: session.id,
+    target: 'test@example.com',
   });
 
   const { otp, ...verificationConfig } = await generateTOTP({
@@ -84,18 +84,18 @@ test('it verifies a valid change email otp and returns a valid transaction token
   });
 
   db.verification.create({
-    type: '2fa',
     target: 'test@example.com',
+    type: '2fa',
     ...verificationConfig,
   });
 
   const args = {
     input: {
       code: otp,
-      type: VerificationType.CHANGE_EMAIL,
+      sessionID: session.id,
       target: 'test@example.com',
       transactionID,
-      sessionID: session.id,
+      type: VerificationType.CHANGE_EMAIL,
     },
   };
 
@@ -109,9 +109,9 @@ test('it verifies a valid change email otp and returns a valid transaction token
 
   const isValid = await verifyTransactionToken(
     {
-      token: result.transactionToken,
       action: VerificationType.CHANGE_EMAIL,
       target: 'test@example.com',
+      token: result.transactionToken,
     },
     ctx,
   );
@@ -127,10 +127,10 @@ test('it verifies a valid change password otp and returns a valid transaction to
   const ctx = createMockGQLContext({ session });
 
   const transactionID = createPendingTransaction({
-    target: 'test@example.com',
-    ipAddress: ctx.ipAddress,
     action: VerificationType.CHANGE_PASSWORD,
+    ipAddress: ctx.ipAddress,
     sessionID: session.id,
+    target: 'test@example.com',
   });
 
   const { otp, ...verificationConfig } = await generateTOTP({
@@ -139,18 +139,18 @@ test('it verifies a valid change password otp and returns a valid transaction to
   });
 
   db.verification.create({
-    type: '2fa',
     target: 'test@example.com',
+    type: '2fa',
     ...verificationConfig,
   });
 
   const args = {
     input: {
       code: otp,
-      type: VerificationType.CHANGE_PASSWORD,
+      sessionID: session.id,
       target: 'test@example.com',
       transactionID,
-      sessionID: session.id,
+      type: VerificationType.CHANGE_PASSWORD,
     },
   };
 
@@ -164,9 +164,9 @@ test('it verifies a valid change password otp and returns a valid transaction to
 
   const isValid = await verifyTransactionToken(
     {
-      token: result.transactionToken,
       action: VerificationType.CHANGE_PASSWORD,
       target: 'test@example.com',
+      token: result.transactionToken,
     },
     ctx,
   );
@@ -180,10 +180,10 @@ test('it verifies a valid reset password otp and returns a valid transaction tok
   const ctx = createMockGQLContext({});
 
   const transactionID = createPendingTransaction({
-    target: 'test@example.com',
-    ipAddress: ctx.ipAddress,
     action: VerificationType.RESET_PASSWORD,
+    ipAddress: ctx.ipAddress,
     sessionID: null,
+    target: 'test@example.com',
   });
 
   const { otp, ...verificationConfig } = await generateTOTP({
@@ -192,17 +192,17 @@ test('it verifies a valid reset password otp and returns a valid transaction tok
   });
 
   db.verification.create({
-    type: '2fa',
     target: 'test@example.com',
+    type: '2fa',
     ...verificationConfig,
   });
 
   const args = {
     input: {
       code: otp,
-      type: VerificationType.RESET_PASSWORD,
       target: 'test@example.com',
       transactionID,
+      type: VerificationType.RESET_PASSWORD,
     },
   };
 
@@ -216,9 +216,9 @@ test('it verifies a valid reset password otp and returns a valid transaction tok
 
   const isValid = await verifyTransactionToken(
     {
-      token: result.transactionToken,
       action: VerificationType.RESET_PASSWORD,
       target: 'test@example.com',
+      token: result.transactionToken,
     },
     ctx,
   );
@@ -232,10 +232,10 @@ test('it verifies a valid change email confirmation otp and returns a valid tran
   const ctx = createMockGQLContext({});
 
   const transactionID = createPendingTransaction({
-    target: 'test@example.com',
-    ipAddress: ctx.ipAddress,
     action: VerificationType.CHANGE_EMAIL_CONFIRMATION,
+    ipAddress: ctx.ipAddress,
     sessionID: null,
+    target: 'test@example.com',
   });
 
   const { otp, ...verificationConfig } = await generateTOTP({
@@ -244,17 +244,17 @@ test('it verifies a valid change email confirmation otp and returns a valid tran
   });
 
   db.verification.create({
-    type: 'change-email',
     target: 'test@example.com',
+    type: 'change-email',
     ...verificationConfig,
   });
 
   const args = {
     input: {
       code: otp,
-      type: VerificationType.CHANGE_EMAIL_CONFIRMATION,
       target: 'test@example.com',
       transactionID,
+      type: VerificationType.CHANGE_EMAIL_CONFIRMATION,
     },
   };
 
@@ -268,9 +268,9 @@ test('it verifies a valid change email confirmation otp and returns a valid tran
 
   const isValid = await verifyTransactionToken(
     {
-      token: result.transactionToken,
       action: VerificationType.CHANGE_EMAIL_CONFIRMATION,
       target: 'test@example.com',
+      token: result.transactionToken,
     },
     ctx,
   );
@@ -288,10 +288,10 @@ test('it throws an error if session validation fails', async () => {
   });
 
   const transactionID = createPendingTransaction({
-    target: 'test@example.com',
-    ipAddress: ctx.ipAddress,
     action: VerificationType.TWO_FACTOR_AUTH,
+    ipAddress: ctx.ipAddress,
     sessionID: session.id,
+    target: 'test@example.com',
   });
 
   const { otp, ...verificationConfig } = await generateTOTP({
@@ -300,18 +300,18 @@ test('it throws an error if session validation fails', async () => {
   });
 
   db.verification.create({
-    type: '2fa',
     target: 'test@example.com',
+    type: '2fa',
     ...verificationConfig,
   });
 
   const args = {
     input: {
       code: otp,
-      type: VerificationType.TWO_FACTOR_AUTH,
+      sessionID: 'non_existent_session',
       target: 'test@example.com',
       transactionID,
-      sessionID: 'non_existent_session',
+      type: VerificationType.TWO_FACTOR_AUTH,
     },
   };
 
@@ -324,10 +324,10 @@ test('it returns an error for an invalid OTP', async () => {
   const ctx = createMockGQLContext({});
 
   const transactionID = createPendingTransaction({
-    target: 'test@example.com',
-    ipAddress: ctx.ipAddress,
     action: VerificationType.ONBOARDING,
+    ipAddress: ctx.ipAddress,
     sessionID: null,
+    target: 'test@example.com',
   });
 
   const { otp, ...verificationConfig } = await generateTOTP({
@@ -336,17 +336,17 @@ test('it returns an error for an invalid OTP', async () => {
   });
 
   db.verification.create({
-    type: '2fa',
     target: 'test@example.com',
+    type: '2fa',
     ...verificationConfig,
   });
 
   const args = {
     input: {
       code: 'invalid',
-      type: VerificationType.ONBOARDING,
       target: 'test@example.com',
       transactionID,
+      type: VerificationType.ONBOARDING,
     },
   };
 
@@ -354,8 +354,8 @@ test('it returns an error for an invalid OTP', async () => {
 
   expect(result).toMatchObject({
     error: {
-      title: 'Invalid OTP',
       message: 'Invalid verification code',
+      title: 'Invalid OTP',
     },
   });
 });
@@ -364,18 +364,18 @@ test('it returns an error if verification does not exist', async () => {
   const ctx = createMockGQLContext({});
 
   const transactionID = createPendingTransaction({
-    target: 'nonexistent@example.com',
-    ipAddress: ctx.ipAddress,
     action: VerificationType.ONBOARDING,
+    ipAddress: ctx.ipAddress,
     sessionID: null,
+    target: 'nonexistent@example.com',
   });
 
   const args = {
     input: {
       code: '999123',
-      type: VerificationType.ONBOARDING,
       target: 'nonexistent@example.com',
       transactionID,
+      type: VerificationType.ONBOARDING,
     },
   };
 
@@ -383,8 +383,8 @@ test('it returns an error if verification does not exist', async () => {
 
   expect(result).toMatchObject({
     error: {
-      title: 'Invalid OTP',
       message: 'Invalid verification code',
+      title: 'Invalid OTP',
     },
   });
 });

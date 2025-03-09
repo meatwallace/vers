@@ -1,6 +1,6 @@
+import { CreateSessionRequest } from '@chrono/service-types';
 import { http, HttpResponse } from 'msw';
 import { env } from '~/env';
-import { CreateSessionRequest } from '@chrono/service-types';
 import { db } from '../../db';
 
 const ENDPOINT_URL = `${env.SESSIONS_SERVICE_URL}create-session`;
@@ -22,21 +22,21 @@ export const createSession = http.post<never, CreateSessionRequest>(
       : new Date(Date.now() + expiryOffset);
 
     const session = db.session.create({
-      userID: body.userID,
+      expiresAt,
       ipAddress: body.ipAddress,
       refreshToken: `refresh_token_${Date.now()}`,
-      expiresAt,
+      userID: body.userID,
     });
 
     const { refreshToken, ...sessionData } = session;
 
     return HttpResponse.json({
-      success: true,
       data: {
         accessToken: `access_token_${Date.now()}`,
         refreshToken,
         ...sessionData,
       },
+      success: true,
     });
   },
 );

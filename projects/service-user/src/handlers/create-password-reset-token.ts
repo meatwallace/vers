@@ -1,13 +1,13 @@
-import { randomBytes } from 'node:crypto';
-import { promisify } from 'node:util';
-import { Context } from 'hono';
-import { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
-import { eq } from 'drizzle-orm';
 import * as schema from '@chrono/postgres-schema';
 import {
   CreatePasswordResetTokenRequest,
   CreatePasswordResetTokenResponse,
 } from '@chrono/service-types';
+import { eq } from 'drizzle-orm';
+import { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
+import { Context } from 'hono';
+import { randomBytes } from 'node:crypto';
+import { promisify } from 'node:util';
 
 const randomBytesAsync = promisify(randomBytes);
 
@@ -24,15 +24,15 @@ export async function createPasswordResetToken(
 
     if (!user) {
       return ctx.json({
-        success: false,
         error: 'User not found',
+        success: false,
       });
     }
 
     if (!user.passwordHash) {
       return ctx.json({
-        success: false,
         error: 'User has no password',
+        success: false,
       });
     }
 
@@ -51,10 +51,10 @@ export async function createPasswordResetToken(
       .where(eq(schema.users.id, id));
 
     const response: CreatePasswordResetTokenResponse = {
-      success: true,
       data: {
         resetToken,
       },
+      success: true,
     };
 
     return ctx.json(response);
@@ -62,8 +62,8 @@ export async function createPasswordResetToken(
     // TODO(#16): capture via Sentry
     if (error instanceof Error) {
       return ctx.json({
-        success: false,
         error: 'An unknown error occurred',
+        success: false,
       });
     }
 

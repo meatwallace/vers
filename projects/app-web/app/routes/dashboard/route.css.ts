@@ -1,37 +1,37 @@
 import { style } from '@vanilla-extract/css';
 
 export const container = style({
-  display: 'flex',
   alignItems: 'center',
-  justifyContent: 'center',
-  width: '100%',
-  maxWidth: '1140px',
-  margin: '0 auto',
+  display: 'flex',
   height: '100%',
+  justifyContent: 'center',
+  margin: '0 auto',
+  maxWidth: '1140px',
   paddingLeft: '24px',
   paddingRight: '24px',
+  width: '100%',
 });
 
 export const worldsContainer = style({
-  display: 'flex',
   backgroundColor: '#a4abbd',
-  boxShadow:
-    'rgba(0, 0, 0, 0.1) 0px 10px 15px -3px, rgba(0, 0, 0, 0.05) 0px 4px 6px -2px;',
-  width: '100%',
-  minHeight: '300px',
   // alignItems: 'center',
   // justifyContent: 'center',
   borderRadius: '8px',
+  boxShadow:
+    'rgba(0, 0, 0, 0.1) 0px 10px 15px -3px, rgba(0, 0, 0, 0.05) 0px 4px 6px -2px;',
+  display: 'flex',
   flexFlow: 'column',
+  minHeight: '300px',
+  paddingBottom: '16px',
   paddingLeft: '8px',
   paddingRight: '8px',
   paddingTop: '16px',
-  paddingBottom: '16px',
+  width: '100%',
 });
 
 export const worldsHeader = style({
-  fontSize: '24px',
   fontFamily: 'Josefin Sans, sans-serif',
+  fontSize: '24px',
   marginBottom: '16px',
 });
 
@@ -49,26 +49,26 @@ export const worldsList = style({
 });
 
 export const worldsListItem = style({
-  backgroundColor: '#ffeecb',
-  display: 'flex',
   alignItems: 'flex-start',
-  justifyContent: 'flex-end',
-  flexFlow: 'column',
-  minHeight: '200px',
+  backgroundColor: '#ffeecb',
   borderRadius: '8px',
-  marginRight: '4px',
+  display: 'flex',
+  flexFlow: 'column',
+  justifyContent: 'flex-end',
+  marginBottom: '8px',
   marginLeft: '4px',
+  marginRight: '4px',
+  minHeight: '200px',
+  paddingBottom: '8px',
   paddingLeft: '8px',
   paddingRight: '8px',
   paddingTop: '8px',
-  paddingBottom: '8px',
   width: '160px',
-  marginBottom: '8px',
 });
 
 export const worldName = style({
-  fontSize: '18px',
   fontFamily: 'Josefin Sans, serif',
+  fontSize: '18px',
 });
 
 export const singleLine = style({
@@ -77,19 +77,19 @@ export const singleLine = style({
 });
 
 export const worldID = style({
-  fontSize: '12px',
   fontFamily: 'Josefin Slab, serif',
+  fontSize: '12px',
 });
 
 export const updatedAtLabel = style({
-  fontSize: '12px',
   fontFamily: 'Josefin Slab, serif',
+  fontSize: '12px',
   fontWeight: 500,
 });
 
 export const updatedAt = style({
-  fontSize: '12px',
   fontFamily: 'Josefin Slab, serif',
+  fontSize: '12px',
 });
 
 export const deleteWorldButton = style({
@@ -97,9 +97,9 @@ export const deleteWorldButton = style({
 });
 
 export const noWorldsContainer = style({
+  alignItems: 'center',
   display: 'flex',
   flexFlow: 'column',
-  alignItems: 'center',
   justifyContent: 'center',
 });
 

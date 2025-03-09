@@ -19,7 +19,7 @@ export const resolve = requireAuth(getCurrentUser);
 
 builder.queryField('getCurrentUser', (t) =>
   t.field({
-    type: User,
     resolve,
+    type: User,
   }),
 );

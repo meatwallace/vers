@@ -1,4 +1,4 @@
-import { test, expect } from 'vitest';
+import { expect, test } from 'vitest';
 import { generateExistingAccountEmail } from './generate-existing-account-email.tsx';
 
 test('it generates an existing account email with the provided configuration', async () => {

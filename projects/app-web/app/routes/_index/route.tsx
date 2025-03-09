@@ -1,15 +1,15 @@
 import { Form } from 'react-router';
-import { type Route } from './+types/route.ts';
 import { Brand } from '~/components/brand.tsx';
 import { Button } from '~/components/button.tsx';
 import { Routes } from '~/types.ts';
 import { requireAnonymous } from '~/utils/require-anonymous.server.ts';
+import { type Route } from './+types/route.ts';
 import * as styles from './route.css.ts';
 
 export const meta: Route.MetaFunction = () => [
   {
-    title: '',
     description: '',
+    title: '',
   },
 ];
 
@@ -22,7 +22,7 @@ export function Index() {
     <>
       <main className={styles.container}>
         <section className={styles.heroSection}>
-          <Brand size="large" className={styles.brand} />
+          <Brand className={styles.brand} size="large" />
           <img
             alt="Book icon"
             className={styles.heroDescriptionIcon}
@@ -41,7 +41,7 @@ export function Index() {
             Already have an account?
           </span>
           <Form action={Routes.Login} method="post">
-            <Button color="transparent" className={styles.logInButton}>
+            <Button className={styles.logInButton} color="transparent">
               Log in
             </Button>
           </Form>

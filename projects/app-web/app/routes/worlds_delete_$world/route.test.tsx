@@ -1,8 +1,8 @@
 import { afterEach, expect, test } from 'vitest';
-import { Form, createRoutesStub } from 'react-router';
-import { drop } from '@mswjs/data';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { createRoutesStub, Form } from 'react-router';
+import { drop } from '@mswjs/data';
 import { db } from '~/mocks/db';
 import { withAuthedUser } from '~/test-utils/with-authed-user.ts';
 import { Routes } from '~/types';
@@ -21,7 +21,6 @@ function setupTest(config: TestConfig) {
 
   const DeleteWorldStub = createRoutesStub([
     {
-      path: '/',
       Component: () => (
         <Form
           action={Routes.DeleteWorld.replace(':worldID', world.id)}
@@ -30,19 +29,20 @@ function setupTest(config: TestConfig) {
           <button type="submit">Delete</button>
         </Form>
       ),
+      path: '/',
     },
     {
-      path: Routes.DeleteWorld,
-      Component: () => 'DELETE_WORLD_ROUTE',
       // @ts-expect-error(#35) - react router test types are out of date
       action: config.isAuthed
         ? // @ts-expect-error(#35) - react router test types are out of date
           withAuthedUser(action, { user: { id: userID } })
         : action,
+      Component: () => 'DELETE_WORLD_ROUTE',
+      path: Routes.DeleteWorld,
     },
     {
-      path: Routes.Login,
       Component: () => 'LOGIN_ROUTE',
+      path: Routes.Login,
     },
   ]);
 

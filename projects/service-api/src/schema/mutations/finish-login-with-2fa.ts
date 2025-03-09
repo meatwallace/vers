@@ -14,8 +14,8 @@ interface Args {
 
 // ensure we use the same error message for all failures to avoid enumeration
 const AMBIGUOUS_INVALID_VERIFICATION_ERROR = {
-  title: 'Invalid code',
   message: '2FA verification is invalid or has expired',
+  title: 'Invalid code',
 };
 
 export async function finishLoginWith2FA(
@@ -33,8 +33,8 @@ export async function finishLoginWith2FA(
     }
 
     const verification = await ctx.services.verification.getVerification({
-      type: '2fa',
       target: args.input.target,
+      type: '2fa',
     });
 
     if (!verification) {
@@ -43,9 +43,9 @@ export async function finishLoginWith2FA(
 
     const payload = await verifyTransactionToken(
       {
-        token: args.input.transactionToken,
         action: VerificationType.TWO_FACTOR_AUTH,
         target: args.input.target,
+        token: args.input.transactionToken,
       },
       ctx,
     );
@@ -66,9 +66,9 @@ export async function finishLoginWith2FA(
     // create a new session now that 2FA is verified, using the expiry of the
     // previous temporary session
     const authPayload = await ctx.services.session.createSession({
-      userID: user.id,
-      ipAddress: ctx.ipAddress,
       expiresAt: previousSession.expiresAt,
+      ipAddress: ctx.ipAddress,
+      userID: user.id,
     });
 
     // delete the previous session as it's no longer needed
@@ -102,8 +102,8 @@ const FinishLoginWith2FAInput = builder.inputType('FinishLoginWith2FAInput', {
 const FinishLoginWith2FAPayload = builder.unionType(
   'FinishLoginWith2FAPayload',
   {
-    types: [AuthPayload, MutationErrorPayload],
     resolveType: createPayloadResolver(AuthPayload),
+    types: [AuthPayload, MutationErrorPayload],
   },
 );
 
@@ -111,10 +111,10 @@ export const resolve = finishLoginWith2FA;
 
 builder.mutationField('finishLoginWith2FA', (t) =>
   t.field({
-    type: FinishLoginWith2FAPayload,
     args: {
-      input: t.arg({ type: FinishLoginWith2FAInput, required: true }),
+      input: t.arg({ required: true, type: FinishLoginWith2FAInput }),
     },
     resolve: finishLoginWith2FA,
+    type: FinishLoginWith2FAPayload,
   }),
 );

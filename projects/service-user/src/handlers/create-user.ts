@@ -1,49 +1,49 @@
-import * as pg from 'postgres';
-import * as schema from '@chrono/postgres-schema';
-import { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
-import { Context } from 'hono';
-import { createId } from '@paralleldrive/cuid2';
-import { isUniqueConstraintError, hashPassword } from '@chrono/service-utils';
 import type {
   CreateUserRequest,
   CreateUserResponse,
 } from '@chrono/service-types';
+import * as schema from '@chrono/postgres-schema';
+import { hashPassword, isUniqueConstraintError } from '@chrono/service-utils';
+import { createId } from '@paralleldrive/cuid2';
+import { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
+import { Context } from 'hono';
+import * as pg from 'postgres';
 
 export async function createUser(
   ctx: Context,
   db: PostgresJsDatabase<typeof schema>,
 ) {
   try {
-    const { email, name, username, password } =
+    const { email, name, password, username } =
       await ctx.req.json<CreateUserRequest>();
 
     const createdAt = new Date();
     const passwordHash = await hashPassword(password);
 
     const user: typeof schema.users.$inferSelect = {
-      id: createId(),
+      createdAt,
       email,
+      id: createId(),
       name,
-      username,
       passwordHash,
       passwordResetToken: null,
       passwordResetTokenExpiresAt: null,
-      createdAt,
       updatedAt: createdAt,
+      username,
     };
 
     await db.insert(schema.users).values(user);
 
     const response: CreateUserResponse = {
-      success: true,
       data: {
-        id: user.id,
-        email: user.email,
-        name: user.name,
-        username: user.username,
         createdAt: user.createdAt,
+        email: user.email,
+        id: user.id,
+        name: user.name,
         updatedAt: user.updatedAt,
+        username: user.username,
       },
+      success: true,
     };
 
     return ctx.json(response);
@@ -51,8 +51,8 @@ export async function createUser(
     if (error instanceof pg.PostgresError) {
       if (isUniqueConstraintError(error, 'users_email_unique')) {
         const response = {
-          success: false,
           error: 'A user with that email already exists',
+          success: false,
         };
 
         return ctx.json(response);
@@ -60,8 +60,8 @@ export async function createUser(
 
       if (isUniqueConstraintError(error, 'users_username_unique')) {
         const response = {
-          success: false,
           error: 'A user with that username already exists',
+          success: false,
         };
 
         return ctx.json(response);
@@ -71,8 +71,8 @@ export async function createUser(
     // TODO(#16): capture via Sentry
     if (error instanceof Error) {
       const response = {
-        success: false,
         error: 'An unknown error occurred',
+        success: false,
       };
 
       return ctx.json(response);

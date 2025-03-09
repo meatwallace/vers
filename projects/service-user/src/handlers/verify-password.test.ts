@@ -1,8 +1,8 @@
+import { expect, test } from 'vitest';
+import { createTestUser, PostgresTestUtils } from '@chrono/service-test-utils';
 import { Hono } from 'hono';
-import { test, expect } from 'vitest';
-import { PostgresTestUtils, createTestUser } from '@chrono/service-test-utils';
-import { verifyPassword } from './verify-password';
 import { pgTestConfig } from '../pg-test-config';
+import { verifyPassword } from './verify-password';
 
 async function setupTest() {
   const app = new Hono();
@@ -20,11 +20,11 @@ test('it verifies a correct password', async () => {
   const user = await createTestUser({ db, user: { password: 'password123' } });
 
   const req = new Request('http://localhost/verify-password', {
-    method: 'POST',
     body: JSON.stringify({
       email: user.email,
       password: 'password123',
     }),
+    method: 'POST',
   });
 
   const res = await app.request(req);
@@ -32,8 +32,8 @@ test('it verifies a correct password', async () => {
 
   expect(res.status).toBe(200);
   expect(body).toEqual({
-    success: true,
     data: {},
+    success: true,
   });
 
   await teardown();
@@ -45,11 +45,11 @@ test('it rejects an incorrect password', async () => {
   const user = await createTestUser({ db, user: { password: 'password123' } });
 
   const req = new Request('http://localhost/verify-password', {
-    method: 'POST',
     body: JSON.stringify({
       email: user.email,
       password: 'wrongpassword',
     }),
+    method: 'POST',
   });
 
   const res = await app.request(req);
@@ -57,8 +57,8 @@ test('it rejects an incorrect password', async () => {
 
   expect(res.status).toBe(200);
   expect(body).toEqual({
-    success: false,
     error: 'Incorrect password',
+    success: false,
   });
 
   await teardown();
@@ -68,11 +68,11 @@ test('it rejects a non-existent user', async () => {
   const { app, teardown } = await setupTest();
 
   const req = new Request('http://localhost/verify-password', {
-    method: 'POST',
     body: JSON.stringify({
       email: 'nonexistent@test.com',
       password: 'password123',
     }),
+    method: 'POST',
   });
 
   const res = await app.request(req);
@@ -80,8 +80,8 @@ test('it rejects a non-existent user', async () => {
 
   expect(res.status).toBe(200);
   expect(body).toEqual({
-    success: false,
     error: 'No user with that email',
+    success: false,
   });
 
   await teardown();
@@ -93,11 +93,11 @@ test('it rejects a user without a password set', async () => {
   const user = await createTestUser({ db, user: { password: null } });
 
   const req = new Request('http://localhost/verify-password', {
-    method: 'POST',
     body: JSON.stringify({
       email: user.email,
       password: 'password123',
     }),
+    method: 'POST',
   });
 
   const res = await app.request(req);
@@ -105,8 +105,8 @@ test('it rejects a user without a password set', async () => {
 
   expect(res.status).toBe(200);
   expect(body).toEqual({
-    success: false,
     error: 'User does not have a password set',
+    success: false,
   });
 
   await teardown();
@@ -116,8 +116,8 @@ test('it handles invalid request body', async () => {
   const { app, teardown } = await setupTest();
 
   const req = new Request('http://localhost/verify-password', {
-    method: 'POST',
     body: 'invalid json',
+    method: 'POST',
   });
 
   const res = await app.request(req);
@@ -125,8 +125,8 @@ test('it handles invalid request body', async () => {
 
   expect(res.status).toBe(200);
   expect(body).toEqual({
-    success: false,
     error: 'An unknown error occurred',
+    success: false,
   });
 
   await teardown();

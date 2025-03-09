@@ -2,7 +2,7 @@ export { sessions } from './sessions';
 
 export { users } from './users';
 
-export { verificationTypeEnum, verifications } from './verifications';
+export { verifications, verificationTypeEnum } from './verifications';
 
 export {
   archetypeEnum,

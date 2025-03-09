@@ -1,8 +1,8 @@
-import { Jsonify } from 'type-fest';
 import { worlds } from '@chrono/postgres-schema';
 import { GetWorldsRequest, GetWorldsResponse } from '@chrono/service-types';
-import { WorldServiceContext } from './types';
+import { Jsonify } from 'type-fest';
 import { marshal } from './marshal';
+import { WorldServiceContext } from './types';
 
 export async function getWorlds(
   args: GetWorldsRequest,

@@ -3,55 +3,55 @@ import { omitNullish } from './omit-nullish.ts';
 
 test('it removes null properties from an object', () => {
   const input = {
-    name: 'test',
-    age: null,
     active: true,
+    age: null,
+    name: 'test',
   };
 
   const result = omitNullish(input);
 
   expect(result).toStrictEqual({
-    name: 'test',
     active: true,
+    name: 'test',
   });
 });
 
 test('it removes undefined properties from an object', () => {
   const input = {
-    name: 'test',
-    age: undefined,
     active: true,
+    age: undefined,
+    name: 'test',
   };
 
   const result = omitNullish(input);
 
   expect(result).toStrictEqual({
-    name: 'test',
     active: true,
+    name: 'test',
   });
 });
 
 test('it preserves falsy values that are not null or undefined', () => {
   const input = {
-    name: '',
-    count: 0,
     active: false,
+    count: 0,
     deleted: null,
+    name: '',
   };
 
   const result = omitNullish(input);
 
   expect(result).toStrictEqual({
-    name: '',
-    count: 0,
     active: false,
+    count: 0,
+    name: '',
   });
 });
 
 test('it returns an empty object when all properties are nullish', () => {
   const input = {
-    name: null,
     age: undefined,
+    name: null,
   };
 
   const result = omitNullish(input);

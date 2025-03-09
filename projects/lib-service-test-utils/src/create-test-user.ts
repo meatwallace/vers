@@ -1,11 +1,11 @@
-import { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
 import * as schema from '@chrono/postgres-schema';
 import { hashPassword } from '@chrono/service-utils';
+import { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
 
 interface TestUserConfig {
   db: PostgresJsDatabase<typeof schema>;
   user?: Partial<Omit<typeof schema.users.$inferSelect, 'passwordHash'>> & {
-    password?: string | null;
+    password?: null | string;
   };
 }
 
@@ -23,15 +23,15 @@ export async function createTestUser(
   }
 
   const user = {
-    id: 'test_id',
+    createdAt: now,
     email: 'user@test.com',
+    id: 'test_id',
     name: 'Test User',
-    username: 'test_user',
     passwordHash,
     passwordResetToken: null,
     passwordResetTokenExpiresAt: null,
-    createdAt: now,
     updatedAt: now,
+    username: 'test_user',
     ...rest,
   };
 
