@@ -27,13 +27,6 @@ export const heroDescriptionContainer = style({
   justifyContent: 'center',
 });
 
-export const heroDescriptionIcon = style({
-  height: '192px',
-  marginBottom: '32px',
-  marginLeft: '-16px',
-  width: '192px',
-});
-
 export const heroDescription = style({
   color: '#76a5ce',
   fontFamily: 'Karla, sans-serif',

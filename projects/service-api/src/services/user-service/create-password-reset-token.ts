@@ -1,7 +1,7 @@
 import {
   CreatePasswordResetTokenRequest,
   CreatePasswordResetTokenResponse,
-} from '@chrono/service-types';
+} from '@vers/service-types';
 import { logger } from '~/logger';
 import { UserServiceContext } from './types';
 

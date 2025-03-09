@@ -1,4 +1,4 @@
-import { CreateUserRequest, CreateUserResponse } from '@chrono/service-types';
+import { CreateUserRequest, CreateUserResponse } from '@vers/service-types';
 import { Jsonify } from 'type-fest';
 import { marshal } from './marshal';
 import { UserData, UserServiceContext } from './types';

@@ -1,4 +1,4 @@
-import { createTestJWT } from '@chrono/service-test-utils';
+import { createTestJWT } from '@vers/service-test-utils';
 import * as jose from 'jose';
 import { createTokenVerifier } from './create-token-verifier';
 

@@ -1,4 +1,4 @@
-import { ServiceID } from '@chrono/service-types';
+import { ServiceID } from '@vers/service-types';
 
 const SERVICE_IDS = Object.values(ServiceID);
 

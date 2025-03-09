@@ -1,5 +1,5 @@
-import { SendEmailRequest } from '@chrono/service-types';
-import { ServiceResponse } from '@chrono/service-types';
+import { SendEmailRequest } from '@vers/service-types';
+import { ServiceResponse } from '@vers/service-types';
 import { logger } from '~/logger';
 import { EmailServiceContext } from './types';
 

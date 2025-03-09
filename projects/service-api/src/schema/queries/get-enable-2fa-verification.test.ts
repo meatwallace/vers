@@ -31,9 +31,7 @@ test('it retrieves the 2FA verification URI', async () => {
     otpURI: expect.any(String),
   });
 
-  expect(result.otpURI).toMatch(
-    'otpauth://totp/Chrononomicon:test%40example.com',
-  );
+  expect(result.otpURI).toMatch('otpauth://totp/vers:test%40example.com');
 });
 
 test('it throws an error if unauthorized', async () => {

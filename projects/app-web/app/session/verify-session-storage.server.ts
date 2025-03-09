@@ -1,7 +1,14 @@
 import { createCookieSessionStorage } from 'react-router';
 import invariant from 'tiny-invariant';
 
-type SessionData = Record<string, string>;
+type SessionKey =
+  | 'newEmailAddress'
+  | 'onboardingEmail'
+  | 'transactionID'
+  | 'transactionToken'
+  | 'unverifiedSessionID';
+
+type SessionData = Record<SessionKey, string>;
 
 interface SessionFlashData {
   error: string;

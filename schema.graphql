@@ -4,12 +4,6 @@ type AuthPayload {
   session: Session!
 }
 
-input CreateWorldInput {
-  placeholder: String
-}
-
-union CreateWorldPayload = MutationErrorPayload | World
-
 """
 A date string, such as 2007-12-03, compliant with the `full-date` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.
 """
@@ -25,12 +19,6 @@ input DeleteSessionInput {
 }
 
 union DeleteSessionPayload = MutationErrorPayload | MutationSuccess
-
-input DeleteWorldInput {
-  worldID: String!
-}
-
-union DeleteWorldPayload = MutationErrorPayload | MutationSuccess
 
 input FinishDisable2FAInput {
   transactionToken: String!
@@ -71,19 +59,7 @@ input FinishPasswordResetInput {
 
 union FinishPasswordResetPayload = MutationErrorPayload | MutationSuccess
 
-input GenerateWorldNamesInput {
-  worldID: String!
-}
-
 input GetSessionsInput {
-  placeholder: String
-}
-
-input GetWorldInput {
-  worldID: String!
-}
-
-input GetWorldsInput {
   placeholder: String
 }
 
@@ -96,9 +72,7 @@ input LoginWithPasswordInput {
 union LoginWithPasswordPayload = AuthPayload | MutationErrorPayload | TwoFactorRequiredPayload
 
 type Mutation {
-  createWorld(input: CreateWorldInput!): CreateWorldPayload!
   deleteSession(input: DeleteSessionInput!): DeleteSessionPayload!
-  deleteWorld(input: DeleteWorldInput!): DeleteWorldPayload!
   finishDisable2FA(input: FinishDisable2FAInput!): FinishDisable2FAPayload!
   finishEmailSignup(input: FinishEmailSignupInput!): FinishEmailSignupPayload!
   finishEnable2FA(input: FinishEnable2FAInput!): FinishEnable2FAPayload!
@@ -110,7 +84,6 @@ type Mutation {
   startEmailSignup(input: StartEmailSignupInput!): StartEmailSignupPayload!
   startEnable2FA(input: StartEnable2FAInput!): StartEnable2FAPayload!
   startPasswordReset(input: StartPasswordResetInput!): StartPasswordResetPayload!
-  updateWorld(input: UpdateWorldInput!): UpdateWorldPayload!
   verifyOTP(input: VerifyOTPInput!): VerifyOTPPayload!
 }
 
@@ -128,12 +101,9 @@ type MutationSuccess {
 }
 
 type Query {
-  generateWorldNames(input: GenerateWorldNamesInput!): [String!]!
   getCurrentUser: User!
   getEnable2FAVerification: TwoFactorVerification!
   getSessions(input: GetSessionsInput!): [Session!]!
-  getWorld(input: GetWorldInput!): World!
-  getWorlds(input: GetWorldsInput!): [World!]!
 }
 
 input RefreshAccessTokenInput {
@@ -186,20 +156,6 @@ type TwoFactorVerification {
   otpURI: String!
 }
 
-input UpdateWorldInput {
-  archetype: String
-  atmosphere: String
-  fantasyType: String
-  geographyFeatures: [String!]
-  geographyType: String
-  name: String
-  population: String
-  technologyLevel: String
-  worldID: String!
-}
-
-union UpdateWorldPayload = MutationErrorPayload | World
-
 type User {
   createdAt: DateTime!
   email: String!
@@ -230,17 +186,3 @@ input VerifyOTPInput {
 }
 
 union VerifyOTPPayload = MutationErrorPayload | TwoFactorSuccessPayload
-
-type World {
-  archetype: String
-  atmosphere: String!
-  createdAt: DateTime!
-  fantasyType: String!
-  geographyFeatures: [String!]!
-  geographyType: String!
-  id: ID!
-  name: String!
-  population: String!
-  technologyLevel: String!
-  updatedAt: DateTime!
-}

@@ -1,5 +1,5 @@
-import { ServiceID } from '@chrono/service-types';
 import { createId } from '@paralleldrive/cuid2';
+import { ServiceID } from '@vers/service-types';
 import { http, HttpResponse } from 'msw';
 import { env } from '~/env';
 import { ENDPOINT_URL } from '~/mocks/handlers/http/send-email';

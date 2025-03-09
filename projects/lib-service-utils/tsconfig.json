@@ -7,10 +7,10 @@
     "baseUrl": ".",
     "paths": {
       "~/*": ["./src/*"],
-      "@chrono/email-templates": ["../lib-email-templates/src/index.ts"],
-      "@chrono/postgres-schema": ["../lib-postgres-schema/src/index.ts"],
-      "@chrono/service-test-utils": ["../lib-service-test-utils/src/index.ts"],
-      "@chrono/service-types": ["../lib-service-types/src/index.ts"]
+      "@vers/email-templates": ["../lib-email-templates/src/index.ts"],
+      "@vers/postgres-schema": ["../lib-postgres-schema/src/index.ts"],
+      "@vers/service-test-utils": ["../lib-service-test-utils/src/index.ts"],
+      "@vers/service-types": ["../lib-service-types/src/index.ts"]
     }
   },
   "references": [

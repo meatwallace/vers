@@ -27,7 +27,7 @@ actions:
          - Export all handlers from `index.ts`
 
       2. Type Safety:
-         - Import types from `@chrono/service-types` for request/response shapes
+         - Import types from `@vers/service-types` for request/response shapes
          - Define explicit Request and Response types for each handler
          - Use zod schemas for request validation
          - Document complex type structures
@@ -88,7 +88,7 @@ examples:
 
       // Good - proper typing and response structure
       import { http, HttpResponse } from 'msw';
-      import { CreateSessionRequest, CreateSessionResponse } from '@chrono/service-types';
+      import { CreateSessionRequest, CreateSessionResponse } from '@vers/service-types';
       import { db } from '~/mocks/db';
       import { createSessionSchema } from '~/schema/mutations/create-session';
       import { env } from '~/env';

@@ -1,6 +1,6 @@
-import { ServiceID } from '@chrono/service-types';
 import { drop } from '@mswjs/data';
 import { createId } from '@paralleldrive/cuid2';
+import { ServiceID } from '@vers/service-types';
 import { env } from '~/env';
 import { db } from '~/mocks/db';
 import { createServiceContext } from '../utils';
@@ -33,7 +33,7 @@ test('it retrieves a 2FA verification URI', async () => {
 
   const result = await get2FAVerificationURI(args, ctx);
 
-  expect(result).toMatch('otpauth://totp/Chrononomicon:test%40example.com');
+  expect(result).toMatch('otpauth://totp/vers:test%40example.com');
   expect(result).toContain('secret=');
-  expect(result).toContain('issuer=Chrononomicon');
+  expect(result).toContain('issuer=vers');
 });

@@ -1,11 +1,11 @@
-import { sessions } from '@chrono/postgres-schema';
+import { sessions } from '@vers/postgres-schema';
 import {
   CreateSessionRequest,
   DeleteSessionRequest,
   GetSessionRequest,
   GetSessionsRequest,
   RefreshTokensRequest,
-} from '@chrono/service-types';
+} from '@vers/service-types';
 import { ServiceContext } from '../utils/types';
 
 export type SessionServiceContext = ServiceContext;

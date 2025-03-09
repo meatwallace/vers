@@ -1,7 +1,7 @@
 import {
   UpdateVerificationRequest,
   UpdateVerificationResponse,
-} from '@chrono/service-types';
+} from '@vers/service-types';
 import { http, HttpResponse } from 'msw';
 import { env } from '~/env.ts';
 import { omitNullish } from '~/utils/omit-nullish.ts';

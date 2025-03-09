@@ -16,6 +16,6 @@ test('it renders the existing account email with all required elements', () => {
   expect(resetButton).toBeInTheDocument();
   expect(resetButton).toHaveAttribute(
     'href',
-    'https://chrononomicon.com/forgot-password',
+    'https://vers.com/forgot-password',
   );
 });

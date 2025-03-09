@@ -1,7 +1,7 @@
 import { expect, test } from 'vitest';
-import * as schema from '@chrono/postgres-schema';
-import { PostgresTestUtils } from '@chrono/service-test-utils';
 import { createId } from '@paralleldrive/cuid2';
+import * as schema from '@vers/postgres-schema';
+import { PostgresTestUtils } from '@vers/service-test-utils';
 import { Hono } from 'hono';
 import { pgTestConfig } from '../pg-test-config';
 import { get2FAVerificationURI } from './get-2fa-verification-uri';
@@ -49,9 +49,7 @@ test('it returns a TOTP auth URI for a valid 2FA verification record', async () 
   expect(res.status).toBe(200);
   expect(body).toMatchObject({
     data: {
-      otpURI: expect.stringContaining(
-        'otpauth://totp/Chrononomicon:test%40example.com',
-      ),
+      otpURI: expect.stringContaining('otpauth://totp/vers:test%40example.com'),
     },
     success: true,
   });

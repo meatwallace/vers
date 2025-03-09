@@ -11,17 +11,12 @@ import { VerifyOTP } from '~/data/mutations/verify-otp.ts';
 import { VerificationType } from '~/gql/graphql.ts';
 import { useIsFormPending } from '~/hooks/use-is-form-pending.ts';
 import { authSessionStorage } from '~/session/auth-session-storage.server.ts';
-import {
-  SESSION_KEY_AUTH_ACCESS_TOKEN,
-  SESSION_KEY_AUTH_SESSION_ID,
-  SESSION_KEY_VERIFY_TRANSACTION_ID,
-  SESSION_KEY_VERIFY_UNVERIFIED_SESSION_ID,
-} from '~/session/consts.ts';
 import { verifySessionStorage } from '~/session/verify-session-storage.server.ts';
 import { Routes } from '~/types.ts';
 import { checkHoneypot } from '~/utils/check-honeypot.server.ts';
 import { createGQLClient } from '~/utils/create-gql-client.server.ts';
 import { isMutationError } from '~/utils/is-mutation-error.ts';
+import { withErrorHandling } from '~/utils/with-error-handling.ts';
 import { Route } from './+types/route.ts';
 import { handleVerification } from './handle-verification.server.ts';
 import { QueryParam } from './types.ts';
@@ -35,7 +30,17 @@ export const VerifyOTPFormSchema = z.object({
   [QueryParam.Type]: VerificationTypeSchema,
 });
 
-export function loader({ request }: Route.LoaderArgs) {
+export const meta: Route.MetaFunction = () => [
+  {
+    description: '',
+    title: 'Vers | Verify OTP',
+  },
+];
+
+// eslint-disable-next-line @typescript-eslint/require-await
+export const loader = withErrorHandling(async (args: Route.LoaderArgs) => {
+  const { request } = args;
+
   const url = new URL(request.url);
 
   const typeParsedWithZod = VerificationTypeSchema.safeParse(
@@ -48,9 +53,11 @@ export function loader({ request }: Route.LoaderArgs) {
   }
 
   return {};
-}
+});
 
-export async function action({ request }: Route.ActionArgs) {
+export const action = withErrorHandling(async (args: Route.ActionArgs) => {
+  const { request } = args;
+
   const client = createGQLClient();
 
   const formData = await request.formData();
@@ -74,11 +81,10 @@ export async function action({ request }: Route.ActionArgs) {
     request.headers.get('cookie'),
   );
 
+  const accessToken = authSession.get('accessToken');
+  const transactionID = verifySession.get('transactionID');
   const sessionID =
-    verifySession.get(SESSION_KEY_VERIFY_UNVERIFIED_SESSION_ID) ??
-    authSession.get(SESSION_KEY_AUTH_SESSION_ID);
-  const accessToken = authSession.get(SESSION_KEY_AUTH_ACCESS_TOKEN);
-  const transactionID = verifySession.get(SESSION_KEY_VERIFY_TRANSACTION_ID);
+    verifySession.get('unverifiedSessionID') ?? authSession.get('sessionID');
 
   if (sessionID) {
     client.setHeader('x-session-id', sessionID);
@@ -97,45 +103,34 @@ export async function action({ request }: Route.ActionArgs) {
     return data({ result }, { status: 400 });
   }
 
-  try {
-    const { verifyOTP } = await client.request(VerifyOTP, {
-      input: {
-        code: submission.value.code,
-        sessionID,
-        target: submission.value.target,
-        transactionID,
-        type: submission.value.type,
-      },
-    });
-
-    if (isMutationError(verifyOTP)) {
-      const result = submission.reply({
-        formErrors: [verifyOTP.error.message],
-      });
-
-      return data({ result }, { status: 400 });
-    }
-
-    return await handleVerification(submission.value.type, {
-      body: formData,
-      client,
-      request,
-      submission,
-      transactionToken: verifyOTP.transactionToken,
-    });
-  } catch (error) {
-    // TODO(#16): capture error
-    console.error('error', error);
-  }
-
-  const result = submission.reply({
-    formErrors: ['Something went wrong'],
+  const { verifyOTP } = await client.request(VerifyOTP, {
+    input: {
+      code: submission.value.code,
+      sessionID,
+      target: submission.value.target,
+      transactionID,
+      type: submission.value.type,
+    },
   });
 
-  return data({ result }, { status: 500 });
-}
+  if (isMutationError(verifyOTP)) {
+    const result = submission.reply({
+      formErrors: [verifyOTP.error.message],
+    });
 
-export function VerifyOTPRoute({ actionData }: Route.ComponentProps) {
+    return data({ result }, { status: 400 });
+  }
+
+  return await handleVerification(submission.value.type, {
+    body: formData,
+    client,
+    request,
+    submission,
+    transactionToken: verifyOTP.transactionToken,
+  });
+});
+
+export function VerifyOTPRoute(props: Route.ComponentProps) {
   const [searchParams] = useSearchParams();
   const isFormPending = useIsFormPending();
 
@@ -154,7 +149,7 @@ export function VerifyOTPRoute({ actionData }: Route.ComponentProps) {
       [QueryParam.Type]: type,
     },
     id: 'verify-otp-form',
-    lastResult: actionData?.result,
+    lastResult: props.actionData?.result,
     onValidate({ formData }) {
       return parseWithZod(formData, { schema: VerifyOTPFormSchema });
     },

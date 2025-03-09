@@ -1,9 +1,9 @@
-import * as schema from '@chrono/postgres-schema';
+import * as schema from '@vers/postgres-schema';
 import {
   ChangePasswordRequest,
   ChangePasswordResponse,
-} from '@chrono/service-types';
-import { hashPassword } from '@chrono/service-utils';
+} from '@vers/service-types';
+import { hashPassword } from '@vers/service-utils';
 import { eq } from 'drizzle-orm';
 import { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
 import { Context } from 'hono';

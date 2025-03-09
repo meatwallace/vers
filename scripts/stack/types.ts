@@ -14,5 +14,4 @@ export enum ServiceID {
   ServiceSession = 'service-session',
   ServiceUser = 'service-user',
   ServiceVerification = 'service-verification',
-  ServiceWorld = 'service-world',
 }

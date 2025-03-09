@@ -6,10 +6,6 @@ import { drop } from '@mswjs/data';
 import { VerificationType } from '~/gql/graphql.ts';
 import { db } from '~/mocks/db.ts';
 import { server } from '~/mocks/node.ts';
-import {
-  SESSION_KEY_VERIFY_ONBOARDING_EMAIL,
-  SESSION_KEY_VERIFY_TRANSACTION_TOKEN,
-} from '~/session/consts.ts';
 import { verifySessionStorage } from '~/session/verify-session-storage.server.ts';
 import { withAuthedUser } from '~/test-utils/with-authed-user.ts';
 import { withRouteProps } from '~/test-utils/with-route-props.tsx';
@@ -57,6 +53,7 @@ function setupTest(config: TestConfig = {}) {
     {
       action: wrappedAction,
       Component: withRouteProps(VerifyOTPRoute),
+      ErrorBoundary: () => 'ERROR_BOUNDARY',
       // @ts-expect-error(#35) - react router test types are out of date
       loader,
       path: '/',
@@ -150,9 +147,7 @@ test('it handles reset password verification and redirects to the reset password
 
   const verifySession = await verifySessionStorage.getSession(cookieHeader);
 
-  expect(verifySession.get(SESSION_KEY_VERIFY_TRANSACTION_TOKEN)).toBe(
-    'valid_transaction_token',
-  );
+  expect(verifySession.get('transactionToken')).toBe('valid_transaction_token');
 });
 
 test('it handles onboarding verification and redirects to the onboarding route on success', async () => {
@@ -178,16 +173,11 @@ test('it handles onboarding verification and redirects to the onboarding route o
 
   const verifySession = await verifySessionStorage.getSession(cookieHeader);
 
-  expect(verifySession.get(SESSION_KEY_VERIFY_ONBOARDING_EMAIL)).toBe(
-    'test@example.com',
-  );
-
-  expect(verifySession.get(SESSION_KEY_VERIFY_TRANSACTION_TOKEN)).toBe(
-    'valid_transaction_token',
-  );
+  expect(verifySession.get('onboardingEmail')).toBe('test@example.com');
+  expect(verifySession.get('transactionToken')).toBe('valid_transaction_token');
 });
 
-test('it handles 2FA setup verification and returns an error', async () => {
+test('it handles 2FA setup verification and throws an error', async () => {
   const { user } = setupTest({
     initialPath: '/?type=TWO_FACTOR_AUTH_SETUP&target=test@example.com',
     transactionID: 'test_transaction_id',
@@ -204,9 +194,9 @@ test('it handles 2FA setup verification and returns an error', async () => {
   await user.type(codeInput, '999999');
   await user.click(submitButton);
 
-  const errorText = await screen.findByText(/Something went wrong/i);
+  const errorBoundary = await screen.findByText(/ERROR_BOUNDARY/i);
 
-  expect(errorText).toBeInTheDocument();
+  expect(errorBoundary).toBeInTheDocument();
 });
 
 test('it handles 2FA disable verification and redirects to the profile route on success', async () => {

@@ -9,7 +9,6 @@ import { RouteErrorBoundary } from '~/components/route-error-boundary.tsx';
 import { StatusButton } from '~/components/status-button.tsx';
 import { graphql } from '~/gql';
 import { useIsFormPending } from '~/hooks/use-is-form-pending';
-import { SESSION_KEY_VERIFY_TRANSACTION_ID } from '~/session/consts.ts';
 import { verifySessionStorage } from '~/session/verify-session-storage.server.ts';
 import { Routes } from '~/types.ts';
 import { checkHoneypot } from '~/utils/check-honeypot.server.ts';
@@ -17,8 +16,9 @@ import { createGQLClient } from '~/utils/create-gql-client.server.ts';
 import { is2FARequiredPayload } from '~/utils/is-2fa-required-payload.ts';
 import { isMutationError } from '~/utils/is-mutation-error.ts';
 import { requireAnonymous } from '~/utils/require-anonymous.server.ts';
+import { withErrorHandling } from '~/utils/with-error-handling.ts';
 import { UserEmailSchema } from '~/validation/user-email-schema.ts';
-import { type Route } from './+types/route.ts';
+import type { Route } from './+types/route.ts';
 import * as styles from './route.css.ts';
 
 const startPasswordResetMutation = graphql(/* GraphQL */ `
@@ -46,13 +46,24 @@ const ForgotPasswordFormSchema = z.object({
   email: UserEmailSchema,
 });
 
-export async function loader({ request }: Route.LoaderArgs) {
+export const meta: Route.MetaFunction = () => [
+  {
+    description: '',
+    title: 'Vers | Forgot Password',
+  },
+];
+
+export const loader = withErrorHandling(async (args: Route.LoaderArgs) => {
+  const { request } = args;
+
   await requireAnonymous(request);
 
   return null;
-}
+});
 
-export async function action({ request }: Route.ActionArgs) {
+export const action = withErrorHandling(async (args: Route.ActionArgs) => {
+  const { request } = args;
+
   await requireAnonymous(request);
 
   const client = createGQLClient();
@@ -95,10 +106,7 @@ export async function action({ request }: Route.ActionArgs) {
         request.headers.get('cookie'),
       );
 
-      verifySession.set(
-        SESSION_KEY_VERIFY_TRANSACTION_ID,
-        startPasswordReset.transactionID,
-      );
+      verifySession.set('transactionID', startPasswordReset.transactionID);
 
       return redirect(Routes.ResetPasswordStarted, {
         headers: {
@@ -120,19 +128,15 @@ export async function action({ request }: Route.ActionArgs) {
   });
 
   return data({ result }, { status: 500 });
-}
+});
 
-export const meta: Route.MetaFunction = () => {
-  return [{ title: 'Forgot Password' }];
-};
-
-export function ForgotPassword({ actionData }: Route.ComponentProps) {
+export function ForgotPassword(props: Route.ComponentProps) {
   const isFormPending = useIsFormPending();
 
   const [form, fields] = useForm({
     constraint: getZodConstraint(ForgotPasswordFormSchema),
     id: 'forgot-password-form',
-    lastResult: actionData?.result,
+    lastResult: props.actionData?.result,
     onValidate({ formData }) {
       return parseWithZod(formData, { schema: ForgotPasswordFormSchema });
     },

@@ -1,7 +1,7 @@
 import { expect, test } from 'vitest';
-import { ServiceID } from '@chrono/service-types';
 import { drop } from '@mswjs/data';
 import { createId } from '@paralleldrive/cuid2';
+import { ServiceID } from '@vers/service-types';
 import { env } from '~/env';
 import { db } from '~/mocks/db';
 import { createServiceContext } from '../utils/create-service-context';

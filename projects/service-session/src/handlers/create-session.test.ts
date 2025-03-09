@@ -1,5 +1,5 @@
 import { expect, test, vi } from 'vitest';
-import { createTestUser, PostgresTestUtils } from '@chrono/service-test-utils';
+import { createTestUser, PostgresTestUtils } from '@vers/service-test-utils';
 import { Hono } from 'hono';
 import { pgTestConfig } from '../pg-test-config';
 import { createJWT } from '../utils/create-jwt';

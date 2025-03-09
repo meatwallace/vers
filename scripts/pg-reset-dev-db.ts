@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import * as schema from '@chrono/postgres-schema';
+import * as schema from '@vers/postgres-schema';
 import { sql } from 'drizzle-orm';
 import { migrate } from 'drizzle-orm/node-postgres/migrator';
 import { drizzle } from 'drizzle-orm/postgres-js';

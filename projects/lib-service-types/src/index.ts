@@ -6,4 +6,3 @@ export * from './service-response';
 export * from './service-session';
 export * from './service-user';
 export * from './service-verification';
-export * from './service-world';

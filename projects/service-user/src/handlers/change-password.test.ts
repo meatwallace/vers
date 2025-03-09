@@ -1,5 +1,5 @@
-import * as schema from '@chrono/postgres-schema';
-import { createTestUser, PostgresTestUtils } from '@chrono/service-test-utils';
+import * as schema from '@vers/postgres-schema';
+import { createTestUser, PostgresTestUtils } from '@vers/service-test-utils';
 import bcrypt from 'bcryptjs';
 import { Hono } from 'hono';
 import invariant from 'tiny-invariant';

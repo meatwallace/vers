@@ -10,7 +10,6 @@ import { StatusButton } from '~/components/status-button.tsx';
 import { graphql } from '~/gql';
 import { VerificationType } from '~/gql/graphql.ts';
 import { useIsFormPending } from '~/hooks/use-is-form-pending.ts';
-import { SESSION_KEY_VERIFY_TRANSACTION_ID } from '~/session/consts.ts';
 import { verifySessionStorage } from '~/session/verify-session-storage.server.ts';
 import { Routes } from '~/types.ts';
 import { checkHoneypot } from '~/utils/check-honeypot.server.ts';
@@ -18,9 +17,10 @@ import { createGQLClient } from '~/utils/create-gql-client.server.ts';
 import { getDomainURL } from '~/utils/get-domain-url.ts';
 import { isMutationError } from '~/utils/is-mutation-error.ts';
 import { requireAnonymous } from '~/utils/require-anonymous.server.ts';
+import { withErrorHandling } from '~/utils/with-error-handling.ts';
 import { UserEmailSchema } from '~/validation/user-email-schema.ts';
+import type { Route } from './+types/route.ts';
 import { QueryParam } from '../verify-otp/types.ts';
-import { type Route } from './+types/route.ts';
 
 const startEmailSignupMutation = graphql(/* GraphQL */ `
   mutation StartEmailSignup($input: StartEmailSignupInput!) {
@@ -43,13 +43,24 @@ const SignupFormSchema = z.object({
   email: UserEmailSchema,
 });
 
-export async function loader({ request }: Route.LoaderArgs) {
+export const meta: Route.MetaFunction = () => [
+  {
+    description: '',
+    title: 'Vers | Signup',
+  },
+];
+
+export const loader = withErrorHandling(async (args: Route.LoaderArgs) => {
+  const { request } = args;
+
   await requireAnonymous(request);
 
   return null;
-}
+});
 
-export async function action({ request }: Route.ActionArgs) {
+export const action = withErrorHandling(async (args: Route.ActionArgs) => {
+  const { request } = args;
+
   await requireAnonymous(request);
 
   const client = createGQLClient();
@@ -67,66 +78,45 @@ export async function action({ request }: Route.ActionArgs) {
     return data({ result }, { status });
   }
 
-  try {
-    const { startEmailSignup } = await client.request(
-      startEmailSignupMutation,
-      {
-        input: {
-          email: submission.value.email,
-        },
-      },
-    );
-
-    if (isMutationError(startEmailSignup)) {
-      const result = submission.reply({
-        formErrors: [startEmailSignup.error.message],
-      });
-
-      return data({ result }, { status: 500 });
-    }
-
-    const verifySession = await verifySessionStorage.getSession(
-      request.headers.get('cookie'),
-    );
-
-    verifySession.set(
-      SESSION_KEY_VERIFY_TRANSACTION_ID,
-      startEmailSignup.transactionID,
-    );
-
-    const verifyURL = new URL(`${getDomainURL(request)}${Routes.VerifyOTP}`);
-
-    verifyURL.searchParams.set(QueryParam.Type, VerificationType.Onboarding);
-    verifyURL.searchParams.set(QueryParam.Target, submission.value.email);
-
-    return redirect(verifyURL.toString(), {
-      headers: {
-        'Set-Cookie': await verifySessionStorage.commitSession(verifySession),
-      },
-    });
-  } catch (error) {
-    // TODO(#16): capture error
-    console.error('error', error);
-  }
-
-  const result = submission.reply({
-    formErrors: ['Something went wrong'],
+  const { startEmailSignup } = await client.request(startEmailSignupMutation, {
+    input: {
+      email: submission.value.email,
+    },
   });
 
-  return data({ result }, { status: 500 });
-}
+  if (isMutationError(startEmailSignup)) {
+    const result = submission.reply({
+      formErrors: [startEmailSignup.error.message],
+    });
 
-export const meta: Route.MetaFunction = () => {
-  return [{ title: 'Signup' }];
-};
+    return data({ result }, { status: 500 });
+  }
 
-export function Signup({ actionData }: Route.ComponentProps) {
+  const verifySession = await verifySessionStorage.getSession(
+    request.headers.get('cookie'),
+  );
+
+  verifySession.set('transactionID', startEmailSignup.transactionID);
+
+  const verifyURL = new URL(`${getDomainURL(request)}${Routes.VerifyOTP}`);
+
+  verifyURL.searchParams.set(QueryParam.Type, VerificationType.Onboarding);
+  verifyURL.searchParams.set(QueryParam.Target, submission.value.email);
+
+  return redirect(verifyURL.toString(), {
+    headers: {
+      'Set-Cookie': await verifySessionStorage.commitSession(verifySession),
+    },
+  });
+});
+
+export function Signup(props: Route.ComponentProps) {
   const isFormPending = useIsFormPending();
 
   const [form, fields] = useForm({
     constraint: getZodConstraint(SignupFormSchema),
     id: 'signup-form',
-    lastResult: actionData?.result,
+    lastResult: props.actionData?.result,
     onValidate({ formData }) {
       return parseWithZod(formData, { schema: SignupFormSchema });
     },

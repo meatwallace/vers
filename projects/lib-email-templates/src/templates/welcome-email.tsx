@@ -9,7 +9,7 @@ export function WelcomeEmail(props: Props) {
   return (
     <E.Container>
       <E.Heading as="h1">
-        <E.Text>Welcome to Chrononomicon.</E.Text>
+        <E.Text>Welcome to vers.</E.Text>
       </E.Heading>
       <E.Text>
         Here&apos;s your verification code:{' '}

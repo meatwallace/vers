@@ -3,10 +3,8 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { createRoutesStub } from 'react-router';
 import { drop } from '@mswjs/data';
-import { graphql } from 'msw';
 import { db } from '~/mocks/db.ts';
 import { server } from '~/mocks/node.ts';
-import { SESSION_KEY_VERIFY_TRANSACTION_ID } from '~/session/consts.ts';
 import { verifySessionStorage } from '~/session/verify-session-storage.server.ts';
 import { withAuthedUser } from '~/test-utils/with-authed-user.ts';
 import { withRouteProps } from '~/test-utils/with-route-props.tsx';
@@ -117,29 +115,7 @@ test('it redirects to verify OTP page on successful signup', async () => {
 
   const verifySession = await verifySessionStorage.getSession(cookieHeader);
 
-  expect(verifySession.get(SESSION_KEY_VERIFY_TRANSACTION_ID)).toBe(
-    'valid-transaction-id',
-  );
-});
-
-test('it shows an error message when signup fails', async () => {
-  server.use(
-    graphql.mutation('StartEmailSignup', () => {
-      throw new Error('Internal server error');
-    }),
-  );
-
-  const { user } = setupTest({ isAuthed: false });
-
-  const emailInput = await screen.findByRole('textbox', { name: /email/i });
-  const submitButton = screen.getByRole('button', { name: /signup/i });
-
-  await user.type(emailInput, 'existing@example.com');
-  await user.click(submitButton);
-
-  const errorMessage = await screen.findByText('Something went wrong');
-
-  expect(errorMessage).toBeInTheDocument();
+  expect(verifySession.get('transactionID')).toBe('valid-transaction-id');
 });
 
 test('it redirects to the dashboard route when already authenticated', async () => {

@@ -17,8 +17,4 @@ export default [
   route(Routes.ForgotPassword, 'routes/forgot-password/route.tsx'),
   route(Routes.ResetPassword, 'routes/reset-password/route.tsx'),
   route(Routes.ResetPasswordStarted, 'routes/reset-password-started/route.tsx'),
-
-  route(Routes.CreateWorld, 'routes/worlds_create/route.tsx'),
-  route(Routes.CreateWorldWizard, 'routes/worlds_create_$world/route.tsx'),
-  route(Routes.DeleteWorld, 'routes/worlds_delete_$world/route.tsx'),
 ] satisfies RouteConfig;

@@ -1,9 +1,9 @@
-import * as schema from '@chrono/postgres-schema';
 import { createId } from '@paralleldrive/cuid2';
 import {
   PostgreSqlContainer,
   StartedPostgreSqlContainer,
 } from '@testcontainers/postgresql';
+import * as schema from '@vers/postgres-schema';
 import { drizzle, PostgresJsDatabase } from 'drizzle-orm/postgres-js';
 import { migrate } from 'drizzle-orm/postgres-js/migrator';
 import path from 'node:path';

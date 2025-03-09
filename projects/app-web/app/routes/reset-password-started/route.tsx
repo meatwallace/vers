@@ -3,13 +3,23 @@ import { Link } from '~/components/link.tsx';
 import { RouteErrorBoundary } from '~/components/route-error-boundary.tsx';
 import { Routes } from '~/types.ts';
 import { requireAnonymous } from '~/utils/require-anonymous.server.ts';
-import { type Route } from './+types/route.ts';
+import { withErrorHandling } from '~/utils/with-error-handling.ts';
+import type { Route } from './+types/route.ts';
 
-export async function loader({ request }: Route.LoaderArgs) {
+export const meta: Route.MetaFunction = () => [
+  {
+    description: '',
+    title: 'Vers | Reset Password',
+  },
+];
+
+export const loader = withErrorHandling(async (args: Route.LoaderArgs) => {
+  const { request } = args;
+
   await requireAnonymous(request);
-}
+});
 
-export default function ResetPasswordStarted() {
+export function ResetPasswordStarted() {
   return (
     <Card>
       <Card.Header>
@@ -39,3 +49,5 @@ export default function ResetPasswordStarted() {
 export function ErrorBoundary() {
   return <RouteErrorBoundary />;
 }
+
+export default ResetPasswordStarted;

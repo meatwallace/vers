@@ -5,7 +5,7 @@ import {
   GetVerificationRequest,
   UpdateVerificationRequest,
   VerifyCodeRequest,
-} from '@chrono/service-types';
+} from '@vers/service-types';
 import { ServiceContext } from '../utils/types';
 
 export type VerificationServiceContext = ServiceContext;

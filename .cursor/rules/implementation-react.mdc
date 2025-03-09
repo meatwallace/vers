@@ -75,7 +75,7 @@ examples:
       }
 
       // Good - proper component structure
-      import { type ReactNode } from 'react'
+      import type { ReactNode } from 'react'
       import { Spinner } from '~/components/spinner.tsx'
       import * as styles from './status-button.css'
 

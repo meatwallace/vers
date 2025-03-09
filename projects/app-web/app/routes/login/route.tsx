@@ -1,7 +1,8 @@
-import { data, Form, Link, redirect } from 'react-router';
+import { data, Form, Link, redirect, useSearchParams } from 'react-router';
 import { getFormProps, getInputProps, useForm } from '@conform-to/react';
 import { getZodConstraint, parseWithZod } from '@conform-to/zod';
 import { HoneypotInputs } from 'remix-utils/honeypot/react';
+import { safeRedirect } from 'remix-utils/safe-redirect';
 import invariant from 'tiny-invariant';
 import { z } from 'zod';
 import { Field } from '~/components/field';
@@ -12,10 +13,6 @@ import { graphql } from '~/gql';
 import { VerificationType } from '~/gql/graphql.ts';
 import { useIsFormPending } from '~/hooks/use-is-form-pending';
 import { authSessionStorage } from '~/session/auth-session-storage.server.ts';
-import {
-  SESSION_KEY_VERIFY_TRANSACTION_ID,
-  SESSION_KEY_VERIFY_UNVERIFIED_SESSION_ID,
-} from '~/session/consts.ts';
 import { storeAuthPayload } from '~/session/store-auth-payload.ts';
 import { verifySessionStorage } from '~/session/verify-session-storage.server.ts';
 import { Routes } from '~/types.ts';
@@ -25,10 +22,11 @@ import { getDomainURL } from '~/utils/get-domain-url.ts';
 import { is2FARequiredPayload } from '~/utils/is-2fa-required-payload.ts';
 import { isMutationError } from '~/utils/is-mutation-error';
 import { requireAnonymous } from '~/utils/require-anonymous.server.ts';
+import { withErrorHandling } from '~/utils/with-error-handling.ts';
 import { PasswordSchema } from '~/validation/password-schema.ts';
 import { UserEmailSchema } from '~/validation/user-email-schema.ts';
+import type { Route } from './+types/route.ts';
 import { QueryParam } from '../verify-otp/types.ts';
-import { type Route } from './+types/route.ts';
 import * as styles from './route.css.ts';
 
 const loginWithPasswordMutation = graphql(/* GraphQL */ `
@@ -61,16 +59,26 @@ const loginWithPasswordMutation = graphql(/* GraphQL */ `
 const LoginFormSchema = z.object({
   email: UserEmailSchema,
   password: PasswordSchema,
+  redirect: z.string().optional(),
   rememberMe: z.boolean().default(false),
 });
 
-export async function loader({ request }: Route.LoaderArgs) {
+export const meta: Route.MetaFunction = () => [
+  {
+    description: '',
+    title: 'Vers | Login',
+  },
+];
+
+export const loader = withErrorHandling(async (args: Route.LoaderArgs) => {
+  const { request } = args;
+
   await requireAnonymous(request);
+});
 
-  return null;
-}
+export const action = withErrorHandling(async (args: Route.ActionArgs) => {
+  const { request } = args;
 
-export async function action({ request }: Route.ActionArgs) {
   await requireAnonymous(request);
 
   const client = createGQLClient();
@@ -88,97 +96,80 @@ export async function action({ request }: Route.ActionArgs) {
     return data({ result }, { status });
   }
 
-  try {
-    const { loginWithPassword } = await client.request(
-      loginWithPasswordMutation,
-      {
-        input: {
-          email: submission.value.email,
-          password: submission.value.password,
-          rememberMe: submission.value.rememberMe,
-        },
+  const { loginWithPassword } = await client.request(
+    loginWithPasswordMutation,
+    {
+      input: {
+        email: submission.value.email,
+        password: submission.value.password,
+        rememberMe: submission.value.rememberMe,
       },
-    );
+    },
+  );
 
-    if (isMutationError(loginWithPassword)) {
-      const result = submission.reply({
-        formErrors: [loginWithPassword.error.message],
-      });
+  if (isMutationError(loginWithPassword)) {
+    const result = submission.reply({
+      formErrors: [loginWithPassword.error.message],
+    });
 
-      return data({ result }, { status: 401 });
-    }
+    return data({ result }, { status: 401 });
+  }
 
-    if (is2FARequiredPayload(loginWithPassword)) {
-      const verifyURL = new URL(`${getDomainURL(request)}${Routes.VerifyOTP}`);
+  if (is2FARequiredPayload(loginWithPassword)) {
+    const verifyURL = new URL(`${getDomainURL(request)}${Routes.VerifyOTP}`);
 
-      verifyURL.searchParams.set(QueryParam.Target, submission.value.email);
+    verifyURL.searchParams.set(QueryParam.Target, submission.value.email);
+    verifyURL.searchParams.set(QueryParam.Type, VerificationType.TwoFactorAuth);
 
+    if (submission.value.redirect) {
       verifyURL.searchParams.set(
-        QueryParam.Type,
-        VerificationType.TwoFactorAuth,
+        QueryParam.RedirectTo,
+        submission.value.redirect,
       );
-
-      invariant(loginWithPassword.sessionID, 'sessionID is required');
-
-      const verifySession = await verifySessionStorage.getSession(
-        request.headers.get('cookie'),
-      );
-
-      verifySession.set(
-        SESSION_KEY_VERIFY_UNVERIFIED_SESSION_ID,
-        loginWithPassword.sessionID,
-      );
-
-      verifySession.set(
-        SESSION_KEY_VERIFY_TRANSACTION_ID,
-        loginWithPassword.transactionID,
-      );
-
-      return redirect(verifyURL.toString(), {
-        headers: {
-          'set-cookie': await verifySessionStorage.commitSession(verifySession),
-        },
-      });
     }
 
-    const authSession = await authSessionStorage.getSession(
+    invariant(loginWithPassword.sessionID, 'sessionID is required');
+
+    const verifySession = await verifySessionStorage.getSession(
       request.headers.get('cookie'),
     );
 
-    storeAuthPayload(authSession, loginWithPassword);
+    verifySession.set('unverifiedSessionID', loginWithPassword.sessionID);
+    verifySession.set('transactionID', loginWithPassword.transactionID);
 
-    return redirect(Routes.Dashboard, {
+    return redirect(verifyURL.toString(), {
       headers: {
-        'set-cookie': await authSessionStorage.commitSession(authSession, {
-          expires: new Date(loginWithPassword.session.expiresAt),
-        }),
+        'set-cookie': await verifySessionStorage.commitSession(verifySession),
       },
     });
-  } catch (error) {
-    // TODO(#16): capture error
-    if (error instanceof Error) {
-      console.error('error', error.message);
-    }
   }
 
-  const result = submission.reply({
-    formErrors: ['Something went wrong'],
+  const authSession = await authSessionStorage.getSession(
+    request.headers.get('cookie'),
+  );
+
+  storeAuthPayload(authSession, loginWithPassword);
+
+  return redirect(safeRedirect(submission.value.redirect ?? Routes.Dashboard), {
+    headers: {
+      'set-cookie': await authSessionStorage.commitSession(authSession, {
+        expires: new Date(loginWithPassword.session.expiresAt),
+      }),
+    },
   });
+});
 
-  return data({ result }, { status: 500 });
-}
-
-export const meta: Route.MetaFunction = () => {
-  return [{ title: 'Login' }];
-};
-
-export function Login({ actionData }: Route.ComponentProps) {
+export function Login(props: Route.ComponentProps) {
+  const [searchParams] = useSearchParams();
   const isFormPending = useIsFormPending();
 
   const [form, fields] = useForm({
     constraint: getZodConstraint(LoginFormSchema),
+    defaultValue: {
+      redirect: searchParams.get('redirect'),
+    },
     id: 'login-form',
-    lastResult: actionData?.result,
+    lastResult: props.actionData?.result,
     onValidate({ formData }) {
       return parseWithZod(formData, { schema: LoginFormSchema });
     },
@@ -219,6 +210,7 @@ export function Login({ actionData }: Route.ComponentProps) {
             htmlFor: fields.password.id,
           }}
         />
+        <input {...getInputProps(fields.redirect, { type: 'hidden' })} />
         <div className={styles.rememberMeContainer}>
           <Field
             errors={fields.rememberMe.errors ?? []}

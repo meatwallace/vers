@@ -1,12 +1,11 @@
-import { ServiceID } from '@chrono/service-types';
 import { createId } from '@paralleldrive/cuid2';
+import { ServiceID } from '@vers/service-types';
 import { db } from '~/mocks/db';
 import { env } from '../env';
 import { createEmailService } from '../services/email-service/create-email-service';
 import { createSessionService } from '../services/session-service/create-session-service';
 import { createUserService } from '../services/user-service/create-user-service';
 import { createVerificationService } from '../services/verification-service/create-verification-service';
-import { createWorldService } from '../services/world-service/create-world-service';
 import { AuthedContext, Context } from '../types';
 
 interface MockContextConfig {
@@ -55,12 +54,6 @@ export function createMockGQLContext(config: MockContextConfig): Context {
         apiURL: env.VERIFICATIONS_SERVICE_URL,
         requestID,
         serviceID: ServiceID.ServiceVerification,
-      }),
-      world: createWorldService({
-        accessToken: config.accessToken,
-        apiURL: env.WORLDS_SERVICE_URL,
-        requestID,
-        serviceID: ServiceID.ServiceWorld,
       }),
     },
   };

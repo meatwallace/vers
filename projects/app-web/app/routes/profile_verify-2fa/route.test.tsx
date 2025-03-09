@@ -6,7 +6,6 @@ import { drop } from '@mswjs/data';
 import { VerificationType } from '~/gql/graphql.ts';
 import { db } from '~/mocks/db.ts';
 import { server } from '~/mocks/node.ts';
-import { SESSION_KEY_VERIFY_TRANSACTION_ID } from '~/session/consts.ts';
 import { verifySessionStorage } from '~/session/verify-session-storage.server.ts';
 import { withAuthedUser } from '~/test-utils/with-authed-user.ts';
 import { withRouteProps } from '~/test-utils/with-route-props.tsx';
@@ -31,7 +30,7 @@ async function setupTest(config: TestConfig = {}) {
   const verifySession = await verifySessionStorage.getSession();
 
   if (config.transactionID) {
-    verifySession.set(SESSION_KEY_VERIFY_TRANSACTION_ID, config.transactionID);
+    verifySession.set('transactionID', config.transactionID);
   }
 
   // @ts-expect-error(#35) - react router test types are out of date
@@ -108,9 +107,7 @@ test('it renders the 2FA setup page with QR code and form', async () => {
   });
 
   const qrCode = await screen.findByAltText('QR code for 2FA');
-  const otpURI = screen.getByText(
-    /otpauth:\/\/totp\/Chrononomicon:test@example.com/,
-  );
+  const otpURI = screen.getByText(/otpauth:\/\/totp\/vers:test@example.com/);
   const codeInput = screen.getByLabelText(/code/i);
   const submitButton = screen.getByRole('button', { name: /submit/i });
 

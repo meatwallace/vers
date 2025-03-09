@@ -1,12 +1,11 @@
-import { ServiceID } from '@chrono/service-types';
-import { getTokenFromHeader } from '@chrono/service-utils';
+import { ServiceID } from '@vers/service-types';
+import { getTokenFromHeader } from '@vers/service-utils';
 import { YogaInitialContext } from 'graphql-yoga';
 import { Context as HonoContext } from 'hono';
 import { createEmailService } from '~/services/email-service/create-email-service';
 import { createSessionService } from '~/services/session-service/create-session-service';
 import { createUserService } from '~/services/user-service/create-user-service';
 import { createVerificationService } from '~/services/verification-service/create-verification-service';
-import { createWorldService } from '~/services/world-service/create-world-service';
 import { env } from './env';
 import { AuthedContext, Context, UnverifiedAuthContext } from './types';
 
@@ -30,13 +29,6 @@ export async function createYogaContext(
     apiURL: env.USERS_SERVICE_URL,
     requestID,
     serviceID: ServiceID.ServiceUser,
-  });
-
-  const worldService = createWorldService({
-    accessToken,
-    apiURL: env.WORLDS_SERVICE_URL,
-    requestID,
-    serviceID: ServiceID.ServiceWorld,
   });
 
   const sessionService = createSessionService({
@@ -64,7 +56,6 @@ export async function createYogaContext(
       session: sessionService,
       user: userService,
       verification: verificationService,
-      world: worldService,
     },
   };
 

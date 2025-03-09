@@ -1,5 +1,5 @@
-import { users } from '@chrono/postgres-schema';
-import { createTestUser, PostgresTestUtils } from '@chrono/service-test-utils';
+import { users } from '@vers/postgres-schema';
+import { createTestUser, PostgresTestUtils } from '@vers/service-test-utils';
 import { eq } from 'drizzle-orm';
 import { Hono } from 'hono';
 import { pgTestConfig } from '../pg-test-config';

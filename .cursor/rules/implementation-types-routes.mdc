@@ -1,6 +1,7 @@
 ---
 description: Standards for working with generated React Route types
-globs: "**/*.{ts,tsx}"
+globs: "**/routes/**/*.{ts,tsx}"
+alwaysApply: false
 ---
 # Route Types Standards
 
@@ -49,7 +50,7 @@ examples:
       };
 
       // ✅ CORRECT: Using generated route types
-      import { type Route } from './+types/routes';
+      import type { Route } from './+types/routes';
       
       export function Profile(props: Route.ComponentProps) {
         // ...

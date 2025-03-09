@@ -1,7 +1,7 @@
 import {
   GetVerificationRequest,
   GetVerificationResponse,
-} from '@chrono/service-types';
+} from '@vers/service-types';
 import { marshal } from './marshal';
 import { VerificationData, VerificationServiceContext } from './types';
 

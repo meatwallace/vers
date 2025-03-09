@@ -4,7 +4,6 @@ import { EmailService } from '~/services/email-service/types';
 import { SessionData, SessionService } from '~/services/session-service/types';
 import { UserData, UserService } from '~/services/user-service/types';
 import { VerificationService } from '~/services/verification-service/types';
-import { WorldService } from '~/services/world-service/types';
 import { envSchema } from './env';
 
 export type Env = z.infer<typeof envSchema>;
@@ -40,7 +39,6 @@ export interface Services {
   session: SessionService;
   user: UserService;
   verification: VerificationService;
-  world: WorldService;
 }
 
 export type StandardMutationPayload<T> =

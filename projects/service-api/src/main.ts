@@ -1,5 +1,5 @@
-import { createLoggerMiddleware } from '@chrono/service-utils';
 import { serve } from '@hono/node-server';
+import { createLoggerMiddleware } from '@vers/service-utils';
 import { requestId } from 'hono/request-id';
 import { app } from './app';
 import { env } from './env';

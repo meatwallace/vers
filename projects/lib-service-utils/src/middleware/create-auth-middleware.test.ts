@@ -1,4 +1,4 @@
-import { createTestJWT } from '@chrono/service-test-utils';
+import { createTestJWT } from '@vers/service-test-utils';
 import { Context, Hono } from 'hono';
 import * as jose from 'jose';
 import { createAuthMiddleware } from './create-auth-middleware';

@@ -28,7 +28,6 @@ export default tseslint.config(
   ...compat.extends('plugin:react-hooks/recommended'),
   jsxA11yPlugin.flatConfigs.recommended,
   perfectionist.configs['recommended-natural'],
-
   {
     languageOptions: {
       globals: {
@@ -85,6 +84,12 @@ export default tseslint.config(
 
       'drizzle/enforce-update-with-where': 'error',
 
+      'perfectionist/sort-exports': [
+        'error',
+        {
+          partitionByComment: true,
+        },
+      ],
       'perfectionist/sort-imports': [
         'error',
         {

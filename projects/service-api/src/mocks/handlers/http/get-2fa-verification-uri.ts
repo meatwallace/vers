@@ -1,5 +1,5 @@
-import { Get2FAVerificationURIRequest } from '@chrono/service-types';
 import { getTOTPAuthUri } from '@epic-web/totp';
+import { Get2FAVerificationURIRequest } from '@vers/service-types';
 import { http, HttpResponse } from 'msw';
 import { env } from '~/env';
 import { db } from '../../db';
@@ -30,7 +30,7 @@ export const get2FAVerificationURI = http.post<
     accountName: body.target,
     algorithm: verification.algorithm,
     digits: verification.digits,
-    issuer: 'Chrononomicon',
+    issuer: 'vers',
     period: verification.period,
     secret: verification.secret,
   });

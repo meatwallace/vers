@@ -1,7 +1,7 @@
 import {
   DeleteVerificationRequest,
   DeleteVerificationResponse,
-} from '@chrono/service-types';
+} from '@vers/service-types';
 import { VerificationServiceContext } from './types';
 
 export async function deleteVerification(

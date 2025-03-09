@@ -1,4 +1,4 @@
-import * as schema from '@chrono/postgres-schema';
+import * as schema from '@vers/postgres-schema';
 import { ServiceResponse } from './service-response';
 
 export type VerificationType =

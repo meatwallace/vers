@@ -1,6 +1,6 @@
-import { sessions } from '@chrono/postgres-schema';
-import { createTestUser, PostgresTestUtils } from '@chrono/service-test-utils';
 import { createId } from '@paralleldrive/cuid2';
+import { sessions } from '@vers/postgres-schema';
+import { createTestUser, PostgresTestUtils } from '@vers/service-test-utils';
 import { Hono } from 'hono';
 import { pgTestConfig } from '../pg-test-config';
 import { getSessions } from './get-sessions';

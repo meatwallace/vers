@@ -1,5 +1,5 @@
-import * as schema from '@chrono/postgres-schema';
-import { hashPassword } from '@chrono/service-utils';
+import * as schema from '@vers/postgres-schema';
+import { hashPassword } from '@vers/service-utils';
 import { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
 
 interface TestUserConfig {

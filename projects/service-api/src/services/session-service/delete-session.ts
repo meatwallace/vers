@@ -1,7 +1,7 @@
 import {
   DeleteSessionRequest,
   DeleteSessionResponse,
-} from '@chrono/service-types';
+} from '@vers/service-types';
 import { SessionServiceContext } from './types';
 
 export async function deleteSession(

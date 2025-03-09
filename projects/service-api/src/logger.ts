@@ -1,4 +1,4 @@
-import { createLogger } from '@chrono/service-utils';
+import { createLogger } from '@vers/service-utils';
 import { env } from './env';
 
 export const logger = createLogger({

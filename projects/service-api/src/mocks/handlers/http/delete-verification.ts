@@ -1,7 +1,7 @@
 import {
   DeleteVerificationRequest,
   DeleteVerificationResponse,
-} from '@chrono/service-types';
+} from '@vers/service-types';
 import { http, HttpResponse } from 'msw';
 import { env } from '~/env.ts';
 import { db } from '../../db.ts';

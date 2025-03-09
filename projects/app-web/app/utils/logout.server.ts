@@ -3,10 +3,6 @@ import { GraphQLClient } from 'graphql-request';
 import { safeRedirect } from 'remix-utils/safe-redirect';
 import { graphql } from '~/gql';
 import { authSessionStorage } from '~/session/auth-session-storage.server';
-import {
-  SESSION_KEY_AUTH_ACCESS_TOKEN,
-  SESSION_KEY_AUTH_SESSION_ID,
-} from '~/session/consts';
 import { Routes } from '~/types';
 import { combineHeaders } from './combine-headers.server.ts';
 import { createGQLClient } from './create-gql-client.server.ts';
@@ -42,8 +38,8 @@ export async function logout(request: Request, ctx: Context = {}) {
     request.headers.get('cookie'),
   );
 
-  const accessToken = authSession.get(SESSION_KEY_AUTH_ACCESS_TOKEN);
-  const sessionID = authSession.get(SESSION_KEY_AUTH_SESSION_ID);
+  const accessToken = authSession.get('accessToken');
+  const sessionID = authSession.get('sessionID');
 
   client.setHeader('authorization', `Bearer ${accessToken}`);
 

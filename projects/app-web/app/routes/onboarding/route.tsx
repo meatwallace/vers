@@ -16,10 +16,11 @@ import { Routes } from '~/types.ts';
 import { checkHoneypot } from '~/utils/check-honeypot.server.ts';
 import { createGQLClient } from '~/utils/create-gql-client.server.ts';
 import { isMutationError } from '~/utils/is-mutation-error';
+import { withErrorHandling } from '~/utils/with-error-handling.ts';
 import { ConfirmPasswordSchema } from '~/validation/confirm-password-schema.ts';
 import { NameSchema } from '~/validation/name-schema.ts';
 import { UsernameSchema } from '~/validation/username-schema.ts';
-import { type Route } from './+types/route.ts';
+import type { Route } from './+types/route.ts';
 import { requireOnboardingSession } from './require-onboarding-session.server.ts';
 
 const finishEmailSignupMutation = graphql(/* GraphQL */ `
@@ -56,13 +57,24 @@ const OnboardingFormSchema = z
   })
   .and(ConfirmPasswordSchema);
 
-export async function loader({ request }: Route.LoaderArgs) {
+export const meta: Route.MetaFunction = () => [
+  {
+    description: '',
+    title: 'Vers | Onboarding',
+  },
+];
+
+export const loader = withErrorHandling(async (args: Route.LoaderArgs) => {
+  const { request } = args;
+
   const { email } = await requireOnboardingSession(request);
 
   return { email };
-}
+});
 
-export async function action({ request }: Route.ActionArgs) {
+export const action = withErrorHandling(async (args: Route.ActionArgs) => {
+  const { request } = args;
+
   const client = createGQLClient();
 
   const { email, transactionToken } = await requireOnboardingSession(request);
@@ -135,19 +147,15 @@ export async function action({ request }: Route.ActionArgs) {
   });
 
   return data({ result }, { status: 500 });
-}
+});
 
-export const meta: Route.MetaFunction = () => {
-  return [{ title: 'Onboarding' }];
-};
-
-export function Onboarding({ actionData }: Route.ComponentProps) {
+export function Onboarding(props: Route.ComponentProps) {
   const isFormPending = useIsFormPending();
 
   const [form, fields] = useForm({
     constraint: getZodConstraint(OnboardingFormSchema),
     id: 'onboarding-form',
-    lastResult: actionData?.result,
+    lastResult: props.actionData?.result,
     onValidate({ formData }) {
       return parseWithZod(formData, { schema: OnboardingFormSchema });
     },

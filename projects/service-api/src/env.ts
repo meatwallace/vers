@@ -1,8 +1,4 @@
-import {
-  addEnvUtils,
-  LoggingSchema,
-  NodeEnvSchema,
-} from '@chrono/service-utils';
+import { addEnvUtils, LoggingSchema, NodeEnvSchema } from '@vers/service-utils';
 import { z } from 'zod';
 
 export const envSchema = z
@@ -23,7 +19,6 @@ export const envSchema = z
     SESSIONS_SERVICE_URL: z.string().url(),
     USERS_SERVICE_URL: z.string().url(),
     VERIFICATIONS_SERVICE_URL: z.string().url(),
-    WORLDS_SERVICE_URL: z.string().url(),
   })
   .transform(addEnvUtils);
 

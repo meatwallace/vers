@@ -1,4 +1,4 @@
-import { ChangePasswordRequest } from '@chrono/service-types';
+import { ChangePasswordRequest } from '@vers/service-types';
 import { http, HttpResponse } from 'msw';
 import { env } from '~/env';
 import { db } from '~/mocks/db';

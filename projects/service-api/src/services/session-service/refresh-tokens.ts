@@ -1,7 +1,7 @@
 import {
   RefreshTokensRequest,
   RefreshTokensResponse,
-} from '@chrono/service-types';
+} from '@vers/service-types';
 import { Jsonify } from 'type-fest';
 import { marshal } from './marshal';
 import { AuthPayload, SessionServiceContext } from './types';
