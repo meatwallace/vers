@@ -1,5 +1,5 @@
-import { http, HttpResponse } from 'msw';
 import { VerifyPasswordRequest } from '@chrono/service-types';
+import { http, HttpResponse } from 'msw';
 import { env } from '~/env';
 import { db } from '../../db';
 
@@ -16,29 +16,29 @@ export const verifyPassword = http.post<never, VerifyPasswordRequest>(
 
     if (!user) {
       return HttpResponse.json({
-        success: false,
         error: 'No user with that email',
+        success: false,
       });
     }
 
     if (user.passwordHash === null) {
       return HttpResponse.json({
-        success: false,
         error: 'User does not have a password set',
+        success: false,
       });
     }
 
     // for the sake of our msw mocks we just store the raw password instead of the hash
     if (body.password !== user.passwordHash) {
       return HttpResponse.json({
-        success: false,
         error: 'Incorrect password',
+        success: false,
       });
     }
 
     return HttpResponse.json({
-      success: true,
       data: {},
+      success: true,
     });
   },
 );

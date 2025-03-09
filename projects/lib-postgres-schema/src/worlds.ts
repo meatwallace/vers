@@ -49,26 +49,26 @@ export const geographyFeaturesEnum = pgEnum('geography_features', [
 ]);
 
 export const worlds = pgTable('worlds', {
-  id: text('id').notNull().primaryKey(),
-  ownerID: text('owner_id')
-    .notNull()
-    .references(() => users.id),
-
-  // details
-  name: text('name').notNull(),
-
-  // world seed
-  fantasyType: fantasyTypeEnum('fantasy_type').notNull(),
-  technologyLevel: technologyLevelEnum('technology_level').notNull(),
   archetype: archetypeEnum('archetype'),
   atmosphere: atmosphereEnum('atmosphere').notNull(),
-  population: populationEnum('population').notNull(),
-  geographyType: geographyTypeEnum('geography_type').notNull(),
-  geographyFeatures: geographyFeaturesEnum('geography_features')
-    .array()
-    .notNull(),
 
   // meta
   createdAt: timestamp('created_at').notNull().defaultNow(),
+
+  // world seed
+  fantasyType: fantasyTypeEnum('fantasy_type').notNull(),
+  geographyFeatures: geographyFeaturesEnum('geography_features')
+    .array()
+    .notNull(),
+  geographyType: geographyTypeEnum('geography_type').notNull(),
+  id: text('id').notNull().primaryKey(),
+  // details
+  name: text('name').notNull(),
+  ownerID: text('owner_id')
+    .notNull()
+    .references(() => users.id),
+  population: populationEnum('population').notNull(),
+
+  technologyLevel: technologyLevelEnum('technology_level').notNull(),
   updatedAt: timestamp('updated_at').notNull().defaultNow(),
 });

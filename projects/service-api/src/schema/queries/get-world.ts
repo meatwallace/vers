@@ -1,6 +1,6 @@
 import invariant from 'tiny-invariant';
-import { Context } from '~/types';
 import { WorldData } from '~/services/world-service/types';
+import { Context } from '~/types';
 import { builder } from '../builder';
 import { World } from '../types/world';
 import { requireAuth } from '../utils/require-auth';
@@ -44,10 +44,10 @@ export const resolve = requireAuth(getWorld);
 
 builder.queryField('getWorld', (t) =>
   t.field({
-    type: World,
     args: {
-      input: t.arg({ type: GetWorldInput, required: true }),
+      input: t.arg({ required: true, type: GetWorldInput }),
     },
     resolve,
+    type: World,
   }),
 );

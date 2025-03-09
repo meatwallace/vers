@@ -8,14 +8,14 @@ import { parseCommaSeperatedStrings } from './utils/parse-comma-seperated-string
 const defaultFilesToFormat = ['.'];
 
 const prettierSpinnerConfig = {
-  text: 'Formatting files with Prettier...',
-  successText: 'Prettier completed',
   failText: 'Prettier failed',
+  successText: 'Prettier completed',
+  text: 'Formatting files with Prettier...',
 };
 
 interface FormatArgs {
-  files: Array<string> | undefined;
   check: boolean;
+  files: Array<string> | undefined;
 }
 
 const program = new Command()
@@ -23,7 +23,7 @@ const program = new Command()
   .description('CLI to format files')
   .option('-f, --files <files>', 'files to format', parseCommaSeperatedStrings)
   .option('-c, --check', 'check if files are formatted')
-  .action(async ({ files, check }: FormatArgs) => {
+  .action(async ({ check, files }: FormatArgs) => {
     await formatFiles(files, check);
   });
 

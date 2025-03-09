@@ -7,11 +7,10 @@ export const Session = builder.objectRef<SessionData>('Session');
 
 Session.implement({
   fields: (t) => ({
-    id: t.exposeID('id'),
-    expiresAt: t.expose('expiresAt', { type: 'DateTime' }),
     createdAt: t.expose('createdAt', { type: 'DateTime' }),
+    expiresAt: t.expose('expiresAt', { type: 'DateTime' }),
+    id: t.exposeID('id'),
     user: t.field({
-      type: User,
       resolve: async (parent, args, ctx) => {
         const user = await ctx.services.user.getUser({
           id: parent.userID,
@@ -21,6 +20,7 @@ Session.implement({
 
         return user;
       },
+      type: User,
     }),
   }),
 });

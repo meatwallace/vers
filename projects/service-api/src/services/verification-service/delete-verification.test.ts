@@ -15,16 +15,16 @@ test('it deletes a verification', async () => {
   });
 
   const accessToken = await createTestJWT({
-    sub: user.id,
     audience: env.API_IDENTIFIER,
     issuer: `https://${env.API_IDENTIFIER}/`,
+    sub: user.id,
   });
 
   const ctx = createServiceContext({
+    accessToken,
+    apiURL: env.VERIFICATIONS_SERVICE_URL,
     requestID: createId(),
     serviceID: ServiceID.ServiceWorld,
-    apiURL: env.VERIFICATIONS_SERVICE_URL,
-    accessToken,
   });
 
   const args = { id: 'test_id' };

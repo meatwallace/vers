@@ -1,8 +1,8 @@
 import { afterEach, expect, test } from 'vitest';
-import { createRoutesStub } from 'react-router';
-import { drop } from '@mswjs/data';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { createRoutesStub } from 'react-router';
+import { drop } from '@mswjs/data';
 import { VerificationType } from '~/gql/graphql.ts';
 import { db } from '~/mocks/db.ts';
 import { server } from '~/mocks/node.ts';
@@ -12,14 +12,14 @@ import { withAuthedUser } from '~/test-utils/with-authed-user.ts';
 import { withRouteProps } from '~/test-utils/with-route-props.tsx';
 import { withSession } from '~/test-utils/with-session.ts';
 import { Routes } from '~/types.ts';
-import { ProfileVerify2FARoute, action, loader } from './route.tsx';
+import { action, loader, ProfileVerify2FARoute } from './route.tsx';
 
 interface TestConfig {
   isAuthed?: boolean;
   transactionID?: string;
   user?: {
-    id?: string;
     email?: string;
+    id?: string;
     name?: string;
   };
 }
@@ -41,24 +41,24 @@ async function setupTest(config: TestConfig = {}) {
 
   const ProfileVerify2FAStub = createRoutesStub([
     {
-      path: '/',
+      action: config.isAuthed
+        ? withAuthedUser(actionWithSession, { user: config.user })
+        : actionWithSession,
       Component: withRouteProps(ProfileVerify2FARoute),
       // @ts-expect-error(#35) - react router test types are out of date
       loader: config.isAuthed
         ? // @ts-expect-error(#35) - react router test types are out of date
           withAuthedUser(loader, { user: config.user })
         : loader,
-      action: config.isAuthed
-        ? withAuthedUser(actionWithSession, { user: config.user })
-        : actionWithSession,
+      path: '/',
     },
     {
-      path: Routes.Profile,
       Component: () => 'PROFILE_ROUTE',
+      path: Routes.Profile,
     },
     {
-      path: Routes.Login,
       Component: () => 'LOGIN_ROUTE',
+      path: Routes.Login,
     },
   ]);
 
@@ -83,8 +83,8 @@ test('it redirects to login if the user is not authenticated', async () => {
 
 test('it redirects to profile page if the user has 2FA enabled', async () => {
   db.verification.create({
-    type: VerificationType.TwoFactorAuth,
     target: 'test@example.com',
+    type: VerificationType.TwoFactorAuth,
   });
 
   await setupTest({ isAuthed: true, user: { email: 'test@example.com' } });
@@ -96,8 +96,8 @@ test('it redirects to profile page if the user has 2FA enabled', async () => {
 
 test('it renders the 2FA setup page with QR code and form', async () => {
   db.verification.create({
-    type: VerificationType.TwoFactorAuthSetup,
     target: 'test@example.com',
+    type: VerificationType.TwoFactorAuthSetup,
   });
 
   await setupTest({
@@ -130,8 +130,8 @@ test('it redirects to profile page on successful 2FA setup', async () => {
   });
 
   db.verification.create({
-    type: VerificationType.TwoFactorAuthSetup,
     target: 'test@example.com',
+    type: VerificationType.TwoFactorAuthSetup,
   });
 
   const codeInput = await screen.findByLabelText(/code/i);
@@ -156,8 +156,8 @@ test('it shows validation errors for invalid code', async () => {
 
   // we still need a verification record for the route to load
   db.verification.create({
-    type: VerificationType.TwoFactorAuthSetup,
     target: 'test@example.com',
+    type: VerificationType.TwoFactorAuthSetup,
   });
 
   const codeInput = await screen.findByLabelText(/code/i);
@@ -181,8 +181,8 @@ test('it shows an error message when verification fails', async () => {
   });
 
   db.verification.create({
-    type: VerificationType.TwoFactorAuthSetup,
     target: 'test@example.com',
+    type: VerificationType.TwoFactorAuthSetup,
   });
 
   const codeInput = await screen.findByLabelText(/code/i);

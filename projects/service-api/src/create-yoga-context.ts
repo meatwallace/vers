@@ -1,7 +1,7 @@
-import { YogaInitialContext } from 'graphql-yoga';
-import { Context as HonoContext } from 'hono';
 import { ServiceID } from '@chrono/service-types';
 import { getTokenFromHeader } from '@chrono/service-utils';
+import { YogaInitialContext } from 'graphql-yoga';
+import { Context as HonoContext } from 'hono';
 import { createEmailService } from '~/services/email-service/create-email-service';
 import { createSessionService } from '~/services/session-service/create-session-service';
 import { createUserService } from '~/services/user-service/create-user-service';
@@ -19,46 +19,46 @@ export async function createYogaContext(
   const accessToken = getTokenFromHeader(authHeader);
 
   const emailService = createEmailService({
+    accessToken,
+    apiURL: env.EMAILS_SERVICE_URL,
     requestID,
     serviceID: ServiceID.ServiceEmail,
-    apiURL: env.EMAILS_SERVICE_URL,
-    accessToken,
   });
 
   const userService = createUserService({
+    accessToken,
+    apiURL: env.USERS_SERVICE_URL,
     requestID,
     serviceID: ServiceID.ServiceUser,
-    apiURL: env.USERS_SERVICE_URL,
-    accessToken,
   });
 
   const worldService = createWorldService({
+    accessToken,
+    apiURL: env.WORLDS_SERVICE_URL,
     requestID,
     serviceID: ServiceID.ServiceWorld,
-    apiURL: env.WORLDS_SERVICE_URL,
-    accessToken,
   });
 
   const sessionService = createSessionService({
+    accessToken,
+    apiURL: env.SESSIONS_SERVICE_URL,
     requestID,
     serviceID: ServiceID.ServiceSession,
-    apiURL: env.SESSIONS_SERVICE_URL,
-    accessToken,
   });
 
   const verificationService = createVerificationService({
+    accessToken,
+    apiURL: env.VERIFICATIONS_SERVICE_URL,
     requestID,
     serviceID: ServiceID.ServiceVerification,
-    apiURL: env.VERIFICATIONS_SERVICE_URL,
-    accessToken,
   });
 
   const userID = honoCtx.get('userID');
   const sessionID = honoCtx.get('sessionID');
 
   const sharedContext = {
-    request: yogaCtx.request,
     ipAddress: honoCtx.get('ipAddress'),
+    request: yogaCtx.request,
     services: {
       email: emailService,
       session: sessionService,
@@ -78,8 +78,8 @@ export async function createYogaContext(
 
     const unverifiedAuthContext: UnverifiedAuthContext = {
       ...sharedContext,
-      user: null,
       session,
+      user: null,
     };
 
     return unverifiedAuthContext;
@@ -96,8 +96,8 @@ export async function createYogaContext(
 
     const authedContext: AuthedContext = {
       ...sharedContext,
-      user,
       session,
+      user,
     };
 
     return authedContext;
@@ -106,7 +106,7 @@ export async function createYogaContext(
   // if both userID or sessionID are missing, return an anonymous context
   return {
     ...sharedContext,
-    user: null,
     session: null,
+    user: null,
   };
 }

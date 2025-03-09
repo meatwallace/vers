@@ -1,11 +1,11 @@
 export interface ServiceResponseError {
-  success: false;
   error: string;
+  success: false;
 }
 
 interface ServiceResponseSuccess<T> {
-  success: true;
   data: T;
+  success: true;
 }
 
 export type ServiceResponse<T> =

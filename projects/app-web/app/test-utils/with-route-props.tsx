@@ -1,16 +1,16 @@
-import type * as T from 'react-router/route-module';
 import { useActionData, useLoaderData, useParams } from 'react-router';
+import type * as T from 'react-router/route-module';
 
 type RouteProps = T.CreateComponentProps<{
-  parents: [];
-  module: Record<string, unknown>;
-  id: unknown;
-  file: string;
-  path: string;
-  params: unknown;
-  loaderData: unknown;
   actionData: unknown;
+  file: string;
+  id: unknown;
+  loaderData: unknown;
   matches: [];
+  module: Record<string, unknown>;
+  params: unknown;
+  parents: [];
+  path: string;
 }>;
 
 export function withRouteProps<T extends RouteProps = RouteProps>(
@@ -26,8 +26,8 @@ export function withRouteProps<T extends RouteProps = RouteProps>(
     const routeProps = {
       actionData,
       loaderData,
-      params,
       matches: [],
+      params,
       // just cast it - typing it's a nightmare
     } as unknown as T;
 

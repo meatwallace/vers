@@ -1,8 +1,8 @@
-import { GraphQLError } from 'graphql';
 import {
   generateExistingAccountEmail,
   generateWelcomeEmail,
 } from '@chrono/email-templates';
+import { GraphQLError } from 'graphql';
 import { env } from '~/env';
 import { logger } from '~/logger';
 import { Context } from '~/types';
@@ -24,10 +24,10 @@ export async function startEmailSignup(
 ): Promise<typeof StartEmailSignupPayload.$inferType> {
   try {
     const transactionID = createPendingTransaction({
-      target: args.input.email,
-      ipAddress: ctx.ipAddress,
       action: VerificationType.ONBOARDING,
+      ipAddress: ctx.ipAddress,
       sessionID: null,
+      target: args.input.email,
     });
 
     const existingUser = await ctx.services.user.getUser({
@@ -43,22 +43,22 @@ export async function startEmailSignup(
       });
 
       await ctx.services.email.sendEmail({
-        to: args.input.email,
         subject: 'You already have an account!',
+        to: args.input.email,
         ...email,
       });
 
       return {
-        transactionID,
         sessionID: null,
+        transactionID,
       };
     }
 
     const verification = await ctx.services.verification.createVerification({
-      type: 'onboarding',
-      target: args.input.email,
-      period: 10 * 60, // 10 minutes
       expiresAt: new Date(Date.now() + 10 * 60 * 1000), // 10 minutes from now
+      period: 10 * 60, // 10 minutes
+      target: args.input.email,
+      type: 'onboarding',
     });
 
     const verificationURL = new URL(`${env.APP_WEB_URL}/verify-otp`);
@@ -69,19 +69,19 @@ export async function startEmailSignup(
     verificationURL.searchParams.set('transactionID', transactionID);
 
     const email = await generateWelcomeEmail({
-      verificationURL: verificationURL.toString(),
       verificationCode: verification.code,
+      verificationURL: verificationURL.toString(),
     });
 
     await ctx.services.email.sendEmail({
-      to: args.input.email,
       subject: 'Welcome to Chrononomicon!',
+      to: args.input.email,
       ...email,
     });
 
     return {
-      transactionID,
       sessionID: null,
+      transactionID,
     };
   } catch (error: unknown) {
     // TODO(#16): capture via Sentry
@@ -104,18 +104,18 @@ const StartEmailSignupInput = builder.inputType('StartEmailSignupInput', {
 });
 
 const StartEmailSignupPayload = builder.unionType('StartEmailSignupPayload', {
-  types: [TwoFactorRequiredPayload, MutationErrorPayload],
   resolveType: createPayloadResolver(TwoFactorRequiredPayload),
+  types: [TwoFactorRequiredPayload, MutationErrorPayload],
 });
 
 export const resolve = startEmailSignup;
 
 builder.mutationField('startEmailSignup', (t) =>
   t.field({
-    type: StartEmailSignupPayload,
     args: {
-      input: t.arg({ type: StartEmailSignupInput, required: true }),
+      input: t.arg({ required: true, type: StartEmailSignupInput }),
     },
     resolve,
+    type: StartEmailSignupPayload,
   }),
 );

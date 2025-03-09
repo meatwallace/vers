@@ -1,6 +1,6 @@
+import { ServiceID } from '@chrono/service-types';
 import { generateTOTP } from '@epic-web/totp';
 import { drop } from '@mswjs/data';
-import { ServiceID } from '@chrono/service-types';
 import { env } from '~/env';
 import { db } from '~/mocks/db';
 import { createServiceContext } from '../utils';
@@ -13,28 +13,28 @@ test('it verifies a code', async () => {
   });
 
   const verification = db.verification.create({
-    type: 'onboarding',
     target: 'test@example.com',
+    type: 'onboarding',
     ...verificationConfig,
   });
 
   const ctx = createServiceContext({
-    serviceID: ServiceID.ServiceVerification,
-    requestID: 'test',
     apiURL: env.VERIFICATIONS_SERVICE_URL,
+    requestID: 'test',
+    serviceID: ServiceID.ServiceVerification,
   });
 
   const args = {
-    type: 'onboarding',
-    target: 'test@example.com',
     code: otp,
+    target: 'test@example.com',
+    type: 'onboarding',
   } as const;
 
   const result = await verifyCode(args, ctx);
 
   expect(result).toMatchObject({
-    type: verification.type,
     target: verification.target,
+    type: verification.type,
   });
 
   drop(db);

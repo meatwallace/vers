@@ -9,7 +9,7 @@ interface Config {
 export async function generateResetPasswordEmail(config: Config) {
   return generateEmail({
     component: (
-      <E.Html lang="en" dir="ltr">
+      <E.Html dir="ltr" lang="en">
         <ResetPasswordEmail resetURL={config.resetURL} />
       </E.Html>
     ),

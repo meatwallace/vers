@@ -1,4 +1,4 @@
-import { HttpResponse, graphql } from 'msw';
+import { graphql, HttpResponse } from 'msw';
 import {
   RefreshAccessTokenInput,
   RefreshAccessTokenPayload,
@@ -34,8 +34,8 @@ export const RefreshAccessToken = graphql.mutation<
       data: {
         refreshAccessToken: {
           error: {
-            title: 'Invalid refresh token',
             message: 'The refresh token is invalid',
+            title: 'Invalid refresh token',
           },
         },
       },
@@ -55,8 +55,8 @@ export const RefreshAccessToken = graphql.mutation<
       data: {
         refreshAccessToken: {
           error: {
-            title: 'Invalid refresh token',
             message: 'The refresh token is invalid',
+            title: 'Invalid refresh token',
           },
         },
       },
@@ -64,15 +64,15 @@ export const RefreshAccessToken = graphql.mutation<
   }
 
   const accessToken = encodeMockJWT({
-    sub: user.id,
     exp: Math.floor(Date.now() / 1000) + EXPIRATION_IN_S,
+    sub: user.id,
   });
 
   return HttpResponse.json({
     data: {
       refreshAccessToken: {
-        refreshToken: session.refreshToken,
         accessToken,
+        refreshToken: session.refreshToken,
         session: {
           ...session,
           user: addUserResolvedFields(user),

@@ -1,21 +1,21 @@
 import { afterEach, expect, test } from 'vitest';
-import { createRoutesStub } from 'react-router';
-import { drop } from '@mswjs/data';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { createRoutesStub } from 'react-router';
+import { drop } from '@mswjs/data';
 import { db } from '~/mocks/db.ts';
 import { withAuthedUser } from '~/test-utils/with-authed-user.ts';
 import { withRouteProps } from '~/test-utils/with-route-props.tsx';
 import { Routes } from '~/types.ts';
-import { Profile, loader } from './route.tsx';
+import { loader, Profile } from './route.tsx';
 
 interface TestConfig {
   isAuthed: boolean;
   user?: {
-    id?: string;
-    name?: string;
     email?: string;
+    id?: string;
     is2FAEnabled?: boolean;
+    name?: string;
   };
 }
 
@@ -24,17 +24,17 @@ function setupTest(config: TestConfig) {
 
   const ProfileStub = createRoutesStub([
     {
-      path: '/',
       Component: withRouteProps(Profile),
       // @ts-expect-error(#35) - react router test types are out of date
       loader: config.isAuthed
         ? // @ts-expect-error(#35) - react router test types are out of date
           withAuthedUser(loader, { user: config.user })
         : loader,
+      path: '/',
     },
     {
-      path: Routes.Login,
       Component: () => 'LOGIN_ROUTE',
+      path: Routes.Login,
     },
   ]);
 
@@ -59,10 +59,10 @@ test('it renders the profile page with user information when authenticated', asy
   setupTest({
     isAuthed: true,
     user: {
-      id: 'user_id',
-      name: 'Test User',
       email: 'test@example.com',
+      id: 'user_id',
       is2FAEnabled: false,
+      name: 'Test User',
     },
   });
 
@@ -77,10 +77,10 @@ test('it shows an enable 2FA button when the user has not enabled 2FA', async ()
   setupTest({
     isAuthed: true,
     user: {
-      id: 'user_id',
-      name: 'Test User',
       email: 'test@example.com',
+      id: 'user_id',
       is2FAEnabled: false,
+      name: 'Test User',
     },
   });
 
@@ -95,10 +95,10 @@ test('it displays a 2FA status enabled message when the user has enabled 2FA', a
   setupTest({
     isAuthed: true,
     user: {
-      id: 'user_id',
-      name: 'Test User',
       email: 'test@example.com',
+      id: 'user_id',
       is2FAEnabled: true,
+      name: 'Test User',
     },
   });
 

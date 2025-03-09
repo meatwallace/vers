@@ -1,9 +1,9 @@
 import { afterEach, expect, test } from 'vitest';
-import { graphql } from 'msw';
-import { createRoutesStub } from 'react-router';
-import { drop } from '@mswjs/data';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { createRoutesStub } from 'react-router';
+import { drop } from '@mswjs/data';
+import { graphql } from 'msw';
 import { db } from '~/mocks/db.ts';
 import { server } from '~/mocks/node.ts';
 import { SESSION_KEY_VERIFY_TRANSACTION_ID } from '~/session/consts.ts';
@@ -11,7 +11,7 @@ import { verifySessionStorage } from '~/session/verify-session-storage.server.ts
 import { withAuthedUser } from '~/test-utils/with-authed-user.ts';
 import { withRouteProps } from '~/test-utils/with-route-props.tsx';
 import { Routes } from '~/types.ts';
-import { Signup, action, loader } from './route.tsx';
+import { action, loader, Signup } from './route.tsx';
 
 let cookieHeader: null | string = null;
 
@@ -38,20 +38,20 @@ function setupTest(config: TestConfig) {
 
   const SignupStub = createRoutesStub([
     {
-      path: '/',
-      Component: withRouteProps(Signup),
       // @ts-expect-error(#35) - react router test types are out of date
       action: config.isAuthed ? withAuthedUser(action) : action,
+      Component: withRouteProps(Signup),
       // @ts-expect-error(#35) - react router test types are out of date
       loader: config.isAuthed ? withAuthedUser(loader) : loader,
+      path: '/',
     },
     {
-      path: Routes.VerifyOTP,
       Component: () => 'VERIFY_OTP_ROUTE',
+      path: Routes.VerifyOTP,
     },
     {
-      path: Routes.Dashboard,
       Component: () => 'DASHBOARD_ROUTE',
+      path: Routes.Dashboard,
     },
   ]);
 

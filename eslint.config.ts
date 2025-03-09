@@ -1,13 +1,14 @@
+import { FlatCompat } from '@eslint/eslintrc';
+import eslint from '@eslint/js';
 import prettierConfig from 'eslint-config-prettier';
 import drizzlePlugin from 'eslint-plugin-drizzle';
 import jsxA11yPlugin from 'eslint-plugin-jsx-a11y';
+import perfectionist from 'eslint-plugin-perfectionist';
 import reactPlugin from 'eslint-plugin-react';
 import unicornPlugin from 'eslint-plugin-unicorn';
-import tseslint from 'typescript-eslint';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { FlatCompat } from '@eslint/eslintrc';
-import eslint from '@eslint/js';
+import tseslint from 'typescript-eslint';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -26,36 +27,24 @@ export default tseslint.config(
   reactPlugin.configs.flat['jsx-runtime'],
   ...compat.extends('plugin:react-hooks/recommended'),
   jsxA11yPlugin.flatConfigs.recommended,
+  perfectionist.configs['recommended-natural'],
+
   {
-    settings: {
-      react: {
-        createClass: 'createReactClass',
-        pragma: 'React',
-        fragment: 'Fragment',
-        version: 'detect',
-      },
-    },
     languageOptions: {
       globals: {
         console: 'readonly',
       },
       parserOptions: {
-        projectService: true,
-        tsconfigRootDir: import.meta.dirname,
-        sourceType: 'module',
         ecmaVersion: 'latest',
+        projectService: true,
+        sourceType: 'module',
+        tsconfigRootDir: import.meta.dirname,
       },
     },
     plugins: {
       drizzle: drizzlePlugin,
     },
     rules: {
-      '@typescript-eslint/no-unused-vars': [
-        'error',
-        {
-          ignoreRestSiblings: true,
-        },
-      ],
       '@typescript-eslint/array-type': [
         'error',
         {
@@ -68,29 +57,89 @@ export default tseslint.config(
           ignoreArrowShorthand: true,
         },
       ],
-      '@typescript-eslint/restrict-template-expressions': [
-        'error',
-        {
-          allow: [{ name: ['URL'], from: 'lib' }],
-          allowBoolean: true,
-          allowNullish: true,
-          allowNumber: true,
-        },
-      ],
       '@typescript-eslint/no-inferrable-types': [
         'error',
         {
           ignoreParameters: true,
         },
       ],
-      '@typescript-eslint/only-throw-error': 'off',
       '@typescript-eslint/no-unsafe-assignment': 'off',
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        {
+          ignoreRestSiblings: true,
+        },
+      ],
+      '@typescript-eslint/only-throw-error': 'off',
+      '@typescript-eslint/restrict-template-expressions': [
+        'error',
+        {
+          allow: [{ from: 'lib', name: ['URL'] }],
+          allowBoolean: true,
+          allowNullish: true,
+          allowNumber: true,
+        },
+      ],
 
       'drizzle/enforce-delete-with-where': 'off',
+
       'drizzle/enforce-update-with-where': 'error',
+
+      'perfectionist/sort-imports': [
+        'error',
+        {
+          customGroups: {
+            type: {
+              react: ['^react$', '^react-.+'],
+              'testing-library': ['^@testing-library'],
+              vitest: ['^vitest$'],
+            },
+            value: {
+              react: ['^react$', '^react-.+'],
+              'testing-library': ['^@testing-library'],
+              vitest: ['^vitest$'],
+            },
+          },
+          groups: [
+            'vitest',
+            'testing-library',
+            'react',
+            'type',
+            ['builtin', 'external'],
+            'internal-type',
+            'internal',
+            ['parent-type', 'sibling-type', 'index-type'],
+            ['parent', 'sibling', 'index'],
+            'object',
+            'unknown',
+          ],
+          internalPattern: ['^~/.+'],
+          newlinesBetween: 'never',
+        },
+      ],
+      'perfectionist/sort-jsx-props': [
+        'error',
+        {
+          customGroups: {
+            callback: '^on.+$',
+            key: '^key$',
+            ref: '^ref$',
+          },
+          groups: ['key', 'ref', 'unknown', 'shorthand', 'callback'],
+        },
+      ],
+      'perfectionist/sort-modules': 'off',
 
       'unicorn/no-null': 'off',
       'unicorn/prevent-abbreviations': 'off',
+    },
+    settings: {
+      react: {
+        createClass: 'createReactClass',
+        fragment: 'Fragment',
+        pragma: 'React',
+        version: 'detect',
+      },
     },
   },
   {

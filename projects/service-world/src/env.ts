@@ -1,19 +1,19 @@
-import { z } from 'zod';
 import {
   addEnvUtils,
-  NodeEnvSchema,
   LoggingSchema,
+  NodeEnvSchema,
 } from '@chrono/service-utils';
+import { z } from 'zod';
 
 export const envSchema = z
   .object({
-    NODE_ENV: NodeEnvSchema,
-    LOGGING: LoggingSchema,
-
+    API_IDENTIFIER: z.string(),
     HOSTNAME: z.string(),
+
+    LOGGING: LoggingSchema,
+    NODE_ENV: NodeEnvSchema,
     PORT: z.string().transform(Number),
     POSTGRES_URL: z.string(),
-    API_IDENTIFIER: z.string(),
   })
   .transform(addEnvUtils);
 

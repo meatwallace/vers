@@ -1,12 +1,12 @@
-import { http, HttpResponse } from 'msw';
 import { afterEach, expect, test } from 'vitest';
+import { drop } from '@mswjs/data';
+import { http, HttpResponse } from 'msw';
 import { db } from '~/mocks/db';
 import { ENDPOINT_URL as CHANGE_PASSWORD_ENDPOINT_URL } from '~/mocks/handlers/http/change-password';
 import { server } from '~/mocks/node';
 import { createMockGQLContext } from '~/test-utils/create-mock-gql-context';
 import { createPendingTransaction } from '~/utils/create-pending-transaction';
 import { createTransactionToken } from '~/utils/create-transaction-token';
-import { drop } from '@mswjs/data';
 import { VerificationType } from '../types/verification-type';
 import { resolve } from './finish-password-reset';
 
@@ -28,9 +28,9 @@ test('it updates the password and removes the password reset token', async () =>
 
   const args = {
     input: {
-      resetToken: '123456',
       email: 'test@example.com',
       password: 'newpassword123',
+      resetToken: '123456',
     },
   };
 
@@ -56,9 +56,9 @@ test('it returns a success response for non-existent user (to avoid user enumera
 
   const args = {
     input: {
-      resetToken: '123456',
       email: 'nonexistent@example.com',
       password: 'newpassword123',
+      resetToken: '123456',
     },
   };
 
@@ -78,17 +78,17 @@ test('it returns success but does not change the password if 2fa is required and
   });
 
   db.verification.create({
-    type: '2fa',
     target: user.email,
+    type: '2fa',
   });
 
   const ctx = createMockGQLContext({});
 
   const args = {
     input: {
-      resetToken: '123456',
       email: 'test@example.com',
       password: 'newpassword123',
+      resetToken: '123456',
       transactionToken: 'invalid-token',
     },
   };
@@ -120,35 +120,35 @@ test('it updates the password when 2fa is required and the transaction token is 
   });
 
   db.verification.create({
-    type: '2fa',
     target: user.email,
+    type: '2fa',
   });
 
   const ctx = createMockGQLContext({});
 
   const transactionID = createPendingTransaction({
-    target: user.email,
-    ipAddress: ctx.ipAddress,
     action: VerificationType.RESET_PASSWORD,
+    ipAddress: ctx.ipAddress,
     sessionID: null,
+    target: user.email,
   });
 
   const transactionToken = await createTransactionToken(
     {
-      target: user.email,
       action: VerificationType.RESET_PASSWORD,
       ipAddress: ctx.ipAddress,
-      transactionID,
       sessionID: null,
+      target: user.email,
+      transactionID,
     },
     ctx,
   );
 
   const args = {
     input: {
-      resetToken: '123456',
       email: 'test@example.com',
       password: 'newpassword123',
+      resetToken: '123456',
       transactionToken,
     },
   };

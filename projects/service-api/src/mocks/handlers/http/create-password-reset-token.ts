@@ -1,7 +1,7 @@
-import { http, HttpResponse } from 'msw';
 import { CreatePasswordResetTokenRequest } from '@chrono/service-types';
-import { db } from '~/mocks/db';
+import { http, HttpResponse } from 'msw';
 import { env } from '~/env';
+import { db } from '~/mocks/db';
 
 const ENDPOINT_URL = `${env.USERS_SERVICE_URL}create-password-reset-token`;
 
@@ -19,34 +19,34 @@ export const CreatePasswordResetToken = http.post<
 
   if (!user) {
     return HttpResponse.json({
-      success: false,
       error: 'User not found',
+      success: false,
     });
   }
 
   if (!user.passwordHash) {
     return HttpResponse.json({
-      success: false,
       error: 'User has no password',
+      success: false,
     });
   }
 
   const resetToken = `mock_reset_token_${Date.now()}`;
 
   db.user.update({
-    where: {
-      id: { equals: user.id },
-    },
     data: {
       passwordResetToken: resetToken,
       passwordResetTokenExpiresAt: new Date(Date.now() + 10 * 60 * 1000),
     },
+    where: {
+      id: { equals: user.id },
+    },
   });
 
   return HttpResponse.json({
-    success: true,
     data: {
       resetToken,
     },
+    success: true,
   });
 });

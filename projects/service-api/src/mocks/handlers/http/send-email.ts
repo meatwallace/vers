@@ -1,5 +1,5 @@
-import { http, HttpResponse } from 'msw';
 import { SendEmailRequest } from '@chrono/service-types';
+import { http, HttpResponse } from 'msw';
 import { env } from '~/env';
 
 export const ENDPOINT_URL = `${env.EMAILS_SERVICE_URL}send-email`;

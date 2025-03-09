@@ -4,9 +4,9 @@ import { changePassword } from './change-password';
 import { createPasswordResetToken } from './create-password-reset-token';
 import { createUser } from './create-user';
 import { getUser } from './get-user';
+import { UserService } from './types';
 import { updateUser } from './update-user';
 import { verifyPassword } from './verify-password';
-import { UserService } from './types';
 
 type UserServiceConfig = CreateServiceContextConfig;
 

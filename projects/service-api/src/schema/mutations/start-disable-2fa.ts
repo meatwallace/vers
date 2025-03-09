@@ -44,29 +44,29 @@ export async function startDisable2FA(
 ): Promise<typeof StartDisable2FAPayload.$inferType> {
   try {
     const verification = await ctx.services.verification.getVerification({
-      type: '2fa',
       target: ctx.user.email,
+      type: '2fa',
     });
 
     if (!verification) {
       return {
         error: {
-          title: '2FA not enabled',
           message: '2FA is not enabled for your account.',
+          title: '2FA not enabled',
         },
       };
     }
 
     const transactionID = createPendingTransaction({
-      target: ctx.user.email,
-      ipAddress: ctx.ipAddress,
       action: VerificationType.TWO_FACTOR_AUTH_DISABLE,
+      ipAddress: ctx.ipAddress,
       sessionID: ctx.session.id,
+      target: ctx.user.email,
     });
 
     return {
-      transactionID,
       sessionID: null,
+      transactionID,
     };
   } catch (error) {
     // TODO(#16): capture via Sentry
@@ -89,18 +89,18 @@ const StartDisable2FAInput = builder.inputType('StartDisable2FAInput', {
 });
 
 const StartDisable2FAPayload = builder.unionType('StartDisable2FAPayload', {
-  types: [TwoFactorRequiredPayload, MutationErrorPayload],
   resolveType: createPayloadResolver(TwoFactorRequiredPayload),
+  types: [TwoFactorRequiredPayload, MutationErrorPayload],
 });
 
 export const resolve = requireAuth(startDisable2FA);
 
 builder.mutationField('startDisable2FA', (t) =>
   t.field({
-    type: StartDisable2FAPayload,
     args: {
-      input: t.arg({ type: StartDisable2FAInput, required: true }),
+      input: t.arg({ required: true, type: StartDisable2FAInput }),
     },
     resolve: resolve,
+    type: StartDisable2FAPayload,
   }),
 );

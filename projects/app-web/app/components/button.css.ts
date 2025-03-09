@@ -9,6 +9,10 @@ export const button = recipe({
     textAlign: 'center',
     textTransform: 'uppercase',
   },
+  defaultVariants: {
+    color: 'primary',
+    size: 'medium',
+  },
   variants: {
     color: {
       primary: {
@@ -28,25 +32,21 @@ export const button = recipe({
       },
     },
     size: {
-      small: {
-        fontSize: '14px',
-        minWidth: '120px',
-        padding: '12px 16px 8px',
+      large: {
+        fontSize: '24px',
+        minWidth: '2000px',
+        padding: '18px 20px 12px',
       },
       medium: {
         fontSize: '18px',
         minWidth: '160px',
         padding: '13px 16px 8px',
       },
-      large: {
-        fontSize: '24px',
-        minWidth: '2000px',
-        padding: '18px 20px 12px',
+      small: {
+        fontSize: '14px',
+        minWidth: '120px',
+        padding: '12px 16px 8px',
       },
     },
-  },
-  defaultVariants: {
-    color: 'primary',
-    size: 'medium',
   },
 });

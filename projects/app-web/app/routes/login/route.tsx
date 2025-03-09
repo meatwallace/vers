@@ -1,9 +1,9 @@
-import { Form, Link, data, redirect } from 'react-router';
+import { data, Form, Link, redirect } from 'react-router';
+import { getFormProps, getInputProps, useForm } from '@conform-to/react';
+import { getZodConstraint, parseWithZod } from '@conform-to/zod';
 import { HoneypotInputs } from 'remix-utils/honeypot/react';
 import invariant from 'tiny-invariant';
 import { z } from 'zod';
-import { getFormProps, getInputProps, useForm } from '@conform-to/react';
-import { getZodConstraint, parseWithZod } from '@conform-to/zod';
 import { Field } from '~/components/field';
 import { FormErrorList } from '~/components/form-error-list.tsx';
 import { RouteErrorBoundary } from '~/components/route-error-boundary.tsx';
@@ -176,8 +176,8 @@ export function Login({ actionData }: Route.ComponentProps) {
   const isFormPending = useIsFormPending();
 
   const [form, fields] = useForm({
-    id: 'login-form',
     constraint: getZodConstraint(LoginFormSchema),
+    id: 'login-form',
     lastResult: actionData?.result,
     onValidate({ formData }) {
       return parseWithZod(formData, { schema: LoginFormSchema });
@@ -201,53 +201,53 @@ export function Login({ actionData }: Route.ComponentProps) {
       <Form method="POST" {...getFormProps(form)} className={styles.loginForm}>
         <HoneypotInputs />
         <Field
-          labelProps={{ htmlFor: fields.email.id, children: 'Email' }}
+          errors={fields.email.errors ?? []}
           inputProps={{
             ...getInputProps(fields.email, { type: 'email' }),
             autoComplete: 'email',
           }}
-          errors={fields.email.errors ?? []}
+          labelProps={{ children: 'Email', htmlFor: fields.email.id }}
         />
         <Field
-          labelProps={{
-            htmlFor: fields.password.id,
-            children: 'Password',
-          }}
+          errors={fields.password.errors ?? []}
           inputProps={{
             ...getInputProps(fields.password, { type: 'password' }),
             autoComplete: 'current-password',
           }}
-          errors={fields.password.errors ?? []}
+          labelProps={{
+            children: 'Password',
+            htmlFor: fields.password.id,
+          }}
         />
         <div className={styles.rememberMeContainer}>
           <Field
-            labelProps={{
-              htmlFor: fields.rememberMe.id,
-              children: 'Remember me',
-            }}
+            errors={fields.rememberMe.errors ?? []}
             inputProps={{
               ...getInputProps(fields.rememberMe, { type: 'checkbox' }),
             }}
-            errors={fields.rememberMe.errors ?? []}
+            labelProps={{
+              children: 'Remember me',
+              htmlFor: fields.rememberMe.id,
+            }}
           />
           <Link
-            to={Routes.ForgotPassword}
             className={styles.forgotPasswordLink}
+            to={Routes.ForgotPassword}
           >
             Forgot password?
           </Link>
         </div>
         <FormErrorList errors={form.errors ?? []} id={form.errorId} />
         <StatusButton
-          type="submit"
-          status={submitButtonStatus}
           disabled={isFormPending}
+          status={submitButtonStatus}
+          type="submit"
         >
           Sign in
         </StatusButton>
         <div className={styles.signupContainer}>
           <span className={styles.signupText}>Don&apos;t have an account?</span>
-          <Link to={Routes.Signup} className={styles.signupLink}>
+          <Link className={styles.signupLink} to={Routes.Signup}>
             Signup
           </Link>
         </div>

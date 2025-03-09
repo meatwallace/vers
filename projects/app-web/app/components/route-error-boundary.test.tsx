@@ -26,11 +26,11 @@ function setupTest(config: TestConfig) {
 
   const RouteStub = createRoutesStub([
     {
-      path: '/',
       Component: () => {
         throw config.error;
       },
       ErrorBoundary: RouteErrorBoundary,
+      path: '/',
     },
   ]);
 

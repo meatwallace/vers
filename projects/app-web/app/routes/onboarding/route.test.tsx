@@ -1,18 +1,18 @@
-import { ActionFunction, LoaderFunction, createRoutesStub } from 'react-router';
-import { drop } from '@mswjs/data';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { ActionFunction, createRoutesStub, LoaderFunction } from 'react-router';
+import { drop } from '@mswjs/data';
 import { db } from '~/mocks/db.ts';
 import { withAuthedUser } from '~/test-utils/with-authed-user.ts';
 import { withRouteProps } from '~/test-utils/with-route-props.tsx';
 import { withSession } from '~/test-utils/with-session.ts';
 import { Routes } from '~/types.ts';
-import { Onboarding, action, loader } from './route.tsx';
+import { action, loader, Onboarding } from './route.tsx';
 
 interface TestConfig {
-  isOnboarding: boolean;
-  isAuthed: boolean;
   email?: string;
+  isAuthed: boolean;
+  isOnboarding: boolean;
   transactionToken?: string;
 }
 
@@ -51,18 +51,18 @@ function setupTest(config: TestConfig) {
 
   const OnboardingStub = createRoutesStub([
     {
-      path: '/',
+      action: _action,
       Component: withRouteProps(Onboarding),
       loader: _loader,
-      action: _action,
+      path: '/',
     },
     {
-      path: Routes.Dashboard,
       Component: () => 'DASHBOARD_ROUTE',
+      path: Routes.Dashboard,
     },
     {
-      path: Routes.Signup,
       Component: () => 'SIGNUP_ROUTE',
+      path: Routes.Signup,
     },
   ]);
 
@@ -77,9 +77,9 @@ afterEach(() => {
 
 test('it redirects to the signup route when no email is stored in the verification session', async () => {
   setupTest({
+    email: '',
     isAuthed: false,
     isOnboarding: false,
-    email: '',
   });
 
   expect(await screen.findByText('SIGNUP_ROUTE')).toBeInTheDocument();

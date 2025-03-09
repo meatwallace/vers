@@ -2,8 +2,8 @@ import * as jose from 'jose';
 import { env } from '../env';
 
 interface Data {
-  userID: string;
   expiresAt: Date;
+  userID: string;
 }
 
 export async function createJWT(data: Data): Promise<string> {

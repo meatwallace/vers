@@ -1,12 +1,12 @@
 import { ServiceResponse } from './service-response';
 
 export interface SessionData {
-  id: string;
-  expiresAt: Date;
-  ipAddress: string;
-  userID: string;
   createdAt: Date;
+  expiresAt: Date;
+  id: string;
+  ipAddress: string;
   updatedAt: Date;
+  userID: string;
 }
 
 interface SessionTokens {
@@ -18,10 +18,10 @@ interface SessionTokens {
  * prioritizes the `expiresAt` parameter over the `rememberMe` flag
  */
 export interface CreateSessionRequest {
-  userID: string;
+  expiresAt?: Date;
   ipAddress: string;
   rememberMe?: boolean;
-  expiresAt?: Date;
+  userID: string;
 }
 
 export type CreateSessionResponse = ServiceResponse<
@@ -39,7 +39,7 @@ export interface GetSessionRequest {
   id: string;
 }
 
-export type GetSessionResponse = ServiceResponse<SessionData | null>;
+export type GetSessionResponse = ServiceResponse<null | SessionData>;
 
 export interface GetSessionsRequest {
   userID: string;

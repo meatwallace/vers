@@ -17,9 +17,9 @@ export function createTokenVerifier(config: TokenVerifierConfig) {
     const publicKey = await jose.importPKCS8(config.signingKey, 'RS256');
 
     const { payload } = await jose.jwtVerify(token, publicKey, {
-      issuer: config.issuer,
-      audience: config.audience,
       algorithms: ['RS256'],
+      audience: config.audience,
+      issuer: config.issuer,
     });
 
     invariant(typeof payload.sub === 'string', 'sub must be in JWT payload');

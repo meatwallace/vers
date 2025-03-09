@@ -1,7 +1,7 @@
 import { afterEach, expect, test } from 'vitest';
+import { drop } from '@mswjs/data';
 import * as jose from 'jose';
 import invariant from 'tiny-invariant';
-import { drop } from '@mswjs/data';
 import { db } from '~/mocks/db';
 import { VerificationType } from '~/schema/types/verification-type';
 import { createMockGQLContext } from '~/test-utils/create-mock-gql-context';
@@ -16,18 +16,18 @@ afterEach(() => {
 
 test('it creates a valid transaction token with required data', async () => {
   const transactionID = createPendingTransaction({
-    target: 'user_123',
-    ipAddress: '127.0.0.1',
     action: VerificationType.TWO_FACTOR_AUTH,
+    ipAddress: '127.0.0.1',
     sessionID: null,
+    target: 'user_123',
   });
 
   const data = {
-    target: 'user_123',
-    ipAddress: '127.0.0.1',
     action: VerificationType.TWO_FACTOR_AUTH,
-    transactionID,
+    ipAddress: '127.0.0.1',
     sessionID: null,
+    target: 'user_123',
+    transactionID,
   };
 
   const ctx = createMockGQLContext({});
@@ -36,9 +36,9 @@ test('it creates a valid transaction token with required data', async () => {
   const key = await jose.importPKCS8(env.JWT_SIGNING_SECRET, 'RS256');
 
   const verifiedToken = await jose.jwtVerify(token, key, {
-    issuer: env.API_IDENTIFIER,
-    audience: env.API_IDENTIFIER,
     algorithms: ['RS256'],
+    audience: env.API_IDENTIFIER,
+    issuer: env.API_IDENTIFIER,
     maxTokenAge: '5 minutes',
     requiredClaims: [
       'amr',
@@ -52,40 +52,40 @@ test('it creates a valid transaction token with required data', async () => {
   });
 
   expect(verifiedToken.payload).toMatchObject({
-    sub: data.target,
-    amr: ['otp'],
-    mfa_verified: true,
-    ip_address: data.ipAddress,
     action: data.action,
-    session_id: null,
-    iss: env.API_IDENTIFIER,
+    amr: ['otp'],
     aud: env.API_IDENTIFIER,
     auth_time: expect.any(Number),
-    iat: expect.any(Number),
     exp: expect.any(Number),
+    iat: expect.any(Number),
+    ip_address: data.ipAddress,
+    iss: env.API_IDENTIFIER,
     jti: expect.any(String),
+    mfa_verified: true,
+    session_id: null,
+    sub: data.target,
   });
 });
 
 test('it creates a valid transaction token with session data', async () => {
   const session = db.session.create({
-    userID: 'user_123',
     ipAddress: '127.0.0.1',
+    userID: 'user_123',
   });
 
   const transactionID = createPendingTransaction({
-    target: 'user_123',
-    ipAddress: '127.0.0.1',
     action: VerificationType.TWO_FACTOR_AUTH,
+    ipAddress: '127.0.0.1',
     sessionID: session.id,
+    target: 'user_123',
   });
 
   const data = {
-    target: 'user_123',
-    ipAddress: '127.0.0.1',
     action: VerificationType.TWO_FACTOR_AUTH,
-    transactionID,
+    ipAddress: '127.0.0.1',
     sessionID: session.id,
+    target: 'user_123',
+    transactionID,
   };
 
   const ctx = createMockGQLContext({});
@@ -93,9 +93,9 @@ test('it creates a valid transaction token with session data', async () => {
   const key = await jose.importPKCS8(env.JWT_SIGNING_SECRET, 'RS256');
 
   const verifiedToken = await jose.jwtVerify(token, key, {
-    issuer: env.API_IDENTIFIER,
-    audience: env.API_IDENTIFIER,
     algorithms: ['RS256'],
+    audience: env.API_IDENTIFIER,
+    issuer: env.API_IDENTIFIER,
     maxTokenAge: '5 minutes',
     requiredClaims: [
       'amr',
@@ -109,24 +109,24 @@ test('it creates a valid transaction token with session data', async () => {
   });
 
   expect(verifiedToken.payload).toMatchObject({
-    sub: data.target,
-    amr: ['otp'],
-    mfa_verified: true,
-    ip_address: data.ipAddress,
     action: data.action,
-    session_id: session.id,
-    iss: env.API_IDENTIFIER,
+    amr: ['otp'],
     aud: env.API_IDENTIFIER,
+    ip_address: data.ipAddress,
+    iss: env.API_IDENTIFIER,
+    mfa_verified: true,
+    session_id: session.id,
+    sub: data.target,
   });
 });
 
 test('it throws an error when a pending transaction is not found', async () => {
   const data = {
-    target: 'user_123',
-    ipAddress: '127.0.0.1',
     action: VerificationType.TWO_FACTOR_AUTH,
-    transactionID: 'invalid',
+    ipAddress: '127.0.0.1',
     sessionID: null,
+    target: 'user_123',
+    transactionID: 'invalid',
   };
 
   const ctx = createMockGQLContext({});
@@ -138,18 +138,18 @@ test('it throws an error when a pending transaction is not found', async () => {
 
 test('it throws an error when session is not found', async () => {
   const transactionID = createPendingTransaction({
-    target: 'user_123',
-    ipAddress: '127.0.0.1',
     action: VerificationType.TWO_FACTOR_AUTH,
+    ipAddress: '127.0.0.1',
     sessionID: null,
+    target: 'user_123',
   });
 
   const data = {
-    target: 'user_123',
-    ipAddress: '127.0.0.1',
     action: VerificationType.TWO_FACTOR_AUTH,
-    transactionID,
+    ipAddress: '127.0.0.1',
     sessionID: 'non_existent_session',
+    target: 'user_123',
+    transactionID,
   };
 
   const ctx = createMockGQLContext({});
@@ -172,18 +172,18 @@ test.each([
   'it generates a %s transaction that expires after %d minutes',
   async (action, minutes) => {
     const transactionID = createPendingTransaction({
-      target: 'user_123',
-      ipAddress: '127.0.0.1',
       action,
+      ipAddress: '127.0.0.1',
       sessionID: null,
+      target: 'user_123',
     });
 
     const data = {
-      target: 'user_123',
-      ipAddress: '127.0.0.1',
       action,
-      transactionID,
+      ipAddress: '127.0.0.1',
       sessionID: null,
+      target: 'user_123',
+      transactionID,
     };
 
     const ctx = createMockGQLContext({});
@@ -191,9 +191,9 @@ test.each([
     const key = await jose.importPKCS8(env.JWT_SIGNING_SECRET, 'RS256');
 
     const verifiedToken = await jose.jwtVerify(token, key, {
-      issuer: env.API_IDENTIFIER,
-      audience: env.API_IDENTIFIER,
       algorithms: ['RS256'],
+      audience: env.API_IDENTIFIER,
+      issuer: env.API_IDENTIFIER,
       maxTokenAge: '20 minutes',
       requiredClaims: [
         'amr',
@@ -219,18 +219,18 @@ test.each([
 
 test('it deletes the pending transaction data from the pending transaction cache', async () => {
   const transactionID = createPendingTransaction({
-    target: 'user_123',
-    ipAddress: '127.0.0.1',
     action: VerificationType.TWO_FACTOR_AUTH,
+    ipAddress: '127.0.0.1',
     sessionID: null,
+    target: 'user_123',
   });
 
   const data = {
-    target: 'user_123',
-    ipAddress: '127.0.0.1',
     action: VerificationType.TWO_FACTOR_AUTH,
-    transactionID,
+    ipAddress: '127.0.0.1',
     sessionID: null,
+    target: 'user_123',
+    transactionID,
   };
 
   const ctx = createMockGQLContext({});

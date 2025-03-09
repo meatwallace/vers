@@ -8,8 +8,8 @@ export function Label({ className, htmlFor, ...restProps }: Props) {
   return (
     <label
       {...restProps}
-      htmlFor={htmlFor}
       className={clsx(styles.label, className)}
+      htmlFor={htmlFor}
     />
   );
 }

@@ -21,7 +21,7 @@ export interface AuthPayload {
 export interface SessionService {
   createSession: (args: CreateSessionRequest) => Promise<AuthPayload>;
   deleteSession: (args: DeleteSessionRequest) => Promise<true>;
-  getSession: (args: GetSessionRequest) => Promise<SessionData | null>;
+  getSession: (args: GetSessionRequest) => Promise<null | SessionData>;
   getSessions: (args: GetSessionsRequest) => Promise<Array<SessionData>>;
   refreshTokens: (args: RefreshTokensRequest) => Promise<AuthPayload>;
 }

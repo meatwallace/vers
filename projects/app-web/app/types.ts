@@ -1,21 +1,21 @@
 export enum Routes {
-  Index = '/',
+  CreateWorld = '/worlds/create',
 
-  Signup = '/signup',
+  CreateWorldWizard = '/worlds/create/:worldID',
+  Dashboard = '/dashboard',
+  DeleteWorld = '/worlds/delete/:worldID',
+  ForgotPassword = '/forgot-password',
+  Index = '/',
   Login = '/login',
   Logout = '/logout',
   Onboarding = '/onboarding',
-  ForgotPassword = '/forgot-password',
-  ResetPassword = '/reset-password',
-  ResetPasswordStarted = '/reset-password-started',
-  VerifyOTP = '/verify-otp',
-
-  Dashboard = '/dashboard',
 
   Profile = '/profile',
-  ProfileVerify2FA = '/profile/2fa/verify',
 
-  CreateWorld = '/worlds/create',
-  CreateWorldWizard = '/worlds/create/:worldID',
-  DeleteWorld = '/worlds/delete/:worldID',
+  ProfileVerify2FA = '/profile/2fa/verify',
+  ResetPassword = '/reset-password',
+
+  ResetPasswordStarted = '/reset-password-started',
+  Signup = '/signup',
+  VerifyOTP = '/verify-otp',
 }

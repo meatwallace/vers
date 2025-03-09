@@ -1,11 +1,11 @@
 import { expect, test } from 'vitest';
-import { eq } from 'drizzle-orm';
-import { Hono } from 'hono';
-import invariant from 'tiny-invariant';
 import * as schema from '@chrono/postgres-schema';
 import { PostgresTestUtils } from '@chrono/service-test-utils';
 import { CreateVerificationResponse } from '@chrono/service-types';
 import { createId } from '@paralleldrive/cuid2';
+import { eq } from 'drizzle-orm';
+import { Hono } from 'hono';
+import invariant from 'tiny-invariant';
 import { pgTestConfig } from '../pg-test-config';
 import { createVerification } from './create-verification';
 import { verifyCode } from './verify-code';
@@ -25,12 +25,12 @@ test('it verifies a valid code', async () => {
   const { app, db, teardown } = await setupTest();
 
   const createReq = new Request('http://localhost/create-verification', {
-    method: 'POST',
     body: JSON.stringify({
-      type: 'onboarding',
-      target: 'test@example.com',
       period: 300,
+      target: 'test@example.com',
+      type: 'onboarding',
     }),
+    method: 'POST',
   });
 
   const createRes = await app.request(createReq);
@@ -39,32 +39,32 @@ test('it verifies a valid code', async () => {
   invariant(createBody.success);
 
   const verifyReq = new Request('http://localhost/verify-code', {
-    method: 'POST',
     body: JSON.stringify({
-      type: 'onboarding',
-      target: 'test@example.com',
       code: createBody.data.otp,
+      target: 'test@example.com',
+      type: 'onboarding',
     }),
+    method: 'POST',
   });
 
   const verifyRes = await app.request(verifyReq);
   const verifyBody = (await verifyRes.json()) as {
-    success: boolean;
     data: {
       id: string;
-      type: string;
       target: string;
+      type: string;
     };
+    success: boolean;
   };
 
   expect(verifyRes.status).toBe(200);
   expect(verifyBody).toMatchObject({
-    success: true,
     data: {
       id: expect.any(String),
-      type: 'onboarding',
       target: 'test@example.com',
+      type: 'onboarding',
     },
+    success: true,
   });
 
   // verify the record was deleted
@@ -81,12 +81,12 @@ test('it handles invalid code', async () => {
   const { app, teardown } = await setupTest();
 
   const req = new Request('http://localhost/verify-code', {
-    method: 'POST',
     body: JSON.stringify({
-      type: 'onboarding',
-      target: 'test@example.com',
       code: 'INVALID',
+      target: 'test@example.com',
+      type: 'onboarding',
     }),
+    method: 'POST',
   });
 
   const res = await app.request(req);
@@ -94,8 +94,8 @@ test('it handles invalid code', async () => {
 
   expect(res.status).toBe(200);
   expect(body).toMatchObject({
-    success: false,
     error: 'Invalid verification code',
+    success: false,
   });
 
   await teardown();
@@ -105,27 +105,27 @@ test('it handles expired codes', async () => {
   const { app, db, teardown } = await setupTest();
 
   const verification = {
-    id: createId(),
-    type: 'onboarding',
-    target: 'test@example.com',
-    secret: 'ABC123',
     algorithm: 'sha1',
-    digits: 6,
-    period: 300,
     charSet: 'hex',
-    expiresAt: new Date(Date.now() - 1000),
     createdAt: new Date(),
+    digits: 6,
+    expiresAt: new Date(Date.now() - 1000),
+    id: createId(),
+    period: 300,
+    secret: 'ABC123',
+    target: 'test@example.com',
+    type: 'onboarding',
   } as const;
 
   await db.insert(schema.verifications).values(verification);
 
   const req = new Request('http://localhost/verify-code', {
-    method: 'POST',
     body: JSON.stringify({
-      type: 'onboarding',
-      target: 'test@example.com',
       code: verification.secret,
+      target: 'test@example.com',
+      type: 'onboarding',
     }),
+    method: 'POST',
   });
 
   const res = await app.request(req);
@@ -133,8 +133,8 @@ test('it handles expired codes', async () => {
 
   expect(res.status).toBe(200);
   expect(body).toMatchObject({
-    success: false,
     error: 'Verification code has expired',
+    success: false,
   });
 
   // verify the record was deleted
@@ -151,11 +151,11 @@ test('it does not delete a 2FA verification', async () => {
   const { app, db, teardown } = await setupTest();
 
   const createReq = new Request('http://localhost/create-verification', {
-    method: 'POST',
     body: JSON.stringify({
-      type: '2fa-setup',
       target: 'test@example.com',
+      type: '2fa-setup',
     }),
+    method: 'POST',
   });
 
   const createRes = await app.request(createReq);
@@ -164,12 +164,12 @@ test('it does not delete a 2FA verification', async () => {
   invariant(createBody.success);
 
   const req = new Request('http://localhost/verify-code', {
-    method: 'POST',
     body: JSON.stringify({
-      type: '2fa-setup',
-      target: 'test@example.com',
       code: createBody.data.otp,
+      target: 'test@example.com',
+      type: '2fa-setup',
     }),
+    method: 'POST',
   });
 
   const res = await app.request(req);
@@ -193,11 +193,11 @@ test('it does not delete a 2FA disable verification', async () => {
   const { app, db, teardown } = await setupTest();
 
   const createReq = new Request('http://localhost/create-verification', {
-    method: 'POST',
     body: JSON.stringify({
-      type: '2fa',
       target: 'test@example.com',
+      type: '2fa',
     }),
+    method: 'POST',
   });
 
   const createRes = await app.request(createReq);
@@ -206,12 +206,12 @@ test('it does not delete a 2FA disable verification', async () => {
   invariant(createBody.success);
 
   const req = new Request('http://localhost/verify-code', {
-    method: 'POST',
     body: JSON.stringify({
-      type: '2fa',
-      target: 'test@example.com',
       code: createBody.data.otp,
+      target: 'test@example.com',
+      type: '2fa',
     }),
+    method: 'POST',
   });
 
   const res = await app.request(req);
@@ -235,8 +235,8 @@ test('handles an invalid request body', async () => {
   const { app, teardown } = await setupTest();
 
   const req = new Request('http://localhost/verify-code', {
-    method: 'POST',
     body: 'invalid json',
+    method: 'POST',
   });
 
   const res = await app.request(req);
@@ -244,8 +244,8 @@ test('handles an invalid request body', async () => {
 
   expect(res.status).toBe(200);
   expect(body).toMatchObject({
-    success: false,
     error: 'An unknown error occurred',
+    success: false,
   });
 
   await teardown();

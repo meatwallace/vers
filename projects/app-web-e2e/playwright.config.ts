@@ -1,8 +1,8 @@
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
 import { workspaceRoot } from '@nx/devkit';
 import { nxE2EPreset } from '@nx/playwright/preset';
 import { defineConfig, devices } from '@playwright/test';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 // patch cjs
 const __filename = fileURLToPath(import.meta.url);
@@ -22,24 +22,10 @@ process.loadEnvFile(dotEnvFile);
 
 export default defineConfig({
   ...nxE2EPreset(__filename, { testDir: './src' }),
-  outputDir: '.test-results',
-  timeout: 60 * 1000,
   expect: {
     timeout: 10 * 1000,
   },
-  use: {
-    baseURL,
-    trace: 'on-first-retry',
-    screenshot: 'only-on-failure',
-  },
-  webServer: {
-    command: 'yarn dev:app-web',
-    url: 'http://localhost:4000',
-    reuseExistingServer: !process.env.CI,
-    cwd: workspaceRoot,
-    stdout: 'pipe',
-    timeout: 60 * 1000,
-  },
+  outputDir: '.test-results',
   projects: [
     {
       name: 'chromium',
@@ -51,4 +37,18 @@ export default defineConfig({
       use: { ...devices['Desktop Firefox'] },
     },
   ],
+  timeout: 60 * 1000,
+  use: {
+    baseURL,
+    screenshot: 'only-on-failure',
+    trace: 'on-first-retry',
+  },
+  webServer: {
+    command: 'yarn dev:app-web',
+    cwd: workspaceRoot,
+    reuseExistingServer: !process.env.CI,
+    stdout: 'pipe',
+    timeout: 60 * 1000,
+    url: 'http://localhost:4000',
+  },
 });

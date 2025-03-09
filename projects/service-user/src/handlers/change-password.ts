@@ -1,12 +1,12 @@
-import { Context } from 'hono';
+import * as schema from '@chrono/postgres-schema';
 import {
   ChangePasswordRequest,
   ChangePasswordResponse,
 } from '@chrono/service-types';
-import { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
-import { eq } from 'drizzle-orm';
-import * as schema from '@chrono/postgres-schema';
 import { hashPassword } from '@chrono/service-utils';
+import { eq } from 'drizzle-orm';
+import { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
+import { Context } from 'hono';
 import { logger } from '../logger';
 
 const log = logger.child({ module: 'changePassword' });
@@ -25,8 +25,8 @@ export async function changePassword(
 
     if (!user) {
       return ctx.json({
-        success: false,
         error: 'User not found',
+        success: false,
       });
     }
 
@@ -34,8 +34,8 @@ export async function changePassword(
 
     if (isTokenMismatch) {
       return ctx.json({
-        success: false,
         error: 'Invalid reset token',
+        success: false,
       });
     }
 
@@ -45,8 +45,8 @@ export async function changePassword(
 
     if (isTokenExpired) {
       return ctx.json({
-        success: false,
         error: 'Reset token expired',
+        success: false,
       });
     }
 
@@ -72,8 +72,8 @@ export async function changePassword(
     });
 
     const response: ChangePasswordResponse = {
-      success: true,
       data: {},
+      success: true,
     };
 
     return ctx.json(response);
@@ -84,8 +84,8 @@ export async function changePassword(
 
     if (error instanceof Error) {
       return ctx.json({
-        success: false,
         error: 'An unknown error occurred',
+        success: false,
       });
     }
 

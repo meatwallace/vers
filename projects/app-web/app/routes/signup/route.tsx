@@ -1,8 +1,8 @@
-import { Form, data, redirect } from 'react-router';
-import { HoneypotInputs } from 'remix-utils/honeypot/react';
-import { z } from 'zod';
+import { data, Form, redirect } from 'react-router';
 import { getFormProps, getInputProps, useForm } from '@conform-to/react';
 import { getZodConstraint, parseWithZod } from '@conform-to/zod';
+import { HoneypotInputs } from 'remix-utils/honeypot/react';
+import { z } from 'zod';
 import { Field } from '~/components/field';
 import { FormErrorList } from '~/components/form-error-list.tsx';
 import { RouteErrorBoundary } from '~/components/route-error-boundary.tsx';
@@ -124,8 +124,8 @@ export function Signup({ actionData }: Route.ComponentProps) {
   const isFormPending = useIsFormPending();
 
   const [form, fields] = useForm({
-    id: 'signup-form',
     constraint: getZodConstraint(SignupFormSchema),
+    id: 'signup-form',
     lastResult: actionData?.result,
     onValidate({ formData }) {
       return parseWithZod(formData, { schema: SignupFormSchema });
@@ -142,19 +142,19 @@ export function Signup({ actionData }: Route.ComponentProps) {
       <Form method="POST" {...getFormProps(form)}>
         <HoneypotInputs />
         <Field
-          labelProps={{ htmlFor: fields.email.id, children: 'Email' }}
+          errors={fields.email.errors ?? []}
           inputProps={{
             ...getInputProps(fields.email, { type: 'email' }),
-            autoFocus: true,
             autoComplete: 'email',
+            autoFocus: true,
           }}
-          errors={fields.email.errors ?? []}
+          labelProps={{ children: 'Email', htmlFor: fields.email.id }}
         />
         <FormErrorList errors={form.errors ?? []} id={form.errorId} />
         <StatusButton
-          type="submit"
-          status={submitButtonStatus}
           disabled={isFormPending}
+          status={submitButtonStatus}
+          type="submit"
         >
           Signup
         </StatusButton>

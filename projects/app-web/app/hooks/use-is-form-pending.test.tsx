@@ -1,17 +1,17 @@
 import { expect, test } from 'vitest';
 import { render, screen } from '@testing-library/react';
-import { Form, createMemoryRouter, RouterProvider } from 'react-router';
 import userEvent from '@testing-library/user-event';
+import { createMemoryRouter, Form, RouterProvider } from 'react-router';
 import { useIsFormPending } from './use-is-form-pending';
 
-type FormMethod = 'POST' | 'GET' | 'PUT' | 'PATCH' | 'DELETE';
-type HTMLFormMethod = 'post' | 'get' | 'put' | 'patch' | 'delete';
+type FormMethod = 'DELETE' | 'GET' | 'PATCH' | 'POST' | 'PUT';
+type HTMLFormMethod = 'delete' | 'get' | 'patch' | 'post' | 'put';
 
 interface Props {
-  isPendingAction: string;
-  isPendingMethod: HTMLFormMethod;
   formAction: string;
   formMethod: HTMLFormMethod;
+  isPendingAction: string;
+  isPendingMethod: HTMLFormMethod;
 }
 
 function TestForm(props: Props) {
@@ -22,8 +22,8 @@ function TestForm(props: Props) {
 
   return (
     <Form action={props.formAction} method={props.formMethod}>
-      <input type="text" name="test" />
-      <button type="submit" disabled={isPending}>
+      <input name="test" type="text" />
+      <button disabled={isPending} type="submit">
         {isPending ? 'Submitting...' : 'Submit'}
       </button>
     </Form>
@@ -31,10 +31,10 @@ function TestForm(props: Props) {
 }
 
 interface TestConfig {
-  isPendingAction: string;
-  isPendingMethod: HTMLFormMethod;
   formAction: string;
   formMethod: HTMLFormMethod;
+  isPendingAction: string;
+  isPendingMethod: HTMLFormMethod;
 }
 
 function setupTest(config: TestConfig) {
@@ -42,29 +42,29 @@ function setupTest(config: TestConfig) {
 
   const router = createMemoryRouter([
     {
-      path: '/',
       element: (
         <TestForm
-          isPendingAction={config.isPendingAction}
-          isPendingMethod={config.isPendingMethod}
           formAction={config.formAction}
           formMethod={config.formMethod}
+          isPendingAction={config.isPendingAction}
+          isPendingMethod={config.isPendingMethod}
         />
       ),
+      path: '/',
     },
     {
+      action: async () => {
+        await new Promise((resolve) => setTimeout(resolve, 0));
+        return null;
+      },
       path: '/test',
-      action: async () => {
-        await new Promise((resolve) => setTimeout(resolve, 0));
-        return null;
-      },
     },
     {
-      path: '/custom',
       action: async () => {
         await new Promise((resolve) => setTimeout(resolve, 0));
         return null;
       },
+      path: '/custom',
     },
   ]);
 
@@ -75,10 +75,10 @@ function setupTest(config: TestConfig) {
 
 test('it returns false when no form submission is pending', () => {
   setupTest({
-    isPendingAction: '/test',
-    isPendingMethod: 'post',
     formAction: '/test',
     formMethod: 'post',
+    isPendingAction: '/test',
+    isPendingMethod: 'post',
   });
 
   const submitButton = screen.getByRole('button');
@@ -89,10 +89,10 @@ test('it returns false when no form submission is pending', () => {
 
 test('it returns true when form submission matches the action and method', async () => {
   const { user } = setupTest({
-    isPendingAction: '/test',
-    isPendingMethod: 'post',
     formAction: '/test',
     formMethod: 'post',
+    isPendingAction: '/test',
+    isPendingMethod: 'post',
   });
 
   const submitButton = screen.getByRole('button');
@@ -105,10 +105,10 @@ test('it returns true when form submission matches the action and method', async
 
 test('it returns false when form submission uses a different method', async () => {
   const { user } = setupTest({
-    isPendingAction: '/test',
-    isPendingMethod: 'post',
     formAction: '/test',
     formMethod: 'get',
+    isPendingAction: '/test',
+    isPendingMethod: 'post',
   });
 
   const submitButton = screen.getByRole('button');
@@ -121,10 +121,10 @@ test('it returns false when form submission uses a different method', async () =
 
 test('it returns false when form submission uses a different action', async () => {
   const { user } = setupTest({
-    isPendingAction: '/test',
-    isPendingMethod: 'post',
     formAction: '/other',
     formMethod: 'post',
+    isPendingAction: '/test',
+    isPendingMethod: 'post',
   });
 
   const submitButton = screen.getByRole('button');
@@ -137,10 +137,10 @@ test('it returns false when form submission uses a different action', async () =
 
 test('it returns true when form submission matches a custom action and method', async () => {
   const { user } = setupTest({
-    isPendingAction: '/custom',
-    isPendingMethod: 'put',
     formAction: '/custom',
     formMethod: 'put',
+    isPendingAction: '/custom',
+    isPendingMethod: 'put',
   });
 
   const submitButton = screen.getByRole('button');

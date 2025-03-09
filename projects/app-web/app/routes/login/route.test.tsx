@@ -1,6 +1,6 @@
-import userEvent from '@testing-library/user-event';
 import { afterEach, expect, test } from 'vitest';
 import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { createRoutesStub } from 'react-router';
 import { drop } from '@mswjs/data';
 import { db } from '~/mocks/db.ts';
@@ -8,7 +8,7 @@ import { withAuthedUser } from '~/test-utils/with-authed-user.ts';
 import { withRouteProps } from '~/test-utils/with-route-props.tsx';
 import { Routes } from '~/types.ts';
 import { createGQLClient } from '~/utils/create-gql-client.server.ts';
-import { Login, action, loader } from './route.tsx';
+import { action, loader, Login } from './route.tsx';
 
 const client = createGQLClient();
 
@@ -25,26 +25,26 @@ function setupTest(config: TestConfig) {
 
   const LoginStub = createRoutesStub([
     {
-      path: '/',
-      Component: withRouteProps(Login),
       // @ts-expect-error(#35) - react router test types are out of date
       action: config.isAuthed
         ? // @ts-expect-error(#35) - react router test types are out of date
           withAuthedUser(action, { client, user: config.user })
         : action,
+      Component: withRouteProps(Login),
       // @ts-expect-error(#35) - react router test types are out of date
       loader: config.isAuthed
         ? // @ts-expect-error(#35) - react router test types are out of date
           withAuthedUser(loader, { client, user: config.user })
         : loader,
+      path: '/',
     },
     {
-      path: Routes.Dashboard,
       Component: () => 'DASHBOARD_ROUTE',
+      path: Routes.Dashboard,
     },
     {
-      path: Routes.Signup,
       Component: () => 'SIGN_UP_ROUTE',
+      path: Routes.Signup,
     },
   ]);
 

@@ -1,5 +1,5 @@
-import { http, HttpResponse } from 'msw';
 import { DeleteSessionRequest } from '@chrono/service-types';
+import { http, HttpResponse } from 'msw';
 import { env } from '~/env';
 import { db } from '../../db';
 
@@ -18,8 +18,8 @@ export const deleteSession = http.post<never, DeleteSessionRequest>(
     });
 
     return HttpResponse.json({
-      success: true,
       data: {},
+      success: true,
     });
   },
 );

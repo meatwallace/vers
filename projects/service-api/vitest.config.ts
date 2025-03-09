@@ -1,7 +1,7 @@
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import tsconfigPaths from 'vite-tsconfig-paths';
 import { loadEnv } from 'vite';
+import tsconfigPaths from 'vite-tsconfig-paths';
 import { defineConfig } from 'vitest/config';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -16,17 +16,17 @@ export default defineConfig({
     ws: process.env.VITEST === 'true' ? false : undefined,
   },
   test: {
-    watch: false,
-    globals: true,
-    environment: 'node',
-    passWithNoTests: true,
-    env: loadEnv('test', __dirname, ''),
-    setupFiles: ['./vitest.setup.ts'],
-    include: ['src/**/*.test.ts'],
-    reporters: ['default'],
     coverage: {
-      reportsDirectory: '../../coverage/apps/service-api',
       provider: 'v8',
+      reportsDirectory: '../../coverage/apps/service-api',
     },
+    env: loadEnv('test', __dirname, ''),
+    environment: 'node',
+    globals: true,
+    include: ['src/**/*.test.ts'],
+    passWithNoTests: true,
+    reporters: ['default'],
+    setupFiles: ['./vitest.setup.ts'],
+    watch: false,
   },
 });

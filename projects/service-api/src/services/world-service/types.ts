@@ -1,47 +1,47 @@
 import { worlds } from '@chrono/postgres-schema';
-import { ServiceContext } from '../utils/types';
 import {
-  GetWorldRequest,
-  GetWorldsRequest,
   CreateWorldRequest,
   DeleteWorldRequest,
-  UpdateWorldRequest,
   GenerateWorldNamesRequest,
+  GetWorldRequest,
+  GetWorldsRequest,
+  UpdateWorldRequest,
 } from '@chrono/service-types';
+import { ServiceContext } from '../utils/types';
 
 type World = typeof worlds.$inferSelect;
 
 export type WorldData = World;
 
 export interface RawWorldData {
-  id: string;
-  ownerID: string;
-  name: string;
-  fantasyType: string;
-  technologyLevel: World['technologyLevel'];
   archetype: World['archetype'];
   atmosphere: World['atmosphere'];
-  population: World['population'];
-  geographyType: World['geographyType'];
-  geographyFeatures: World['geographyFeatures'];
   createdAt: string;
+  fantasyType: string;
+  geographyFeatures: World['geographyFeatures'];
+  geographyType: World['geographyType'];
+  id: string;
+  name: string;
+  ownerID: string;
+  population: World['population'];
+  technologyLevel: World['technologyLevel'];
   updatedAt: string;
 }
 
 export type WorldServiceContext = ServiceContext;
 
 export interface WorldService {
-  getWorld: (args: GetWorldRequest) => Promise<WorldData | null>;
-
-  getWorlds: (args: GetWorldsRequest) => Promise<Array<WorldData>>;
-
   createWorld: (args: CreateWorldRequest) => Promise<WorldData>;
 
   deleteWorld: (args: DeleteWorldRequest) => Promise<true>;
 
-  updateWorld: (args: UpdateWorldRequest) => Promise<WorldData>;
-
   generateWorldNames: (
     args: GenerateWorldNamesRequest,
   ) => Promise<Array<string>>;
+
+  getWorld: (args: GetWorldRequest) => Promise<null | WorldData>;
+
+  getWorlds: (args: GetWorldsRequest) => Promise<Array<WorldData>>;
+
+  updateWorld: (args: UpdateWorldRequest) => Promise<WorldData>;
 }

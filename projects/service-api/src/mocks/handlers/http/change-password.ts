@@ -1,7 +1,7 @@
-import { http, HttpResponse } from 'msw';
 import { ChangePasswordRequest } from '@chrono/service-types';
-import { db } from '~/mocks/db';
+import { http, HttpResponse } from 'msw';
 import { env } from '~/env';
+import { db } from '~/mocks/db';
 
 export const ENDPOINT_URL = `${env.USERS_SERVICE_URL}change-password`;
 
@@ -19,8 +19,8 @@ export const changePassword = http.post<never, ChangePasswordRequest>(
 
       if (!user) {
         return HttpResponse.json({
-          success: false,
           error: 'User not found',
+          success: false,
         });
       }
 
@@ -28,8 +28,8 @@ export const changePassword = http.post<never, ChangePasswordRequest>(
 
       if (isTokenMismatch) {
         return HttpResponse.json({
-          success: false,
           error: 'Invalid reset token',
+          success: false,
         });
       }
 
@@ -39,19 +39,19 @@ export const changePassword = http.post<never, ChangePasswordRequest>(
 
       if (isTokenExpired) {
         return HttpResponse.json({
-          success: false,
           error: 'Reset token expired',
+          success: false,
         });
       }
 
       db.user.update({
-        where: {
-          id: { equals: user.id },
-        },
         data: {
           passwordHash: body.password,
           passwordResetToken: null,
           passwordResetTokenExpiresAt: null,
+        },
+        where: {
+          id: { equals: user.id },
         },
       });
 
@@ -62,14 +62,14 @@ export const changePassword = http.post<never, ChangePasswordRequest>(
       });
 
       return HttpResponse.json({
-        success: true,
         data: {},
+        success: true,
       });
     } catch {
       return HttpResponse.json(
         {
-          success: false,
           error: 'An unknown error occurred',
+          success: false,
         },
         { status: 500 },
       );

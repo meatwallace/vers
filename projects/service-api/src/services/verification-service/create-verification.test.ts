@@ -12,18 +12,18 @@ afterEach(() => {
 
 test('it creates a new verification', async () => {
   const ctx = createServiceContext({
+    apiURL: env.VERIFICATIONS_SERVICE_URL,
     requestID: createId(),
     serviceID: ServiceID.ServiceVerification,
-    apiURL: env.VERIFICATIONS_SERVICE_URL,
   });
 
   const now = Date.now();
 
   const args = {
-    type: 'onboarding',
-    target: 'test@example.com',
-    period: 300,
     expiresAt: new Date(now + 10 * 60 * 1000),
+    period: 300,
+    target: 'test@example.com',
+    type: 'onboarding',
   } as const;
 
   const result = await createVerification(args, ctx);
@@ -31,8 +31,8 @@ test('it creates a new verification', async () => {
   expect(result).toMatchObject({
     code: expect.any(String),
     verification: {
-      type: 'onboarding',
       target: 'test@example.com',
+      type: 'onboarding',
     },
   });
 });

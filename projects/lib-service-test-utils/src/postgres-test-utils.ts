@@ -1,43 +1,41 @@
+import * as schema from '@chrono/postgres-schema';
+import { createId } from '@paralleldrive/cuid2';
 import {
   PostgreSqlContainer,
   StartedPostgreSqlContainer,
 } from '@testcontainers/postgresql';
-import { PostgresJsDatabase, drizzle } from 'drizzle-orm/postgres-js';
+import { drizzle, PostgresJsDatabase } from 'drizzle-orm/postgres-js';
 import { migrate } from 'drizzle-orm/postgres-js/migrator';
 import path from 'node:path';
 import postgres, { Sql } from 'postgres';
-import { createId } from '@paralleldrive/cuid2';
-import * as schema from '@chrono/postgres-schema';
 
 const TEST_TEMPLATE_DB = 'test_template';
 const TEST_DB_USER = 'test';
 const TEST_DB_PASSWORD = 'test';
 
 interface PostgresTestConfig {
-  port: number;
   migrationPath?: string;
+  port: number;
 }
 
 interface IPostgresTestUtils {
-  container: StartedPostgreSqlContainer | null;
-  client: Sql | null;
-  db: PostgresJsDatabase<typeof schema> | null;
-  testDBClients: Map<string, Sql>;
-  startContainer: (config: PostgresTestConfig) => Promise<void>;
-  stopContainer: () => Promise<void>;
-  initialize: (config: PostgresTestConfig) => Promise<void>;
+  client: null | Sql;
+  container: null | StartedPostgreSqlContainer;
   createTestDB: (config: PostgresTestConfig) => Promise<{
     db: PostgresJsDatabase<typeof schema>;
     teardown: () => Promise<void>;
   }>;
+  db: null | PostgresJsDatabase<typeof schema>;
+  initialize: (config: PostgresTestConfig) => Promise<void>;
+  startContainer: (config: PostgresTestConfig) => Promise<void>;
+  stopContainer: () => Promise<void>;
   teardown: () => Promise<void>;
+  testDBClients: Map<string, Sql>;
 }
 
 export const PostgresTestUtils: IPostgresTestUtils = {
-  container: null,
   client: null,
-  db: null,
-  testDBClients: new Map(),
+  container: null,
   async createTestDB(config: PostgresTestConfig) {
     if (!this.container) {
       this.container = await createPostgresContainer(config);
@@ -76,6 +74,14 @@ export const PostgresTestUtils: IPostgresTestUtils = {
 
     return { db: testDB, teardown };
   },
+  db: null,
+  async initialize(config: PostgresTestConfig) {
+    if (this.container) {
+      throw new Error('Container already exists');
+    }
+
+    this.container = await createPostgresContainer(config);
+  },
   async startContainer(config: PostgresTestConfig) {
     if (!this.container) {
       this.container = await createPostgresContainer(config);
@@ -105,13 +111,6 @@ export const PostgresTestUtils: IPostgresTestUtils = {
 
     await this.container.stop();
   },
-  async initialize(config: PostgresTestConfig) {
-    if (this.container) {
-      throw new Error('Container already exists');
-    }
-
-    this.container = await createPostgresContainer(config);
-  },
   async teardown() {
     if (this.client) {
       await this.client.end();
@@ -122,6 +121,7 @@ export const PostgresTestUtils: IPostgresTestUtils = {
       await client.end();
     }
   },
+  testDBClients: new Map(),
 };
 
 async function createPostgresContainer(
@@ -136,7 +136,7 @@ async function createPostgresContainer(
     .withEnvironment({
       PGDATA: '/var/lib/pg/data',
     })
-    .withExposedPorts({ host: config.port, container: 5432 })
+    .withExposedPorts({ container: 5432, host: config.port })
     // allow reusing our container across tests
     .withReuse()
     .start();

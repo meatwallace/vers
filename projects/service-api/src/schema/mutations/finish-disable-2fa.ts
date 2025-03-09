@@ -48,13 +48,13 @@ export async function finishDisable2FA(
   _: object,
   args: Args,
   ctx: AuthedContext,
-): Promise<MutationSuccessResult | MutationErrorPayloadData> {
+): Promise<MutationErrorPayloadData | MutationSuccessResult> {
   try {
     const isValidTransaction = await verifyTransactionToken(
       {
-        token: args.input.transactionToken,
         action: VerificationType.TWO_FACTOR_AUTH_DISABLE,
         target: ctx.user.email,
+        token: args.input.transactionToken,
       },
       ctx,
     );
@@ -62,22 +62,22 @@ export async function finishDisable2FA(
     if (!isValidTransaction) {
       return {
         error: {
-          title: 'An unknown error occurred',
           message: 'An unknown error occurred',
+          title: 'An unknown error occurred',
         },
       };
     }
 
     const verification = await ctx.services.verification.getVerification({
-      type: '2fa',
       target: ctx.user.email,
+      type: '2fa',
     });
 
     if (!verification) {
       return {
         error: {
-          title: '2FA not enabled',
           message: '2FA is not enabled for your account.',
+          title: '2FA not enabled',
         },
       };
     }
@@ -96,8 +96,8 @@ export async function finishDisable2FA(
 
     return {
       error: {
-        title: 'An unknown error occurred',
         message: 'An unknown error occurred',
+        title: 'An unknown error occurred',
       },
     };
   }
@@ -110,18 +110,18 @@ const FinishDisable2FAInput = builder.inputType('FinishDisable2FAInput', {
 });
 
 const FinishDisable2FAPayload = builder.unionType('FinishDisable2FAPayload', {
-  types: [MutationSuccess, MutationErrorPayload],
   resolveType: createPayloadResolver(MutationSuccess),
+  types: [MutationSuccess, MutationErrorPayload],
 });
 
 export const resolve = requireAuth(finishDisable2FA);
 
 builder.mutationField('finishDisable2FA', (t) =>
   t.field({
-    type: FinishDisable2FAPayload,
     args: {
-      input: t.arg({ type: FinishDisable2FAInput, required: true }),
+      input: t.arg({ required: true, type: FinishDisable2FAInput }),
     },
     resolve: resolve,
+    type: FinishDisable2FAPayload,
   }),
 );

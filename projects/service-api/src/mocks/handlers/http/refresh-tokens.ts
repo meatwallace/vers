@@ -1,5 +1,5 @@
-import { http, HttpResponse } from 'msw';
 import { RefreshTokensRequest } from '@chrono/service-types';
+import { http, HttpResponse } from 'msw';
 import { env } from '~/env';
 import { db } from '../../db';
 
@@ -23,17 +23,17 @@ export const refreshTokens = http.post<never, RefreshTokensRequest>(
     const newRefreshToken = `refresh_token_${Date.now()}`;
 
     db.session.update({
-      where: { id: { equals: session.id } },
       data: { refreshToken: newRefreshToken },
+      where: { id: { equals: session.id } },
     });
 
     return HttpResponse.json({
-      success: true,
       data: {
         accessToken: `access_token_${Date.now()}`,
         refreshToken: newRefreshToken,
         ...sessionData,
       },
+      success: true,
     });
   },
 );

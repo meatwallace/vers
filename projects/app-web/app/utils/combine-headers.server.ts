@@ -1,5 +1,5 @@
 export function combineHeaders(
-  ...headers: Array<ResponseInit['headers'] | null | undefined>
+  ...headers: Array<null | ResponseInit['headers'] | undefined>
 ) {
   const combined = new Headers();
 

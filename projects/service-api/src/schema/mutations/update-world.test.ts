@@ -1,56 +1,56 @@
-import { drop } from '@mswjs/data';
 import { createTestJWT } from '@chrono/service-test-utils';
+import { drop } from '@mswjs/data';
 import { env } from '~/env';
-import { createMockGQLContext } from '~/test-utils/create-mock-gql-context';
 import { db } from '~/mocks/db';
+import { createMockGQLContext } from '~/test-utils/create-mock-gql-context';
 import { resolve } from './update-world';
 
 test('it updates a world', async () => {
   const user = db.user.create({});
 
   db.world.create({
+    atmosphere: 'Neutral',
+    fantasyType: 'Medium',
+    geographyFeatures: ['Deserts'],
+    geographyType: 'Supercontinent',
     id: 'test_id',
     name: 'New World',
-    fantasyType: 'Medium',
-    technologyLevel: 'Medieval',
-    atmosphere: 'Neutral',
     population: 'Average',
-    geographyType: 'Supercontinent',
-    geographyFeatures: ['Deserts'],
+    technologyLevel: 'Medieval',
   });
 
   const accessToken = await createTestJWT({
-    sub: user.id,
     audience: env.API_IDENTIFIER,
     issuer: `https://${env.API_IDENTIFIER}/`,
+    sub: user.id,
   });
 
   const ctx = createMockGQLContext({ accessToken, user });
 
   const args = {
     input: {
-      worldID: 'test_id',
-      name: 'Updated World',
-      fantasyType: 'High',
-      technologyLevel: 'Modern',
       atmosphere: 'Dark',
-      population: 'Dense',
-      geographyType: 'Continents',
+      fantasyType: 'High',
       geographyFeatures: ['Tundra'],
+      geographyType: 'Continents',
+      name: 'Updated World',
+      population: 'Dense',
+      technologyLevel: 'Modern',
+      worldID: 'test_id',
     },
   };
 
   const result = await resolve({}, args, ctx);
 
   expect(result).toMatchObject({
+    atmosphere: 'Dark',
+    fantasyType: 'High',
+    geographyFeatures: ['Tundra'],
+    geographyType: 'Continents',
     id: 'test_id',
     name: 'Updated World',
-    fantasyType: 'High',
-    technologyLevel: 'Modern',
-    atmosphere: 'Dark',
     population: 'Dense',
-    geographyType: 'Continents',
-    geographyFeatures: ['Tundra'],
+    technologyLevel: 'Modern',
   });
 
   drop(db);
@@ -60,43 +60,43 @@ test('it supports partial updates', async () => {
   const user = db.user.create({});
 
   db.world.create({
-    id: 'test_id',
-    ownerID: user.id,
-    name: 'New World',
-    fantasyType: 'Medium',
-    technologyLevel: 'Medieval',
     atmosphere: 'Neutral',
-    population: 'Average',
-    geographyType: 'Supercontinent',
+    fantasyType: 'Medium',
     geographyFeatures: ['Deserts'],
+    geographyType: 'Supercontinent',
+    id: 'test_id',
+    name: 'New World',
+    ownerID: user.id,
+    population: 'Average',
+    technologyLevel: 'Medieval',
   });
 
   const accessToken = await createTestJWT({
-    sub: user.id,
     audience: env.API_IDENTIFIER,
     issuer: `https://${env.API_IDENTIFIER}/`,
+    sub: user.id,
   });
 
   const ctx = createMockGQLContext({ accessToken, user });
 
   const args = {
     input: {
-      worldID: 'test_id',
       name: 'Updated World',
+      worldID: 'test_id',
     },
   };
 
   const result = await resolve({}, args, ctx);
 
   expect(result).toMatchObject({
+    atmosphere: 'Neutral',
+    fantasyType: 'Medium',
+    geographyFeatures: ['Deserts'],
+    geographyType: 'Supercontinent',
     id: 'test_id',
     name: 'Updated World',
-    fantasyType: 'Medium',
-    technologyLevel: 'Medieval',
-    atmosphere: 'Neutral',
     population: 'Average',
-    geographyType: 'Supercontinent',
-    geographyFeatures: ['Deserts'],
+    technologyLevel: 'Medieval',
   });
 
   drop(db);

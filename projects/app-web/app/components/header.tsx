@@ -6,8 +6,8 @@ import * as styles from './header.css.ts';
 
 interface Props {
   user: {
-    username: string;
     name?: string;
+    username: string;
   };
 }
 
@@ -16,7 +16,7 @@ export function Header(props: Props) {
     <header className={styles.container}>
       <Brand size="small" />
 
-      <Link to={Routes.Profile} className={styles.profileLink}>
+      <Link className={styles.profileLink} to={Routes.Profile}>
         {props.user.name ?? props.user.username}
       </Link>
 

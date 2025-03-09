@@ -22,14 +22,14 @@ type VerificationHandlerStrategy = (
 type StrategyMap = Record<VerificationType, VerificationHandlerStrategy>;
 
 const HANDLE_VERIFICATION_TYPE_STRATEGY: StrategyMap = {
+  [VerificationType.ChangeEmail]: noop,
+  [VerificationType.ChangeEmailConfirmation]: noop,
+  [VerificationType.ChangePassword]: noop,
   [VerificationType.Onboarding]: handleOnboarding,
   [VerificationType.ResetPassword]: handleResetPassword,
   [VerificationType.TwoFactorAuth]: handle2FA,
-  [VerificationType.TwoFactorAuthSetup]: handleUnsupported,
   [VerificationType.TwoFactorAuthDisable]: handle2FADisable,
-  [VerificationType.ChangeEmailConfirmation]: noop,
-  [VerificationType.ChangePassword]: noop,
-  [VerificationType.ChangeEmail]: noop,
+  [VerificationType.TwoFactorAuthSetup]: handleUnsupported,
 };
 
 // eslint-disable-next-line @typescript-eslint/require-await

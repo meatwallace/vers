@@ -6,8 +6,8 @@ export interface ServiceContext {
 }
 
 export interface CreateServiceContextConfig {
+  accessToken?: null | string;
+  apiURL: string;
   requestID: string;
   serviceID: ServiceID;
-  apiURL: string;
-  accessToken?: string | null;
 }

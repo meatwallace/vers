@@ -1,10 +1,10 @@
-import { test, expect } from 'vitest';
+import { expect, test } from 'vitest';
 import { generateWelcomeEmail } from './generate-welcome-email.tsx';
 
 test('it generates a welcome email with the provided configuration', async () => {
   const config = {
-    verificationURL: 'https://chrononomicon.com/verification?token=123456',
     verificationCode: '123456',
+    verificationURL: 'https://chrononomicon.com/verification?token=123456',
   };
 
   const { html, plainText } = await generateWelcomeEmail(config);

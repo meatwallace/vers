@@ -6,8 +6,6 @@ export function createServiceContext(
   config: CreateServiceContextConfig,
 ): ServiceContext {
   const client = got.extend({
-    prefixUrl: config.apiURL,
-    responseType: 'json',
     headers: {
       'x-request-id': config.requestID,
       ...(config.accessToken
@@ -15,16 +13,6 @@ export function createServiceContext(
         : {}),
     },
     hooks: {
-      beforeRequest: [
-        (options) => {
-          const shortRequestID = config.requestID.slice(0, 8);
-
-          logger.info(
-            { requestID: config.requestID },
-            `(${shortRequestID}) --> ${options.method} ${options.url?.toString() ?? ''}`,
-          );
-        },
-      ],
       afterResponse: [
         (response) => {
           const shortRequestID = config.requestID.slice(0, 8);
@@ -49,7 +37,19 @@ export function createServiceContext(
           return error;
         },
       ],
+      beforeRequest: [
+        (options) => {
+          const shortRequestID = config.requestID.slice(0, 8);
+
+          logger.info(
+            { requestID: config.requestID },
+            `(${shortRequestID}) --> ${options.method} ${options.url?.toString() ?? ''}`,
+          );
+        },
+      ],
     },
+    prefixUrl: config.apiURL,
+    responseType: 'json',
   });
 
   return {

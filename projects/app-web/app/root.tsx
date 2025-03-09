@@ -8,8 +8,8 @@ import {
 } from 'react-router';
 import { HoneypotProvider } from 'remix-utils/honeypot/react';
 import { type Route } from './+types/root.ts';
-import { honeypot } from './honeypot.server.ts';
 import * as styles from './global.css.ts';
+import { honeypot } from './honeypot.server.ts';
 
 // quick hack to ensure our global styles are kept in the prod build -
 // can clean this up later.

@@ -1,11 +1,11 @@
-import * as jose from 'jose';
-import { Context, Hono } from 'hono';
 import { createTestJWT } from '@chrono/service-test-utils';
+import { Context, Hono } from 'hono';
+import * as jose from 'jose';
 import { createAuthMiddleware } from './create-auth-middleware';
 
 const TEST_TOKEN_PAYLOAD = {
-  sub: 'test_id',
   iss: `https://test.com/`,
+  sub: 'test_id',
 };
 
 const TEST_SIGNING_KEY = `-----BEGIN PRIVATE KEY-----
@@ -66,11 +66,11 @@ async function setupTest(config: TestConfig = {}) {
   const signingKey = await jose.importPKCS8(TEST_SIGNING_KEY, 'RS256');
 
   const token = await createTestJWT({
-    sub: TEST_TOKEN_PAYLOAD.sub,
+    alg: 'RS256',
     audience: 'test.com',
     issuer: 'https://test.com/',
     signingKey,
-    alg: 'RS256',
+    sub: TEST_TOKEN_PAYLOAD.sub,
   });
 
   return { app, token };

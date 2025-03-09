@@ -1,7 +1,7 @@
-import { Context } from 'hono';
 import * as schema from '@chrono/postgres-schema';
-import { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
 import { GetSessionRequest, GetSessionResponse } from '@chrono/service-types';
+import { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
+import { Context } from 'hono';
 
 export async function getSession(
   ctx: Context,
@@ -15,15 +15,15 @@ export async function getSession(
     });
 
     const response: GetSessionResponse = {
-      success: true,
       data: session ?? null,
+      success: true,
     };
 
     return ctx.json(response);
   } catch (error: unknown) {
     // TODO(#16): capture via Sentry
     if (error instanceof Error) {
-      return ctx.json({ success: false, error: 'An unknown error occurred' });
+      return ctx.json({ error: 'An unknown error occurred', success: false });
     }
 
     throw error;

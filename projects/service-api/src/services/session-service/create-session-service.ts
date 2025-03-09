@@ -1,11 +1,11 @@
+import { createServiceContext } from '../utils/create-service-context';
+import { CreateServiceContextConfig } from '../utils/types';
 import { createSession } from './create-session';
+import { deleteSession } from './delete-session';
 import { getSession } from './get-session';
 import { getSessions } from './get-sessions';
 import { refreshTokens } from './refresh-tokens';
-import { deleteSession } from './delete-session';
 import { SessionService } from './types';
-import { CreateServiceContextConfig } from '../utils/types';
-import { createServiceContext } from '../utils/create-service-context';
 
 type SessionServiceConfig = CreateServiceContextConfig;
 

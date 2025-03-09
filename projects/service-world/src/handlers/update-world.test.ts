@@ -1,10 +1,10 @@
-import { Hono } from 'hono';
-import { PostgresTestUtils, createTestUser } from '@chrono/service-test-utils';
-import { createId } from '@paralleldrive/cuid2';
 import { worlds } from '@chrono/postgres-schema';
+import { createTestUser, PostgresTestUtils } from '@chrono/service-test-utils';
+import { createId } from '@paralleldrive/cuid2';
 import { and, eq } from 'drizzle-orm';
-import { updateWorld } from './update-world';
+import { Hono } from 'hono';
 import { pgTestConfig } from '../pg-test-config';
+import { updateWorld } from './update-world';
 
 async function setupTest() {
   const app = new Hono();
@@ -26,37 +26,37 @@ test('it updates the provided world', async () => {
   const [insertedWorld] = await db
     .insert(worlds)
     .values({
-      id: worldID,
-      ownerID: user.id,
-      name: 'New World',
-      fantasyType: 'Medium',
-      technologyLevel: 'Medieval',
       atmosphere: 'Neutral',
-      population: 'Average',
-      geographyType: 'Supercontinent',
-      geographyFeatures: ['Deserts'],
       createdAt: new Date('2024-05-02T01:58:38.835Z'),
+      fantasyType: 'Medium',
+      geographyFeatures: ['Deserts'],
+      geographyType: 'Supercontinent',
+      id: worldID,
+      name: 'New World',
+      ownerID: user.id,
+      population: 'Average',
+      technologyLevel: 'Medieval',
     })
     .returning();
 
   const update = {
-    name: 'Updated World',
-    fantasyType: 'High',
-    technologyLevel: 'Modern',
     archetype: 'Cyberpunk',
     atmosphere: 'Dark',
-    population: 'Dense',
-    geographyType: 'Continents',
+    fantasyType: 'High',
     geographyFeatures: ['Tundra'],
+    geographyType: 'Continents',
+    name: 'Updated World',
+    population: 'Dense',
+    technologyLevel: 'Modern',
   };
 
   const req = new Request('http://localhost/update-world', {
-    method: 'POST',
     body: JSON.stringify({
       ownerID: user.id,
       worldID: worldID,
       ...update,
     }),
+    method: 'POST',
   });
 
   const res = await app.request(req);
@@ -69,34 +69,34 @@ test('it updates the provided world', async () => {
 
   expect(res.status).toBe(200);
   expect(body).toMatchObject({
-    success: true,
     data: {
-      id: worldID,
-      ownerID: user.id,
-      name: 'Updated World',
-      fantasyType: 'High',
-      technologyLevel: 'Modern',
       archetype: 'Cyberpunk',
       atmosphere: 'Dark',
-      population: 'Dense',
-      geographyType: 'Continents',
-      geographyFeatures: ['Tundra'],
       createdAt: expect.any(String),
+      fantasyType: 'High',
+      geographyFeatures: ['Tundra'],
+      geographyType: 'Continents',
+      id: worldID,
+      name: 'Updated World',
+      ownerID: user.id,
+      population: 'Dense',
+      technologyLevel: 'Modern',
       updatedAt: expect.any(String),
     },
+    success: true,
   });
 
   expect(updatedWorld).toMatchObject({
-    id: worldID,
-    ownerID: user.id,
-    name: 'Updated World',
-    fantasyType: 'High',
-    technologyLevel: 'Modern',
     atmosphere: 'Dark',
-    population: 'Dense',
-    geographyType: 'Continents',
-    geographyFeatures: ['Tundra'],
     createdAt: expect.any(Date),
+    fantasyType: 'High',
+    geographyFeatures: ['Tundra'],
+    geographyType: 'Continents',
+    id: worldID,
+    name: 'Updated World',
+    ownerID: user.id,
+    population: 'Dense',
+    technologyLevel: 'Modern',
     updatedAt: expect.any(Date),
   });
 
@@ -113,16 +113,16 @@ test('it allows partial updating', async () => {
   const worldID = createId();
 
   await db.insert(worlds).values({
-    id: worldID,
-    ownerID: user.id,
-    name: 'New World',
-    fantasyType: 'Medium',
-    technologyLevel: 'Medieval',
     atmosphere: 'Neutral',
-    population: 'Average',
-    geographyType: 'Supercontinent',
-    geographyFeatures: ['Deserts'],
     createdAt: new Date('2024-05-02T01:58:38.835Z'),
+    fantasyType: 'Medium',
+    geographyFeatures: ['Deserts'],
+    geographyType: 'Supercontinent',
+    id: worldID,
+    name: 'New World',
+    ownerID: user.id,
+    population: 'Average',
+    technologyLevel: 'Medieval',
   });
 
   const update = {
@@ -130,12 +130,12 @@ test('it allows partial updating', async () => {
   };
 
   const req = new Request('http://localhost/update-world', {
-    method: 'POST',
     body: JSON.stringify({
       ownerID: user.id,
       worldID: worldID,
       ...update,
     }),
+    method: 'POST',
   });
 
   const res = await app.request(req);
@@ -146,33 +146,33 @@ test('it allows partial updating', async () => {
 
   expect(res.status).toBe(200);
   expect(body).toMatchObject({
-    success: true,
     data: {
-      id: worldID,
-      ownerID: user.id,
-      name: 'Updated World',
-      fantasyType: 'Medium',
-      technologyLevel: 'Medieval',
       atmosphere: 'Neutral',
-      population: 'Average',
-      geographyType: 'Supercontinent',
-      geographyFeatures: ['Deserts'],
       createdAt: expect.any(String),
+      fantasyType: 'Medium',
+      geographyFeatures: ['Deserts'],
+      geographyType: 'Supercontinent',
+      id: worldID,
+      name: 'Updated World',
+      ownerID: user.id,
+      population: 'Average',
+      technologyLevel: 'Medieval',
       updatedAt: expect.any(String),
     },
+    success: true,
   });
 
   expect(updatedWorld).toMatchObject({
-    id: worldID,
-    ownerID: user.id,
-    name: 'Updated World',
-    fantasyType: 'Medium',
-    technologyLevel: 'Medieval',
     atmosphere: 'Neutral',
-    population: 'Average',
-    geographyType: 'Supercontinent',
-    geographyFeatures: ['Deserts'],
     createdAt: expect.any(Date),
+    fantasyType: 'Medium',
+    geographyFeatures: ['Deserts'],
+    geographyType: 'Supercontinent',
+    id: worldID,
+    name: 'Updated World',
+    ownerID: user.id,
+    population: 'Average',
+    technologyLevel: 'Medieval',
     updatedAt: expect.any(Date),
   });
 

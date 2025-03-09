@@ -4,15 +4,15 @@ import { Icon } from './icon.tsx';
 import { Spinner } from './spinner.tsx';
 
 type Props = ButtonProps & {
-  status: StatusButtonStatus;
   spinDelay?: number;
+  status: StatusButtonStatus;
 };
 
 enum StatusButtonStatus {
+  Error = 'error',
   Idle = 'idle',
   Pending = 'pending',
   Success = 'success',
-  Error = 'error',
 }
 
 export function StatusButton(props: Props) {
@@ -44,12 +44,12 @@ function getStatusIcon(status: StatusButtonStatus, isPendingVisible: boolean) {
 
   if (status === StatusButtonStatus.Success) {
     return (
-      <Icon.Checkmark role="img" aria-label="Success" aria-hidden="false" />
+      <Icon.Checkmark aria-hidden="false" aria-label="Success" role="img" />
     );
   }
 
   if (status === StatusButtonStatus.Error) {
-    return <Icon.Cross role="img" aria-label="Error" aria-hidden="false" />;
+    return <Icon.Cross aria-hidden="false" aria-label="Error" role="img" />;
   }
 
   return null;

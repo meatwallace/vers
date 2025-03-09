@@ -1,11 +1,11 @@
 import * as jose from 'jose';
 
 interface JWTConfig {
-  sub: string;
-  issuer: string;
+  alg?: string;
   audience: string;
   expirationTime?: string;
-  alg?: string;
+  issuer: string;
+  sub: string;
 }
 
 export async function createJWT(config: JWTConfig): Promise<string> {

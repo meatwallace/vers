@@ -11,7 +11,7 @@
  */
 export function combineCookies(
   setCookieHeader: string,
-  existingCookieHeader: string | null,
+  existingCookieHeader: null | string,
 ) {
   return existingCookieHeader
     ? `${existingCookieHeader}; ${setCookieHeader.split(';')[0]}`

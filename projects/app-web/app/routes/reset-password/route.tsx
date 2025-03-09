@@ -1,8 +1,8 @@
-import { Form, Link, data, redirect } from 'react-router';
-import { HoneypotInputs } from 'remix-utils/honeypot/react';
-import { z } from 'zod';
+import { data, Form, Link, redirect } from 'react-router';
 import { getFormProps, getInputProps, useForm } from '@conform-to/react';
 import { getZodConstraint, parseWithZod } from '@conform-to/zod';
+import { HoneypotInputs } from 'remix-utils/honeypot/react';
+import { z } from 'zod';
 import { Field } from '~/components/field';
 import { FormErrorList } from '~/components/form-error-list.tsx';
 import { RouteErrorBoundary } from '~/components/route-error-boundary.tsx';
@@ -100,9 +100,9 @@ export async function action({ request }: Route.ActionArgs) {
       finishPasswordResetMutation,
       {
         input: {
-          resetToken,
           email,
           password: submission.value.password,
+          resetToken,
           transactionToken,
         },
       },
@@ -147,16 +147,16 @@ export function ResetPassword({
   const isFormPending = useIsFormPending();
 
   const [form, fields] = useForm({
-    id: 'reset-password-form',
     constraint: getZodConstraint(ResetPasswordFormSchema),
+    defaultValue: {
+      email: loaderData.email,
+    },
+    id: 'reset-password-form',
     lastResult: actionData?.result,
     onValidate({ formData }) {
       return parseWithZod(formData, { schema: ResetPasswordFormSchema });
     },
     shouldRevalidate: 'onBlur',
-    defaultValue: {
-      email: loaderData.email,
-    },
   });
 
   const submitButtonStatus = isFormPending
@@ -180,38 +180,38 @@ export function ResetPassword({
         <HoneypotInputs />
         <input {...getInputProps(fields.email, { type: 'hidden' })} />
         <Field
-          labelProps={{
-            htmlFor: fields.password.id,
-            children: 'New Password',
-          }}
+          errors={fields.password.errors ?? []}
           inputProps={{
             ...getInputProps(fields.password, { type: 'password' }),
             autoComplete: 'new-password',
           }}
-          errors={fields.password.errors ?? []}
+          labelProps={{
+            children: 'New Password',
+            htmlFor: fields.password.id,
+          }}
         />
         <Field
-          labelProps={{
-            htmlFor: fields.confirmPassword.id,
-            children: 'Confirm Password',
-          }}
+          errors={fields.confirmPassword.errors ?? []}
           inputProps={{
             ...getInputProps(fields.confirmPassword, { type: 'password' }),
             autoComplete: 'new-password',
           }}
-          errors={fields.confirmPassword.errors ?? []}
+          labelProps={{
+            children: 'Confirm Password',
+            htmlFor: fields.confirmPassword.id,
+          }}
         />
         <FormErrorList errors={form.errors ?? []} id={form.errorId} />
         <StatusButton
-          type="submit"
-          status={submitButtonStatus}
           disabled={isFormPending}
+          status={submitButtonStatus}
+          type="submit"
         >
           Reset Password
         </StatusButton>
         <div className={styles.loginContainer}>
           <span className={styles.loginText}>Remember your password?</span>
-          <Link to={Routes.Login} className={styles.loginLink}>
+          <Link className={styles.loginLink} to={Routes.Login}>
             Login
           </Link>
         </div>

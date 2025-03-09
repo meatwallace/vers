@@ -15,23 +15,23 @@ test('it updates a verification', async () => {
   const user = db.user.create({});
 
   db.verification.create({
-    id: 'test_id',
-    type: '2fa-setup',
-    target: user.id,
     expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24),
+    id: 'test_id',
+    target: user.id,
+    type: '2fa-setup',
   });
 
   const accessToken = await createTestJWT({
-    sub: user.id,
     audience: env.API_IDENTIFIER,
     issuer: `https://${env.API_IDENTIFIER}/`,
+    sub: user.id,
   });
 
   const ctx = createServiceContext({
+    accessToken,
+    apiURL: env.VERIFICATIONS_SERVICE_URL,
     requestID: createId(),
     serviceID: ServiceID.ServiceWorld,
-    apiURL: env.VERIFICATIONS_SERVICE_URL,
-    accessToken,
   });
 
   const args = {
@@ -48,9 +48,9 @@ test('it updates a verification', async () => {
   });
 
   expect(updatedVerification).toMatchObject({
-    id: 'test_id',
-    type: '2fa',
-    target: user.id,
     expiresAt: expect.any(Date),
+    id: 'test_id',
+    target: user.id,
+    type: '2fa',
   });
 });

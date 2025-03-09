@@ -1,12 +1,12 @@
-import { and, eq } from 'drizzle-orm';
-import { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
-import { Context } from 'hono';
 import * as schema from '@chrono/postgres-schema';
 import {
   Get2FAVerificationURIRequest,
   Get2FAVerificationURIResponse,
 } from '@chrono/service-types';
 import { getTOTPAuthUri } from '@epic-web/totp';
+import { and, eq } from 'drizzle-orm';
+import { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
+import { Context } from 'hono';
 
 export async function get2FAVerificationURI(
   ctx: Context,
@@ -24,25 +24,25 @@ export async function get2FAVerificationURI(
 
     if (!verification) {
       return ctx.json({
-        success: false,
         error: 'No 2FA verification found for this target',
+        success: false,
       });
     }
 
     const otpURI = getTOTPAuthUri({
-      secret: verification.secret,
+      accountName: target,
       algorithm: verification.algorithm,
       digits: verification.digits,
-      period: verification.period,
-      accountName: target,
       issuer: 'Chrononomicon',
+      period: verification.period,
+      secret: verification.secret,
     });
 
     const response: Get2FAVerificationURIResponse = {
-      success: true,
       data: {
         otpURI,
       },
+      success: true,
     };
 
     return ctx.json(response);
@@ -50,8 +50,8 @@ export async function get2FAVerificationURI(
     // TODO(#16): capture via Sentry
     if (error instanceof Error) {
       const response = {
-        success: false,
         error: 'An unknown error occurred',
+        success: false,
       };
 
       return ctx.json(response);

@@ -1,5 +1,5 @@
-import bcrypt from 'bcryptjs';
 import { expect, test } from 'vitest';
+import bcrypt from 'bcryptjs';
 import { hashPassword } from './hash-password.ts';
 
 test('it hashes a password using bcrypt', async () => {

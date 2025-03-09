@@ -26,8 +26,8 @@ export function createLoggerMiddleware(logger: Logger): MiddlewareHandler {
       {
         requestID,
         response: {
-          status: ctx.res.status,
           ok: String(ctx.res.ok),
+          status: ctx.res.status,
         },
       },
       `(${shortRequestID}) <<< ${ctx.res.status} ${path}`,

@@ -1,12 +1,12 @@
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { createRoutesStub } from 'react-router';
-import { render, screen, waitFor } from '@testing-library/react';
-import { Header } from './header';
 import { Routes } from '~/types';
+import { Header } from './header';
 
 interface TestConfig {
-  username: string;
   name?: string;
+  username: string;
 }
 
 function setupTest(config: TestConfig) {
@@ -14,15 +14,15 @@ function setupTest(config: TestConfig) {
 
   const HeaderStub = createRoutesStub([
     {
-      path: '/',
       Component: () => (
-        <Header user={{ username: config.username, name: config.name }} />
+        <Header user={{ name: config.name, username: config.username }} />
       ),
+      path: '/',
     },
     {
-      path: Routes.Logout,
-      Component: () => 'LOGOUT_ROUTE',
       action: () => null,
+      Component: () => 'LOGOUT_ROUTE',
+      path: Routes.Logout,
     },
   ]);
 
@@ -32,7 +32,7 @@ function setupTest(config: TestConfig) {
 }
 
 test("it displays the user's `name`", () => {
-  setupTest({ username: 'test_user', name: 'John Doe' });
+  setupTest({ name: 'John Doe', username: 'test_user' });
 
   expect(screen.getByText('John Doe')).toBeInTheDocument();
 });

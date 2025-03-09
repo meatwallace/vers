@@ -10,17 +10,17 @@ export default defineConfig({
     ws: process.env.VITEST === 'true' ? false : undefined,
   },
   test: {
-    watch: false,
-    globals: true,
+    coverage: {
+      provider: 'v8',
+      reportsDirectory: '../../coverage/apps/lib-email-templates',
+    },
     environment: 'happy-dom',
+    globals: true,
+    include: ['src/**/*.test.ts', 'src/**/*.test.tsx'],
     passWithNoTests: true,
+    reporters: ['default'],
     setupFiles: ['./vitest.setup.ts'],
     testTimeout: 30 * 1000,
-    include: ['src/**/*.test.ts', 'src/**/*.test.tsx'],
-    reporters: ['default'],
-    coverage: {
-      reportsDirectory: '../../coverage/apps/lib-email-templates',
-      provider: 'v8',
-    },
+    watch: false,
   },
 });

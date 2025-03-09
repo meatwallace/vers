@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 
-import { sql } from 'drizzle-orm';
 import * as schema from '@chrono/postgres-schema';
-import { drizzle } from 'drizzle-orm/postgres-js';
+import { sql } from 'drizzle-orm';
 import { migrate } from 'drizzle-orm/node-postgres/migrator';
+import { drizzle } from 'drizzle-orm/postgres-js';
 import { oraPromise } from 'ora';
 import { pg } from './postgres/pg';
 
@@ -81,10 +81,10 @@ async function resetDevDB() {
   const cleanupStart = Date.now();
 
   const cleanupSpinnerConfig = {
-    text: 'Cleaning up database...',
+    failText: () => `Database cleanup failed in ${Date.now() - cleanupStart}ms`,
     successText: () =>
       `Database cleanup completed in ${Date.now() - cleanupStart}ms`,
-    failText: () => `Database cleanup failed in ${Date.now() - cleanupStart}ms`,
+    text: 'Cleaning up database...',
   };
 
   await oraPromise(db.execute(query), cleanupSpinnerConfig);
@@ -92,11 +92,11 @@ async function resetDevDB() {
   const migrationStart = Date.now();
 
   const migrationSpinnerConfig = {
-    text: 'Migrating database...',
-    successText: () =>
-      `Database migration completed in ${Date.now() - migrationStart}ms`,
     failText: () =>
       `Database migration failed in ${Date.now() - migrationStart}ms`,
+    successText: () =>
+      `Database migration completed in ${Date.now() - migrationStart}ms`,
+    text: 'Migrating database...',
   };
 
   await oraPromise(

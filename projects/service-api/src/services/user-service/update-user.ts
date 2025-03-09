@@ -1,5 +1,5 @@
-import { Jsonify } from 'type-fest';
 import { UpdateUserRequest, UpdateUserResponse } from '@chrono/service-types';
+import { Jsonify } from 'type-fest';
 import { UserServiceContext } from './types';
 
 export async function updateUser(

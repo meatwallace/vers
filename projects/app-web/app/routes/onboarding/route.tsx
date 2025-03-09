@@ -1,25 +1,25 @@
-import { z } from 'zod';
-import { data, redirect, Form } from 'react-router';
-import { HoneypotInputs } from 'remix-utils/honeypot/react';
-import { useForm, getFormProps, getInputProps } from '@conform-to/react';
+import { data, Form, redirect } from 'react-router';
+import { getFormProps, getInputProps, useForm } from '@conform-to/react';
 import { getZodConstraint, parseWithZod } from '@conform-to/zod';
-import { type Route } from './+types/route.ts';
-import { graphql } from '~/gql';
-import { Routes } from '~/types.ts';
-import { createGQLClient } from '~/utils/create-gql-client.server.ts';
+import { HoneypotInputs } from 'remix-utils/honeypot/react';
+import { z } from 'zod';
 import { CheckboxField, Field } from '~/components/field';
 import { FormErrorList } from '~/components/form-error-list.tsx';
 import { RouteErrorBoundary } from '~/components/route-error-boundary.tsx';
 import { StatusButton } from '~/components/status-button.tsx';
+import { graphql } from '~/gql';
 import { useIsFormPending } from '~/hooks/use-is-form-pending';
 import { authSessionStorage } from '~/session/auth-session-storage.server.ts';
-import { verifySessionStorage } from '~/session/verify-session-storage.server.ts';
 import { storeAuthPayload } from '~/session/store-auth-payload.ts';
+import { verifySessionStorage } from '~/session/verify-session-storage.server.ts';
+import { Routes } from '~/types.ts';
+import { checkHoneypot } from '~/utils/check-honeypot.server.ts';
+import { createGQLClient } from '~/utils/create-gql-client.server.ts';
+import { isMutationError } from '~/utils/is-mutation-error';
 import { ConfirmPasswordSchema } from '~/validation/confirm-password-schema.ts';
 import { NameSchema } from '~/validation/name-schema.ts';
 import { UsernameSchema } from '~/validation/username-schema.ts';
-import { isMutationError } from '~/utils/is-mutation-error';
-import { checkHoneypot } from '~/utils/check-honeypot.server.ts';
+import { type Route } from './+types/route.ts';
 import { requireOnboardingSession } from './require-onboarding-session.server.ts';
 
 const finishEmailSignupMutation = graphql(/* GraphQL */ `
@@ -46,13 +46,13 @@ const finishEmailSignupMutation = graphql(/* GraphQL */ `
 
 const OnboardingFormSchema = z
   .object({
-    username: UsernameSchema,
-    name: NameSchema,
     agreeToTerms: z.boolean({
       required_error:
         'You must agree to the terms of service and privacy policy',
     }),
+    name: NameSchema,
     rememberMe: z.boolean().default(false),
+    username: UsernameSchema,
   })
   .and(ConfirmPasswordSchema);
 
@@ -85,11 +85,11 @@ export async function action({ request }: Route.ActionArgs) {
       {
         input: {
           email,
-          username: submission.value.username,
-          password: submission.value.password,
           name: submission.value.name,
+          password: submission.value.password,
           rememberMe: submission.value.rememberMe,
           transactionToken,
+          username: submission.value.username,
         },
       },
     );
@@ -145,8 +145,8 @@ export function Onboarding({ actionData }: Route.ComponentProps) {
   const isFormPending = useIsFormPending();
 
   const [form, fields] = useForm({
-    id: 'onboarding-form',
     constraint: getZodConstraint(OnboardingFormSchema),
+    id: 'onboarding-form',
     lastResult: actionData?.result,
     onValidate({ formData }) {
       return parseWithZod(formData, { schema: OnboardingFormSchema });
@@ -163,68 +163,68 @@ export function Onboarding({ actionData }: Route.ComponentProps) {
       <Form method="POST" {...getFormProps(form)}>
         <HoneypotInputs />
         <Field
-          labelProps={{ htmlFor: fields.username.id, children: 'Username' }}
+          errors={fields.username.errors ?? []}
           inputProps={{
             ...getInputProps(fields.username, { type: 'text' }),
             autoComplete: 'username',
           }}
-          errors={fields.username.errors ?? []}
+          labelProps={{ children: 'Username', htmlFor: fields.username.id }}
         />
         <Field
-          labelProps={{ htmlFor: fields.name.id, children: 'Name' }}
+          errors={fields.name.errors ?? []}
           inputProps={{
             ...getInputProps(fields.name, { type: 'text' }),
             autoComplete: 'name',
           }}
-          errors={fields.name.errors ?? []}
+          labelProps={{ children: 'Name', htmlFor: fields.name.id }}
         />
         <Field
-          labelProps={{
-            htmlFor: fields.password.id,
-            children: 'Password',
-          }}
+          errors={fields.password.errors ?? []}
           inputProps={{
             ...getInputProps(fields.password, { type: 'password' }),
             autoComplete: 'new-password',
           }}
-          errors={fields.password.errors ?? []}
+          labelProps={{
+            children: 'Password',
+            htmlFor: fields.password.id,
+          }}
         />
         <Field
-          labelProps={{
-            htmlFor: fields.confirmPassword.id,
-            children: 'Confirm Password',
-          }}
+          errors={fields.confirmPassword.errors ?? []}
           inputProps={{
             ...getInputProps(fields.confirmPassword, { type: 'password' }),
             autoComplete: 'new-password',
           }}
-          errors={fields.confirmPassword.errors ?? []}
+          labelProps={{
+            children: 'Confirm Password',
+            htmlFor: fields.confirmPassword.id,
+          }}
         />
         <CheckboxField
-          labelProps={{
-            htmlFor: fields.agreeToTerms.id,
-            children: 'Agree to terms',
-          }}
           checkboxProps={getInputProps(fields.agreeToTerms, {
             type: 'checkbox',
           })}
           errors={fields.agreeToTerms.errors ?? []}
+          labelProps={{
+            children: 'Agree to terms',
+            htmlFor: fields.agreeToTerms.id,
+          }}
         />
         <CheckboxField
-          labelProps={{
-            htmlFor: fields.rememberMe.id,
-            children: 'Remember me',
-          }}
           checkboxProps={getInputProps(fields.rememberMe, {
             type: 'checkbox',
           })}
           errors={fields.rememberMe.errors ?? []}
+          labelProps={{
+            children: 'Remember me',
+            htmlFor: fields.rememberMe.id,
+          }}
         />
         <FormErrorList errors={form.errors ?? []} id={form.errorId} />
         <StatusButton
-          type="submit"
-          status={submitButtonStatus}
           disabled={isFormPending}
+          status={submitButtonStatus}
+          type="submit"
         >
           Create an account
         </StatusButton>

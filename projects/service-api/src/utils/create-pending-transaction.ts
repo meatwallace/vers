@@ -1,12 +1,12 @@
-import { VerificationType } from '~/schema/types/verification-type';
 import { createId } from '@paralleldrive/cuid2';
+import { VerificationType } from '~/schema/types/verification-type';
 import { pendingTransactionCache } from './pending-transaction-cache';
 
 interface Data {
-  target: string;
-  ipAddress: string;
   action: VerificationType;
-  sessionID: string | null;
+  ipAddress: string;
+  sessionID: null | string;
+  target: string;
 }
 
 /**

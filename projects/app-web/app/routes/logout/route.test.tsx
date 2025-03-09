@@ -1,13 +1,13 @@
-import userEvent from '@testing-library/user-event';
 import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { createRoutesStub, Form } from 'react-router';
-import { Routes } from '~/types.ts';
-import { withAuthedUser } from '~/test-utils/with-authed-user.ts';
-import { db } from '~/mocks/db.ts';
 import { drop } from '@mswjs/data';
-import { server } from '~/mocks/node.ts';
 import { graphql } from 'msw';
-import { loader, action } from './route.tsx';
+import { db } from '~/mocks/db.ts';
+import { server } from '~/mocks/node.ts';
+import { withAuthedUser } from '~/test-utils/with-authed-user.ts';
+import { Routes } from '~/types.ts';
+import { action, loader } from './route.tsx';
 
 interface TestConfig {
   initialPath?: string;
@@ -19,23 +19,23 @@ function setupTest(config: TestConfig) {
 
   const LogoutStub = createRoutesStub([
     {
-      path: Routes.Dashboard,
       Component: () => (
         <Form action={Routes.Logout} method="post">
           <button type="submit">Logout</button>
         </Form>
       ),
+      path: Routes.Dashboard,
     },
     {
-      path: Routes.Logout,
-      Component: () => 'LOGOUT_ROUTE',
-      loader,
       // @ts-expect-error(#35) - react router test types are out of date
       action: withAuthedUser(action, { sessionID: config.sessionID }),
+      Component: () => 'LOGOUT_ROUTE',
+      loader,
+      path: Routes.Logout,
     },
     {
-      path: Routes.Index,
       Component: () => 'INDEX_ROUTE',
+      path: Routes.Index,
     },
   ]);
 

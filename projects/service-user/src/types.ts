@@ -1,5 +1,5 @@
-import { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
 import * as schema from '@chrono/postgres-schema';
+import { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
 import { z } from 'zod';
 import { envSchema } from './env';
 

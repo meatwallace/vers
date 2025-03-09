@@ -2,13 +2,13 @@ import {
   GetVerificationRequest,
   GetVerificationResponse,
 } from '@chrono/service-types';
-import { VerificationData, VerificationServiceContext } from './types';
 import { marshal } from './marshal';
+import { VerificationData, VerificationServiceContext } from './types';
 
 export async function getVerification(
   args: GetVerificationRequest,
   ctx: VerificationServiceContext,
-): Promise<VerificationData | null> {
+): Promise<null | VerificationData> {
   const response = await ctx.client.post<GetVerificationResponse>(
     'get-verification',
     {

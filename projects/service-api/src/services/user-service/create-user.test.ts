@@ -1,7 +1,7 @@
-import { drop } from '@mswjs/data';
 import { createTestJWT } from '@chrono/service-test-utils';
-import { createId } from '@paralleldrive/cuid2';
 import { ServiceID } from '@chrono/service-types';
+import { drop } from '@mswjs/data';
+import { createId } from '@paralleldrive/cuid2';
 import { env } from '~/env';
 import { db } from '~/mocks/db';
 import { createServiceContext } from '../utils';
@@ -11,34 +11,34 @@ test('it creates a new user', async () => {
   const user = db.user.create({});
 
   const accessToken = await createTestJWT({
-    sub: user.id,
     audience: env.API_IDENTIFIER,
     issuer: `https://${env.API_IDENTIFIER}/`,
+    sub: user.id,
   });
 
   const ctx = createServiceContext({
+    accessToken,
+    apiURL: env.USERS_SERVICE_URL,
     requestID: createId(),
     serviceID: ServiceID.ServiceUser,
-    apiURL: env.USERS_SERVICE_URL,
-    accessToken,
   });
 
   const args = {
     email: 'user@test.com',
     name: 'Test User',
-    username: 'test_user',
     password: 'test_password',
+    username: 'test_user',
   };
 
   const result = await createUser(args, ctx);
 
   expect(result).toMatchObject({
-    id: expect.any(String),
-    email: args.email,
-    name: args.name,
-    username: args.username,
     createdAt: expect.any(Date),
+    email: args.email,
+    id: expect.any(String),
+    name: args.name,
     updatedAt: expect.any(Date),
+    username: args.username,
   });
 
   drop(db);

@@ -1,10 +1,10 @@
-import clsx from 'clsx';
 import { RecipeVariants } from '@vanilla-extract/recipes';
+import clsx from 'clsx';
 import * as styles from './brand.css.ts';
 
-type Props = {
+type Props = RecipeVariants<typeof styles.container> & {
   className?: string;
-} & RecipeVariants<typeof styles.container>;
+};
 
 export function Brand(props: Props) {
   return (
@@ -14,8 +14,8 @@ export function Brand(props: Props) {
       Chron
       <img
         alt="Chrononomicon brand icon"
-        src="/assets/images/brand-icon-light.png"
         className={styles.icon({ size: props.size })}
+        src="/assets/images/brand-icon-light.png"
       />
       nomicon
     </h1>

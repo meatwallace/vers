@@ -1,8 +1,8 @@
 import { afterEach, expect, test } from 'vitest';
-import { Form, createRoutesStub } from 'react-router';
-import { drop } from '@mswjs/data';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { createRoutesStub, Form } from 'react-router';
+import { drop } from '@mswjs/data';
 import { db } from '~/mocks/db';
 import { withAuthedUser } from '~/test-utils/with-authed-user.ts';
 import { Routes } from '~/types';
@@ -15,24 +15,24 @@ interface TestConfig {
 function setupTest(config: TestConfig) {
   const CreateWorldStub = createRoutesStub([
     {
-      path: '/',
       Component: () => (
         <Form action={Routes.CreateWorld} method="post">
           <button type="submit">Create</button>
         </Form>
       ),
+      path: '/',
     },
     {
-      path: Routes.CreateWorld,
-      Component: null,
       // @ts-expect-error(#35) - react router test types are out of date
       action: config.isAuthed
         ? // @ts-expect-error(#35) - react router test types are out of date
           withAuthedUser(action, { user: { id: 'user_id' } })
         : action,
+      Component: null,
+      path: Routes.CreateWorld,
     },
-    { path: Routes.CreateWorldWizard, Component: () => 'Create World Wizard' },
-    { path: Routes.Login, Component: () => 'LOGIN_ROUTE' },
+    { Component: () => 'Create World Wizard', path: Routes.CreateWorldWizard },
+    { Component: () => 'LOGIN_ROUTE', path: Routes.Login },
   ]);
 
   render(<CreateWorldStub />);

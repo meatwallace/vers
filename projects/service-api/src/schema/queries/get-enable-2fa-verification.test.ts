@@ -14,13 +14,13 @@ test('it retrieves the 2FA verification URI', async () => {
 
   // Create a 2FA setup verification record
   db.verification.create({
-    type: '2fa-setup',
-    target: user.email,
-    secret: 'ABCDEFGHIJKLMNOP',
     algorithm: 'SHA-1',
+    charSet: 'ABCDEFGHJKLMNPQRSTUVWXYZ123456789',
     digits: 6,
     period: 30,
-    charSet: 'ABCDEFGHJKLMNPQRSTUVWXYZ123456789',
+    secret: 'ABCDEFGHIJKLMNOP',
+    target: user.email,
+    type: '2fa-setup',
   });
 
   const ctx = createMockGQLContext({ user });

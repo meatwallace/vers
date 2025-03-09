@@ -1,12 +1,12 @@
-import bcrypt from 'bcryptjs';
-import { Context } from 'hono';
-import { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
-import { eq } from 'drizzle-orm';
 import * as schema from '@chrono/postgres-schema';
 import {
   VerifyPasswordRequest,
   VerifyPasswordResponse,
 } from '@chrono/service-types';
+import bcrypt from 'bcryptjs';
+import { eq } from 'drizzle-orm';
+import { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
+import { Context } from 'hono';
 
 export async function verifyPassword(
   ctx: Context,
@@ -21,8 +21,8 @@ export async function verifyPassword(
 
     if (!user) {
       const response: VerifyPasswordResponse = {
-        success: false,
         error: 'No user with that email',
+        success: false,
       };
 
       return ctx.json(response);
@@ -30,8 +30,8 @@ export async function verifyPassword(
 
     if (!user.passwordHash) {
       const response: VerifyPasswordResponse = {
-        success: false,
         error: 'User does not have a password set',
+        success: false,
       };
 
       return ctx.json(response);
@@ -41,16 +41,16 @@ export async function verifyPassword(
 
     if (!isValid) {
       const response: VerifyPasswordResponse = {
-        success: false,
         error: 'Incorrect password',
+        success: false,
       };
 
       return ctx.json(response);
     }
 
     const response: VerifyPasswordResponse = {
-      success: true,
       data: {},
+      success: true,
     };
 
     return ctx.json(response);
@@ -58,8 +58,8 @@ export async function verifyPassword(
     // TODO(#16): capture via Sentry
     if (error instanceof Error) {
       const response = {
-        success: false,
         error: 'An unknown error occurred',
+        success: false,
       };
 
       return ctx.json(response);

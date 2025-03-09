@@ -1,25 +1,25 @@
-import { drop } from '@mswjs/data';
 import { createTestJWT } from '@chrono/service-test-utils';
+import { drop } from '@mswjs/data';
 import { env } from '~/env';
-import { createMockGQLContext } from '~/test-utils/create-mock-gql-context';
 import { db } from '~/mocks/db';
+import { createMockGQLContext } from '~/test-utils/create-mock-gql-context';
 import { resolve } from './get-current-user';
 
 test('it returns the current user', async () => {
   const user = db.user.create({});
 
   const accessToken = await createTestJWT({
-    sub: user.id,
     audience: env.API_IDENTIFIER,
     issuer: `https://${env.API_IDENTIFIER}/`,
+    sub: user.id,
   });
 
   const ctx = createMockGQLContext({ accessToken, user });
   const result = await resolve({}, {}, ctx);
 
   expect(result).toMatchObject({
-    id: user.id,
     email: user.email,
+    id: user.id,
     name: user.name,
     username: user.username,
   });

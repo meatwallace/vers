@@ -9,11 +9,11 @@ test('it increments the attempt count for a pending transaction', () => {
   const transactionID = 'test_transaction';
 
   const initialTransaction = {
-    target: 'test@example.com',
-    ipAddress: '127.0.0.1',
     action: 'CHANGE_PASSWORD',
     attempts: 0,
+    ipAddress: '127.0.0.1',
     sessionID: null,
+    target: 'test@example.com',
   };
 
   pendingTransactionCache.set(transactionID, initialTransaction);
@@ -34,11 +34,11 @@ test('it throws an error when transaction is not found', () => {
 test('it deletes the transaction when max attempts are reached', () => {
   const transactionID = 'test_transaction';
   const initialTransaction = {
-    target: 'test@example.com',
-    ipAddress: '127.0.0.1',
     action: 'CHANGE_PASSWORD',
     attempts: 4, // One less than MAX_TRANSACTION_ATTEMPTS
+    ipAddress: '127.0.0.1',
     sessionID: null,
+    target: 'test@example.com',
   };
 
   pendingTransactionCache.set(transactionID, initialTransaction);
@@ -52,11 +52,11 @@ test('it increments attempts up to max attempts', () => {
   const transactionID = 'test_transaction';
 
   const initialTransaction = {
-    target: 'test@example.com',
-    ipAddress: '127.0.0.1',
     action: 'CHANGE_PASSWORD',
     attempts: 0,
+    ipAddress: '127.0.0.1',
     sessionID: null,
+    target: 'test@example.com',
   };
 
   pendingTransactionCache.set(transactionID, initialTransaction);

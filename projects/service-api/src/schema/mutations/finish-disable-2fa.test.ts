@@ -21,32 +21,32 @@ test('it successfully disables 2FA with a valid transaction token', async () => 
   });
 
   const verification = db.verification.create({
-    id: 'verification-id',
-    type: '2fa',
-    target: user.email,
-    secret: 'ABCDEFGHIJKLMNOP',
     algorithm: 'SHA-1',
-    digits: 6,
-    period: 30,
     charSet: 'ABCDEFGHJKLMNPQRSTUVWXYZ123456789',
+    digits: 6,
+    id: 'verification-id',
+    period: 30,
+    secret: 'ABCDEFGHIJKLMNOP',
+    target: user.email,
+    type: '2fa',
   });
 
-  const ctx = createMockGQLContext({ user, session });
+  const ctx = createMockGQLContext({ session, user });
 
   const transactionID = createPendingTransaction({
-    target: user.email,
-    ipAddress: ctx.ipAddress,
     action: VerificationType.TWO_FACTOR_AUTH_DISABLE,
+    ipAddress: ctx.ipAddress,
     sessionID: session.id,
+    target: user.email,
   });
 
   const transactionToken = await createTransactionToken(
     {
-      transactionID,
-      target: user.email,
-      ipAddress: ctx.ipAddress,
       action: VerificationType.TWO_FACTOR_AUTH_DISABLE,
+      ipAddress: ctx.ipAddress,
       sessionID: session.id,
+      target: user.email,
+      transactionID,
     },
     ctx,
   );
@@ -76,14 +76,14 @@ test('it returns an error with an invalid transaction token', async () => {
   });
 
   db.verification.create({
-    id: 'verification-id',
-    type: resolveVerificationType(VerificationType.TWO_FACTOR_AUTH),
-    target: user.email,
-    secret: 'ABCDEFGHIJKLMNOP',
     algorithm: 'SHA-1',
-    digits: 6,
-    period: 30,
     charSet: 'ABCDEFGHJKLMNPQRSTUVWXYZ123456789',
+    digits: 6,
+    id: 'verification-id',
+    period: 30,
+    secret: 'ABCDEFGHIJKLMNOP',
+    target: user.email,
+    type: resolveVerificationType(VerificationType.TWO_FACTOR_AUTH),
   });
 
   const ctx = createMockGQLContext({ user });
@@ -98,8 +98,8 @@ test('it returns an error with an invalid transaction token', async () => {
 
   expect(result).toEqual({
     error: {
-      title: 'An unknown error occurred',
       message: 'An unknown error occurred',
+      title: 'An unknown error occurred',
     },
   });
 });
@@ -121,8 +121,8 @@ test('it returns an error if 2FA is not enabled', async () => {
 
   expect(result).toEqual({
     error: {
-      title: 'An unknown error occurred',
       message: 'An unknown error occurred',
+      title: 'An unknown error occurred',
     },
   });
 });

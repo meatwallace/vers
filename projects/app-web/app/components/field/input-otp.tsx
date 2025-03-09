@@ -12,8 +12,8 @@ export function InputOTP(props: Props) {
   return (
     <OTPInput
       {...restProps}
-      containerClassName={clsx(styles.container, containerClassName)}
       className={clsx(styles.input, className)}
+      containerClassName={clsx(styles.container, containerClassName)}
     />
   );
 }
@@ -28,8 +28,8 @@ function InputOTPSeparator(props: React.ComponentProps<'div'>) {
   return (
     <div
       {...props}
-      role="separator"
       className={clsx(styles.separator, props.className)}
+      role="separator"
     />
   );
 }

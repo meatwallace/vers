@@ -6,7 +6,7 @@ import { UserData, UserServiceContext } from './types';
 export async function getUser(
   args: GetUserRequest,
   ctx: UserServiceContext,
-): Promise<UserData | null> {
+): Promise<null | UserData> {
   const response = await ctx.client.post<Jsonify<GetUserResponse>>('get-user', {
     body: JSON.stringify(args),
     resolveBodyOnly: true,

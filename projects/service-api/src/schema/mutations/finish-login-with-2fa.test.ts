@@ -1,9 +1,9 @@
+import { drop } from '@mswjs/data';
 import invariant from 'tiny-invariant';
 import { db } from '~/mocks/db';
 import { createMockGQLContext } from '~/test-utils/create-mock-gql-context';
 import { createPendingTransaction } from '~/utils/create-pending-transaction';
 import { createTransactionToken } from '~/utils/create-transaction-token';
-import { drop } from '@mswjs/data';
 import { VerificationType } from '../types/verification-type';
 import { resolve } from './finish-login-with-2fa';
 
@@ -17,39 +17,39 @@ test('it returns an auth payload when the transaction token is valid', async () 
   });
 
   const session = db.session.create({
-    userID: user.id,
     expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 30),
+    userID: user.id,
   });
 
   const ctx = createMockGQLContext({ session });
 
   const transactionID = createPendingTransaction({
-    target: 'user@test.com',
-    ipAddress: ctx.ipAddress,
     action: VerificationType.TWO_FACTOR_AUTH,
+    ipAddress: ctx.ipAddress,
     sessionID: session.id,
+    target: 'user@test.com',
   });
 
   const verification = db.verification.create({
-    type: '2fa',
     target: 'user@test.com',
+    type: '2fa',
   });
 
   const transactionToken = await createTransactionToken(
     {
-      target: verification.target,
       action: VerificationType.TWO_FACTOR_AUTH,
       ipAddress: ctx.ipAddress,
-      transactionID,
       sessionID: session.id,
+      target: verification.target,
+      transactionID,
     },
     ctx,
   );
 
   const args = {
     input: {
-      target: verification.target,
       rememberMe: true,
+      target: verification.target,
       transactionToken,
     },
   };
@@ -60,10 +60,10 @@ test('it returns an auth payload when the transaction token is valid', async () 
     accessToken: expect.any(String),
     refreshToken: expect.any(String),
     session: {
-      id: expect.any(String),
-      userID: user.id,
-      ipAddress: ctx.ipAddress,
       expiresAt: expect.any(Date),
+      id: expect.any(String),
+      ipAddress: ctx.ipAddress,
+      userID: user.id,
     },
   });
 
@@ -82,33 +82,33 @@ test('it returns an error when 2FA is not enabled', async () => {
   });
 
   const session = db.session.create({
-    userID: user.id,
     ipAddress: ctx.ipAddress,
+    userID: user.id,
   });
 
   const transactionID = createPendingTransaction({
-    target: 'user@test.com',
-    ipAddress: ctx.ipAddress,
     action: VerificationType.TWO_FACTOR_AUTH,
+    ipAddress: ctx.ipAddress,
     sessionID: session.id,
+    target: 'user@test.com',
   });
 
   const transactionToken = await createTransactionToken(
     {
-      target: 'user@test.com',
       action: VerificationType.TWO_FACTOR_AUTH,
       ipAddress: ctx.ipAddress,
-      transactionID,
       sessionID: session.id,
+      target: 'user@test.com',
+      transactionID,
     },
     ctx,
   );
 
   const args = {
     input: {
+      rememberMe: true,
       target: 'user@test.com',
       transactionToken,
-      rememberMe: true,
     },
   };
 
@@ -116,8 +116,8 @@ test('it returns an error when 2FA is not enabled', async () => {
 
   expect(result).toMatchObject({
     error: {
-      title: 'Invalid code',
       message: '2FA verification is invalid or has expired',
+      title: 'Invalid code',
     },
   });
 });
@@ -128,16 +128,16 @@ test('it returns an error when the transaction token is invalid', async () => {
   });
 
   db.verification.create({
-    type: '2fa',
     target: user.email,
+    type: '2fa',
   });
 
   const ctx = createMockGQLContext({});
   const args = {
     input: {
+      rememberMe: true,
       target: user.email,
       transactionToken: 'invalid',
-      rememberMe: true,
     },
   };
 
@@ -145,8 +145,8 @@ test('it returns an error when the transaction token is invalid', async () => {
 
   expect(result).toMatchObject({
     error: {
-      title: 'Invalid code',
       message: '2FA verification is invalid or has expired',
+      title: 'Invalid code',
     },
   });
 });

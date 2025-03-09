@@ -1,6 +1,6 @@
-import { Resend } from 'resend';
-import { Context } from 'hono';
 import { SendEmailRequest, SendEmailResponse } from '@chrono/service-types';
+import { Context } from 'hono';
+import { Resend } from 'resend';
 import { env } from '../env';
 import { logger } from '../logger';
 
@@ -10,15 +10,15 @@ const log = logger.child({ module: 'sendEmail' });
 
 export async function sendEmail(ctx: Context) {
   try {
-    const { to, subject, html, plainText } =
+    const { html, plainText, subject, to } =
       await ctx.req.json<SendEmailRequest>();
 
     const result = await resend.emails.send({
       from: 'noreply@transactional.chrononomicon.com',
-      to,
-      subject,
       html,
+      subject,
       text: plainText,
+      to,
     });
 
     if (result.error) {
@@ -26,12 +26,12 @@ export async function sendEmail(ctx: Context) {
       log.error({ error: result.error });
 
       // TODO(#16): capture via Sentry
-      return ctx.json({ success: false, error: 'Failed to send email' });
+      return ctx.json({ error: 'Failed to send email', success: false });
     }
 
     const response: SendEmailResponse = {
-      success: true,
       data: {},
+      success: true,
     };
 
     return ctx.json(response);
@@ -42,8 +42,8 @@ export async function sendEmail(ctx: Context) {
     // TODO(#16): capture via Sentry
     if (error instanceof Error) {
       const response = {
-        success: false,
         error: 'An unknown error occurred',
+        success: false,
       };
 
       return ctx.json(response);

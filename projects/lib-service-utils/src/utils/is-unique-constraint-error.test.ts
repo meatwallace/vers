@@ -1,5 +1,5 @@
+import { expect, test } from 'vitest';
 import * as pg from 'postgres';
-import { test, expect } from 'vitest';
 import { isUniqueConstraintError } from './is-unique-constraint-error';
 
 test('it returns true for unique constraint violations', () => {

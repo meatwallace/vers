@@ -1,7 +1,7 @@
 import { redirect } from 'react-router';
-import { Routes } from '~/types';
 import { authSessionStorage } from '~/session/auth-session-storage.server.ts';
 import { SESSION_KEY_AUTH_SESSION_ID } from '~/session/consts.ts';
+import { Routes } from '~/types';
 
 export async function requireAnonymous(request: Request) {
   const authSession = await authSessionStorage.getSession(

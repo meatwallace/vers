@@ -1,8 +1,8 @@
-import QRCode from 'qrcode';
-import { Form, MetaFunction, data, redirect } from 'react-router';
-import { z } from 'zod';
+import { data, Form, MetaFunction, redirect } from 'react-router';
 import { getFormProps, getInputProps, useForm } from '@conform-to/react';
 import { getZodConstraint, parseWithZod } from '@conform-to/zod';
+import QRCode from 'qrcode';
+import { z } from 'zod';
 import { OTPField } from '~/components/field/otp-field';
 import { FormErrorList } from '~/components/form-error-list.tsx';
 import { RouteErrorBoundary } from '~/components/route-error-boundary.tsx';
@@ -71,9 +71,9 @@ export async function loader({ request }: Route.LoaderArgs) {
   const qrCode = await QRCode.toDataURL(getEnable2FAVerification.otpURI);
 
   return {
-    target: getCurrentUser.email,
-    qrCode,
     otpURI: getEnable2FAVerification.otpURI,
+    qrCode,
+    target: getCurrentUser.email,
   };
 }
 
@@ -111,10 +111,10 @@ export async function action({ request }: Route.ActionArgs) {
   const { verifyOTP } = await client.request(VerifyOTP, {
     input: {
       code: submission.value.code,
-      type: VerificationType.TwoFactorAuthSetup,
+      sessionID,
       target: submission.value.target,
       transactionID,
-      sessionID,
+      type: VerificationType.TwoFactorAuthSetup,
     },
   });
 
@@ -142,7 +142,7 @@ export async function action({ request }: Route.ActionArgs) {
 
     return data(
       { result },
-      { status: 400, headers: { 'Set-Cookie': setCookieHeader } },
+      { headers: { 'Set-Cookie': setCookieHeader }, status: 400 },
     );
   }
 
@@ -153,8 +153,8 @@ export async function action({ request }: Route.ActionArgs) {
 
 export const meta: MetaFunction = () => [
   {
-    title: 'Verify 2FA',
     description: 'Verify your 2FA setup',
+    title: 'Verify 2FA',
   },
 ];
 
@@ -165,14 +165,14 @@ export function ProfileVerify2FARoute({
   const isFormPending = useIsFormPending();
 
   const [form, fields] = useForm({
-    id: 'verify-2fa-form',
     constraint: getZodConstraint(VerifyOTPFormSchema),
+    defaultValue: {
+      target: loaderData.target,
+    },
+    id: 'verify-2fa-form',
     lastResult: actionData?.result,
     onValidate({ formData }) {
       return parseWithZod(formData, { schema: VerifyOTPFormSchema });
-    },
-    defaultValue: {
-      target: loaderData.target,
     },
   });
 
@@ -199,9 +199,9 @@ export function ProfileVerify2FARoute({
 
           <div className={styles.qrCodeContainer}>
             <img
-              src={loaderData.qrCode}
               alt="QR code for 2FA"
               className={styles.qrCode}
+              src={loaderData.qrCode}
             />
           </div>
 
@@ -215,20 +215,20 @@ export function ProfileVerify2FARoute({
 
           <Form method="POST" {...getFormProps(form)}>
             <OTPField
-              labelProps={{
-                htmlFor: fields.code.id,
-                children: 'Code',
-              }}
+              errors={fields.code.errors ?? []}
               inputProps={{
                 ...getInputProps(fields.code, { type: 'text' }),
                 autoComplete: 'one-time-code',
                 autoFocus: true,
               }}
-              errors={fields.code.errors ?? []}
+              labelProps={{
+                children: 'Code',
+                htmlFor: fields.code.id,
+              }}
             />
             <input {...getInputProps(fields.target, { type: 'hidden' })} />
             <FormErrorList errors={form.errors ?? []} id={form.errorId} />
-            <StatusButton type="submit" status={submitButtonStatus}>
+            <StatusButton status={submitButtonStatus} type="submit">
               Submit
             </StatusButton>
           </Form>

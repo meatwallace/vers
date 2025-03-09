@@ -2,12 +2,12 @@ import { User, VerificationType } from '~/gql/graphql';
 import { db } from '~/mocks/db';
 
 interface DBUser {
-  id: string;
-  email: string;
-  username: string;
-  name: string;
   createdAt: string;
+  email: string;
+  id: string;
+  name: string;
   updatedAt: string;
+  username: string;
 }
 
 /**

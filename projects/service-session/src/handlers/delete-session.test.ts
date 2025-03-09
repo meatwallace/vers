@@ -1,9 +1,9 @@
-import { Hono } from 'hono';
-import { test, expect } from 'vitest';
-import { createTestUser, PostgresTestUtils } from '@chrono/service-test-utils';
+import { expect, test } from 'vitest';
 import * as schema from '@chrono/postgres-schema';
-import { deleteSession } from './delete-session';
+import { createTestUser, PostgresTestUtils } from '@chrono/service-test-utils';
+import { Hono } from 'hono';
 import { pgTestConfig } from '../pg-test-config';
+import { deleteSession } from './delete-session';
 
 async function setupTest() {
   const app = new Hono();
@@ -21,23 +21,23 @@ test('it deletes a session', async () => {
   const user = await createTestUser({ db });
 
   const session = {
+    createdAt: new Date(),
+    expiresAt: new Date(Date.now() + 1000 * 60 * 60),
     id: 'test_session_id',
-    userID: user.id,
     ipAddress: '127.0.0.1',
     refreshToken: 'test_refresh_token',
-    expiresAt: new Date(Date.now() + 1000 * 60 * 60),
-    createdAt: new Date(),
     updatedAt: new Date(),
+    userID: user.id,
   };
 
   await db.insert(schema.sessions).values(session);
 
   const req = new Request('http://localhost/delete-session', {
-    method: 'POST',
     body: JSON.stringify({
       id: session.id,
       userID: user.id,
     }),
+    method: 'POST',
   });
 
   const res = await app.request(req);
@@ -45,8 +45,8 @@ test('it deletes a session', async () => {
 
   expect(res.status).toBe(200);
   expect(body).toMatchObject({
-    success: true,
     data: {},
+    success: true,
   });
 
   const deletedSession = await db.query.sessions.findFirst({
@@ -64,23 +64,23 @@ test('it does not delete a session when userID does not match', async () => {
   const user = await createTestUser({ db });
 
   const session = {
+    createdAt: new Date(),
+    expiresAt: new Date(Date.now() + 1000 * 60 * 60),
     id: 'test_session_id',
-    userID: user.id,
     ipAddress: '127.0.0.1',
     refreshToken: 'test_refresh_token',
-    expiresAt: new Date(Date.now() + 1000 * 60 * 60),
-    createdAt: new Date(),
     updatedAt: new Date(),
+    userID: user.id,
   };
 
   await db.insert(schema.sessions).values(session);
 
   const req = new Request('http://localhost/delete-session', {
-    method: 'POST',
     body: JSON.stringify({
       id: session.id,
       userID: 'different_user_id',
     }),
+    method: 'POST',
   });
 
   const res = await app.request(req);
@@ -88,8 +88,8 @@ test('it does not delete a session when userID does not match', async () => {
 
   expect(res.status).toBe(200);
   expect(body).toMatchObject({
-    success: true,
     data: {},
+    success: true,
   });
 
   // verify session was not deleted
@@ -106,8 +106,8 @@ test('it handles invalid request body', async () => {
   const { app, teardown } = await setupTest();
 
   const req = new Request('http://localhost/delete-session', {
-    method: 'POST',
     body: 'invalid json',
+    method: 'POST',
   });
 
   const res = await app.request(req);
@@ -115,8 +115,8 @@ test('it handles invalid request body', async () => {
 
   expect(res.status).toBe(200);
   expect(body).toMatchObject({
-    success: false,
     error: 'An unknown error occurred',
+    success: false,
   });
 
   await teardown();

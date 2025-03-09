@@ -6,7 +6,7 @@ import './routes';
 
 app.use(logger());
 
-serve({ fetch: app.fetch, port: env.PORT, hostname: env.HOSTNAME });
+serve({ fetch: app.fetch, hostname: env.HOSTNAME, port: env.PORT });
 
 console.log(
   `⚡️ Serving Verifications API @ http://${env.HOSTNAME}:${env.PORT}`,

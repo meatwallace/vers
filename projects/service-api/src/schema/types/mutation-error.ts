@@ -1,8 +1,8 @@
 import { builder } from '../builder';
 
 interface MutationErrorData {
-  title: string;
   message: string;
+  title: string;
 }
 
 export const MutationError =
@@ -10,7 +10,7 @@ export const MutationError =
 
 MutationError.implement({
   fields: (t) => ({
-    title: t.exposeString('title'),
     message: t.exposeString('message'),
+    title: t.exposeString('title'),
   }),
 });

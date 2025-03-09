@@ -37,9 +37,9 @@ export function createAuthMiddleware(config: AuthMiddlewareConfig) {
       throw new HTTPException(401, {
         message: errorDescription,
         res: createUnauthorizedResponse({
-          error: 'invalid_request',
-          description: errorDescription,
           ctx,
+          description: errorDescription,
+          error: 'invalid_request',
         }),
       });
     }
@@ -52,9 +52,9 @@ export function createAuthMiddleware(config: AuthMiddlewareConfig) {
       throw new HTTPException(401, {
         message: errorDescription,
         res: createUnauthorizedResponse({
-          error: 'invalid_request',
-          description: errorDescription,
           ctx,
+          description: errorDescription,
+          error: 'invalid_request',
         }),
       });
     }
@@ -67,14 +67,14 @@ export function createAuthMiddleware(config: AuthMiddlewareConfig) {
       ctx.set('userID', payload.sub);
     } catch (error: unknown) {
       throw new HTTPException(401, {
+        cause: error,
         message: 'Unauthorized',
         res: createUnauthorizedResponse({
           ctx,
+          description: 'token verification failure',
           error: 'invalid_token',
           statusText: 'Unauthorized',
-          description: 'token verification failure',
         }),
-        cause: error,
       });
     }
 
@@ -83,18 +83,18 @@ export function createAuthMiddleware(config: AuthMiddlewareConfig) {
 }
 
 interface ErrorParts {
-  error: string;
-  description: string;
-  statusText?: string;
   ctx: Context;
+  description: string;
+  error: string;
+  statusText?: string;
 }
 
 function createUnauthorizedResponse(error: ErrorParts) {
   return new Response('Unauthorized', {
-    status: 401,
-    statusText: error.statusText,
     headers: {
       'WWW-Authenticate': `Bearer realm="${error.ctx.req.url}",error="${error.error}",error_description="${error.description}"`,
     },
+    status: 401,
+    statusText: error.statusText,
   });
 }

@@ -1,9 +1,9 @@
 import { afterEach, expect, test } from 'vitest';
-import { GraphQLClient } from 'graphql-request';
-import { LoaderFunctionArgs, createRoutesStub } from 'react-router';
-import invariant from 'tiny-invariant';
-import { drop } from '@mswjs/data';
 import { render, screen } from '@testing-library/react';
+import { createRoutesStub, LoaderFunctionArgs } from 'react-router';
+import { drop } from '@mswjs/data';
+import { GraphQLClient } from 'graphql-request';
+import invariant from 'tiny-invariant';
 import { db } from '~/mocks/db.ts';
 import { authSessionStorage } from '~/session/auth-session-storage.server.ts';
 import {
@@ -15,9 +15,9 @@ import { Routes } from '~/types.ts';
 import { logout } from './logout.server.ts';
 
 interface TestConfig {
+  redirectTo?: string;
   sessionID?: string;
   userID?: string;
-  redirectTo?: string;
 }
 
 let setCookieHeader: null | string = null;
@@ -47,20 +47,20 @@ function setupTest(config: TestConfig = {}) {
 
   const TestRoutesStub = createRoutesStub([
     {
-      path: '/logout',
       Component: () => 'LOGOUT_ROUTE',
       loader: withAuthedUser(loader, {
         sessionID: config.sessionID,
         user: { id: config.userID },
       }),
+      path: '/logout',
     },
     {
-      path: Routes.Index,
       Component: () => 'INDEX_ROUTE',
+      path: Routes.Index,
     },
     {
-      path: '/custom',
       Component: () => 'CUSTOM_ROUTE',
+      path: '/custom',
     },
   ]);
 

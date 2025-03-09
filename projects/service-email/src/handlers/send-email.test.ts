@@ -1,9 +1,9 @@
+import { expect, test } from 'vitest';
 import { Hono } from 'hono';
 import { http, HttpResponse } from 'msw';
-import { test, expect } from 'vitest';
 import { ENDPOINT_URL as RESEND_EMAIL_ENDPOINT_URL } from '~/mocks/handlers/http/resend-emails.ts';
-import { sendEmail } from './send-email';
 import { server } from '~/mocks/node.ts';
+import { sendEmail } from './send-email';
 
 function setupTest() {
   const app = new Hono();
@@ -21,15 +21,15 @@ test('it successfully sends an email', async () => {
   const { app } = setupTest();
 
   const email = {
-    to: 'test@example.com',
-    subject: 'Test Subject',
     html: '<p>Test content</p>',
     plainText: 'Test content',
+    subject: 'Test Subject',
+    to: 'test@example.com',
   };
 
   const req = new Request('http://localhost/send-email', {
-    method: 'POST',
     body: JSON.stringify(email),
+    method: 'POST',
   });
 
   const res = await app.request(req);
@@ -48,23 +48,23 @@ test('it handles Resend errors', async () => {
   const { app } = setupTest();
 
   const email = {
-    to: 'test@example.com',
-    subject: 'Test Subject',
     html: '<p>Test content</p>',
     plainText: 'Test content',
+    subject: 'Test Subject',
+    to: 'test@example.com',
   };
 
   const req = new Request('http://localhost/send-email', {
-    method: 'POST',
     body: JSON.stringify(email),
+    method: 'POST',
   });
 
   const res = await app.request(req);
 
   expect(res.status).toBe(200);
   expect(await res.json()).toMatchObject({
-    success: false,
     error: 'Failed to send email',
+    success: false,
   });
 });
 
@@ -72,15 +72,15 @@ test('handles an invalid request body', async () => {
   const { app } = setupTest();
 
   const req = new Request('http://localhost/send-email', {
-    method: 'POST',
     body: 'invalid json',
+    method: 'POST',
   });
 
   const res = await app.request(req);
 
   expect(res.status).toBe(200);
   expect(await res.json()).toMatchObject({
-    success: false,
     error: 'An unknown error occurred',
+    success: false,
   });
 });

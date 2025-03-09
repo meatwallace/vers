@@ -11,18 +11,18 @@ import { combineCookies } from './combine-cookies';
 interface Config {
   sessionID?: string;
   user?: {
-    id?: string;
     email?: string;
-    password?: string;
-    name?: string;
+    id?: string;
     is2FAEnabled?: boolean;
+    name?: string;
+    password?: string;
   };
 }
 
 export function withAuthedUser(
-  dataFn: LoaderFunction | ActionFunction,
+  dataFn: ActionFunction | LoaderFunction,
   config: Config = {},
-): LoaderFunction | ActionFunction {
+): ActionFunction | LoaderFunction {
   return async ({ request, ...rest }) => {
     const { accessToken, refreshToken, session } = await createAuthedUser(
       config.user ?? {},

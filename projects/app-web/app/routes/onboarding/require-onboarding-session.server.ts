@@ -1,10 +1,10 @@
 import { redirect } from 'react-router';
-import { Routes } from '~/types';
-import { verifySessionStorage } from '~/session/verify-session-storage.server.ts';
 import {
   SESSION_KEY_VERIFY_ONBOARDING_EMAIL,
   SESSION_KEY_VERIFY_TRANSACTION_TOKEN,
 } from '~/session/consts.ts';
+import { verifySessionStorage } from '~/session/verify-session-storage.server.ts';
+import { Routes } from '~/types';
 import { requireAnonymous } from '~/utils/require-anonymous.server';
 
 export async function requireOnboardingSession(

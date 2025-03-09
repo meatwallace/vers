@@ -34,31 +34,31 @@ export async function updateWorld(
 
 const UpdateWorldInput = builder.inputType('UpdateWorldInput', {
   fields: (t) => ({
-    worldID: t.string({ required: true }),
-    name: t.string({}),
-    fantasyType: t.string({}),
-    technologyLevel: t.string({}),
     archetype: t.string({}),
     atmosphere: t.string({}),
-    population: t.string({}),
-    geographyType: t.string({}),
+    fantasyType: t.string({}),
     geographyFeatures: t.stringList({}),
+    geographyType: t.string({}),
+    name: t.string({}),
+    population: t.string({}),
+    technologyLevel: t.string({}),
+    worldID: t.string({ required: true }),
   }),
 });
 
 const UpdateWorldPayload = builder.unionType('UpdateWorldPayload', {
-  types: [World, MutationErrorPayload],
   resolveType: createPayloadResolver(World),
+  types: [World, MutationErrorPayload],
 });
 
 export const resolve = requireAuth(updateWorld);
 
 builder.mutationField('updateWorld', (t) =>
   t.field({
-    type: UpdateWorldPayload,
     args: {
-      input: t.arg({ type: UpdateWorldInput, required: true }),
+      input: t.arg({ required: true, type: UpdateWorldInput }),
     },
     resolve,
+    type: UpdateWorldPayload,
   }),
 );

@@ -1,6 +1,6 @@
-import { HttpResponse, http } from 'msw';
 import { Get2FAVerificationURIRequest } from '@chrono/service-types';
 import { getTOTPAuthUri } from '@epic-web/totp';
+import { http, HttpResponse } from 'msw';
 import { env } from '~/env';
 import { db } from '../../db';
 
@@ -14,31 +14,31 @@ export const get2FAVerificationURI = http.post<
 
   const verification = db.verification.findFirst({
     where: {
-      type: { equals: '2fa-setup' },
       target: { equals: body.target },
+      type: { equals: '2fa-setup' },
     },
   });
 
   if (!verification) {
     return HttpResponse.json({
-      success: false,
       error: 'No 2FA verification found for this target',
+      success: false,
     });
   }
 
   const otpURI = getTOTPAuthUri({
-    secret: verification.secret,
+    accountName: body.target,
     algorithm: verification.algorithm,
     digits: verification.digits,
-    period: verification.period,
-    accountName: body.target,
     issuer: 'Chrononomicon',
+    period: verification.period,
+    secret: verification.secret,
   });
 
   return HttpResponse.json({
-    success: true,
     data: {
       otpURI,
     },
+    success: true,
   });
 });

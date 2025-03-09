@@ -1,9 +1,9 @@
-import invariant from 'tiny-invariant';
 import { afterEach, expect, test } from 'vitest';
-import { createRoutesStub, type LoaderFunction } from 'react-router';
 import { render, screen } from '@testing-library/react';
-import { GraphQLClient } from 'graphql-request';
+import { createRoutesStub, type LoaderFunction } from 'react-router';
 import { drop } from '@mswjs/data';
+import { GraphQLClient } from 'graphql-request';
+import invariant from 'tiny-invariant';
 import { db } from '~/mocks/db.ts';
 import { decodeMockJWT } from '~/mocks/utils/decode-mock-jwt.ts';
 import { encodeMockJWT } from '~/mocks/utils/encode-mock-jwt.ts';
@@ -17,10 +17,10 @@ import { Routes } from '~/types.ts';
 import { requireAuth } from './require-auth.server.ts';
 
 interface TestConfig {
-  initialPath?: string;
-  sessionID?: string;
   accessToken?: string;
+  initialPath?: string;
   refreshToken?: string;
+  sessionID?: string;
 }
 
 let setCookieHeader: null | string = null;
@@ -78,17 +78,17 @@ async function setupTest(config: Partial<TestConfig> = {}) {
 
   const TestRoutesSTub = createRoutesStub([
     {
-      path: '/',
       Component: () => 'TEST_ROUTE',
       loader,
+      path: '/',
     },
     {
-      path: Routes.Login,
       Component: () => 'LOGIN_ROUTE',
+      path: Routes.Login,
     },
     {
-      path: Routes.Logout,
       Component: () => 'LOGOUT_ROUTE',
+      path: Routes.Logout,
     },
   ]);
 
@@ -107,14 +107,14 @@ test('it allows access with valid session', async () => {
   });
 
   const accessToken = encodeMockJWT({
-    sub: user.id,
     exp: Math.floor(Date.now() / 1000) + 1000, // Not expired
+    sub: user.id,
   });
 
   await setupTest({
-    sessionID: 'test_session_id',
     accessToken,
     refreshToken: 'valid_refresh_token',
+    sessionID: 'test_session_id',
   });
 
   const testRoute = await screen.findByText('TEST_ROUTE');
@@ -144,24 +144,24 @@ test('it logs the user out if the access and refresh token are expired', async (
   const user = db.user.create({});
 
   const refreshToken = encodeMockJWT({
-    sub: user.id,
     exp: Math.floor(Date.now() / 1000) - 1000, // Expired
+    sub: user.id,
   });
 
   const session = db.session.create({
-    userID: user.id,
     refreshToken,
+    userID: user.id,
   });
 
   const expiredToken = encodeMockJWT({
-    sub: user.id,
     exp: Math.floor(Date.now() / 1000) - 1000, // Expired
+    sub: user.id,
   });
 
   await setupTest({
-    sessionID: session.id,
     accessToken: expiredToken,
     refreshToken: session.refreshToken,
+    sessionID: session.id,
   });
 
   const loginRoute = await screen.findByText('LOGIN_ROUTE');
@@ -186,14 +186,14 @@ test('it logs the user out when refreshing the access token fails', async () => 
   });
 
   const accessToken = encodeMockJWT({
-    sub: session.userID,
     exp: Math.floor(Date.now() / 1000) - 1000, // Expired
+    sub: session.userID,
   });
 
   await setupTest({
-    sessionID: session.id,
     accessToken,
     refreshToken: session.refreshToken,
+    sessionID: session.id,
   });
 
   const loginRoute = await screen.findByText('LOGIN_ROUTE');
@@ -217,8 +217,8 @@ test('it refreshes the session when access token is expired', async () => {
   });
 
   const expiredAccessToken = encodeMockJWT({
-    sub: user.id,
     exp: Math.floor(Date.now() / 1000) - 1000, // Expired
+    sub: user.id,
   });
 
   const session = db.session.create({
@@ -227,9 +227,9 @@ test('it refreshes the session when access token is expired', async () => {
   });
 
   await setupTest({
-    sessionID: session.id,
     accessToken: expiredAccessToken,
     refreshToken: session.refreshToken,
+    sessionID: session.id,
   });
 
   // ensure we end up at the expected route after refreshing the access token

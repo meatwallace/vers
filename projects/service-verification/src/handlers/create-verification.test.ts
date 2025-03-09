@@ -1,8 +1,8 @@
 import { expect, test } from 'vitest';
-import { and, eq } from 'drizzle-orm';
-import { Hono } from 'hono';
 import * as schema from '@chrono/postgres-schema';
 import { PostgresTestUtils } from '@chrono/service-test-utils';
+import { and, eq } from 'drizzle-orm';
+import { Hono } from 'hono';
 import { pgTestConfig } from '../pg-test-config';
 import { createVerification } from './create-verification';
 
@@ -20,12 +20,12 @@ test('creates a verification code and stores a record of it', async () => {
   const { app, db, teardown } = await setupTest();
 
   const req = new Request('http://localhost/create-verification', {
-    method: 'POST',
     body: JSON.stringify({
-      type: 'onboarding',
-      target: 'test@example.com',
       period: 5 * 60, // 5 minutes
+      target: 'test@example.com',
+      type: 'onboarding',
     }),
+    method: 'POST',
   });
 
   const res = await app.request(req);
@@ -33,13 +33,13 @@ test('creates a verification code and stores a record of it', async () => {
 
   expect(res.status).toBe(200);
   expect(body).toMatchObject({
-    success: true,
     data: {
       id: expect.any(String),
-      type: 'onboarding',
-      target: 'test@example.com',
       otp: expect.any(String),
+      target: 'test@example.com',
+      type: 'onboarding',
     },
+    success: true,
   });
 
   const verification = await db.query.verifications.findFirst({
@@ -50,15 +50,15 @@ test('creates a verification code and stores a record of it', async () => {
   });
 
   expect(verification).toMatchObject({
+    algorithm: 'SHA-256',
+    charSet: 'ABCDEFGHJKLMNPQRSTUVWXYZ123456789',
+    createdAt: expect.any(Date),
+    digits: 6,
+    expiresAt: null,
+    period: 300,
+    secret: expect.any(String),
     target: 'test@example.com',
     type: 'onboarding',
-    secret: expect.any(String),
-    algorithm: 'SHA-256',
-    digits: 6,
-    period: 300,
-    charSet: 'ABCDEFGHJKLMNPQRSTUVWXYZ123456789',
-    expiresAt: null,
-    createdAt: expect.any(Date),
   });
 
   await teardown();
@@ -68,11 +68,11 @@ test('it uses a simple charset for 2fa verification codes', async () => {
   const { app, db, teardown } = await setupTest();
 
   const req = new Request('http://localhost/create-verification', {
-    method: 'POST',
     body: JSON.stringify({
-      type: '2fa',
       target: 'test@example.com',
+      type: '2fa',
     }),
+    method: 'POST',
   });
 
   const res = await app.request(req);
@@ -80,13 +80,13 @@ test('it uses a simple charset for 2fa verification codes', async () => {
 
   expect(res.status).toBe(200);
   expect(body).toMatchObject({
-    success: true,
     data: {
       id: expect.any(String),
-      type: '2fa',
-      target: 'test@example.com',
       otp: expect.any(String),
+      target: 'test@example.com',
+      type: '2fa',
     },
+    success: true,
   });
 
   const verification = await db.query.verifications.findFirst({
@@ -97,15 +97,15 @@ test('it uses a simple charset for 2fa verification codes', async () => {
   });
 
   expect(verification).toMatchObject({
+    algorithm: 'SHA-256',
+    charSet: '0123456789',
+    createdAt: expect.any(Date),
+    digits: 6,
+    expiresAt: null,
+    period: 30,
+    secret: expect.any(String),
     target: 'test@example.com',
     type: '2fa',
-    secret: expect.any(String),
-    algorithm: 'SHA-256',
-    digits: 6,
-    period: 30,
-    charSet: '0123456789',
-    expiresAt: null,
-    createdAt: expect.any(Date),
   });
 
   await teardown();
@@ -115,11 +115,11 @@ test('it uses a simple charset for 2fa setup verification codes', async () => {
   const { app, db, teardown } = await setupTest();
 
   const req = new Request('http://localhost/create-verification', {
-    method: 'POST',
     body: JSON.stringify({
-      type: '2fa-setup',
       target: 'test@example.com',
+      type: '2fa-setup',
     }),
+    method: 'POST',
   });
 
   const res = await app.request(req);
@@ -127,13 +127,13 @@ test('it uses a simple charset for 2fa setup verification codes', async () => {
 
   expect(res.status).toBe(200);
   expect(body).toMatchObject({
-    success: true,
     data: {
       id: expect.any(String),
-      type: '2fa-setup',
-      target: 'test@example.com',
       otp: expect.any(String),
+      target: 'test@example.com',
+      type: '2fa-setup',
     },
+    success: true,
   });
 
   const verification = await db.query.verifications.findFirst({
@@ -144,15 +144,15 @@ test('it uses a simple charset for 2fa setup verification codes', async () => {
   });
 
   expect(verification).toMatchObject({
+    algorithm: 'SHA-256',
+    charSet: '0123456789',
+    createdAt: expect.any(Date),
+    digits: 6,
+    expiresAt: null,
+    period: 30,
+    secret: expect.any(String),
     target: 'test@example.com',
     type: '2fa-setup',
-    secret: expect.any(String),
-    algorithm: 'SHA-256',
-    digits: 6,
-    period: 30,
-    charSet: '0123456789',
-    expiresAt: null,
-    createdAt: expect.any(Date),
   });
 
   await teardown();
@@ -162,23 +162,23 @@ test('replaces existing verification for same target and type', async () => {
   const { app, db, teardown } = await setupTest();
 
   const req1 = new Request('http://localhost/create-verification', {
-    method: 'POST',
     body: JSON.stringify({
-      type: 'onboarding',
-      target: 'test@example.com',
       period: 300,
+      target: 'test@example.com',
+      type: 'onboarding',
     }),
+    method: 'POST',
   });
 
   await app.request(req1);
 
   const req2 = new Request('http://localhost/create-verification', {
-    method: 'POST',
     body: JSON.stringify({
-      type: 'onboarding',
-      target: 'test@example.com',
       period: 300,
+      target: 'test@example.com',
+      type: 'onboarding',
     }),
+    method: 'POST',
   });
 
   await app.request(req2);
@@ -199,8 +199,8 @@ test('handles an invalid request body', async () => {
   const { app, teardown } = await setupTest();
 
   const req = new Request('http://localhost/create-verification', {
-    method: 'POST',
     body: 'invalid json',
+    method: 'POST',
   });
 
   const res = await app.request(req);
@@ -208,8 +208,8 @@ test('handles an invalid request body', async () => {
 
   expect(res.status).toBe(200);
   expect(body).toMatchObject({
-    success: false,
     error: 'An unknown error occurred',
+    success: false,
   });
 
   await teardown();
@@ -221,12 +221,12 @@ test('creates a verification with explicit expiry time', async () => {
   const now = Date.now();
 
   const req = new Request('http://localhost/create-verification', {
-    method: 'POST',
     body: JSON.stringify({
-      type: 'onboarding',
-      target: 'test@example.com',
       expiresAt: new Date(now + 10 * 60 * 1000),
+      target: 'test@example.com',
+      type: 'onboarding',
     }),
+    method: 'POST',
   });
 
   const res = await app.request(req);
@@ -234,13 +234,13 @@ test('creates a verification with explicit expiry time', async () => {
 
   expect(res.status).toBe(200);
   expect(body).toMatchObject({
-    success: true,
     data: {
       id: expect.any(String),
-      type: 'onboarding',
-      target: 'test@example.com',
       otp: expect.any(String),
+      target: 'test@example.com',
+      type: 'onboarding',
     },
+    success: true,
   });
 
   const verification = await db.query.verifications.findFirst({
@@ -252,9 +252,9 @@ test('creates a verification with explicit expiry time', async () => {
 
   expect(verification).not.toBeUndefined();
   expect(verification).toMatchObject({
+    expiresAt: new Date(now + 10 * 60 * 1000),
     target: 'test@example.com',
     type: 'onboarding',
-    expiresAt: new Date(now + 10 * 60 * 1000),
   });
 
   await teardown();

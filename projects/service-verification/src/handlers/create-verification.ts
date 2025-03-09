@@ -1,7 +1,3 @@
-import { and, eq } from 'drizzle-orm';
-import { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
-import { Context } from 'hono';
-import { Jsonify } from 'type-fest';
 import * as schema from '@chrono/postgres-schema';
 import {
   CreateVerificationRequest,
@@ -10,6 +6,10 @@ import {
 } from '@chrono/service-types';
 import { generateTOTP } from '@epic-web/totp';
 import { createId } from '@paralleldrive/cuid2';
+import { and, eq } from 'drizzle-orm';
+import { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
+import { Context } from 'hono';
+import { Jsonify } from 'type-fest';
 
 // alphanumeirc excluding 0, O, and I on purpose to avoid confusing users
 const TOTP_CHARSET = 'ABCDEFGHJKLMNPQRSTUVWXYZ123456789';
@@ -18,10 +18,10 @@ const TOTP_CHARSET = 'ABCDEFGHJKLMNPQRSTUVWXYZ123456789';
 const TWO_FACTOR_CHARSET = '0123456789';
 
 const VERIFICATION_TYPE_TO_CHARSET: Record<VerificationType, string> = {
-  '2fa-setup': TWO_FACTOR_CHARSET,
   '2fa': TWO_FACTOR_CHARSET,
-  onboarding: TOTP_CHARSET,
+  '2fa-setup': TWO_FACTOR_CHARSET,
   'change-email': TOTP_CHARSET,
+  onboarding: TOTP_CHARSET,
 };
 
 export async function createVerification(
@@ -29,7 +29,7 @@ export async function createVerification(
   db: PostgresJsDatabase<typeof schema>,
 ) {
   try {
-    const { type, target, period, expiresAt } =
+    const { expiresAt, period, target, type } =
       await ctx.req.json<Jsonify<CreateVerificationRequest>>();
 
     // delete any existing verifications for this target and type to invalidate previous codes
@@ -49,24 +49,24 @@ export async function createVerification(
     });
 
     const verification: typeof schema.verifications.$inferSelect = {
-      id: createId(),
-      type,
-      target,
-      expiresAt: expiresAt ? new Date(expiresAt) : null,
       createdAt: new Date(),
+      expiresAt: expiresAt ? new Date(expiresAt) : null,
+      id: createId(),
+      target,
+      type,
       ...verificationConfig,
     };
 
     await db.insert(schema.verifications).values(verification);
 
     const response: CreateVerificationResponse = {
-      success: true,
       data: {
-        otp,
         id: verification.id,
-        type: verification.type,
+        otp,
         target: verification.target,
+        type: verification.type,
       },
+      success: true,
     };
 
     return ctx.json(response);
@@ -74,8 +74,8 @@ export async function createVerification(
     // TODO(#16): capture via Sentry
     if (error instanceof Error) {
       const response = {
-        success: false,
         error: 'An unknown error occurred',
+        success: false,
       };
 
       return ctx.json(response);

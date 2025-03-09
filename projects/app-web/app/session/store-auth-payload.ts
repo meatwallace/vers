@@ -1,16 +1,16 @@
 import { Session } from 'react-router';
 import {
-  SESSION_KEY_AUTH_SESSION_ID,
   SESSION_KEY_AUTH_ACCESS_TOKEN,
   SESSION_KEY_AUTH_REFRESH_TOKEN,
+  SESSION_KEY_AUTH_SESSION_ID,
 } from './consts.ts';
 
 interface AuthPayload {
   accessToken: string;
   refreshToken: string;
   session: {
-    id: string;
     expiresAt: string;
+    id: string;
   };
 }
 

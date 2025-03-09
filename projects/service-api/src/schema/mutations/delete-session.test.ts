@@ -1,7 +1,7 @@
-import { drop } from '@mswjs/data';
 import { createTestJWT } from '@chrono/service-test-utils';
-import { db } from '~/mocks/db';
+import { drop } from '@mswjs/data';
 import { env } from '~/env';
+import { db } from '~/mocks/db';
 import { server } from '~/mocks/node';
 import { createMockGQLContext } from '~/test-utils/create-mock-gql-context';
 import { resolve } from './delete-session';
@@ -20,9 +20,9 @@ test('it deletes a session when the user is authenticated', async () => {
   });
 
   const accessToken = await createTestJWT({
-    sub: user.id,
     audience: env.API_IDENTIFIER,
     issuer: `https://${env.API_IDENTIFIER}/`,
+    sub: user.id,
   });
 
   const ctx = createMockGQLContext({ accessToken, user });

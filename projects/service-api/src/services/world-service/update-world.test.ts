@@ -1,7 +1,7 @@
-import { drop } from '@mswjs/data';
 import { createTestJWT } from '@chrono/service-test-utils';
-import { createId } from '@paralleldrive/cuid2';
 import { ServiceID } from '@chrono/service-types';
+import { drop } from '@mswjs/data';
+import { createId } from '@paralleldrive/cuid2';
 import { env } from '~/env';
 import { db } from '~/mocks/db';
 import { createServiceContext } from '../utils';
@@ -12,41 +12,36 @@ test('it updates a world', async () => {
 
   db.world.create({
     id: 'test_id',
-    ownerID: user.id,
     name: 'Test World',
+    ownerID: user.id,
   });
 
   const accessToken = await createTestJWT({
-    sub: user.id,
     audience: env.API_IDENTIFIER,
     issuer: `https://${env.API_IDENTIFIER}/`,
+    sub: user.id,
   });
 
   const ctx = createServiceContext({
+    accessToken,
+    apiURL: env.WORLDS_SERVICE_URL,
     requestID: createId(),
     serviceID: ServiceID.ServiceWorld,
-    apiURL: env.WORLDS_SERVICE_URL,
-    accessToken,
   });
 
   const args = {
+    name: 'Updated World',
     ownerID: user.id,
     worldID: 'test_id',
-    name: 'Updated World',
   };
 
   const result = await updateWorld(args, ctx);
 
   expect(result).toMatchObject({
-    id: 'test_id',
-    ownerID: user.id,
-    name: 'Updated World',
-    fantasyType: 'Medium',
-    technologyLevel: 'Medieval',
     archetype: null,
     atmosphere: 'Neutral',
-    population: 'Average',
-    geographyType: 'Supercontinent',
+    createdAt: expect.any(Date),
+    fantasyType: 'Medium',
     geographyFeatures: [
       'Deserts',
       'Forest',
@@ -55,7 +50,12 @@ test('it updates a world', async () => {
       'Swamps',
       'Tundra',
     ],
-    createdAt: expect.any(Date),
+    geographyType: 'Supercontinent',
+    id: 'test_id',
+    name: 'Updated World',
+    ownerID: user.id,
+    population: 'Average',
+    technologyLevel: 'Medieval',
     updatedAt: expect.any(Date),
   });
 

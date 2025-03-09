@@ -1,5 +1,5 @@
-import { http, HttpResponse } from 'msw';
 import { CreateUserRequest } from '@chrono/service-types';
+import { http, HttpResponse } from 'msw';
 import { env } from '~/env';
 import { db } from '../../db';
 
@@ -17,8 +17,8 @@ export const createUser = http.post<never, CreateUserRequest>(
     });
 
     return HttpResponse.json({
-      success: true,
       data: user,
+      success: true,
     });
   },
 );

@@ -1,9 +1,9 @@
-import { Hono } from 'hono';
-import { PostgresTestUtils, createTestUser } from '@chrono/service-test-utils';
-import { createId } from '@paralleldrive/cuid2';
 import { worlds } from '@chrono/postgres-schema';
-import { getWorlds } from './get-worlds';
+import { createTestUser, PostgresTestUtils } from '@chrono/service-test-utils';
+import { createId } from '@paralleldrive/cuid2';
+import { Hono } from 'hono';
 import { pgTestConfig } from '../pg-test-config';
+import { getWorlds } from './get-worlds';
 
 async function setupTest() {
   const app = new Hono();
@@ -24,65 +24,65 @@ test('it returns all the worlds for the given owner', async () => {
   const worldID2 = createId();
 
   await db.insert(worlds).values({
-    id: worldID1,
-    ownerID: user.id,
-    name: 'New World #1',
-    fantasyType: 'Low',
-    technologyLevel: 'Medieval',
     atmosphere: 'Dark',
-    population: 'Sparse',
-    geographyType: 'Supercontinent',
+    fantasyType: 'Low',
     geographyFeatures: ['Tundra'],
+    geographyType: 'Supercontinent',
+    id: worldID1,
+    name: 'New World #1',
+    ownerID: user.id,
+    population: 'Sparse',
+    technologyLevel: 'Medieval',
   });
 
   await db.insert(worlds).values({
-    id: worldID2,
-    ownerID: user.id,
-    name: 'New World #2',
-    fantasyType: 'High',
-    technologyLevel: 'Medieval',
     atmosphere: 'Light',
-    population: 'Average',
-    geographyType: 'Islands',
+    fantasyType: 'High',
     geographyFeatures: ['Deserts'],
+    geographyType: 'Islands',
+    id: worldID2,
+    name: 'New World #2',
+    ownerID: user.id,
+    population: 'Average',
+    technologyLevel: 'Medieval',
   });
 
   const req = new Request('http://localhost/get-worlds', {
-    method: 'POST',
     body: JSON.stringify({
       ownerID: user.id,
     }),
+    method: 'POST',
   });
 
   const res = await app.request(req);
 
   expect(res.status).toBe(200);
   expect(await res.json()).toMatchObject({
-    success: true,
     data: [
       {
-        id: worldID1,
-        ownerID: user.id,
-        name: 'New World #1',
-        fantasyType: 'Low',
-        technologyLevel: 'Medieval',
         atmosphere: 'Dark',
-        population: 'Sparse',
-        geographyType: 'Supercontinent',
+        fantasyType: 'Low',
         geographyFeatures: ['Tundra'],
+        geographyType: 'Supercontinent',
+        id: worldID1,
+        name: 'New World #1',
+        ownerID: user.id,
+        population: 'Sparse',
+        technologyLevel: 'Medieval',
       },
       {
-        id: worldID2,
-        ownerID: user.id,
-        name: 'New World #2',
-        fantasyType: 'High',
-        technologyLevel: 'Medieval',
         atmosphere: 'Light',
-        population: 'Average',
-        geographyType: 'Islands',
+        fantasyType: 'High',
         geographyFeatures: ['Deserts'],
+        geographyType: 'Islands',
+        id: worldID2,
+        name: 'New World #2',
+        ownerID: user.id,
+        population: 'Average',
+        technologyLevel: 'Medieval',
       },
     ],
+    success: true,
   });
 
   await teardown();
@@ -92,18 +92,18 @@ test('it returns an empty array if the owner does not have any worlds', async ()
   const { app, teardown, user } = await setupTest();
 
   const req = new Request('http://localhost/get-worlds', {
-    method: 'POST',
     body: JSON.stringify({
       ownerID: user.id,
     }),
+    method: 'POST',
   });
 
   const res = await app.request(req);
 
   expect(res.status).toBe(200);
   expect(await res.json()).toMatchObject({
-    success: true,
     data: [],
+    success: true,
   });
 
   await teardown();

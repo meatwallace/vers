@@ -1,6 +1,6 @@
-import { createRoutesStub } from 'react-router';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { createRoutesStub } from 'react-router';
 import { withAuthedUser } from '~/test-utils/with-authed-user.ts';
 import { Routes } from '~/types.ts';
 import ResetPasswordStarted, { loader } from './route.tsx';
@@ -14,18 +14,18 @@ function setupTest(config: TestConfig = {}) {
 
   const ResetPasswordStartedStub = createRoutesStub([
     {
-      path: '/',
       Component: ResetPasswordStarted,
       // @ts-expect-error(#35) - react router test types are out of date
       loader: config.isAuthed ? withAuthedUser(loader) : loader,
+      path: '/',
     },
     {
-      path: Routes.Dashboard,
       Component: () => 'DASHBOARD_ROUTE',
+      path: Routes.Dashboard,
     },
     {
-      path: Routes.ForgotPassword,
       Component: () => 'FORGOT_PASSWORD_ROUTE',
+      path: Routes.ForgotPassword,
     },
   ]);
 

@@ -1,5 +1,5 @@
-import invariant from 'tiny-invariant';
 import { GraphQLClient } from 'graphql-request';
+import invariant from 'tiny-invariant';
 import { graphql } from '~/gql';
 import { Routes } from '~/types';
 import { isMutationError } from './is-mutation-error.ts';

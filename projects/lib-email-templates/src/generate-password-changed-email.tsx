@@ -9,7 +9,7 @@ interface Config {
 export async function generatePasswordChangedEmail(config: Config) {
   return generateEmail({
     component: (
-      <E.Html lang="en" dir="ltr">
+      <E.Html dir="ltr" lang="en">
         <PasswordChangedEmail email={config.email} />
       </E.Html>
     ),

@@ -1,5 +1,5 @@
-import { http, HttpResponse } from 'msw';
 import { CreateWorldRequest, CreateWorldResponse } from '@chrono/service-types';
+import { http, HttpResponse } from 'msw';
 import { env } from '~/env';
 import { db } from '../../db';
 
@@ -15,8 +15,8 @@ export const createWorld = http.post<never, CreateWorldRequest>(
     });
 
     const response: CreateWorldResponse = {
-      success: true,
       data: world,
+      success: true,
     };
 
     return HttpResponse.json(response);

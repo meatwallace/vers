@@ -1,8 +1,8 @@
+import * as schema from '@chrono/postgres-schema';
+import { createTestUser, PostgresTestUtils } from '@chrono/service-test-utils';
 import bcrypt from 'bcryptjs';
 import { Hono } from 'hono';
 import invariant from 'tiny-invariant';
-import * as schema from '@chrono/postgres-schema';
-import { PostgresTestUtils, createTestUser } from '@chrono/service-test-utils';
 import { pgTestConfig } from '../pg-test-config';
 import { changePassword } from './change-password';
 
@@ -31,12 +31,12 @@ test('it updates the password and clears the reset token for an existing user', 
   });
 
   const req = new Request('http://localhost/change-password', {
-    method: 'POST',
     body: JSON.stringify({
       id: user.id,
       password: 'newpassword123',
       resetToken: 'test_reset_token',
     }),
+    method: 'POST',
   });
 
   const res = await app.request(req);
@@ -70,12 +70,12 @@ test('it returns an error if the user does not exist', async () => {
   const { app, teardown } = await setupTest();
 
   const req = new Request('http://localhost/change-password', {
-    method: 'POST',
     body: JSON.stringify({
-      resetToken: 'test_reset_token',
       id: 'nonexistent_id',
       password: 'newpassword123',
+      resetToken: 'test_reset_token',
     }),
+    method: 'POST',
   });
 
   const res = await app.request(req);
@@ -83,8 +83,8 @@ test('it returns an error if the user does not exist', async () => {
 
   expect(res.status).toBe(200);
   expect(body).toMatchObject({
-    success: false,
     error: 'User not found',
+    success: false,
   });
 
   await teardown();
@@ -94,12 +94,12 @@ test('it returns an error if the reset token is invalid', async () => {
   const { app, teardown } = await setupTest();
 
   const req = new Request('http://localhost/change-password', {
-    method: 'POST',
     body: JSON.stringify({
       id: 'test_id',
       password: 'newpassword123',
       resetToken: 'invalid_reset_token',
     }),
+    method: 'POST',
   });
 
   const res = await app.request(req);
@@ -107,8 +107,8 @@ test('it returns an error if the reset token is invalid', async () => {
 
   expect(res.status).toBe(200);
   expect(body).toMatchObject({
-    success: false,
     error: 'Invalid reset token',
+    success: false,
   });
 
   await teardown();
@@ -123,12 +123,12 @@ test('it returns an error if the reset token has expired', async () => {
   });
 
   const req = new Request('http://localhost/change-password', {
-    method: 'POST',
     body: JSON.stringify({
       id: user.id,
       password: 'newpassword123',
       resetToken: 'test_reset_token',
     }),
+    method: 'POST',
   });
 
   const res = await app.request(req);
@@ -136,8 +136,8 @@ test('it returns an error if the reset token has expired', async () => {
 
   expect(res.status).toBe(200);
   expect(body).toMatchObject({
-    success: false,
     error: 'Reset token expired',
+    success: false,
   });
 
   await teardown();
@@ -147,8 +147,8 @@ test('it returns an error for invalid request body', async () => {
   const { app, teardown } = await setupTest();
 
   const req = new Request('http://localhost/change-password', {
-    method: 'POST',
     body: 'invalid json',
+    method: 'POST',
   });
 
   const res = await app.request(req);
@@ -156,8 +156,8 @@ test('it returns an error for invalid request body', async () => {
 
   expect(res.status).toBe(200);
   expect(body).toMatchObject({
-    success: false,
     error: 'An unknown error occurred',
+    success: false,
   });
 
   await teardown();

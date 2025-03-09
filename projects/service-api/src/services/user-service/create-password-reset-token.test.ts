@@ -1,6 +1,6 @@
+import { ServiceID } from '@chrono/service-types';
 import { drop } from '@mswjs/data';
 import { createId } from '@paralleldrive/cuid2';
-import { ServiceID } from '@chrono/service-types';
 import { env } from '~/env';
 import { db } from '~/mocks/db';
 import { createServiceContext } from '../utils';
@@ -10,14 +10,14 @@ test('it creates a password reset token for an existing user', async () => {
   const user = db.user.create({
     email: 'user@test.com',
     name: 'Test User',
-    username: 'test_user',
     passwordHash: 'hashed_password',
+    username: 'test_user',
   });
 
   const ctx = createServiceContext({
+    apiURL: env.USERS_SERVICE_URL,
     requestID: createId(),
     serviceID: ServiceID.ServiceUser,
-    apiURL: env.USERS_SERVICE_URL,
   });
 
   const args = { id: user.id };
@@ -31,9 +31,9 @@ test('it creates a password reset token for an existing user', async () => {
 
 test('it throws an error if the user does not exist', async () => {
   const ctx = createServiceContext({
+    apiURL: env.USERS_SERVICE_URL,
     requestID: createId(),
     serviceID: ServiceID.ServiceUser,
-    apiURL: env.USERS_SERVICE_URL,
   });
 
   const args = { id: 'nonexistent_id' };
@@ -49,14 +49,14 @@ test('it throws an error if the user has no password', async () => {
   const user = db.user.create({
     email: 'user@test.com',
     name: 'Test User',
-    username: 'test_user',
     passwordHash: null,
+    username: 'test_user',
   });
 
   const ctx = createServiceContext({
+    apiURL: env.USERS_SERVICE_URL,
     requestID: createId(),
     serviceID: ServiceID.ServiceUser,
-    apiURL: env.USERS_SERVICE_URL,
   });
 
   const args = { id: user.id };

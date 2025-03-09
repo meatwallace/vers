@@ -1,8 +1,8 @@
-import { Form, Link, data, redirect } from 'react-router';
-import { HoneypotInputs } from 'remix-utils/honeypot/react';
-import { z } from 'zod';
+import { data, Form, Link, redirect } from 'react-router';
 import { getFormProps, getInputProps, useForm } from '@conform-to/react';
 import { getZodConstraint, parseWithZod } from '@conform-to/zod';
+import { HoneypotInputs } from 'remix-utils/honeypot/react';
+import { z } from 'zod';
 import { Field } from '~/components/field';
 import { FormErrorList } from '~/components/form-error-list.tsx';
 import { RouteErrorBoundary } from '~/components/route-error-boundary.tsx';
@@ -130,8 +130,8 @@ export function ForgotPassword({ actionData }: Route.ComponentProps) {
   const isFormPending = useIsFormPending();
 
   const [form, fields] = useForm({
-    id: 'forgot-password-form',
     constraint: getZodConstraint(ForgotPasswordFormSchema),
+    id: 'forgot-password-form',
     lastResult: actionData?.result,
     onValidate({ formData }) {
       return parseWithZod(formData, { schema: ForgotPasswordFormSchema });
@@ -159,24 +159,24 @@ export function ForgotPassword({ actionData }: Route.ComponentProps) {
       >
         <HoneypotInputs />
         <Field
-          labelProps={{ htmlFor: fields.email.id, children: 'Email' }}
+          errors={fields.email.errors ?? []}
           inputProps={{
             ...getInputProps(fields.email, { type: 'email' }),
             autoComplete: 'email',
           }}
-          errors={fields.email.errors ?? []}
+          labelProps={{ children: 'Email', htmlFor: fields.email.id }}
         />
         <FormErrorList errors={form.errors ?? []} id={form.errorId} />
         <StatusButton
-          type="submit"
-          status={submitButtonStatus}
           disabled={isFormPending}
+          status={submitButtonStatus}
+          type="submit"
         >
           Recover password
         </StatusButton>
         <div className={styles.loginContainer}>
           <span className={styles.loginText}>Remember your password?</span>
-          <Link to={Routes.Login} className={styles.loginLink}>
+          <Link className={styles.loginLink} to={Routes.Login}>
             Login
           </Link>
         </div>

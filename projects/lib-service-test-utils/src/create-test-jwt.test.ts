@@ -6,9 +6,9 @@ test('it creates a valid JWT with the provided configuration', async () => {
   const issuer = 'https://test.com';
 
   const jwt = await createTestJWT({
-    sub: userID,
     audience,
     issuer,
+    sub: userID,
   });
 
   expect(jwt).toBeDefined();

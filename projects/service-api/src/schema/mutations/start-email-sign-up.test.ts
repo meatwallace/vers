@@ -1,14 +1,14 @@
-import { HttpResponse, http } from 'msw';
 import { SendEmailRequest } from '@chrono/service-types';
 import { drop } from '@mswjs/data';
+import { http, HttpResponse } from 'msw';
 import { db } from '~/mocks/db';
 import { ENDPOINT_URL } from '~/mocks/handlers/http/send-email';
 import { server } from '~/mocks/node';
 import { createMockGQLContext } from '~/test-utils/create-mock-gql-context';
 import { resolve } from './start-email-sign-up';
 
-let emailSubject: string | null = null;
-let emailTemplate: string | null = null;
+let emailSubject: null | string = null;
+let emailTemplate: null | string = null;
 
 const sendEmailHandler = vi.fn(async ({ request }: { request: Request }) => {
   const body = (await request.json()) as SendEmailRequest;
@@ -47,8 +47,8 @@ test('it creates a verification code and sends an email to the user', async () =
 
   const verification = db.verification.findFirst({
     where: {
-      type: { equals: 'onboarding' },
       target: { equals: 'user@test.com' },
+      type: { equals: 'onboarding' },
     },
   });
 
@@ -56,8 +56,8 @@ test('it creates a verification code and sends an email to the user', async () =
   expect(sendEmailHandler).toHaveBeenCalled();
   expect(emailTemplate).toContain('http://localhost:4000/verify-otp');
   expect(result).toMatchObject({
-    transactionID: expect.any(String),
     sessionID: null,
+    transactionID: expect.any(String),
   });
 });
 
@@ -83,7 +83,7 @@ test('it notifies an existing user that they have an account and returns success
   expect(sendEmailHandler).toHaveBeenCalled();
   expect(emailSubject).toContain('You already have an account!');
   expect(result).toMatchObject({
-    transactionID: expect.any(String),
     sessionID: null,
+    transactionID: expect.any(String),
   });
 });

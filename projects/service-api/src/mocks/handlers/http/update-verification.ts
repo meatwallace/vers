@@ -1,8 +1,8 @@
-import { http, HttpResponse } from 'msw';
 import {
   UpdateVerificationRequest,
   UpdateVerificationResponse,
 } from '@chrono/service-types';
+import { http, HttpResponse } from 'msw';
 import { env } from '~/env.ts';
 import { omitNullish } from '~/utils/omit-nullish.ts';
 import { db } from '../../db.ts';
@@ -21,34 +21,34 @@ export const updateVerification = http.post<never, UpdateVerificationRequest>(
 
     if (!verification) {
       const response: UpdateVerificationResponse = {
-        success: false,
         error: 'Verification not found',
+        success: false,
       };
 
       return HttpResponse.json(response);
     }
 
     const updatedVerification = db.verification.update({
-      where: { id: { equals: id } },
       data: omitNullish(update),
+      where: { id: { equals: id } },
     });
 
     if (!updatedVerification) {
       const response: UpdateVerificationResponse = {
-        success: false,
         error: 'Failed to update verification',
+        success: false,
       };
 
       return HttpResponse.json(response);
     }
 
     const response = {
-      success: true,
       data: {
         id: updatedVerification.id,
-        type: updatedVerification.type,
         target: updatedVerification.target,
+        type: updatedVerification.type,
       },
+      success: true,
     };
 
     return HttpResponse.json(response);

@@ -1,11 +1,11 @@
-import { Context } from 'hono';
-import { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
 import * as schema from '@chrono/postgres-schema';
-import { and, eq } from 'drizzle-orm';
 import {
   DeleteSessionRequest,
   DeleteSessionResponse,
 } from '@chrono/service-types';
+import { and, eq } from 'drizzle-orm';
+import { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
+import { Context } from 'hono';
 
 export async function deleteSession(
   ctx: Context,
@@ -21,8 +21,8 @@ export async function deleteSession(
       );
 
     const response: DeleteSessionResponse = {
-      success: true,
       data: {},
+      success: true,
     };
 
     return ctx.json(response);
@@ -30,8 +30,8 @@ export async function deleteSession(
     // TODO(#16): capture via Sentry
     if (error instanceof Error) {
       const response = {
-        success: false,
         error: 'An unknown error occurred',
+        success: false,
       };
 
       return ctx.json(response);
