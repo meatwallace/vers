@@ -1,8 +1,9 @@
-import { PostgresTestUtils } from '@vers/service-test-utils';
+import { createPostgresContainer, setupTestDB } from '@vers/service-test-utils';
 
-await PostgresTestUtils.startContainer({
-  migrationPath: './projects/db-postgres/migrations',
-  port: 32_999,
+const container = await createPostgresContainer();
+
+await setupTestDB(container, {
+  migrationsFolder: './projects/db-postgres/migrations',
 });
 
 console.log('⚡ postgres test container started');

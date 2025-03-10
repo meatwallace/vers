@@ -1,6 +1,7 @@
 import { afterEach, expect, test, vi } from 'vitest';
-import { createTestUser, PostgresTestUtils } from '@vers/service-test-utils';
-import { pgTestConfig } from '../pg-test-config';
+import * as schema from '@vers/postgres-schema';
+import { createTestDB, createTestUser } from '@vers/service-test-utils';
+import { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
 import { router } from '../router';
 import { t } from '../t';
 import { createJWT } from '../utils/create-jwt';
@@ -9,14 +10,16 @@ vi.mock('../utils/create-jwt');
 
 const createCaller = t.createCallerFactory(router);
 
-async function setupTest() {
-  const { db, teardown } = await PostgresTestUtils.createTestDB(pgTestConfig);
+interface TestConfig {
+  db: PostgresJsDatabase<typeof schema>;
+}
 
-  const user = await createTestUser({ db });
+async function setupTest(config: TestConfig) {
+  const caller = createCaller({ db: config.db });
 
-  const caller = createCaller({ db });
+  const user = await createTestUser({ db: config.db });
 
-  return { caller, db, teardown, user };
+  return { caller, user };
 }
 
 afterEach(() => {
@@ -24,7 +27,11 @@ afterEach(() => {
 });
 
 test('it creates a session with default refresh token duration', async () => {
-  const { caller, teardown, user } = await setupTest();
+  await using handle = await createTestDB();
+
+  const { db } = handle;
+
+  const { caller, user } = await setupTest({ db });
 
   vi.mocked(createJWT)
     .mockResolvedValueOnce('mock-refresh-token')
@@ -58,12 +65,14 @@ test('it creates a session with default refresh token duration', async () => {
 
   expect(refreshTokenExpires - now).toBeCloseTo(24 * 60 * 60 * 1000, -2);
   expect(accessTokenExpires - now).toBeCloseTo(15 * 60 * 1000, -2);
-
-  await teardown();
 });
 
 test('it creates a session with extended refresh token duration', async () => {
-  const { caller, teardown, user } = await setupTest();
+  await using handle = await createTestDB();
+
+  const { db } = handle;
+
+  const { caller, user } = await setupTest({ db });
 
   vi.mocked(createJWT)
     .mockResolvedValueOnce('mock-refresh-token')
@@ -94,6 +103,4 @@ test('it creates a session with extended refresh token duration', async () => {
   const refreshTokenExpires = refreshTokenCall.expiresAt.getTime();
 
   expect(refreshTokenExpires - now).toBeCloseTo(7 * 24 * 60 * 60 * 1000, -2);
-
-  await teardown();
 });

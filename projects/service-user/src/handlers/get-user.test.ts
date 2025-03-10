@@ -1,53 +1,64 @@
 import { expect, test } from 'vitest';
-import { createTestUser, PostgresTestUtils } from '@vers/service-test-utils';
-import { pgTestConfig } from '../pg-test-config';
+import * as schema from '@vers/postgres-schema';
+import { createTestDB, createTestUser } from '@vers/service-test-utils';
+import { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
 import { router } from '../router';
 import { t } from '../t';
 
 const createCaller = t.createCallerFactory(router);
 
-async function setupTest() {
-  const { db, teardown } = await PostgresTestUtils.createTestDB(pgTestConfig);
+interface TestConfig {
+  db: PostgresJsDatabase<typeof schema>;
+}
 
-  const user = await createTestUser({ db });
+function setupTest(config: TestConfig) {
+  const caller = createCaller({ db: config.db });
 
-  const caller = createCaller({ db });
-
-  return { caller, db, teardown, user };
+  return { caller };
 }
 
 test('it gets a user by ID', async () => {
-  const { caller, teardown, user } = await setupTest();
+  await using handle = await createTestDB();
+
+  const { db } = handle;
+
+  const user = await createTestUser({ db });
+
+  const { caller } = setupTest({ db });
 
   const result = await caller.getUser({
     id: user.id,
   });
 
   expect(result).toStrictEqual(user);
-
-  await teardown();
 });
 
 test('it gets a user by email', async () => {
-  const { caller, teardown, user } = await setupTest();
+  await using handle = await createTestDB();
+
+  const { db } = handle;
+
+  const user = await createTestUser({ db });
+
+  const { caller } = setupTest({ db });
 
   const result = await caller.getUser({
     email: user.email,
   });
 
   expect(result).toStrictEqual(user);
-
-  await teardown();
 });
 
 test('it returns null for a non-existent user', async () => {
-  const { caller, teardown } = await setupTest();
+  await using handle = await createTestDB();
+
+  const { db } = handle;
+
+  const { caller } = setupTest({ db });
 
   const result = await caller.getUser({
     id: 'non-existent-id',
   });
 
   expect(result).toBeNull();
-
-  await teardown();
 });

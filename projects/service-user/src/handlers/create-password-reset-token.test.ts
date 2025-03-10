@@ -1,26 +1,31 @@
 import { expect, test } from 'vitest';
 import * as schema from '@vers/postgres-schema';
-import { createTestUser, PostgresTestUtils } from '@vers/service-test-utils';
-import { pgTestConfig } from '../pg-test-config';
+import { createTestDB, createTestUser } from '@vers/service-test-utils';
+import { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
 import { router } from '../router';
 import { t } from '../t';
 
 const createCaller = t.createCallerFactory(router);
 
 interface TestConfig {
+  db: PostgresJsDatabase<typeof schema>;
   user?: Partial<typeof schema.users.$inferInsert>;
 }
 
-async function setupTest(config: TestConfig = {}) {
-  const { db, teardown } = await PostgresTestUtils.createTestDB(pgTestConfig);
-  const user = await createTestUser({ db, user: config.user });
-  const caller = createCaller({ db });
+function setupTest(config: TestConfig) {
+  const caller = createCaller({ db: config.db });
 
-  return { caller, db, teardown, user };
+  return { caller };
 }
 
 test('it creates a password reset token for an existing user', async () => {
-  const { caller, db, teardown, user } = await setupTest();
+  await using handle = await createTestDB();
+
+  const { db } = handle;
+
+  const user = await createTestUser({ db });
+
+  const { caller } = setupTest({ db });
 
   const result = await caller.createPasswordResetToken({
     id: user.id,
@@ -40,12 +45,16 @@ test('it creates a password reset token for an existing user', async () => {
   expect(updatedUser?.passwordResetTokenExpiresAt).toBeBefore(
     new Date(Date.now() + 11 * 60 * 1000),
   );
-
-  await teardown();
 });
 
 test('it updates the user record with the new reset token', async () => {
-  const { caller, db, teardown, user } = await setupTest();
+  await using handle = await createTestDB();
+
+  const { db } = handle;
+
+  const user = await createTestUser({ db });
+
+  const { caller } = setupTest({ db });
 
   const firstResult = await caller.createPasswordResetToken({
     id: user.id,
@@ -62,12 +71,14 @@ test('it updates the user record with the new reset token', async () => {
   });
 
   expect(updatedUser?.passwordResetToken).toBe(secondResult.resetToken);
-
-  await teardown();
 });
 
 test('it throws an error if the user does not exist', async () => {
-  const { caller, teardown } = await setupTest();
+  await using handle = await createTestDB();
+
+  const { db } = handle;
+
+  const { caller } = setupTest({ db });
 
   await expect(
     caller.createPasswordResetToken({
@@ -77,16 +88,16 @@ test('it throws an error if the user does not exist', async () => {
     code: 'NOT_FOUND',
     message: 'User not found',
   });
-
-  await teardown();
 });
 
 test('it throws an error if the user has no password', async () => {
-  const { caller, teardown, user } = await setupTest({
-    user: {
-      passwordHash: null,
-    },
-  });
+  await using handle = await createTestDB();
+
+  const { db } = handle;
+
+  const user = await createTestUser({ db, user: { password: null } });
+
+  const { caller } = setupTest({ db });
 
   await expect(
     caller.createPasswordResetToken({
@@ -96,6 +107,4 @@ test('it throws an error if the user has no password', async () => {
     code: 'BAD_REQUEST',
     message: 'User has no password',
   });
-
-  await teardown();
 });

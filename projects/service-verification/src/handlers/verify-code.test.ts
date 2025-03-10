@@ -1,25 +1,31 @@
 import { expect, test } from 'vitest';
+import type { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
 import { createId } from '@paralleldrive/cuid2';
 import * as schema from '@vers/postgres-schema';
-import { PostgresTestUtils } from '@vers/service-test-utils';
+import { createTestDB } from '@vers/service-test-utils';
 import { eq } from 'drizzle-orm';
 import invariant from 'tiny-invariant';
-import { pgTestConfig } from '../pg-test-config';
 import { router } from '../router';
 import { t } from '../t';
 
 const createCaller = t.createCallerFactory(router);
 
-async function setupTest() {
-  const { db, teardown } = await PostgresTestUtils.createTestDB(pgTestConfig);
+interface TestConfig {
+  db: PostgresJsDatabase<typeof schema>;
+}
 
-  const caller = createCaller({ db });
+function setupTest(config: TestConfig) {
+  const caller = createCaller({ db: config.db });
 
-  return { caller, db, teardown };
+  return { caller };
 }
 
 test('it verifies a valid code', async () => {
-  const { caller, db, teardown } = await setupTest();
+  await using handle = await createTestDB();
+
+  const { db } = handle;
+
+  const { caller } = setupTest({ db });
 
   const createResult = await caller.createVerification({
     period: 300,
@@ -47,12 +53,14 @@ test('it verifies a valid code', async () => {
   });
 
   expect(verifications).toHaveLength(0);
-
-  await teardown();
 });
 
 test('it rejects invalid code', async () => {
-  const { caller, teardown } = await setupTest();
+  await using handle = await createTestDB();
+
+  const { db } = handle;
+
+  const { caller } = setupTest({ db });
 
   await expect(
     caller.verifyCode({
@@ -64,12 +72,14 @@ test('it rejects invalid code', async () => {
     code: 'BAD_REQUEST',
     message: 'Invalid verification code',
   });
-
-  await teardown();
 });
 
 test('it rejects expired codes', async () => {
-  const { caller, db, teardown } = await setupTest();
+  await using handle = await createTestDB();
+
+  const { db } = handle;
+
+  const { caller } = setupTest({ db });
 
   const verification = {
     algorithm: 'sha1',
@@ -103,12 +113,14 @@ test('it rejects expired codes', async () => {
   });
 
   expect(verifications).toHaveLength(0);
-
-  await teardown();
 });
 
 test('it does not delete a 2FA setup verification', async () => {
-  const { caller, db, teardown } = await setupTest();
+  await using handle = await createTestDB();
+
+  const { db } = handle;
+
+  const { caller } = setupTest({ db });
 
   const createResult = await caller.createVerification({
     target: 'test@example.com',
@@ -132,12 +144,14 @@ test('it does not delete a 2FA setup verification', async () => {
   });
 
   expect(verification).toBeDefined();
-
-  await teardown();
 });
 
 test('it does not delete a 2FA verification', async () => {
-  const { caller, db, teardown } = await setupTest();
+  await using handle = await createTestDB();
+
+  const { db } = handle;
+
+  const { caller } = setupTest({ db });
 
   const createResult = await caller.createVerification({
     target: 'test@example.com',
@@ -161,6 +175,4 @@ test('it does not delete a 2FA verification', async () => {
   });
 
   expect(verification).toBeDefined();
-
-  await teardown();
 });
