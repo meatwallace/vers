@@ -1,23 +1,29 @@
 import { expect, test } from 'vitest';
+import type { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
 import { createId } from '@paralleldrive/cuid2';
 import * as schema from '@vers/postgres-schema';
-import { PostgresTestUtils } from '@vers/service-test-utils';
-import { pgTestConfig } from '../pg-test-config';
+import { createTestDB } from '@vers/service-test-utils';
 import { router } from '../router';
 import { t } from '../t';
 
 const createCaller = t.createCallerFactory(router);
 
-async function setupTest() {
-  const { db, teardown } = await PostgresTestUtils.createTestDB(pgTestConfig);
+interface TestConfig {
+  db: PostgresJsDatabase<typeof schema>;
+}
 
-  const caller = createCaller({ db });
+function setupTest(config: TestConfig) {
+  const caller = createCaller({ db: config.db });
 
-  return { caller, db, teardown };
+  return { caller };
 }
 
 test('it returns a TOTP auth URI for a valid 2FA verification record', async () => {
-  const { caller, db, teardown } = await setupTest();
+  await using handle = await createTestDB();
+
+  const { db } = handle;
+
+  const { caller } = setupTest({ db });
 
   const verification = {
     algorithm: 'SHA-1',
@@ -41,12 +47,14 @@ test('it returns a TOTP auth URI for a valid 2FA verification record', async () 
   expect(result).toStrictEqual({
     otpURI: expect.stringContaining('otpauth://totp/vers:test%40example.com'),
   });
-
-  await teardown();
 });
 
 test('it throws an error for non-existent 2FA verification record', async () => {
-  const { caller, teardown } = await setupTest();
+  await using handle = await createTestDB();
+
+  const { db } = handle;
+
+  const { caller } = setupTest({ db });
 
   await expect(
     caller.get2FAVerificationURI({
@@ -56,6 +64,4 @@ test('it throws an error for non-existent 2FA verification record', async () => 
     code: 'BAD_REQUEST',
     message: 'No 2FA verification found for this target',
   });
-
-  await teardown();
 });

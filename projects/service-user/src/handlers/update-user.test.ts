@@ -1,25 +1,31 @@
 import { expect, test } from 'vitest';
-import { users } from '@vers/postgres-schema';
-import { createTestUser, PostgresTestUtils } from '@vers/service-test-utils';
+import * as schema from '@vers/postgres-schema';
+import { createTestDB, createTestUser } from '@vers/service-test-utils';
 import { eq } from 'drizzle-orm';
-import { pgTestConfig } from '../pg-test-config';
+import { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
 import { router } from '../router';
 import { t } from '../t';
 
 const createCaller = t.createCallerFactory(router);
 
-async function setupTest() {
-  const { db, teardown } = await PostgresTestUtils.createTestDB(pgTestConfig);
+interface TestConfig {
+  db: PostgresJsDatabase<typeof schema>;
+}
 
-  const user = await createTestUser({ db });
+function setupTest(config: TestConfig) {
+  const caller = createCaller({ db: config.db });
 
-  const caller = createCaller({ db });
-
-  return { caller, db, teardown, user };
+  return { caller };
 }
 
 test('it updates the provided user', async () => {
-  const { caller, db, teardown, user } = await setupTest();
+  await using handle = await createTestDB();
+
+  const { db } = handle;
+
+  const user = await createTestUser({ db });
+
+  const { caller } = setupTest({ db });
 
   const update = {
     name: 'Updated Name',
@@ -32,7 +38,7 @@ test('it updates the provided user', async () => {
   });
 
   const updatedUser = await db.query.users.findFirst({
-    where: eq(users.id, user.id),
+    where: eq(schema.users.id, user.id),
   });
 
   expect(result).toStrictEqual({ updatedID: user.id });
@@ -47,12 +53,16 @@ test('it updates the provided user', async () => {
   expect(updatedUser?.updatedAt.getTime()).toBeGreaterThan(
     user.updatedAt.getTime(),
   );
-
-  await teardown();
 });
 
 test('it allows partial updating', async () => {
-  const { caller, db, teardown, user } = await setupTest();
+  await using handle = await createTestDB();
+
+  const { db } = handle;
+
+  const user = await createTestUser({ db });
+
+  const { caller } = setupTest({ db });
 
   const update = {
     name: 'Updated Name',
@@ -64,7 +74,7 @@ test('it allows partial updating', async () => {
   });
 
   const updatedUser = await db.query.users.findFirst({
-    where: eq(users.id, user.id),
+    where: eq(schema.users.id, user.id),
   });
 
   expect(result).toStrictEqual({ updatedID: user.id });
@@ -74,6 +84,4 @@ test('it allows partial updating', async () => {
     name: 'Updated Name',
     updatedAt: expect.any(Date),
   });
-
-  await teardown();
 });

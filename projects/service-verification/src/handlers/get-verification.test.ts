@@ -1,24 +1,30 @@
 import { expect, test } from 'vitest';
+import type { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
 import { createId } from '@paralleldrive/cuid2';
 import * as schema from '@vers/postgres-schema';
-import { PostgresTestUtils } from '@vers/service-test-utils';
+import { createTestDB } from '@vers/service-test-utils';
 import { eq } from 'drizzle-orm';
-import { pgTestConfig } from '../pg-test-config';
 import { router } from '../router';
 import { t } from '../t';
 
 const createCaller = t.createCallerFactory(router);
 
-async function setupTest() {
-  const { db, teardown } = await PostgresTestUtils.createTestDB(pgTestConfig);
+interface TestConfig {
+  db: PostgresJsDatabase<typeof schema>;
+}
 
-  const caller = createCaller({ db });
+function setupTest(config: TestConfig) {
+  const caller = createCaller({ db: config.db });
 
-  return { caller, db, teardown };
+  return { caller };
 }
 
 test('it returns an existing verification', async () => {
-  const { caller, db, teardown } = await setupTest();
+  await using handle = await createTestDB();
+
+  const { db } = handle;
+
+  const { caller } = setupTest({ db });
 
   const verification = {
     algorithm: 'sha1',
@@ -45,12 +51,14 @@ test('it returns an existing verification', async () => {
     target: verification.target,
     type: verification.type,
   });
-
-  await teardown();
 });
 
 test('it returns null for non-existent verification', async () => {
-  const { caller, teardown } = await setupTest();
+  await using handle = await createTestDB();
+
+  const { db } = handle;
+
+  const { caller } = setupTest({ db });
 
   const result = await caller.getVerification({
     target: 'test@example.com',
@@ -58,12 +66,14 @@ test('it returns null for non-existent verification', async () => {
   });
 
   expect(result).toBeNull();
-
-  await teardown();
 });
 
 test('it handles and deletes expired verifications', async () => {
-  const { caller, db, teardown } = await setupTest();
+  await using handle = await createTestDB();
+
+  const { db } = handle;
+
+  const { caller } = setupTest({ db });
 
   const verification = {
     algorithm: 'sha1',
@@ -93,6 +103,4 @@ test('it handles and deletes expired verifications', async () => {
   });
 
   expect(verifications).toHaveLength(0);
-
-  await teardown();
 });

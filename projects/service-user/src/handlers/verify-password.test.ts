@@ -1,21 +1,28 @@
 import { expect, test } from 'vitest';
-import { createTestUser, PostgresTestUtils } from '@vers/service-test-utils';
-import { pgTestConfig } from '../pg-test-config';
+import * as schema from '@vers/postgres-schema';
+import { createTestDB, createTestUser } from '@vers/service-test-utils';
+import { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
 import { router } from '../router';
 import { t } from '../t';
 
 const createCaller = t.createCallerFactory(router);
 
-async function setupTest() {
-  const { db, teardown } = await PostgresTestUtils.createTestDB(pgTestConfig);
+interface TestConfig {
+  db: PostgresJsDatabase<typeof schema>;
+}
 
-  const caller = createCaller({ db });
+function setupTest(config: TestConfig) {
+  const caller = createCaller({ db: config.db });
 
-  return { caller, db, teardown };
+  return { caller };
 }
 
 test('it verifies a correct password', async () => {
-  const { caller, db, teardown } = await setupTest();
+  await using handle = await createTestDB();
+
+  const { db } = handle;
+
+  const { caller } = setupTest({ db });
 
   const user = await createTestUser({ db, user: { password: 'password123' } });
 
@@ -25,12 +32,14 @@ test('it verifies a correct password', async () => {
   });
 
   expect(result).toStrictEqual({ success: true });
-
-  await teardown();
 });
 
 test('it returns a failure payload when the password is incorrect', async () => {
-  const { caller, db, teardown } = await setupTest();
+  await using handle = await createTestDB();
+
+  const { db } = handle;
+
+  const { caller } = setupTest({ db });
 
   const user = await createTestUser({ db, user: { password: 'password123' } });
 
@@ -40,12 +49,14 @@ test('it returns a failure payload when the password is incorrect', async () => 
   });
 
   expect(result).toStrictEqual({ success: false });
-
-  await teardown();
 });
 
 test('it rejects a non-existent user', async () => {
-  const { caller, teardown } = await setupTest();
+  await using handle = await createTestDB();
+
+  const { db } = handle;
+
+  const { caller } = setupTest({ db });
 
   await expect(
     caller.verifyPassword({
@@ -56,12 +67,14 @@ test('it rejects a non-existent user', async () => {
     code: 'NOT_FOUND',
     message: 'No user with that email',
   });
-
-  await teardown();
 });
 
 test('it rejects a user without a password set', async () => {
-  const { caller, db, teardown } = await setupTest();
+  await using handle = await createTestDB();
+
+  const { db } = handle;
+
+  const { caller } = setupTest({ db });
 
   const user = await createTestUser({ db, user: { password: null } });
 
@@ -74,6 +87,4 @@ test('it rejects a user without a password set', async () => {
     code: 'BAD_REQUEST',
     message: 'User does not have a password set',
   });
-
-  await teardown();
 });

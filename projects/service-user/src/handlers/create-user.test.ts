@@ -1,23 +1,30 @@
 import { expect, test } from 'vitest';
-import { PostgresTestUtils } from '@vers/service-test-utils';
+import * as schema from '@vers/postgres-schema';
+import { createTestDB } from '@vers/service-test-utils';
 import bcrypt from 'bcryptjs';
+import { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
 import invariant from 'tiny-invariant';
-import { pgTestConfig } from '../pg-test-config';
 import { router } from '../router';
 import { t } from '../t';
 
 const createCaller = t.createCallerFactory(router);
 
-async function setupTest() {
-  const { db, teardown } = await PostgresTestUtils.createTestDB(pgTestConfig);
+interface TestConfig {
+  db: PostgresJsDatabase<typeof schema>;
+}
 
-  const caller = createCaller({ db });
+function setupTest(config: TestConfig) {
+  const caller = createCaller({ db: config.db });
 
-  return { caller, db, teardown };
+  return { caller };
 }
 
 test('it creates a user with a hashed password', async () => {
-  const { caller, db, teardown } = await setupTest();
+  await using handle = await createTestDB();
+
+  const { db } = handle;
+
+  const { caller } = setupTest({ db });
 
   const password = 'password123';
 
@@ -46,12 +53,14 @@ test('it creates a user with a hashed password', async () => {
   await expect(
     bcrypt.compare(password, user.passwordHash),
   ).resolves.toBeTruthy();
-
-  await teardown();
 });
 
 test('it throws an error if a user with that email already exists', async () => {
-  const { caller, teardown } = await setupTest();
+  await using handle = await createTestDB();
+
+  const { db } = handle;
+
+  const { caller } = setupTest({ db });
 
   await caller.createUser({
     email: 'user@test.com',
@@ -72,12 +81,14 @@ test('it throws an error if a user with that email already exists', async () => 
     code: 'CONFLICT',
     message: 'A user with that email already exists',
   });
-
-  await teardown();
 });
 
 test('it throws an error if a user with that username already exists', async () => {
-  const { caller, teardown } = await setupTest();
+  await using handle = await createTestDB();
+
+  const { db } = handle;
+
+  const { caller } = setupTest({ db });
 
   await caller.createUser({
     email: 'user1@test.com',
@@ -98,6 +109,4 @@ test('it throws an error if a user with that username already exists', async () 
     code: 'CONFLICT',
     message: 'A user with that username already exists',
   });
-
-  await teardown();
 });

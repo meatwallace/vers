@@ -1,24 +1,30 @@
 import { expect, test } from 'vitest';
 import * as schema from '@vers/postgres-schema';
-import { createTestUser, PostgresTestUtils } from '@vers/service-test-utils';
-import { pgTestConfig } from '../pg-test-config';
+import { createTestDB, createTestUser } from '@vers/service-test-utils';
+import { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
 import { router } from '../router';
 import { t } from '../t';
 
 const createCaller = t.createCallerFactory(router);
 
-async function setupTest() {
-  const { db, teardown } = await PostgresTestUtils.createTestDB(pgTestConfig);
+interface TestConfig {
+  db: PostgresJsDatabase<typeof schema>;
+}
 
-  const caller = createCaller({ db });
+async function setupTest(config: TestConfig) {
+  const caller = createCaller({ db: config.db });
 
-  return { caller, db, teardown };
+  const user = await createTestUser({ db: config.db });
+
+  return { caller, user };
 }
 
 test('it deletes a session', async () => {
-  const { caller, db, teardown } = await setupTest();
+  await using handle = await createTestDB();
 
-  const user = await createTestUser({ db });
+  const { db } = handle;
+
+  const { caller, user } = await setupTest({ db });
 
   const session = {
     createdAt: new Date(),
@@ -44,14 +50,14 @@ test('it deletes a session', async () => {
   });
 
   expect(deletedSession).toBeUndefined();
-
-  await teardown();
 });
 
 test('it does not delete a session when userID does not match', async () => {
-  const { caller, db, teardown } = await setupTest();
+  await using handle = await createTestDB();
 
-  const user = await createTestUser({ db });
+  const { db } = handle;
+
+  const { caller, user } = await setupTest({ db });
 
   const session = {
     createdAt: new Date(),
@@ -78,6 +84,4 @@ test('it does not delete a session when userID does not match', async () => {
   });
 
   expect(existingSession).not.toBeNull();
-
-  await teardown();
 });

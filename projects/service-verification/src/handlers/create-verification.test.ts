@@ -1,23 +1,29 @@
 import { expect, test } from 'vitest';
+import type { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
 import * as schema from '@vers/postgres-schema';
-import { PostgresTestUtils } from '@vers/service-test-utils';
+import { createTestDB } from '@vers/service-test-utils';
 import { and, eq } from 'drizzle-orm';
-import { pgTestConfig } from '../pg-test-config';
 import { router } from '../router';
 import { t } from '../t';
 
 const createCaller = t.createCallerFactory(router);
 
-async function setupTest() {
-  const { db, teardown } = await PostgresTestUtils.createTestDB(pgTestConfig);
+interface TestConfig {
+  db: PostgresJsDatabase<typeof schema>;
+}
 
-  const caller = createCaller({ db });
+function setupTest(config: TestConfig) {
+  const caller = createCaller({ db: config.db });
 
-  return { caller, db, teardown };
+  return { caller };
 }
 
 test('creates a verification code and stores a record of it', async () => {
-  const { caller, db, teardown } = await setupTest();
+  await using handle = await createTestDB();
+
+  const { db } = handle;
+
+  const { caller } = setupTest({ db });
 
   const result = await caller.createVerification({
     period: 5 * 60, // 5 minutes
@@ -51,12 +57,14 @@ test('creates a verification code and stores a record of it', async () => {
     target: 'test@example.com',
     type: 'onboarding',
   });
-
-  await teardown();
 });
 
 test('it uses a simple charset for 2FA verification codes', async () => {
-  const { caller, db, teardown } = await setupTest();
+  await using handle = await createTestDB();
+
+  const { db } = handle;
+
+  const { caller } = setupTest({ db });
 
   const result = await caller.createVerification({
     target: 'test@example.com',
@@ -89,12 +97,14 @@ test('it uses a simple charset for 2FA verification codes', async () => {
     target: 'test@example.com',
     type: '2fa',
   });
-
-  await teardown();
 });
 
 test('it uses a simple charset for 2FA setup verification codes', async () => {
-  const { caller, db, teardown } = await setupTest();
+  await using handle = await createTestDB();
+
+  const { db } = handle;
+
+  const { caller } = setupTest({ db });
 
   const result = await caller.createVerification({
     target: 'test@example.com',
@@ -127,12 +137,14 @@ test('it uses a simple charset for 2FA setup verification codes', async () => {
     target: 'test@example.com',
     type: '2fa-setup',
   });
-
-  await teardown();
 });
 
 test('replaces existing verification for same target and type', async () => {
-  const { caller, db, teardown } = await setupTest();
+  await using handle = await createTestDB();
+
+  const { db } = handle;
+
+  const { caller } = setupTest({ db });
 
   await caller.createVerification({
     period: 300,
@@ -161,12 +173,14 @@ test('replaces existing verification for same target and type', async () => {
   });
 
   expect(verifications).toHaveLength(1);
-
-  await teardown();
 });
 
 test('creates a verification with explicit expiry time', async () => {
-  const { caller, db, teardown } = await setupTest();
+  await using handle = await createTestDB();
+
+  const { db } = handle;
+
+  const { caller } = setupTest({ db });
 
   const now = Date.now();
 
@@ -203,6 +217,4 @@ test('creates a verification with explicit expiry time', async () => {
     target: 'test@example.com',
     type: 'onboarding',
   });
-
-  await teardown();
 });

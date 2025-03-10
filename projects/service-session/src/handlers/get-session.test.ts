@@ -1,30 +1,36 @@
 import { expect, test } from 'vitest';
 import { createId } from '@paralleldrive/cuid2';
-import { sessions } from '@vers/postgres-schema';
-import { createTestUser, PostgresTestUtils } from '@vers/service-test-utils';
-import { pgTestConfig } from '../pg-test-config';
+import * as schema from '@vers/postgres-schema';
+import { createTestDB, createTestUser } from '@vers/service-test-utils';
+import { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
 import { router } from '../router';
 import { t } from '../t';
 
 const createCaller = t.createCallerFactory(router);
 
-async function setupTest() {
-  const { db, teardown } = await PostgresTestUtils.createTestDB(pgTestConfig);
+interface TestConfig {
+  db: PostgresJsDatabase<typeof schema>;
+}
 
-  const user = await createTestUser({ db });
+async function setupTest(config: TestConfig) {
+  const caller = createCaller({ db: config.db });
 
-  const caller = createCaller({ db });
+  const user = await createTestUser({ db: config.db });
 
-  return { caller, db, teardown, user };
+  return { caller, user };
 }
 
 test('it returns the requested session', async () => {
-  const { caller, db, teardown, user } = await setupTest();
+  await using handle = await createTestDB();
+
+  const { db } = handle;
+
+  const { caller, user } = await setupTest({ db });
 
   const sessionID = createId();
   const now = new Date();
 
-  await db.insert(sessions).values({
+  await db.insert(schema.sessions).values({
     createdAt: now,
     expiresAt: new Date(now.getTime() + 24 * 60 * 60 * 1000), // 24 hours from now
     id: sessionID,
@@ -46,18 +52,18 @@ test('it returns the requested session', async () => {
     updatedAt: expect.any(Date),
     userID: user.id,
   });
-
-  await teardown();
 });
 
 test('it returns null for non-existent session', async () => {
-  const { caller, teardown } = await setupTest();
+  await using handle = await createTestDB();
+
+  const { db } = handle;
+
+  const { caller } = await setupTest({ db });
 
   const result = await caller.getSession({
     id: 'non-existent-id',
   });
 
   expect(result).toBeNull();
-
-  await teardown();
 });

@@ -1,10 +1,24 @@
-import { pgTestConfig } from './src/pg-test-config';
-import { PostgresTestUtils } from './src/postgres-test-utils';
+import type { TestProject } from 'vitest/node';
+import {
+  createPostgresContainer,
+  getContainerConnectionURI,
+  setupTestDB,
+} from './src/index';
 
-export async function setup() {
-  await PostgresTestUtils.initialize(pgTestConfig);
+declare module 'vitest' {
+  export interface ProvidedContext {
+    dbURI: string;
+    templateDB: string;
+  }
 }
 
-export async function teardown() {
-  await PostgresTestUtils.teardown();
+export async function setup(project: TestProject) {
+  const container = await createPostgresContainer();
+
+  await setupTestDB(container);
+
+  const dbURI = getContainerConnectionURI(container);
+
+  project.provide('dbURI', dbURI);
+  project.provide('templateDB', container.getDatabase());
 }

@@ -49,24 +49,30 @@ examples:
 
       // Good - proper service handler testing
       import { Hono } from 'hono';
-      import { PostgresTestUtils } from '@vers/service-test-utils';
-      import { pgTestConfig } from '../pg-test-config';
+      import { createTestDB } from '@vers/service-test-utils';
+      import type { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
       import { router } from '../router';
       import { t } from '../t';
 
       const createCaller = t.createCallerFactory(router);
 
-      async function setupTest() {
-        // Good - create a test DB
-        const { db, teardown } = await PostgresTestUtils.createTestDB(pgTestConfig);
+      interface TestConfig {
+        db: PostgresJsDatabase<typeof schema>;
+      }
 
-        const caller = createCaller({ db });
+      async function setupTest(config: TestConfig) {
+        const caller = createCaller({ db: config.db });
 
-        return { caller, db, teardown };
+        return { caller };
       }
 
       test('it creates a user with a hashed password', async () => {
-        const { caller, db, teardown } = await setupTest();
+        // Good - use our utils with automatic disposal and pass to setup fn
+        await using handler = await createTestDB();
+        
+        const { db } = handler;
+
+        const { caller } = await setupTest({ db });
 
         const password = 'password123';
 
@@ -96,8 +102,6 @@ examples:
 
         // Good - verify data that only exists in our database
         expect(await bcrypt.compare(password, user.passwordHash)).toBe(true);
-
-        await teardown();
       });
 
       // Good - test error cases

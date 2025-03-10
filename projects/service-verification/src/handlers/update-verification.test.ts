@@ -1,24 +1,30 @@
 import { expect, test } from 'vitest';
+import type { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
 import { createId } from '@paralleldrive/cuid2';
 import * as schema from '@vers/postgres-schema';
-import { PostgresTestUtils } from '@vers/service-test-utils';
+import { createTestDB } from '@vers/service-test-utils';
 import { eq } from 'drizzle-orm';
-import { pgTestConfig } from '../pg-test-config';
 import { router } from '../router';
 import { t } from '../t';
 
 const createCaller = t.createCallerFactory(router);
 
-async function setupTest() {
-  const { db, teardown } = await PostgresTestUtils.createTestDB(pgTestConfig);
+interface TestConfig {
+  db: PostgresJsDatabase<typeof schema>;
+}
 
-  const caller = createCaller({ db });
+function setupTest(config: TestConfig) {
+  const caller = createCaller({ db: config.db });
 
-  return { caller, db, teardown };
+  return { caller };
 }
 
 test('should update a verification record', async () => {
-  const { caller, db, teardown } = await setupTest();
+  await using handle = await createTestDB();
+
+  const { db } = handle;
+
+  const { caller } = setupTest({ db });
 
   const id = createId();
 
@@ -59,6 +65,4 @@ test('should update a verification record', async () => {
     target: 'user@example.com',
     type: '2fa',
   });
-
-  await teardown();
 });

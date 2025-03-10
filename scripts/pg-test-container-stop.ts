@@ -1,12 +1,9 @@
-import { PostgresTestUtils } from '@vers/service-test-utils';
+import { createPostgresContainer } from '@vers/service-test-utils';
 
 // if the container is running, this does nothing except create a reference to it
 // so we can stop it
-await PostgresTestUtils.startContainer({
-  migrationPath: './projects/db-postgres/migrations',
-  port: 32_999,
-});
+const container = await createPostgresContainer();
 
-await PostgresTestUtils.stopContainer();
+await container.stop();
 
 console.log('💤 postgres test container stopped');
