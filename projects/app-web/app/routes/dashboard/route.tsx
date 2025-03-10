@@ -1,6 +1,4 @@
-import { Header } from '~/components/header.tsx';
 import { RouteErrorBoundary } from '~/components/route-error-boundary.tsx';
-import { GetCurrentUser } from '~/data/queries/get-current-user';
 import { createGQLClient } from '~/utils/create-gql-client.server.ts';
 import { requireAuth } from '~/utils/require-auth.server.ts';
 import { withErrorHandling } from '~/utils/with-error-handling.ts';
@@ -21,15 +19,13 @@ export const loader = withErrorHandling(async (args: Route.LoaderArgs) => {
 
   await requireAuth(request, { client });
 
-  const { getCurrentUser } = await client.request(GetCurrentUser, {});
-
-  return { user: getCurrentUser };
+  return {};
 });
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function Dashboard(props: Route.ComponentProps) {
   return (
     <>
-      <Header user={props.loaderData.user} />
       <main className={styles.container}>
         <h1>Dashboard</h1>
       </main>

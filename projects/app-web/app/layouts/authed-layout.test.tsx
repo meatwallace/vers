@@ -1,5 +1,5 @@
 import { afterEach, expect, test } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { createRoutesStub } from 'react-router';
 import { drop } from '@mswjs/data';
@@ -7,7 +7,7 @@ import { db } from '~/mocks/db.ts';
 import { withAuthedUser } from '~/test-utils/with-authed-user.ts';
 import { withRouteProps } from '~/test-utils/with-route-props.tsx';
 import { Routes } from '~/types.ts';
-import { Dashboard, loader } from './route.tsx';
+import { AuthedLayout, loader } from './authed-layout.tsx';
 
 interface TestConfig {
   isAuthed: boolean;
@@ -22,7 +22,7 @@ function setupTest(config: TestConfig) {
 
   const DashboardStub = createRoutesStub([
     {
-      Component: withRouteProps(Dashboard),
+      Component: withRouteProps(AuthedLayout),
       // @ts-expect-error(#35) - react router test types are out of date
       loader: config.isAuthed
         ? withAuthedUser(loader, { user: config.user })
@@ -55,10 +55,14 @@ test('it redirects to the login route when not authenticated', async () => {
   await screen.findByText('LOGIN_ROUTE');
 });
 
-test('it renders the dashboard when authenticated', async () => {
-  setupTest({ isAuthed: true, user: { id: 'user_id', name: 'Test User' } });
+test('it renders a log out button that navigates to the logout route when clicked', async () => {
+  const { user } = setupTest({ isAuthed: true, user: { id: 'user_id' } });
 
-  const dashboardHeader = await screen.findByText('Dashboard');
+  const logOutButton = await screen.findByRole('button', { name: 'Log out' });
 
-  expect(dashboardHeader).toBeInTheDocument();
+  await waitFor(() => user.click(logOutButton));
+
+  const loggedOutMessage = await screen.findByText('LOGOUT_ROUTE');
+
+  expect(loggedOutMessage).toBeInTheDocument();
 });
