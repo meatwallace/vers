@@ -1,15 +1,15 @@
-import { generateTOTP } from '@epic-web/totp';
-import { createId } from '@paralleldrive/cuid2';
-import * as schema from '@vers/postgres-schema';
-import {
-  CreateVerificationRequest,
-  CreateVerificationResponse,
+import type {
+  CreateVerificationPayload,
   VerificationType,
 } from '@vers/service-types';
+import { generateTOTP } from '@epic-web/totp';
+import { createId } from '@paralleldrive/cuid2';
+import { TRPCError } from '@trpc/server';
+import * as schema from '@vers/postgres-schema';
 import { and, eq } from 'drizzle-orm';
-import { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
-import { Context } from 'hono';
-import { Jsonify } from 'type-fest';
+import { z } from 'zod';
+import type { Context } from '../types';
+import { t } from '../t';
 
 // alphanumeirc excluding 0, O, and I on purpose to avoid confusing users
 const TOTP_CHARSET = 'ABCDEFGHJKLMNPQRSTUVWXYZ123456789';
@@ -24,16 +24,22 @@ const VERIFICATION_TYPE_TO_CHARSET: Record<VerificationType, string> = {
   onboarding: TOTP_CHARSET,
 };
 
+export const CreateVerificationInputSchema = z.object({
+  expiresAt: z.date().nullable().optional(),
+  period: z.number().optional(),
+  target: z.string(),
+  type: z.enum(['2fa', '2fa-setup', 'change-email', 'onboarding']),
+});
+
 export async function createVerification(
+  input: z.infer<typeof CreateVerificationInputSchema>,
   ctx: Context,
-  db: PostgresJsDatabase<typeof schema>,
-) {
+): Promise<CreateVerificationPayload> {
   try {
-    const { expiresAt, period, target, type } =
-      await ctx.req.json<Jsonify<CreateVerificationRequest>>();
+    const { expiresAt, period, target, type } = input;
 
     // delete any existing verifications for this target and type to invalidate previous codes
-    await db
+    await ctx.db
       .delete(schema.verifications)
       .where(
         and(
@@ -57,30 +63,26 @@ export async function createVerification(
       ...verificationConfig,
     };
 
-    await db.insert(schema.verifications).values(verification);
+    await ctx.db.insert(schema.verifications).values(verification);
 
-    const response: CreateVerificationResponse = {
-      data: {
-        id: verification.id,
-        otp,
-        target: verification.target,
-        type: verification.type,
-      },
-      success: true,
+    const payload = {
+      id: verification.id,
+      otp,
+      target: verification.target,
+      type: verification.type,
     };
 
-    return ctx.json(response);
+    return payload;
   } catch (error: unknown) {
     // TODO(#16): capture via Sentry
-    if (error instanceof Error) {
-      const response = {
-        error: 'An unknown error occurred',
-        success: false,
-      };
-
-      return ctx.json(response);
-    }
-
-    throw error;
+    throw new TRPCError({
+      cause: error,
+      code: 'INTERNAL_SERVER_ERROR',
+      message: 'An unknown error occurred',
+    });
   }
 }
+
+export const procedure = t.procedure
+  .input(CreateVerificationInputSchema)
+  .mutation(async ({ ctx, input }) => createVerification(input, ctx));

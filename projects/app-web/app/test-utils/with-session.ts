@@ -1,4 +1,4 @@
-import { ActionFunction, LoaderFunction } from 'react-router';
+import { AppLoadContext } from 'react-router';
 import { verifySessionStorage } from '~/session/verify-session-storage.server';
 import { combineCookies } from './combine-cookies';
 
@@ -9,6 +9,12 @@ interface SessionConfig {
   unverifiedSessionID?: string;
 }
 
+interface DataFnArgs {
+  context: AppLoadContext;
+  params: Record<string, string | undefined>;
+  request: Request;
+}
+
 /**
  * Wraps a React Router loader or action function and adds session data to the request.
  *
@@ -16,13 +22,13 @@ interface SessionConfig {
  * @param config - The configuration object containing session data.
  * @returns The wrapped loader or action function.
  */
-export function withSession(
-  dataFn: ActionFunction | LoaderFunction,
+export function withSession<Args extends DataFnArgs, Data>(
+  dataFn: (args: Args) => Promise<Data>,
   config: SessionConfig,
-): ActionFunction | LoaderFunction {
-  return async ({ request, ...rest }) => {
+) {
+  return async (args: Args): Promise<Data> => {
     const verifySession = await verifySessionStorage.getSession(
-      request.headers.get('cookie'),
+      args.request.headers.get('cookie'),
     );
 
     if (config.onboardingEmail) {
@@ -44,11 +50,11 @@ export function withSession(
     const setCookieHeader =
       await verifySessionStorage.commitSession(verifySession);
 
-    const existingCookie = request.headers.get('cookie');
+    const existingCookie = args.request.headers.get('cookie');
     const cookieHeader = combineCookies(setCookieHeader, existingCookie);
 
-    request.headers.set('cookie', cookieHeader);
+    args.request.headers.set('cookie', cookieHeader);
 
-    return dataFn({ request, ...rest });
+    return dataFn(args);
   };
 }

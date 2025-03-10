@@ -1,9 +1,10 @@
+import { expect, test } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { createRoutesStub } from 'react-router';
 import { withAuthedUser } from '~/test-utils/with-authed-user.ts';
 import { Routes } from '~/types.ts';
-import ResetPasswordStarted, { loader } from './route.tsx';
+import { loader, ResetPasswordStarted } from './route.tsx';
 
 interface TestConfig {
   isAuthed?: boolean;

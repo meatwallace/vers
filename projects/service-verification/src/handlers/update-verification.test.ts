@@ -3,22 +3,22 @@ import { createId } from '@paralleldrive/cuid2';
 import * as schema from '@vers/postgres-schema';
 import { PostgresTestUtils } from '@vers/service-test-utils';
 import { eq } from 'drizzle-orm';
-import { Hono } from 'hono';
 import { pgTestConfig } from '../pg-test-config';
-import { updateVerification } from './update-verification';
+import { router } from '../router';
+import { t } from '../t';
+
+const createCaller = t.createCallerFactory(router);
 
 async function setupTest() {
-  const app = new Hono();
-
   const { db, teardown } = await PostgresTestUtils.createTestDB(pgTestConfig);
 
-  app.post('/update-verification', async (ctx) => updateVerification(ctx, db));
+  const caller = createCaller({ db });
 
-  return { app, db, teardown };
+  return { caller, db, teardown };
 }
 
-test('should update a verification record ', async () => {
-  const { app, db, teardown } = await setupTest();
+test('should update a verification record', async () => {
+  const { caller, db, teardown } = await setupTest();
 
   const id = createId();
 
@@ -34,25 +34,13 @@ test('should update a verification record ', async () => {
     type: '2fa-setup',
   });
 
-  const response = await app.request('/update-verification', {
-    body: JSON.stringify({
-      id,
-      type: '2fa',
-    }),
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    method: 'POST',
+  const result = await caller.updateVerification({
+    id,
+    type: '2fa',
   });
 
-  const result = await response.json();
-
-  expect(response.status).toBe(200);
   expect(result).toEqual({
-    data: {
-      updatedID: id,
-    },
-    success: true,
+    updatedID: id,
   });
 
   const updatedVerification = await db.query.verifications.findFirst({
@@ -69,27 +57,6 @@ test('should update a verification record ', async () => {
     secret: 'test-secret',
     target: 'user@example.com',
     type: '2fa',
-  });
-
-  await teardown();
-});
-
-test('should handle errors gracefully', async () => {
-  const { app, teardown } = await setupTest();
-
-  const response = await app.request('/update-verification', {
-    body: 'invalid-json',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    method: 'POST',
-  });
-
-  const result = await response.json();
-
-  expect(result).toEqual({
-    error: 'An unknown error occurred',
-    success: false,
   });
 
   await teardown();

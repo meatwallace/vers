@@ -1,21 +1,26 @@
 import { createId } from '@paralleldrive/cuid2';
+import { TRPCError } from '@trpc/server';
 import * as schema from '@vers/postgres-schema';
-import {
-  CreateSessionRequest,
-  CreateSessionResponse,
-} from '@vers/service-types';
-import { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
-import { Context } from 'hono';
+import { CreateSessionPayload } from '@vers/service-types';
+import { z } from 'zod';
+import type { Context } from '../types';
 import * as consts from '../consts';
+import { t } from '../t';
 import { createJWT } from '../utils/create-jwt';
 
+export const CreateSessionInputSchema = z.object({
+  expiresAt: z.date().optional(),
+  ipAddress: z.string(),
+  rememberMe: z.boolean().optional(),
+  userID: z.string(),
+});
+
 export async function createSession(
+  input: z.infer<typeof CreateSessionInputSchema>,
   ctx: Context,
-  db: PostgresJsDatabase<typeof schema>,
-) {
+): Promise<CreateSessionPayload> {
   try {
-    const { expiresAt, ipAddress, rememberMe, userID } =
-      await ctx.req.json<CreateSessionRequest>();
+    const { expiresAt, ipAddress, rememberMe, userID } = input;
 
     const refreshTokenDuration = rememberMe
       ? consts.REFRESH_TOKEN_DURATION_LONG
@@ -45,28 +50,23 @@ export async function createSession(
       userID,
     };
 
-    await db.insert(schema.sessions).values(session);
+    await ctx.db.insert(schema.sessions).values(session);
 
-    const response: CreateSessionResponse = {
-      data: {
-        ...session,
-        accessToken,
-      },
-      success: true,
+    return {
+      accessToken,
+      refreshToken,
+      session,
     };
-
-    return ctx.json(response);
   } catch (error: unknown) {
     // TODO(#16): capture via Sentry
-    if (error instanceof Error) {
-      const response = {
-        error: 'An unknown error occurred',
-        success: false,
-      };
-
-      return ctx.json(response);
-    }
-
-    throw error;
+    throw new TRPCError({
+      cause: error,
+      code: 'INTERNAL_SERVER_ERROR',
+      message: 'An unknown error occurred',
+    });
   }
 }
+
+export const procedure = t.procedure
+  .input(CreateSessionInputSchema)
+  .mutation(async ({ ctx, input }) => createSession(input, ctx));

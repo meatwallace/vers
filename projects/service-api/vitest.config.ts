@@ -22,7 +22,6 @@ export default defineConfig({
     },
     env: loadEnv('test', __dirname, ''),
     environment: 'node',
-    globals: true,
     include: ['src/**/*.test.ts'],
     passWithNoTests: true,
     reporters: ['default'],

@@ -5,10 +5,8 @@ export const envSchema = z
   .object({
     API_IDENTIFIER: z.string(),
     HOSTNAME: z.string(),
-
     LOGGING: LoggingSchema,
     NODE_ENV: NodeEnvSchema,
-
     PORT: z.string().transform(Number),
     RESEND_API_KEY: z.string(),
   })

@@ -3,22 +3,22 @@ import { createId } from '@paralleldrive/cuid2';
 import * as schema from '@vers/postgres-schema';
 import { PostgresTestUtils } from '@vers/service-test-utils';
 import { eq } from 'drizzle-orm';
-import { Hono } from 'hono';
 import { pgTestConfig } from '../pg-test-config';
-import { getVerification } from './get-verification';
+import { router } from '../router';
+import { t } from '../t';
+
+const createCaller = t.createCallerFactory(router);
 
 async function setupTest() {
-  const app = new Hono();
-
   const { db, teardown } = await PostgresTestUtils.createTestDB(pgTestConfig);
 
-  app.post('/get-verification', async (ctx) => getVerification(ctx, db));
+  const caller = createCaller({ db });
 
-  return { app, db, teardown };
+  return { caller, db, teardown };
 }
 
 test('it returns an existing verification', async () => {
-  const { app, db, teardown } = await setupTest();
+  const { caller, db, teardown } = await setupTest();
 
   const verification = {
     algorithm: 'sha1',
@@ -35,55 +35,35 @@ test('it returns an existing verification', async () => {
 
   await db.insert(schema.verifications).values(verification);
 
-  const req = new Request('http://localhost/get-verification', {
-    body: JSON.stringify({
-      target: 'test@example.com',
-      type: 'onboarding',
-    }),
-    method: 'POST',
+  const result = await caller.getVerification({
+    target: 'test@example.com',
+    type: 'onboarding',
   });
 
-  const res = await app.request(req);
-  const body = await res.json();
-
-  expect(res.status).toBe(200);
-  expect(body).toMatchObject({
-    data: {
-      id: verification.id,
-      target: verification.target,
-      type: verification.type,
-    },
-    success: true,
+  expect(result).toMatchObject({
+    id: verification.id,
+    target: verification.target,
+    type: verification.type,
   });
 
   await teardown();
 });
 
 test('it returns null for non-existent verification', async () => {
-  const { app, teardown } = await setupTest();
+  const { caller, teardown } = await setupTest();
 
-  const req = new Request('http://localhost/get-verification', {
-    body: JSON.stringify({
-      target: 'test@example.com',
-      type: 'onboarding',
-    }),
-    method: 'POST',
+  const result = await caller.getVerification({
+    target: 'test@example.com',
+    type: 'onboarding',
   });
 
-  const res = await app.request(req);
-  const body = await res.json();
-
-  expect(res.status).toBe(200);
-  expect(body).toMatchObject({
-    data: null,
-    success: true,
-  });
+  expect(result).toBeNull();
 
   await teardown();
 });
 
 test('it handles and deletes expired verifications', async () => {
-  const { app, db, teardown } = await setupTest();
+  const { caller, db, teardown } = await setupTest();
 
   const verification = {
     algorithm: 'sha1',
@@ -100,22 +80,12 @@ test('it handles and deletes expired verifications', async () => {
 
   await db.insert(schema.verifications).values(verification);
 
-  const req = new Request('http://localhost/get-verification', {
-    body: JSON.stringify({
-      target: 'test@example.com',
-      type: 'onboarding',
-    }),
-    method: 'POST',
+  const result = await caller.getVerification({
+    target: 'test@example.com',
+    type: 'onboarding',
   });
 
-  const res = await app.request(req);
-  const body = await res.json();
-
-  expect(res.status).toBe(200);
-  expect(body).toMatchObject({
-    data: null,
-    success: true,
-  });
+  expect(result).toBeNull();
 
   // verify the record was deleted
   const verifications = await db.query.verifications.findMany({
@@ -123,26 +93,6 @@ test('it handles and deletes expired verifications', async () => {
   });
 
   expect(verifications).toHaveLength(0);
-
-  await teardown();
-});
-
-test('handles an invalid request body', async () => {
-  const { app, teardown } = await setupTest();
-
-  const req = new Request('http://localhost/get-verification', {
-    body: 'invalid json',
-    method: 'POST',
-  });
-
-  const res = await app.request(req);
-  const body = await res.json();
-
-  expect(res.status).toBe(200);
-  expect(body).toMatchObject({
-    error: 'An unknown error occurred',
-    success: false,
-  });
 
   await teardown();
 });

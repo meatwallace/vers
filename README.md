@@ -4,7 +4,7 @@
 
 ```sh
 # start postgres container for tests
-yarn test:start-pg
+yarn pg:test-container:start
 
 # lint, typecheck, unit tests
 yarn lint

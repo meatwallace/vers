@@ -1,38 +1,39 @@
+import { TRPCError } from '@trpc/server';
 import * as schema from '@vers/postgres-schema';
-import {
-  CreatePasswordResetTokenRequest,
-  CreatePasswordResetTokenResponse,
-} from '@vers/service-types';
+import { CreatePasswordResetTokenPayload } from '@vers/service-types';
 import { eq } from 'drizzle-orm';
-import { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
-import { Context } from 'hono';
 import { randomBytes } from 'node:crypto';
 import { promisify } from 'node:util';
+import { z } from 'zod';
+import type { Context } from '../types';
+import { t } from '../t';
 
 const randomBytesAsync = promisify(randomBytes);
 
-export async function createPasswordResetToken(
-  ctx: Context,
-  db: PostgresJsDatabase<typeof schema>,
-) {
-  try {
-    const { id } = await ctx.req.json<CreatePasswordResetTokenRequest>();
+export const CreatePasswordResetTokenInputSchema = z.object({
+  id: z.string(),
+});
 
-    const user = await db.query.users.findFirst({
-      where: eq(schema.users.id, id),
+export async function createPasswordResetToken(
+  input: z.infer<typeof CreatePasswordResetTokenInputSchema>,
+  ctx: Context,
+): Promise<CreatePasswordResetTokenPayload> {
+  try {
+    const user = await ctx.db.query.users.findFirst({
+      where: eq(schema.users.id, input.id),
     });
 
     if (!user) {
-      return ctx.json({
-        error: 'User not found',
-        success: false,
+      throw new TRPCError({
+        code: 'NOT_FOUND',
+        message: 'User not found',
       });
     }
 
     if (!user.passwordHash) {
-      return ctx.json({
-        error: 'User has no password',
-        success: false,
+      throw new TRPCError({
+        code: 'BAD_REQUEST',
+        message: 'User has no password',
       });
     }
 
@@ -42,31 +43,29 @@ export async function createPasswordResetToken(
 
     // intentionally not updating our user record's `updatedAt` field
     // so that it's reflective of information that matters to the user
-    await db
+    await ctx.db
       .update(schema.users)
       .set({
         passwordResetToken: resetToken,
         passwordResetTokenExpiresAt: expiresAt,
       })
-      .where(eq(schema.users.id, id));
+      .where(eq(schema.users.id, input.id));
 
-    const response: CreatePasswordResetTokenResponse = {
-      data: {
-        resetToken,
-      },
-      success: true,
-    };
-
-    return ctx.json(response);
+    return { resetToken };
   } catch (error: unknown) {
     // TODO(#16): capture via Sentry
-    if (error instanceof Error) {
-      return ctx.json({
-        error: 'An unknown error occurred',
-        success: false,
-      });
+    if (error instanceof TRPCError) {
+      throw error;
     }
 
-    throw error;
+    throw new TRPCError({
+      cause: error,
+      code: 'INTERNAL_SERVER_ERROR',
+      message: 'An unknown error occurred',
+    });
   }
 }
+
+export const procedure = t.procedure
+  .input(CreatePasswordResetTokenInputSchema)
+  .mutation(async ({ ctx, input }) => createPasswordResetToken(input, ctx));

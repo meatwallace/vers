@@ -1,3 +1,4 @@
+import { expect, test } from 'vitest';
 import { getTokenFromHeader } from './get-token-from-header';
 
 test('it extracts the token from the header', () => {

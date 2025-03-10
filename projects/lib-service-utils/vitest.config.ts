@@ -15,7 +15,6 @@ export default defineConfig({
       reportsDirectory: '../../coverage/apps/lib-service-utils',
     },
     environment: 'node',
-    globals: true,
     include: ['src/**/*.test.ts'],
     passWithNoTests: true,
     reporters: ['default'],

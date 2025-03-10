@@ -15,7 +15,6 @@ export default defineConfig({
       reportsDirectory: '../../coverage/apps/lib-email-templates',
     },
     environment: 'happy-dom',
-    globals: true,
     include: ['src/**/*.test.ts', 'src/**/*.test.tsx'],
     passWithNoTests: true,
     reporters: ['default'],

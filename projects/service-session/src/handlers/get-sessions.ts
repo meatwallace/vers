@@ -1,32 +1,35 @@
+import { TRPCError } from '@trpc/server';
 import * as schema from '@vers/postgres-schema';
-import { GetSessionsRequest, GetSessionsResponse } from '@vers/service-types';
+import { GetSessionsPayload } from '@vers/service-types';
 import { eq } from 'drizzle-orm';
-import { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
-import { Context } from 'hono';
+import { z } from 'zod';
+import type { Context } from '../types';
+import { t } from '../t';
+
+export const GetSessionsInputSchema = z.object({
+  userID: z.string(),
+});
 
 export async function getSessions(
+  input: z.infer<typeof GetSessionsInputSchema>,
   ctx: Context,
-  db: PostgresJsDatabase<typeof schema>,
-) {
+): Promise<GetSessionsPayload> {
   try {
-    const { userID } = await ctx.req.json<GetSessionsRequest>();
-
-    const sessions = await db.query.sessions.findMany({
-      where: eq(schema.sessions.userID, userID),
+    const sessions = await ctx.db.query.sessions.findMany({
+      where: eq(schema.sessions.userID, input.userID),
     });
 
-    const response: GetSessionsResponse = {
-      data: sessions,
-      success: true,
-    };
-
-    return ctx.json(response);
+    return sessions;
   } catch (error: unknown) {
     // TODO(#16): capture via Sentry
-    if (error instanceof Error) {
-      return ctx.json({ error: 'An unknown error occurred', success: false });
-    }
-
-    throw error;
+    throw new TRPCError({
+      cause: error,
+      code: 'INTERNAL_SERVER_ERROR',
+      message: 'An unknown error occurred',
+    });
   }
 }
+
+export const procedure = t.procedure
+  .input(GetSessionsInputSchema)
+  .query(async ({ ctx, input }) => getSessions(input, ctx));

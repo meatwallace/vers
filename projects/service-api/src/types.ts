@@ -1,9 +1,11 @@
+import type { TRPCClient } from '@trpc/client';
+import type { ServiceRouter as EmailServiceRouter } from '@vers/service-email';
+import type { ServiceRouter as SessionServiceRouter } from '@vers/service-session';
+import type { SessionData, UserData } from '@vers/service-types';
+import type { ServiceRouter as UserServiceRouter } from '@vers/service-user';
+import type { ServiceRouter as VerificationServiceRouter } from '@vers/service-verification';
 import { z } from 'zod';
 import { MutationErrorPayload } from '~/schema/types/mutation-error-payload';
-import { EmailService } from '~/services/email-service/types';
-import { SessionData, SessionService } from '~/services/session-service/types';
-import { UserData, UserService } from '~/services/user-service/types';
-import { VerificationService } from '~/services/verification-service/types';
 import { envSchema } from './env';
 
 export type Env = z.infer<typeof envSchema>;
@@ -35,10 +37,10 @@ export interface AnonymousContext {
 export type Context = AnonymousContext | AuthedContext | UnverifiedAuthContext;
 
 export interface Services {
-  email: EmailService;
-  session: SessionService;
-  user: UserService;
-  verification: VerificationService;
+  email: TRPCClient<EmailServiceRouter>;
+  session: TRPCClient<SessionServiceRouter>;
+  user: TRPCClient<UserServiceRouter>;
+  verification: TRPCClient<VerificationServiceRouter>;
 }
 
 export type StandardMutationPayload<T> =

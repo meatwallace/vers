@@ -1,51 +1,43 @@
+import { expect, test } from 'vitest';
 import * as schema from '@vers/postgres-schema';
 import { createTestUser, PostgresTestUtils } from '@vers/service-test-utils';
 import bcrypt from 'bcryptjs';
-import { Hono } from 'hono';
 import invariant from 'tiny-invariant';
 import { pgTestConfig } from '../pg-test-config';
-import { changePassword } from './change-password';
+import { router } from '../router';
+import { t } from '../t';
+
+const createCaller = t.createCallerFactory(router);
 
 interface TestConfig {
   user?: Partial<typeof schema.users.$inferInsert>;
 }
 
 async function setupTest(config: TestConfig = {}) {
-  const app = new Hono();
-
   const { db, teardown } = await PostgresTestUtils.createTestDB(pgTestConfig);
 
   const user = await createTestUser({ db, user: config.user });
 
-  app.post('/change-password', async (ctx) => changePassword(ctx, db));
+  const caller = createCaller({ db });
 
-  return { app, db, teardown, user };
+  return { caller, db, teardown, user };
 }
 
 test('it updates the password and clears the reset token for an existing user', async () => {
-  const { app, db, teardown, user } = await setupTest({
+  const { caller, db, teardown, user } = await setupTest({
     user: {
       passwordResetToken: 'test_reset_token',
       passwordResetTokenExpiresAt: new Date(Date.now() + 1000 * 60 * 10),
     },
   });
 
-  const req = new Request('http://localhost/change-password', {
-    body: JSON.stringify({
-      id: user.id,
-      password: 'newpassword123',
-      resetToken: 'test_reset_token',
-    }),
-    method: 'POST',
+  const result = await caller.changePassword({
+    id: user.id,
+    password: 'newpassword123',
+    resetToken: 'test_reset_token',
   });
 
-  const res = await app.request(req);
-  const body = await res.json();
-
-  expect(res.status).toBe(200);
-  expect(body).toMatchObject({
-    success: true,
-  });
+  expect(result).toEqual({});
 
   const updatedUser = await db.query.users.findFirst({
     where: (users, { eq }) => eq(users.id, user.id),
@@ -66,98 +58,62 @@ test('it updates the password and clears the reset token for an existing user', 
   await teardown();
 });
 
-test('it returns an error if the user does not exist', async () => {
-  const { app, teardown } = await setupTest();
+test('it throws an error if the user does not exist', async () => {
+  const { caller, teardown } = await setupTest();
 
-  const req = new Request('http://localhost/change-password', {
-    body: JSON.stringify({
+  await expect(
+    caller.changePassword({
       id: 'nonexistent_id',
       password: 'newpassword123',
       resetToken: 'test_reset_token',
     }),
-    method: 'POST',
-  });
-
-  const res = await app.request(req);
-  const body = await res.json();
-
-  expect(res.status).toBe(200);
-  expect(body).toMatchObject({
-    error: 'User not found',
-    success: false,
+  ).rejects.toMatchObject({
+    code: 'NOT_FOUND',
+    message: 'No user with that ID',
   });
 
   await teardown();
 });
 
-test('it returns an error if the reset token is invalid', async () => {
-  const { app, teardown } = await setupTest();
+test('it throws an error if the reset token is invalid', async () => {
+  const { caller, teardown, user } = await setupTest({
+    user: {
+      passwordResetToken: 'test_reset_token',
+      passwordResetTokenExpiresAt: new Date(Date.now() + 1000 * 60 * 10),
+    },
+  });
 
-  const req = new Request('http://localhost/change-password', {
-    body: JSON.stringify({
-      id: 'test_id',
+  await expect(
+    caller.changePassword({
+      id: user.id,
       password: 'newpassword123',
       resetToken: 'invalid_reset_token',
     }),
-    method: 'POST',
-  });
-
-  const res = await app.request(req);
-  const body = await res.json();
-
-  expect(res.status).toBe(200);
-  expect(body).toMatchObject({
-    error: 'Invalid reset token',
-    success: false,
+  ).rejects.toMatchObject({
+    code: 'BAD_REQUEST',
+    message: 'Invalid reset token',
   });
 
   await teardown();
 });
 
-test('it returns an error if the reset token has expired', async () => {
-  const { app, teardown, user } = await setupTest({
+test('it throws an error if the reset token has expired', async () => {
+  const { caller, teardown, user } = await setupTest({
     user: {
       passwordResetToken: 'test_reset_token',
       passwordResetTokenExpiresAt: new Date(Date.now() - 1000 * 60 * 10),
     },
   });
 
-  const req = new Request('http://localhost/change-password', {
-    body: JSON.stringify({
+  await expect(
+    caller.changePassword({
       id: user.id,
       password: 'newpassword123',
       resetToken: 'test_reset_token',
     }),
-    method: 'POST',
-  });
-
-  const res = await app.request(req);
-  const body = await res.json();
-
-  expect(res.status).toBe(200);
-  expect(body).toMatchObject({
-    error: 'Reset token expired',
-    success: false,
-  });
-
-  await teardown();
-});
-
-test('it returns an error for invalid request body', async () => {
-  const { app, teardown } = await setupTest();
-
-  const req = new Request('http://localhost/change-password', {
-    body: 'invalid json',
-    method: 'POST',
-  });
-
-  const res = await app.request(req);
-  const body = await res.json();
-
-  expect(res.status).toBe(200);
-  expect(body).toMatchObject({
-    error: 'An unknown error occurred',
-    success: false,
+  ).rejects.toMatchObject({
+    code: 'BAD_REQUEST',
+    message: 'Reset token expired',
   });
 
   await teardown();

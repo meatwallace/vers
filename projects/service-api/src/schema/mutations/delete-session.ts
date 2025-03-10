@@ -1,5 +1,7 @@
+import { logger } from '~/logger';
 import { AuthedContext } from '~/types';
 import { builder } from '../builder';
+import { UNKNOWN_ERROR } from '../errors';
 import { MutationErrorPayload } from '../types/mutation-error-payload';
 import { MutationSuccess } from '../types/mutation-success';
 import { createPayloadResolver } from '../utils/create-payload-resolver';
@@ -25,17 +27,19 @@ export async function deleteSession(
   args: Args,
   ctx: AuthedContext,
 ): Promise<typeof DeleteSessionPayload.$inferType> {
-  // eslint-disable-next-line no-useless-catch
   try {
-    await ctx.services.session.deleteSession({
+    await ctx.services.session.deleteSession.mutate({
       id: args.input.id,
       userID: ctx.user.id,
     });
 
     return { success: true };
   } catch (error: unknown) {
-    // TODO(#16): capture via Sentry
-    throw error;
+    if (error instanceof Error) {
+      logger.error(error.message);
+    }
+
+    return { error: UNKNOWN_ERROR };
   }
 }
 

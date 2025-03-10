@@ -8,8 +8,14 @@ import { MutationSuccess } from '../types/mutation-success';
 import { VerificationType } from '../types/verification-type';
 import { createPayloadResolver } from '../utils/create-payload-resolver';
 
+interface Args {
+  input: typeof FinishPasswordResetInput.$inferInput;
+}
+
 /**
- * @description Completes a password reset by updating the user's password and sending a confirmation email
+ * @description Completes a password reset by updating the user's password and sending a confirmation email.
+ *
+ * Always returns a successful response to prevent enumeration attacks.
  *
  * @example
  * ```gql
@@ -32,32 +38,22 @@ import { createPayloadResolver } from '../utils/create-payload-resolver';
  * }
  * ```
  */
-
-interface Args {
-  input: typeof FinishPasswordResetInput.$inferInput;
-}
-
-// always return successful to avoid enumeration
-const AMBIGUOUS_SUCCESS_RESPONSE = {
-  success: true,
-} as const;
-
 export async function finishPasswordReset(
   _: object,
   args: Args,
   ctx: Context,
 ): Promise<typeof FinishPasswordResetPayload.$inferType> {
   try {
-    const user = await ctx.services.user.getUser({
+    const user = await ctx.services.user.getUser.query({
       email: args.input.email,
     });
 
     if (!user) {
-      return AMBIGUOUS_SUCCESS_RESPONSE;
+      return { success: true };
     }
 
     const twoFactorVerification =
-      await ctx.services.verification.getVerification({
+      await ctx.services.verification.getVerification.query({
         target: args.input.email,
         type: '2fa',
       });
@@ -72,10 +68,10 @@ export async function finishPasswordReset(
     );
 
     if (twoFactorVerification && !isValidTransaction) {
-      return AMBIGUOUS_SUCCESS_RESPONSE;
+      return { success: true };
     }
 
-    await ctx.services.user.changePassword({
+    await ctx.services.user.changePassword.mutate({
       id: user.id,
       password: args.input.password,
       resetToken: args.input.resetToken,
@@ -85,21 +81,21 @@ export async function finishPasswordReset(
       email: user.email,
     });
 
-    await ctx.services.email.sendEmail({
+    await ctx.services.email.sendEmail.mutate({
       html: email.html,
       plainText: email.plainText,
       subject: 'Password Changed',
       to: user.email,
     });
 
-    return AMBIGUOUS_SUCCESS_RESPONSE;
+    return { success: true };
   } catch (error: unknown) {
     // TODO(#16): capture via Sentry
     if (error instanceof Error) {
       logger.error(error.message);
     }
 
-    return AMBIGUOUS_SUCCESS_RESPONSE;
+    return { success: true };
   }
 }
 

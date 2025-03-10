@@ -1,49 +1,45 @@
+import { TRPCError } from '@trpc/server';
 import * as schema from '@vers/postgres-schema';
-import { GetUserRequest, GetUserResponse } from '@vers/service-types';
+import { GetUserPayload } from '@vers/service-types';
 import { eq, or } from 'drizzle-orm';
-import { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
-import { Context } from 'hono';
+import { z } from 'zod';
+import type { Context } from '../types';
+import { t } from '../t';
+
+export const GetUserInputSchema = z
+  .object({
+    email: z.string().email().optional(),
+    id: z.string().optional(),
+  })
+  .refine((data) => Boolean(data.email) || Boolean(data.id), {
+    message: 'Either email or ID must be provided',
+  });
 
 export async function getUser(
+  input: z.infer<typeof GetUserInputSchema>,
   ctx: Context,
-  db: PostgresJsDatabase<typeof schema>,
-) {
+): Promise<GetUserPayload> {
   try {
-    const { email, id } = await ctx.req.json<GetUserRequest>();
-
-    if (!email && !id) {
-      return ctx.json({
-        error: 'Either email or id must be provided',
-        success: false,
-      });
-    }
-
     const where = [
-      email ? eq(schema.users.email, email) : undefined,
-      id ? eq(schema.users.id, id) : undefined,
+      input.email ? eq(schema.users.email, input.email) : undefined,
+      input.id ? eq(schema.users.id, input.id) : undefined,
     ].filter(Boolean);
 
-    const user = await db.query.users.findFirst({
+    const user = await ctx.db.query.users.findFirst({
       where: or(...where),
     });
 
-    const response: GetUserResponse = {
-      data: user ?? null,
-      success: true,
-    };
-
-    return ctx.json(response);
+    return user ?? null;
   } catch (error: unknown) {
     // TODO(#16): capture via Sentry
-    if (error instanceof Error) {
-      const response = {
-        error: 'An unknown error occurred',
-        success: false,
-      };
-
-      return ctx.json(response);
-    }
-
-    throw error;
+    throw new TRPCError({
+      cause: error,
+      code: 'INTERNAL_SERVER_ERROR',
+      message: 'An unknown error occurred',
+    });
   }
 }
+
+export const procedure = t.procedure
+  .input(GetUserInputSchema)
+  .query(async ({ ctx, input }) => getUser(input, ctx));

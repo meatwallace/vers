@@ -1,4 +1,4 @@
-import { afterEach, expect, test } from 'vitest';
+import { afterEach, expect, test, vi } from 'vitest';
 import { drop } from '@mswjs/data';
 import { db } from '~/mocks/db';
 import { VerificationType } from '~/schema/types/verification-type';

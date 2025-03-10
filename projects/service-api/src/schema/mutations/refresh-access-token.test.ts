@@ -1,3 +1,4 @@
+import { expect, test } from 'vitest';
 import { drop } from '@mswjs/data';
 import { db } from '~/mocks/db';
 import { createMockGQLContext } from '~/test-utils/create-mock-gql-context';
@@ -52,7 +53,12 @@ test('it fails to refresh with invalid refresh token', async () => {
     },
   };
 
-  await expect(() => resolve({}, args, ctx)).rejects.toThrow();
+  const result = await resolve({}, args, ctx);
 
-  drop(db);
+  expect(result).toStrictEqual({
+    error: {
+      message: 'An unknown error occurred',
+      title: 'An unknown error occurred',
+    },
+  });
 });

@@ -1,3 +1,4 @@
+import { expect, test } from 'vitest';
 import { drop } from '@mswjs/data';
 import invariant from 'tiny-invariant';
 import { db } from '~/mocks/db';

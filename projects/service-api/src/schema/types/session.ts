@@ -1,5 +1,5 @@
+import type { SessionData } from '@vers/service-types';
 import invariant from 'tiny-invariant';
-import { SessionData } from '~/services/session-service/types';
 import { builder } from '../builder';
 import { User } from './user';
 
@@ -12,7 +12,7 @@ Session.implement({
     id: t.exposeID('id'),
     user: t.field({
       resolve: async (parent, args, ctx) => {
-        const user = await ctx.services.user.getUser({
+        const user = await ctx.services.user.getUser.query({
           id: parent.userID,
         });
 

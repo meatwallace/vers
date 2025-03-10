@@ -1,43 +1,42 @@
+import type { DeleteVerificationPayload } from '@vers/service-types';
+import { TRPCError } from '@trpc/server';
 import * as schema from '@vers/postgres-schema';
-import {
-  DeleteVerificationRequest,
-  DeleteVerificationResponse,
-} from '@vers/service-types';
 import { eq } from 'drizzle-orm';
-import { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
-import { Context } from 'hono';
+import { z } from 'zod';
+import type { Context } from '../types';
+import { t } from '../t';
+
+export const DeleteVerificationInputSchema = z.object({
+  id: z.string(),
+});
 
 export async function deleteVerification(
+  input: z.infer<typeof DeleteVerificationInputSchema>,
   ctx: Context,
-  db: PostgresJsDatabase<typeof schema>,
-) {
+): Promise<DeleteVerificationPayload> {
   try {
-    const { id } = await ctx.req.json<DeleteVerificationRequest>();
-
-    const [verification] = await db
+    const [verification] = await ctx.db
       .delete(schema.verifications)
-      .where(eq(schema.verifications.id, id))
+      .where(eq(schema.verifications.id, input.id))
       .returning({
         deletedID: schema.verifications.id,
       });
 
-    const response: DeleteVerificationResponse = {
-      data: { deletedID: verification.deletedID },
-      success: true,
+    const payload = {
+      deletedID: verification.deletedID,
     };
 
-    return ctx.json(response);
+    return payload;
   } catch (error: unknown) {
     // TODO(#16): capture via Sentry
-    if (error instanceof Error) {
-      const response = {
-        error: 'An unknown error occurred',
-        success: false,
-      };
-
-      return ctx.json(response);
-    }
-
-    throw error;
+    throw new TRPCError({
+      cause: error,
+      code: 'INTERNAL_SERVER_ERROR',
+      message: 'An unknown error occurred',
+    });
   }
 }
+
+export const procedure = t.procedure
+  .input(DeleteVerificationInputSchema)
+  .mutation(async ({ ctx, input }) => deleteVerification(input, ctx));

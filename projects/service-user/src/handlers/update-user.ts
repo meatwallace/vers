@@ -1,17 +1,25 @@
+import { TRPCError } from '@trpc/server';
 import * as schema from '@vers/postgres-schema';
-import { UpdateUserRequest, UpdateUserResponse } from '@vers/service-types';
+import { UpdateUserPayload } from '@vers/service-types';
 import { eq } from 'drizzle-orm';
-import { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
-import { Context } from 'hono';
+import { z } from 'zod';
+import type { Context } from '../types';
+import { t } from '../t';
+
+export const UpdateUserInputSchema = z.object({
+  id: z.string(),
+  name: z.string().optional(),
+  username: z.string().optional(),
+});
 
 export async function updateUser(
+  input: z.infer<typeof UpdateUserInputSchema>,
   ctx: Context,
-  db: PostgresJsDatabase<typeof schema>,
-) {
+): Promise<UpdateUserPayload> {
   try {
-    const { id, ...update } = await ctx.req.json<UpdateUserRequest>();
+    const { id, ...update } = input;
 
-    const [user] = await db
+    const [user] = await ctx.db
       .update(schema.users)
       .set({
         ...update,
@@ -22,23 +30,17 @@ export async function updateUser(
         updatedID: schema.users.id,
       });
 
-    const response: UpdateUserResponse = {
-      data: { updatedID: user.updatedID },
-      success: true,
-    };
-
-    return ctx.json(response);
+    return { updatedID: user.updatedID };
   } catch (error: unknown) {
     // TODO(#16): capture via Sentry
-    if (error instanceof Error) {
-      const response = {
-        error: 'An unknown error occurred',
-        success: false,
-      };
-
-      return ctx.json(response);
-    }
-
-    throw error;
+    throw new TRPCError({
+      cause: error,
+      code: 'INTERNAL_SERVER_ERROR',
+      message: 'An unknown error occurred',
+    });
   }
 }
+
+export const procedure = t.procedure
+  .input(UpdateUserInputSchema)
+  .mutation(async ({ ctx, input }) => updateUser(input, ctx));

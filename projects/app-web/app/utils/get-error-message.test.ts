@@ -1,3 +1,4 @@
+import { expect, test } from 'vitest';
 import { getErrorMessage } from './get-error-message';
 
 test('it returns string errors as is', () => {

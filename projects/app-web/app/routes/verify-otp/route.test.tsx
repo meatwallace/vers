@@ -1,4 +1,4 @@
-import { afterEach, expect, test } from 'vitest';
+import { afterEach, expect, test, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { createRoutesStub } from 'react-router';
@@ -42,7 +42,6 @@ vi.stubGlobal(
 function setupTest(config: TestConfig = {}) {
   const user = userEvent.setup();
 
-  // @ts-expect-error(#35) - react router test types are out of date
   let wrappedAction = withSession(action, config);
 
   if (config.isAuthed) {
@@ -51,6 +50,7 @@ function setupTest(config: TestConfig = {}) {
 
   const VerifyOTPStub = createRoutesStub([
     {
+      // @ts-expect-error(#35) - react router test types are out of date
       action: wrappedAction,
       Component: withRouteProps(VerifyOTPRoute),
       ErrorBoundary: () => 'ERROR_BOUNDARY',

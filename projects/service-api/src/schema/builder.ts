@@ -1,6 +1,6 @@
 import SchemaBuilder from '@pothos/core';
 import { DateResolver, DateTimeResolver } from 'graphql-scalars';
-import { Context } from '~/types';
+import type { Context } from '~/types';
 
 interface SchemaConfig {
   Context: Context;

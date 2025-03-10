@@ -15,7 +15,6 @@ export default defineConfig({
       reportsDirectory: '../../coverage/apps/lib-service-test-utils',
     },
     environment: 'node',
-    globals: true,
     globalSetup: './vitest.global-setup.ts',
     include: ['src/**/*.test.ts'],
     passWithNoTests: true,

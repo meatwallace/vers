@@ -1,8 +1,8 @@
-import { afterEach, expect, test } from 'vitest';
+import { afterEach, expect, test, vi } from 'vitest';
 import { drop } from '@mswjs/data';
-import { http, HttpResponse } from 'msw';
+import { TRPCError } from '@trpc/server';
 import { db } from '~/mocks/db';
-import { ENDPOINT_URL as CHANGE_PASSWORD_ENDPOINT_URL } from '~/mocks/handlers/http/change-password';
+import { trpc } from '~/mocks/handlers/service-user/trpc';
 import { server } from '~/mocks/node';
 import { createMockGQLContext } from '~/test-utils/create-mock-gql-context';
 import { createPendingTransaction } from '~/utils/create-pending-transaction';
@@ -181,10 +181,13 @@ test('it returns a success response for any errors returned from the change pass
   const ctx = createMockGQLContext({});
 
   const changePasswordHandler = vi.fn(() => {
-    return HttpResponse.json({ success: false });
+    throw new TRPCError({
+      code: 'INTERNAL_SERVER_ERROR',
+      message: 'Failed to change password',
+    });
   });
 
-  server.use(http.post(CHANGE_PASSWORD_ENDPOINT_URL, changePasswordHandler));
+  server.use(trpc.changePassword.mutation(changePasswordHandler));
 
   const args = {
     input: {
@@ -197,7 +200,5 @@ test('it returns a success response for any errors returned from the change pass
   const result = await resolve({}, args, ctx);
 
   expect(changePasswordHandler).toHaveBeenCalled();
-  expect(result).toMatchObject({
-    success: true,
-  });
+  expect(result).toMatchObject({ success: true });
 });

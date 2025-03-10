@@ -1,3 +1,4 @@
+import { expect, test } from 'vitest';
 import { createMockServices } from '../test-utils/create-mock-services';
 import { isAuthed } from './is-authed';
 

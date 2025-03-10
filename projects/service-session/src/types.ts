@@ -5,31 +5,6 @@ import { envSchema } from './env';
 
 export type Env = z.infer<typeof envSchema>;
 
-export interface HandlerContext {
+export interface Context {
   db: PostgresJsDatabase<typeof schema>;
-}
-
-export interface CreateSessionInput {
-  ipAddress: string;
-  rememberMe: boolean;
-  userID: string;
-}
-
-export interface RefreshTokensInput {
-  refreshToken: string;
-}
-
-export interface Session {
-  createdAt: Date;
-  expiresAt: Date;
-  id: string;
-  refreshToken: string;
-  updatedAt: Date;
-  userID: string;
-}
-
-export interface TokenPayload {
-  accessToken: string;
-  refreshToken: string;
-  session: Session;
 }

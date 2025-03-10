@@ -1,23 +1,29 @@
-import type {
-  CreateUserRequest,
-  CreateUserResponse,
-} from '@vers/service-types';
 import { createId } from '@paralleldrive/cuid2';
+import { TRPCError } from '@trpc/server';
 import * as schema from '@vers/postgres-schema';
+import { CreateUserPayload } from '@vers/service-types';
 import { hashPassword, isUniqueConstraintError } from '@vers/service-utils';
-import { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
-import { Context } from 'hono';
 import * as pg from 'postgres';
+import { z } from 'zod';
+import type { Context } from '../types';
+import { t } from '../t';
+
+export const CreateUserInputSchema = z.object({
+  email: z.string().email(),
+  name: z.string(),
+  password: z.string(),
+  username: z.string(),
+});
 
 export async function createUser(
+  input: z.infer<typeof CreateUserInputSchema>,
   ctx: Context,
-  db: PostgresJsDatabase<typeof schema>,
-) {
+): Promise<CreateUserPayload> {
   try {
-    const { email, name, password, username } =
-      await ctx.req.json<CreateUserRequest>();
+    const { email, name, password, username } = input;
 
     const createdAt = new Date();
+
     const passwordHash = await hashPassword(password);
 
     const user: typeof schema.users.$inferSelect = {
@@ -32,52 +38,42 @@ export async function createUser(
       username,
     };
 
-    await db.insert(schema.users).values(user);
+    await ctx.db.insert(schema.users).values(user);
 
-    const response: CreateUserResponse = {
-      data: {
-        createdAt: user.createdAt,
-        email: user.email,
-        id: user.id,
-        name: user.name,
-        updatedAt: user.updatedAt,
-        username: user.username,
-      },
-      success: true,
+    return {
+      createdAt: user.createdAt,
+      email: user.email,
+      id: user.id,
+      name: user.name,
+      updatedAt: user.updatedAt,
+      username: user.username,
     };
-
-    return ctx.json(response);
   } catch (error: unknown) {
     if (error instanceof pg.PostgresError) {
       if (isUniqueConstraintError(error, 'users_email_unique')) {
-        const response = {
-          error: 'A user with that email already exists',
-          success: false,
-        };
-
-        return ctx.json(response);
+        throw new TRPCError({
+          code: 'CONFLICT',
+          message: 'A user with that email already exists',
+        });
       }
 
       if (isUniqueConstraintError(error, 'users_username_unique')) {
-        const response = {
-          error: 'A user with that username already exists',
-          success: false,
-        };
-
-        return ctx.json(response);
+        throw new TRPCError({
+          code: 'CONFLICT',
+          message: 'A user with that username already exists',
+        });
       }
     }
 
     // TODO(#16): capture via Sentry
-    if (error instanceof Error) {
-      const response = {
-        error: 'An unknown error occurred',
-        success: false,
-      };
-
-      return ctx.json(response);
-    }
-
-    throw error;
+    throw new TRPCError({
+      cause: error,
+      code: 'INTERNAL_SERVER_ERROR',
+      message: 'An unknown error occurred',
+    });
   }
 }
+
+export const procedure = t.procedure
+  .input(CreateUserInputSchema)
+  .mutation(async ({ ctx, input }) => createUser(input, ctx));

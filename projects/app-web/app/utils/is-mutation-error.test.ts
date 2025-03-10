@@ -1,3 +1,4 @@
+import { expect, test } from 'vitest';
 import { isMutationError } from './is-mutation-error';
 
 test('it returns true if the provided data is a mutation error', () => {

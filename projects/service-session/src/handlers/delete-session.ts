@@ -1,42 +1,41 @@
+import { TRPCError } from '@trpc/server';
 import * as schema from '@vers/postgres-schema';
-import {
-  DeleteSessionRequest,
-  DeleteSessionResponse,
-} from '@vers/service-types';
+import { DeleteSessionPayload } from '@vers/service-types';
 import { and, eq } from 'drizzle-orm';
-import { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
-import { Context } from 'hono';
+import { z } from 'zod';
+import type { Context } from '../types';
+import { t } from '../t';
+
+export const DeleteSessionInputSchema = z.object({
+  id: z.string(),
+  userID: z.string(),
+});
 
 export async function deleteSession(
+  input: z.infer<typeof DeleteSessionInputSchema>,
   ctx: Context,
-  db: PostgresJsDatabase<typeof schema>,
-) {
+): Promise<DeleteSessionPayload> {
   try {
-    const { id, userID } = await ctx.req.json<DeleteSessionRequest>();
-
-    await db
+    await ctx.db
       .delete(schema.sessions)
       .where(
-        and(eq(schema.sessions.id, id), eq(schema.sessions.userID, userID)),
+        and(
+          eq(schema.sessions.id, input.id),
+          eq(schema.sessions.userID, input.userID),
+        ),
       );
 
-    const response: DeleteSessionResponse = {
-      data: {},
-      success: true,
-    };
-
-    return ctx.json(response);
+    return {};
   } catch (error: unknown) {
     // TODO(#16): capture via Sentry
-    if (error instanceof Error) {
-      const response = {
-        error: 'An unknown error occurred',
-        success: false,
-      };
-
-      return ctx.json(response);
-    }
-
-    throw error;
+    throw new TRPCError({
+      cause: error,
+      code: 'INTERNAL_SERVER_ERROR',
+      message: 'An unknown error occurred',
+    });
   }
 }
+
+export const procedure = t.procedure
+  .input(DeleteSessionInputSchema)
+  .mutation(async ({ ctx, input }) => deleteSession(input, ctx));

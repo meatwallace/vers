@@ -1,20 +1,24 @@
+import type { UpdateVerificationPayload } from '@vers/service-types';
+import { TRPCError } from '@trpc/server';
 import * as schema from '@vers/postgres-schema';
-import {
-  UpdateVerificationRequest,
-  UpdateVerificationResponse,
-} from '@vers/service-types';
 import { eq } from 'drizzle-orm';
-import { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
-import { Context } from 'hono';
+import { z } from 'zod';
+import type { Context } from '../types';
+import { t } from '../t';
+
+export const UpdateVerificationInputSchema = z.object({
+  id: z.string(),
+  type: z.enum(['2fa', '2fa-setup', 'change-email', 'onboarding']).optional(),
+});
 
 export async function updateVerification(
+  input: z.infer<typeof UpdateVerificationInputSchema>,
   ctx: Context,
-  db: PostgresJsDatabase<typeof schema>,
-) {
+): Promise<UpdateVerificationPayload> {
   try {
-    const { id, ...update } = await ctx.req.json<UpdateVerificationRequest>();
+    const { id, ...update } = input;
 
-    const [verification] = await db
+    const [verification] = await ctx.db
       .update(schema.verifications)
       .set(update)
       .where(eq(schema.verifications.id, id))
@@ -22,25 +26,17 @@ export async function updateVerification(
         updatedID: schema.verifications.id,
       });
 
-    const response: UpdateVerificationResponse = {
-      data: {
-        updatedID: verification.updatedID,
-      },
-      success: true,
-    };
-
-    return ctx.json(response);
+    return { updatedID: verification.updatedID };
   } catch (error: unknown) {
     // TODO(#16): capture via Sentry
-    if (error instanceof Error) {
-      const response = {
-        error: 'An unknown error occurred',
-        success: false,
-      };
-
-      return ctx.json(response);
-    }
-
-    throw error;
+    throw new TRPCError({
+      cause: error,
+      code: 'INTERNAL_SERVER_ERROR',
+      message: 'An unknown error occurred',
+    });
   }
 }
+
+export const procedure = t.procedure
+  .input(UpdateVerificationInputSchema)
+  .mutation(async ({ ctx, input }) => updateVerification(input, ctx));

@@ -1,24 +1,25 @@
+import { expect, test } from 'vitest';
 import { createId } from '@paralleldrive/cuid2';
 import { sessions } from '@vers/postgres-schema';
 import { createTestUser, PostgresTestUtils } from '@vers/service-test-utils';
-import { Hono } from 'hono';
 import { pgTestConfig } from '../pg-test-config';
-import { getSession } from './get-session';
+import { router } from '../router';
+import { t } from '../t';
+
+const createCaller = t.createCallerFactory(router);
 
 async function setupTest() {
-  const app = new Hono();
-
   const { db, teardown } = await PostgresTestUtils.createTestDB(pgTestConfig);
 
   const user = await createTestUser({ db });
 
-  app.post('/get-session', async (ctx) => getSession(ctx, db));
+  const caller = createCaller({ db });
 
-  return { app, db, teardown, user };
+  return { caller, db, teardown, user };
 }
 
 test('it returns the requested session', async () => {
-  const { app, db, teardown, user } = await setupTest();
+  const { caller, db, teardown, user } = await setupTest();
 
   const sessionID = createId();
   const now = new Date();
@@ -33,27 +34,30 @@ test('it returns the requested session', async () => {
     userID: user.id,
   });
 
-  const req = new Request('http://localhost/get-session', {
-    body: JSON.stringify({
-      id: sessionID,
-    }),
-    method: 'POST',
+  const result = await caller.getSession({
+    id: sessionID,
   });
 
-  const res = await app.request(req);
-
-  expect(res.status).toBe(200);
-  expect(await res.json()).toMatchObject({
-    data: {
-      createdAt: expect.any(String),
-      expiresAt: expect.any(String),
-      id: sessionID,
-      ipAddress: '127.0.0.1',
-      updatedAt: expect.any(String),
-      userID: user.id,
-    },
-    success: true,
+  expect(result).toMatchObject({
+    createdAt: expect.any(Date),
+    expiresAt: expect.any(Date),
+    id: sessionID,
+    ipAddress: '127.0.0.1',
+    updatedAt: expect.any(Date),
+    userID: user.id,
   });
+
+  await teardown();
+});
+
+test('it returns null for non-existent session', async () => {
+  const { caller, teardown } = await setupTest();
+
+  const result = await caller.getSession({
+    id: 'non-existent-id',
+  });
+
+  expect(result).toBeNull();
 
   await teardown();
 });

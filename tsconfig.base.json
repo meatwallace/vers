@@ -25,7 +25,13 @@
         "projects/lib-service-test-utils/src/index.ts"
       ],
       "@vers/service-types": ["projects/lib-service-types/src/index.ts"],
-      "@vers/service-utils": ["projects/lib-service-utils/src/index.ts"]
+      "@vers/service-utils": ["projects/lib-service-utils/src/index.ts"],
+      "@vers/service-email": ["projects/service-email/src/index.ts"],
+      "@vers/service-user": ["projects/service-user/src/index.ts"],
+      "@vers/service-session": ["projects/service-session/src/index.ts"],
+      "@vers/service-verification": [
+        "projects/service-verification/src/index.ts"
+      ]
     }
   },
   "exclude": ["node_modules", "tmp"],

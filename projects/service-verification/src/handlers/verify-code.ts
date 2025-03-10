@@ -1,18 +1,26 @@
+import type { VerifyCodePayload } from '@vers/service-types';
 import { verifyTOTP } from '@epic-web/totp';
+import { TRPCError } from '@trpc/server';
 import * as schema from '@vers/postgres-schema';
-import { VerifyCodeRequest, VerifyCodeResponse } from '@vers/service-types';
 import { and, eq } from 'drizzle-orm';
-import { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
-import { Context } from 'hono';
+import { z } from 'zod';
+import type { Context } from '../types';
+import { t } from '../t';
+
+export const VerifyCodeInputSchema = z.object({
+  code: z.string(),
+  target: z.string(),
+  type: z.enum(['2fa', '2fa-setup', 'change-email', 'onboarding']),
+});
 
 export async function verifyCode(
+  input: z.infer<typeof VerifyCodeInputSchema>,
   ctx: Context,
-  db: PostgresJsDatabase<typeof schema>,
-) {
+): Promise<VerifyCodePayload> {
   try {
-    const { code, target, type } = await ctx.req.json<VerifyCodeRequest>();
+    const { code, target, type } = input;
 
-    const verification = await db.query.verifications.findFirst({
+    const verification = await ctx.db.query.verifications.findFirst({
       where: and(
         eq(schema.verifications.type, type),
         eq(schema.verifications.target, target),
@@ -20,20 +28,20 @@ export async function verifyCode(
     });
 
     if (!verification) {
-      return ctx.json({
-        error: 'Invalid verification code',
-        success: false,
+      throw new TRPCError({
+        code: 'BAD_REQUEST',
+        message: 'Invalid verification code',
       });
     }
 
     if (verification.expiresAt && verification.expiresAt < new Date()) {
-      await db
+      await ctx.db
         .delete(schema.verifications)
         .where(eq(schema.verifications.id, verification.id));
 
-      return ctx.json({
-        error: 'Verification code has expired',
-        success: false,
+      throw new TRPCError({
+        code: 'BAD_REQUEST',
+        message: 'Verification code has expired',
       });
     }
 
@@ -43,9 +51,9 @@ export async function verifyCode(
     });
 
     if (!result) {
-      return ctx.json({
-        error: 'Invalid verification code',
-        success: false,
+      throw new TRPCError({
+        code: 'BAD_REQUEST',
+        message: 'Invalid verification code',
       });
     }
 
@@ -53,32 +61,30 @@ export async function verifyCode(
       verification.type === '2fa-setup' || verification.type === '2fa';
 
     if (!is2FAVerification) {
-      await db
+      await ctx.db
         .delete(schema.verifications)
         .where(eq(schema.verifications.id, verification.id));
     }
 
-    const response: VerifyCodeResponse = {
-      data: {
-        id: verification.id,
-        target: verification.target,
-        type: verification.type,
-      },
-      success: true,
+    return {
+      id: verification.id,
+      target: verification.target,
+      type: verification.type,
     };
-
-    return ctx.json(response);
   } catch (error: unknown) {
     // TODO(#16): capture via Sentry
-    if (error instanceof Error) {
-      const response = {
-        error: 'An unknown error occurred',
-        success: false,
-      };
-
-      return ctx.json(response);
+    if (error instanceof TRPCError) {
+      throw error;
     }
 
-    throw error;
+    throw new TRPCError({
+      cause: error,
+      code: 'INTERNAL_SERVER_ERROR',
+      message: 'An unknown error occurred',
+    });
   }
 }
+
+export const procedure = t.procedure
+  .input(VerifyCodeInputSchema)
+  .mutation(async ({ ctx, input }) => verifyCode(input, ctx));

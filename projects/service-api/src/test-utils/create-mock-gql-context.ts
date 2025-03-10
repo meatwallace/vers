@@ -1,12 +1,13 @@
+import type { ServiceRouter as EmailServiceRouter } from '@vers/service-email';
+import type { ServiceRouter as SessionServiceRouter } from '@vers/service-session';
+import type { ServiceRouter as UserServiceRouter } from '@vers/service-user';
+import type { ServiceRouter as VerificationServiceRouter } from '@vers/service-verification';
 import { createId } from '@paralleldrive/cuid2';
 import { ServiceID } from '@vers/service-types';
 import { db } from '~/mocks/db';
+import type { AuthedContext, Context } from '../types';
 import { env } from '../env';
-import { createEmailService } from '../services/email-service/create-email-service';
-import { createSessionService } from '../services/session-service/create-session-service';
-import { createUserService } from '../services/user-service/create-user-service';
-import { createVerificationService } from '../services/verification-service/create-verification-service';
-import { AuthedContext, Context } from '../types';
+import { createTRPCClient } from '../utils/create-trpc-client';
 
 interface MockContextConfig {
   accessToken?: string;
@@ -27,34 +28,42 @@ export function createMockGQLContext(config: MockContextConfig): Context {
   const ipAddress =
     config.session?.ipAddress ?? config.ipAddress ?? '127.0.0.1';
 
+  const email = createTRPCClient<EmailServiceRouter>({
+    accessToken: config.accessToken,
+    apiURL: env.EMAILS_SERVICE_URL,
+    requestID,
+    serviceID: ServiceID.ServiceEmail,
+  });
+
+  const user = createTRPCClient<UserServiceRouter>({
+    accessToken: config.accessToken,
+    apiURL: env.USERS_SERVICE_URL,
+    requestID,
+    serviceID: ServiceID.ServiceUser,
+  });
+
+  const session = createTRPCClient<SessionServiceRouter>({
+    accessToken: config.accessToken,
+    apiURL: env.SESSIONS_SERVICE_URL,
+    requestID,
+    serviceID: ServiceID.ServiceSession,
+  });
+
+  const verification = createTRPCClient<VerificationServiceRouter>({
+    accessToken: config.accessToken,
+    apiURL: env.VERIFICATIONS_SERVICE_URL,
+    requestID,
+    serviceID: ServiceID.ServiceVerification,
+  });
+
   const sharedContext = {
     ipAddress,
     request,
     services: {
-      email: createEmailService({
-        accessToken: config.accessToken,
-        apiURL: env.EMAILS_SERVICE_URL,
-        requestID,
-        serviceID: ServiceID.ServiceEmail,
-      }),
-      session: createSessionService({
-        accessToken: config.accessToken,
-        apiURL: env.SESSIONS_SERVICE_URL,
-        requestID,
-        serviceID: ServiceID.ServiceSession,
-      }),
-      user: createUserService({
-        accessToken: config.accessToken,
-        apiURL: env.USERS_SERVICE_URL,
-        requestID,
-        serviceID: ServiceID.ServiceUser,
-      }),
-      verification: createVerificationService({
-        accessToken: config.accessToken,
-        apiURL: env.VERIFICATIONS_SERVICE_URL,
-        requestID,
-        serviceID: ServiceID.ServiceVerification,
-      }),
+      email,
+      session,
+      user,
+      verification,
     },
   };
 
@@ -66,12 +75,15 @@ export function createMockGQLContext(config: MockContextConfig): Context {
     };
   }
 
-  const user = config.user ?? db.user.create({ email: 'test@example.com' });
-  const session = config.session ?? db.session.create({ userID: user.id });
+  const authedUser =
+    config.user ?? db.user.create({ email: 'test@example.com' });
+
+  const authedSession =
+    config.session ?? db.session.create({ userID: authedUser.id });
 
   return {
     ...sharedContext,
-    session,
-    user,
+    session: authedSession,
+    user: authedUser,
   };
 }

@@ -1,16 +1,16 @@
-import { expect, test } from 'vitest';
-import { Hono } from 'hono';
+import { afterEach, expect, test } from 'vitest';
 import { http, HttpResponse } from 'msw';
 import { ENDPOINT_URL as RESEND_EMAIL_ENDPOINT_URL } from '~/mocks/handlers/http/resend-emails.ts';
 import { server } from '~/mocks/node.ts';
-import { sendEmail } from './send-email';
+import { router } from '../router';
+import { t } from '../t';
+
+const createCaller = t.createCallerFactory(router);
 
 function setupTest() {
-  const app = new Hono();
+  const caller = createCaller({});
 
-  app.post('/send-email', sendEmail);
-
-  return { app };
+  return { caller };
 }
 
 afterEach(() => {
@@ -18,7 +18,7 @@ afterEach(() => {
 });
 
 test('it successfully sends an email', async () => {
-  const { app } = setupTest();
+  const { caller } = setupTest();
 
   const email = {
     html: '<p>Test content</p>',
@@ -27,25 +27,19 @@ test('it successfully sends an email', async () => {
     to: 'test@example.com',
   };
 
-  const req = new Request('http://localhost/send-email', {
-    body: JSON.stringify(email),
-    method: 'POST',
-  });
+  const result = await caller.sendEmail(email);
 
-  const res = await app.request(req);
-
-  expect(res.status).toBe(200);
-  expect(await res.json()).toMatchObject({ success: true });
+  expect(result).toEqual({});
 });
 
-test('it handles Resend errors', async () => {
+test('it throws an error for Resend errors', async () => {
   server.use(
     http.post(RESEND_EMAIL_ENDPOINT_URL, () => {
       return HttpResponse.error();
     }),
   );
 
-  const { app } = setupTest();
+  const { caller } = setupTest();
 
   const email = {
     html: '<p>Test content</p>',
@@ -54,33 +48,8 @@ test('it handles Resend errors', async () => {
     to: 'test@example.com',
   };
 
-  const req = new Request('http://localhost/send-email', {
-    body: JSON.stringify(email),
-    method: 'POST',
-  });
-
-  const res = await app.request(req);
-
-  expect(res.status).toBe(200);
-  expect(await res.json()).toMatchObject({
-    error: 'Failed to send email',
-    success: false,
-  });
-});
-
-test('handles an invalid request body', async () => {
-  const { app } = setupTest();
-
-  const req = new Request('http://localhost/send-email', {
-    body: 'invalid json',
-    method: 'POST',
-  });
-
-  const res = await app.request(req);
-
-  expect(res.status).toBe(200);
-  expect(await res.json()).toMatchObject({
-    error: 'An unknown error occurred',
-    success: false,
+  await expect(caller.sendEmail(email)).rejects.toMatchObject({
+    code: 'INTERNAL_SERVER_ERROR',
+    message: 'Failed to send email',
   });
 });

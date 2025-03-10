@@ -1,50 +1,40 @@
 import { expect, test } from 'vitest';
 import { PostgresTestUtils } from '@vers/service-test-utils';
 import bcrypt from 'bcryptjs';
-import { Hono } from 'hono';
 import invariant from 'tiny-invariant';
 import { pgTestConfig } from '../pg-test-config';
-import { createUser } from './create-user';
+import { router } from '../router';
+import { t } from '../t';
+
+const createCaller = t.createCallerFactory(router);
 
 async function setupTest() {
-  const app = new Hono();
-
   const { db, teardown } = await PostgresTestUtils.createTestDB(pgTestConfig);
 
-  app.post('/create-user', async (ctx) => createUser(ctx, db));
+  const caller = createCaller({ db });
 
-  return { app, db, teardown };
+  return { caller, db, teardown };
 }
 
 test('it creates a user with a hashed password', async () => {
-  const { app, db, teardown } = await setupTest();
+  const { caller, db, teardown } = await setupTest();
 
   const password = 'password123';
 
-  const req = new Request('http://localhost/create-user', {
-    body: JSON.stringify({
-      email: 'user@test.com',
-      name: 'Test User',
-      password,
-      username: 'test_user',
-    }),
-    method: 'POST',
+  const result = await caller.createUser({
+    email: 'user@test.com',
+    name: 'Test User',
+    password,
+    username: 'test_user',
   });
 
-  const res = await app.request(req);
-  const body = await res.json();
-
-  expect(res.status).toBe(200);
-  expect(body).toMatchObject({
-    data: {
-      createdAt: expect.any(String),
-      email: 'user@test.com',
-      id: expect.any(String),
-      name: 'Test User',
-      updatedAt: expect.any(String),
-      username: 'test_user',
-    },
-    success: true,
+  expect(result).toMatchObject({
+    createdAt: expect.any(Date),
+    email: 'user@test.com',
+    id: expect.any(String),
+    name: 'Test User',
+    updatedAt: expect.any(Date),
+    username: 'test_user',
   });
 
   const user = await db.query.users.findFirst({
@@ -58,97 +48,53 @@ test('it creates a user with a hashed password', async () => {
   await teardown();
 });
 
-test('it returns an error if a user with that email already exists', async () => {
-  const { app, teardown } = await setupTest();
+test('it throws an error if a user with that email already exists', async () => {
+  const { caller, teardown } = await setupTest();
 
-  const req1 = new Request('http://localhost/create-user', {
-    body: JSON.stringify({
-      email: 'user@test.com',
-      name: 'Test User',
-      password: 'password123',
-      username: 'test_user',
-    }),
-    method: 'POST',
+  await caller.createUser({
+    email: 'user@test.com',
+    name: 'Test User',
+    password: 'password123',
+    username: 'test_user',
   });
 
-  await app.request(req1);
-
   // try to create another user with the same email
-  const req2 = new Request('http://localhost/create-user', {
-    body: JSON.stringify({
+  await expect(
+    caller.createUser({
       email: 'user@test.com',
       name: 'Another User',
       password: 'password456',
       username: 'another_user',
     }),
-    method: 'POST',
-  });
-
-  const res = await app.request(req2);
-  const body = await res.json();
-
-  expect(res.status).toBe(200);
-  expect(body).toMatchObject({
-    error: 'A user with that email already exists',
-    success: false,
+  ).rejects.toMatchObject({
+    code: 'CONFLICT',
+    message: 'A user with that email already exists',
   });
 
   await teardown();
 });
 
-test('it returns an error if a user with that username already exists', async () => {
-  const { app, teardown } = await setupTest();
+test('it throws an error if a user with that username already exists', async () => {
+  const { caller, teardown } = await setupTest();
 
-  const req1 = new Request('http://localhost/create-user', {
-    body: JSON.stringify({
-      email: 'user1@test.com',
-      name: 'Test User',
-      password: 'password123',
-      username: 'test_user',
-    }),
-    method: 'POST',
+  await caller.createUser({
+    email: 'user1@test.com',
+    name: 'Test User',
+    password: 'password123',
+    username: 'test_user',
   });
 
-  await app.request(req1);
-
   // try to create another user with the same username
-  const req2 = new Request('http://localhost/create-user', {
-    body: JSON.stringify({
+  await expect(
+    caller.createUser({
       email: 'user2@test.com',
       name: 'Another User',
       password: 'password456',
       username: 'test_user',
     }),
-    method: 'POST',
-  });
-
-  const res = await app.request(req2);
-  const body = await res.json();
-
-  expect(res.status).toBe(200);
-  expect(body).toMatchObject({
-    error: 'A user with that username already exists',
-    success: false,
-  });
-
-  await teardown();
-});
-
-test('it handles invalid request body', async () => {
-  const { app, teardown } = await setupTest();
-
-  const req = new Request('http://localhost/create-user', {
-    body: 'invalid json',
-    method: 'POST',
-  });
-
-  const res = await app.request(req);
-  const body = await res.json();
-
-  expect(res.status).toBe(200);
-  expect(body).toMatchObject({
-    error: 'An unknown error occurred',
-    success: false,
+  ).rejects.toMatchObject({
+    code: 'CONFLICT',
+    message: 'A user with that username already exists',
   });
 
   await teardown();

@@ -1,3 +1,4 @@
+import { afterEach, expect, test, vi } from 'vitest';
 import { createTestJWT } from '@vers/service-test-utils';
 import { Context, Hono } from 'hono';
 import * as jose from 'jose';
@@ -38,7 +39,8 @@ LXzqIDpWE0IvzZf40jW7bzPgJrMBuDD4INMSa6P75apoJnqWg1NzuXBdph7/XZuo
 -----END PRIVATE KEY-----
 `;
 
-const testHandlerSpy = vi.fn((ctx: Context) => {
+// eslint-disable-next-line @typescript-eslint/require-await
+const testHandlerSpy = vi.fn(async (ctx: Context) => {
   return ctx.json({
     payload: ctx.get('jwtPayload'),
     userID: ctx.get('userID'),

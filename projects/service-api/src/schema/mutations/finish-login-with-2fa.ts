@@ -1,8 +1,8 @@
-import { GraphQLError } from 'graphql';
+import type { Context } from '~/types';
 import { logger } from '~/logger';
-import { Context } from '~/types';
 import { verifyTransactionToken } from '~/utils/verify-transaction-token';
 import { builder } from '../builder';
+import { UNKNOWN_ERROR } from '../errors';
 import { AuthPayload } from '../types/auth-payload';
 import { MutationErrorPayload } from '../types/mutation-error-payload';
 import { VerificationType } from '../types/verification-type';
@@ -24,7 +24,7 @@ export async function finishLoginWith2FA(
   ctx: Context,
 ): Promise<typeof FinishLoginWith2FAPayload.$inferType> {
   try {
-    const user = await ctx.services.user.getUser({
+    const user = await ctx.services.user.getUser.query({
       email: args.input.target,
     });
 
@@ -32,7 +32,7 @@ export async function finishLoginWith2FA(
       return { error: AMBIGUOUS_INVALID_VERIFICATION_ERROR };
     }
 
-    const verification = await ctx.services.verification.getVerification({
+    const verification = await ctx.services.verification.getVerification.query({
       target: args.input.target,
       type: '2fa',
     });
@@ -55,7 +55,7 @@ export async function finishLoginWith2FA(
       return { error: AMBIGUOUS_INVALID_VERIFICATION_ERROR };
     }
 
-    const previousSession = await ctx.services.session.getSession({
+    const previousSession = await ctx.services.session.getSession.query({
       id: payload.session_id,
     });
 
@@ -65,14 +65,14 @@ export async function finishLoginWith2FA(
 
     // create a new session now that 2FA is verified, using the expiry of the
     // previous temporary session
-    const authPayload = await ctx.services.session.createSession({
+    const authPayload = await ctx.services.session.createSession.mutate({
       expiresAt: previousSession.expiresAt,
       ipAddress: ctx.ipAddress,
       userID: user.id,
     });
 
     // delete the previous session as it's no longer needed
-    await ctx.services.session.deleteSession({
+    await ctx.services.session.deleteSession.mutate({
       id: previousSession.id,
       userID: user.id,
     });
@@ -84,11 +84,7 @@ export async function finishLoginWith2FA(
       logger.error(error.message);
     }
 
-    throw new GraphQLError('An unknown error occurred', {
-      extensions: {
-        code: 'INTERNAL_SERVER_ERROR',
-      },
-    });
+    return { error: UNKNOWN_ERROR };
   }
 }
 

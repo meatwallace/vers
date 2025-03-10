@@ -1,5 +1,3 @@
-import { ServiceResponse } from './service-response';
-
 export interface UserData {
   createdAt: Date;
   email: string;
@@ -9,52 +7,54 @@ export interface UserData {
   username: string;
 }
 
-export interface CreateUserRequest {
+export interface CreateUserArgs {
   email: string;
   name: string;
   password: string;
   username: string;
 }
 
-export type CreateUserResponse = ServiceResponse<UserData>;
+export type CreateUserPayload = UserData;
 
-export interface GetUserRequest {
+export interface GetUserArgs {
   email?: string;
   id?: string;
 }
 
-export type GetUserResponse = ServiceResponse<null | UserData>;
+export type GetUserPayload = null | UserData;
 
-export interface VerifyPasswordRequest {
+export interface VerifyPasswordArgs {
   email: string;
   password: string;
 }
 
-export type VerifyPasswordResponse = ServiceResponse<Record<string, never>>;
+export interface VerifyPasswordPayload {
+  success: boolean;
+}
 
-export interface ChangePasswordRequest {
+export interface ChangePasswordArgs {
   id: string;
   password: string;
   resetToken: string;
 }
 
-export type ChangePasswordResponse = ServiceResponse<Record<string, never>>;
+export type ChangePasswordPayload = Record<string, never>;
 
-export interface CreatePasswordResetTokenRequest {
+export interface CreatePasswordResetTokenArgs {
   id: string;
 }
 
-export type CreatePasswordResetTokenResponse = ServiceResponse<{
+export interface CreatePasswordResetTokenPayload {
   resetToken: string;
-}>;
+}
 
-export interface UpdateUserRequest {
+export interface UpdateUserArgs {
   email?: string;
   id: string;
   name?: string;
   username?: string;
 }
 
-export type UpdateUserResponse = ServiceResponse<{
+export interface UpdateUserPayload {
   updatedID: string;
-}>;
+}

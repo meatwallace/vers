@@ -1,8 +1,8 @@
-import { GraphQLError } from 'graphql';
+import type { Context } from '~/types';
 import { logger } from '~/logger';
-import { Context } from '~/types';
 import { createPendingTransaction } from '~/utils/create-pending-transaction';
 import { builder } from '../builder';
+import { UNKNOWN_ERROR } from '../errors';
 import { AuthPayload } from '../types/auth-payload';
 import { MutationErrorPayload } from '../types/mutation-error-payload';
 import { TwoFactorRequiredPayload } from '../types/two-factor-required-payload';
@@ -25,7 +25,7 @@ export async function loginWithPassword(
   ctx: Context,
 ): Promise<typeof LoginWithPasswordPayload.$inferType> {
   try {
-    const user = await ctx.services.user.getUser({
+    const user = await ctx.services.user.getUser.query({
       email: args.input.email,
     });
 
@@ -35,7 +35,7 @@ export async function loginWithPassword(
       };
     }
 
-    const verifyPasswordResult = await ctx.services.user.verifyPassword({
+    const verifyPasswordResult = await ctx.services.user.verifyPassword.mutate({
       email: args.input.email,
       password: args.input.password,
     });
@@ -47,14 +47,14 @@ export async function loginWithPassword(
     }
 
     // Check if 2FA is enabled for this user by looking for a verification record
-    const verification = await ctx.services.verification.getVerification({
+    const verification = await ctx.services.verification.getVerification.query({
       target: user.email,
       type: '2fa',
     });
 
     // create a session regardless if the user requires 2FA as we need it to
     // bind the transaction to the session
-    const authPayload = await ctx.services.session.createSession({
+    const authPayload = await ctx.services.session.createSession.mutate({
       ipAddress: ctx.ipAddress,
       rememberMe: args.input.rememberMe,
       userID: user.id,
@@ -79,11 +79,7 @@ export async function loginWithPassword(
       logger.error(error.message);
     }
 
-    throw new GraphQLError('An unknown error occurred', {
-      extensions: {
-        code: 'INTERNAL_SERVER_ERROR',
-      },
-    });
+    return { error: UNKNOWN_ERROR };
   }
 }
 

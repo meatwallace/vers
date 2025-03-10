@@ -50,7 +50,6 @@ export default defineConfig({
       SESSION_SECRET: 'secret',
     },
     environment: 'happy-dom',
-    globals: true,
     include: ['app/**/*.test.{ts,tsx}'],
     passWithNoTests: true,
     reporters: ['default'],

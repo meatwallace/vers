@@ -1,70 +1,56 @@
+import type { GetVerificationPayload } from '@vers/service-types';
+import { TRPCError } from '@trpc/server';
 import * as schema from '@vers/postgres-schema';
-import {
-  GetVerificationRequest,
-  GetVerificationResponse,
-} from '@vers/service-types';
 import { and, eq } from 'drizzle-orm';
-import { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
-import { Context } from 'hono';
+import { z } from 'zod';
+import type { Context } from '../types';
+import { t } from '../t';
+
+export const GetVerificationInputSchema = z.object({
+  target: z.string(),
+  type: z.enum(['2fa', '2fa-setup', 'change-email', 'onboarding']),
+});
 
 export async function getVerification(
+  input: z.infer<typeof GetVerificationInputSchema>,
   ctx: Context,
-  db: PostgresJsDatabase<typeof schema>,
-) {
+): Promise<GetVerificationPayload> {
   try {
-    const { target, type } = await ctx.req.json<GetVerificationRequest>();
-
-    const verification = await db.query.verifications.findFirst({
+    const verification = await ctx.db.query.verifications.findFirst({
       where: and(
-        eq(schema.verifications.type, type),
-        eq(schema.verifications.target, target),
+        eq(schema.verifications.type, input.type),
+        eq(schema.verifications.target, input.target),
       ),
     });
 
     if (!verification) {
-      const response: GetVerificationResponse = {
-        data: null,
-        success: true,
-      };
-
-      return ctx.json(response);
+      return null;
     }
 
     // if the verification has expired, delete it and return null
     if (verification.expiresAt && verification.expiresAt < new Date()) {
-      await db
+      await ctx.db
         .delete(schema.verifications)
         .where(eq(schema.verifications.id, verification.id));
 
-      const response: GetVerificationResponse = {
-        data: null,
-        success: true,
-      };
-
-      return ctx.json(response);
+      return null;
     }
 
-    const response: GetVerificationResponse = {
-      data: {
-        id: verification.id,
-        target: verification.target,
-        type: verification.type,
-      },
-      success: true,
+    return {
+      id: verification.id,
+      target: verification.target,
+      type: verification.type,
     };
-
-    return ctx.json(response);
   } catch (error: unknown) {
     // TODO(#16): capture via Sentry
-    if (error instanceof Error) {
-      const response = {
-        error: 'An unknown error occurred',
-        success: false,
-      };
-
-      return ctx.json(response);
-    }
-
-    throw error;
+    throw new TRPCError({
+      cause: error,
+      code: 'INTERNAL_SERVER_ERROR',
+      message: 'An unknown error occurred',
+    });
   }
 }
+
+export const procedure = t.procedure
+  .input(GetVerificationInputSchema)
+  .query(async ({ ctx, input }) => getVerification(input, ctx));

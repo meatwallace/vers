@@ -1,3 +1,4 @@
+import { expect, test } from 'vitest';
 import { drop } from '@mswjs/data';
 import { createTestJWT } from '@vers/service-test-utils';
 import { env } from '~/env';

@@ -1,3 +1,4 @@
+import { expect, test } from 'vitest';
 import { VerificationType } from '~/schema/types/verification-type';
 import { createPendingTransaction } from './create-pending-transaction';
 import { pendingTransactionCache } from './pending-transaction-cache';

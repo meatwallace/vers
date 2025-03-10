@@ -15,7 +15,6 @@ export default defineConfig({
       reportsDirectory: '../../coverage/apps/lib-postgres-schema',
     },
     environment: 'node',
-    globals: true,
     include: ['src/**/*.test.ts'],
     passWithNoTests: true,
     reporters: ['default'],

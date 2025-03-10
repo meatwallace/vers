@@ -1,5 +1,3 @@
-import { ServiceResponse } from './service-response';
-
 export interface SessionData {
   createdAt: Date;
   expiresAt: Date;
@@ -14,50 +12,40 @@ interface SessionTokens {
   refreshToken: string;
 }
 
-/**
- * prioritizes the `expiresAt` parameter over the `rememberMe` flag
- */
-export interface CreateSessionRequest {
+export type AuthPayload = SessionTokens & {
+  session: SessionData;
+};
+
+export interface CreateSessionArgs {
   expiresAt?: Date;
   ipAddress: string;
   rememberMe?: boolean;
   userID: string;
 }
 
-export type CreateSessionResponse = ServiceResponse<
-  SessionData & SessionTokens
->;
+export type CreateSessionPayload = AuthPayload;
 
-export interface DeleteSessionRequest {
+export interface DeleteSessionArgs {
   id: string;
   userID: string;
 }
 
-export type DeleteSessionResponse = ServiceResponse<Record<string, never>>;
+export type DeleteSessionPayload = Record<string, never>;
 
-export interface GetSessionRequest {
+export interface GetSessionArgs {
   id: string;
 }
 
-export type GetSessionResponse = ServiceResponse<null | SessionData>;
+export type GetSessionPayload = null | SessionData;
 
-export interface GetSessionsRequest {
+export interface GetSessionsArgs {
   userID: string;
 }
 
-export type GetSessionsResponse = ServiceResponse<Array<SessionData>>;
+export type GetSessionsPayload = Array<SessionData>;
 
-export interface RefreshTokensRequest {
+export interface RefreshTokensArgs {
   refreshToken: string;
 }
 
-export type RefreshTokensResponse = ServiceResponse<
-  SessionData & SessionTokens
->;
-
-export interface GetTokensRequest {
-  sessionID: string;
-  userID: string;
-}
-
-export type GetTokensResponse = ServiceResponse<SessionData & SessionTokens>;
+export type RefreshTokensPayload = AuthPayload;

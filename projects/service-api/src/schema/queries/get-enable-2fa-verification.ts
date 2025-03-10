@@ -1,9 +1,13 @@
 import { GraphQLError } from 'graphql';
 import invariant from 'tiny-invariant';
+import type { Context } from '~/types';
 import { logger } from '~/logger';
-import { Context } from '~/types';
 import { builder } from '../builder';
 import { requireAuth } from '../utils/require-auth';
+
+interface TwoFactorVerificationData {
+  otpURI: string;
+}
 
 /**
  * @description Retrieves the verification URI for 2FA setup
@@ -17,11 +21,6 @@ import { requireAuth } from '../utils/require-auth';
  * }
  * ```
  */
-
-interface TwoFactorVerificationData {
-  otpURI: string;
-}
-
 export async function getEnable2FAVerification(
   _: object,
   __: object,
@@ -30,9 +29,10 @@ export async function getEnable2FAVerification(
   invariant(ctx.user, 'user is required in an authed resolver');
 
   try {
-    const otpURI = await ctx.services.verification.get2FAVerificationURI({
-      target: ctx.user.email,
-    });
+    const { otpURI } =
+      await ctx.services.verification.get2FAVerificationURI.query({
+        target: ctx.user.email,
+      });
 
     return { otpURI };
   } catch (error) {

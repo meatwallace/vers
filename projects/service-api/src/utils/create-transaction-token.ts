@@ -1,7 +1,7 @@
 import { createId } from '@paralleldrive/cuid2';
 import * as jose from 'jose';
+import type { Context } from '~/types';
 import { VerificationType } from '~/schema/types/verification-type';
-import { Context } from '~/types';
 import { env } from '../env';
 import { pendingTransactionCache } from './pending-transaction-cache';
 
@@ -50,7 +50,7 @@ export async function createTransactionToken(
   }
 
   if (data.sessionID) {
-    const session = await ctx.services.session.getSession({
+    const session = await ctx.services.session.getSession.query({
       id: data.sessionID,
     });
 
