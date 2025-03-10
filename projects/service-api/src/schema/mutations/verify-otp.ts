@@ -78,6 +78,12 @@ builder.mutationField('verifyOTP', (t) =>
     args: {
       input: t.arg({ required: true, type: VerifyOTPInput }),
     },
+    directives: {
+      rateLimit: {
+        duration: 60,
+        limit: 10,
+      },
+    },
     resolve: verifyOTP,
     type: VerifyOTPPayload,
   }),

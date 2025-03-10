@@ -91,6 +91,12 @@ builder.mutationField('finishEmailSignup', (t) =>
     args: {
       input: t.arg({ required: true, type: FinishEmailSignupInput }),
     },
+    directives: {
+      rateLimit: {
+        duration: 60,
+        limit: 10,
+      },
+    },
     resolve: finishEmailSignup,
     type: FinishEmailSignupPayload,
   }),

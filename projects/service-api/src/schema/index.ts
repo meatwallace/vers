@@ -1,6 +1,12 @@
+import { rateLimitDirective } from 'graphql-rate-limit-directive';
 import { builder } from './builder';
+import { getRateLimitKey } from './utils/get-rate-limit-key';
 
-export const schema = builder.toSchema();
+const { rateLimitDirectiveTransformer } = rateLimitDirective({
+  keyGenerator: getRateLimitKey,
+});
+
+export const schema = rateLimitDirectiveTransformer(builder.toSchema());
 
 // auth
 export { resolve as finishEmailSignup } from './mutations/finish-email-sign-up';

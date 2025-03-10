@@ -110,6 +110,12 @@ builder.mutationField('finishLoginWith2FA', (t) =>
     args: {
       input: t.arg({ required: true, type: FinishLoginWith2FAInput }),
     },
+    directives: {
+      rateLimit: {
+        duration: 60,
+        limit: 10,
+      },
+    },
     resolve: finishLoginWith2FA,
     type: FinishLoginWith2FAPayload,
   }),

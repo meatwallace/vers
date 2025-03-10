@@ -63,6 +63,12 @@ export const resolve = requireAuth(getEnable2FAVerification);
 
 builder.queryField('getEnable2FAVerification', (t) =>
   t.field({
+    directives: {
+      rateLimit: {
+        duration: 60,
+        limit: 20,
+      },
+    },
     resolve: resolve,
     type: TwoFactorVerification,
   }),

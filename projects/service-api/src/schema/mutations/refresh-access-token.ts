@@ -52,6 +52,12 @@ builder.mutationField('refreshAccessToken', (t) =>
     args: {
       input: t.arg({ required: true, type: RefreshAccessTokenInput }),
     },
+    directives: {
+      rateLimit: {
+        duration: 60,
+        limit: 10,
+      },
+    },
     resolve: refreshAccessToken,
     type: RefreshAccessTokenPayload,
   }),

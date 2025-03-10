@@ -19,6 +19,12 @@ export const resolve = requireAuth(getCurrentUser);
 
 builder.queryField('getCurrentUser', (t) =>
   t.field({
+    directives: {
+      rateLimit: {
+        duration: 60,
+        limit: 20,
+      },
+    },
     resolve,
     type: User,
   }),

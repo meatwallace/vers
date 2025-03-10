@@ -5,13 +5,15 @@ import { app } from './app';
 import { env } from './env';
 import { initYoga } from './init-yoga';
 import { logger } from './logger';
-import { createRemoteAddressMiddleware } from './middleware/create-remote-address-middleware';
-import { createSessionHeaderMiddleware } from './middleware/create-session-header-middleware';
+import { rateLimitMiddleware } from './middleware/rate-limit-middleware';
+import { remoteAddressMiddleware } from './middleware/remote-address-middleware';
+import { sessionHeaderMiddleware } from './middleware/session-header-middleware';
 
 app.use('*', requestId());
-app.use('*', createRemoteAddressMiddleware());
-app.use('*', createSessionHeaderMiddleware());
+app.use('*', remoteAddressMiddleware);
+app.use('*', sessionHeaderMiddleware);
 app.use('*', createLoggerMiddleware(logger));
+app.use('*', rateLimitMiddleware);
 
 initYoga();
 
