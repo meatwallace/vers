@@ -37,7 +37,7 @@ test('it updates the password and clears the reset token for an existing user', 
     resetToken: 'test_reset_token',
   });
 
-  expect(result).toEqual({});
+  expect(result).toStrictEqual({});
 
   const updatedUser = await db.query.users.findFirst({
     where: (users, { eq }) => eq(users.id, user.id),
@@ -48,9 +48,9 @@ test('it updates the password and clears the reset token for an existing user', 
     'updated user password hash must set',
   );
 
-  expect(
-    await bcrypt.compare('newpassword123', updatedUser.passwordHash),
-  ).toBeTrue();
+  await expect(
+    bcrypt.compare('newpassword123', updatedUser.passwordHash),
+  ).resolves.toBeTrue();
 
   expect(updatedUser.passwordResetToken).toBeNull();
   expect(updatedUser.passwordResetTokenExpiresAt).toBeNull();

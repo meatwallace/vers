@@ -60,7 +60,7 @@ test('it successfully disables 2FA with a valid transaction token', async () => 
 
   const result = await resolve({}, args, ctx);
 
-  expect(result).toEqual({ success: true });
+  expect(result).toStrictEqual({ success: true });
 
   const deletedVerification = db.verification.findFirst({
     where: {
@@ -97,7 +97,7 @@ test('it returns an error with an invalid transaction token', async () => {
 
   const result = await resolve({}, args, ctx);
 
-  expect(result).toEqual({
+  expect(result).toStrictEqual({
     error: {
       message: 'An unknown error occurred',
       title: 'An unknown error occurred',
@@ -120,7 +120,7 @@ test('it returns an error if 2FA is not enabled', async () => {
 
   const result = await resolve({}, args, ctx);
 
-  expect(result).toEqual({
+  expect(result).toStrictEqual({
     error: {
       message: 'An unknown error occurred',
       title: 'An unknown error occurred',

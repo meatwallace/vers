@@ -36,7 +36,7 @@ test('it updates the password and removes the password reset token', async () =>
 
   const result = await resolve({}, args, ctx);
 
-  expect(result).toMatchObject({
+  expect(result).toStrictEqual({
     success: true,
   });
 
@@ -64,7 +64,7 @@ test('it returns a success response for non-existent user (to avoid user enumera
 
   const result = await resolve({}, args, ctx);
 
-  expect(result).toMatchObject({
+  expect(result).toStrictEqual({
     success: true,
   });
 });
@@ -95,7 +95,7 @@ test('it returns success but does not change the password if 2fa is required and
 
   const result = await resolve({}, args, ctx);
 
-  expect(result).toMatchObject({
+  expect(result).toStrictEqual({
     success: true,
   });
 
@@ -155,7 +155,7 @@ test('it updates the password when 2fa is required and the transaction token is 
 
   const result = await resolve({}, args, ctx);
 
-  expect(result).toMatchObject({
+  expect(result).toStrictEqual({
     success: true,
   });
 
@@ -199,6 +199,6 @@ test('it returns a success response for any errors returned from the change pass
 
   const result = await resolve({}, args, ctx);
 
-  expect(changePasswordHandler).toHaveBeenCalled();
-  expect(result).toMatchObject({ success: true });
+  expect(changePasswordHandler).toHaveBeenCalledTimes(1);
+  expect(result).toStrictEqual({ success: true });
 });

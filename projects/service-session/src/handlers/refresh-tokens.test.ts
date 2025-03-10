@@ -46,7 +46,7 @@ test('it refreshes tokens for a young session without rotating the refresh token
     refreshToken: session.refreshToken,
   });
 
-  expect(result).toMatchObject({
+  expect(result).toStrictEqual({
     accessToken: 'new-access-token',
     refreshToken: session.refreshToken,
     session: {
@@ -54,6 +54,7 @@ test('it refreshes tokens for a young session without rotating the refresh token
       expiresAt: expect.any(Date),
       id: session.id,
       ipAddress: session.ipAddress,
+      updatedAt: expect.any(Date),
       userID: session.userID,
     },
   });
@@ -85,7 +86,7 @@ test('it rotates the refresh token if the provided one is older than our short r
     refreshToken: session.refreshToken,
   });
 
-  expect(result).toMatchObject({
+  expect(result).toStrictEqual({
     accessToken: 'new-access-token',
     refreshToken: 'new-refresh-token',
     session: {
@@ -93,6 +94,7 @@ test('it rotates the refresh token if the provided one is older than our short r
       expiresAt: expect.any(Date),
       id: session.id,
       ipAddress: session.ipAddress,
+      updatedAt: expect.any(Date),
       userID: session.userID,
     },
   });

@@ -23,11 +23,7 @@ test('it gets a user by ID', async () => {
     id: user.id,
   });
 
-  expect(result).toMatchObject({
-    createdAt: expect.any(Date),
-    email: user.email,
-    id: user.id,
-  });
+  expect(result).toStrictEqual(user);
 
   await teardown();
 });
@@ -39,11 +35,7 @@ test('it gets a user by email', async () => {
     email: user.email,
   });
 
-  expect(result).toMatchObject({
-    createdAt: expect.any(Date),
-    email: user.email,
-    id: user.id,
-  });
+  expect(result).toStrictEqual(user);
 
   await teardown();
 });

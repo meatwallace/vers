@@ -26,7 +26,7 @@ test('it creates a password reset token for an existing user', async () => {
     id: user.id,
   });
 
-  expect(result).toMatchObject({
+  expect(result).toStrictEqual({
     resetToken: expect.any(String),
   });
 

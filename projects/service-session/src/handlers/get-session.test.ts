@@ -38,7 +38,7 @@ test('it returns the requested session', async () => {
     id: sessionID,
   });
 
-  expect(result).toMatchObject({
+  expect(result).toStrictEqual({
     createdAt: expect.any(Date),
     expiresAt: expect.any(Date),
     id: sessionID,

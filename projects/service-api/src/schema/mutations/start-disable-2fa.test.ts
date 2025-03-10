@@ -35,7 +35,7 @@ test('it successfully creates a pending transaction when 2FA is enabled', async 
 
   const result = await resolve({}, args, ctx);
 
-  expect(result).toMatchObject({
+  expect(result).toStrictEqual({
     sessionID: null,
     transactionID: expect.any(String),
   });
@@ -44,8 +44,9 @@ test('it successfully creates a pending transaction when 2FA is enabled', async 
 
   const pendingTransaction = pendingTransactionCache.get(result.transactionID);
 
-  expect(pendingTransaction).toMatchObject({
+  expect(pendingTransaction).toStrictEqual({
     action: VerificationType.TWO_FACTOR_AUTH_DISABLE,
+    attempts: 0,
     ipAddress: ctx.ipAddress,
     sessionID: ctx.session?.id,
     target: user.email,
@@ -65,7 +66,7 @@ test('it returns an error if 2FA is not enabled', async () => {
 
   const result = await resolve({}, args, ctx);
 
-  expect(result).toMatchObject({
+  expect(result).toStrictEqual({
     error: {
       message: '2FA is not enabled for your account.',
       title: '2FA not enabled',

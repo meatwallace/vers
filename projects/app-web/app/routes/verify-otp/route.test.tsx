@@ -274,13 +274,13 @@ test('it handles 2FA login verification and redirects to the dashboard on succes
   expect(dashboardRoute).toBeInTheDocument();
 });
 
-test.skip('it handles change email verification and redirects to the profile route on success', async () => {
-  // TODO
-});
+test.todo(
+  'it handles change email verification and redirects to the profile route on success',
+);
 
-test.skip('it handles change password verification and redirects to the profile route on success', async () => {
-  // TODO
-});
+test.todo(
+  'it handles change password verification and redirects to the profile route on success',
+);
 
 test('it shows error for invalid verification code', async () => {
   const { user } = setupTest({

@@ -21,7 +21,7 @@ test('it creates a verification code and sends an email to the user', async () =
 
   const result = await resolve({}, args, ctx);
 
-  expect(result).toMatchObject({
+  expect(result).toStrictEqual({
     sessionID: null,
     transactionID: expect.any(String),
   });
@@ -58,7 +58,7 @@ test('it notifies an existing user that they have an account and returns success
 
   const result = await resolve({}, args, ctx);
 
-  expect(result).toMatchObject({
+  expect(result).toStrictEqual({
     sessionID: null,
     transactionID: expect.any(String),
   });

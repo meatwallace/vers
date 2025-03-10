@@ -58,7 +58,7 @@ test('it successfully completes 2FA setup', async () => {
 
   const result = await resolve({}, args, ctx);
 
-  expect(result).toEqual({ success: true });
+  expect(result).toStrictEqual({ success: true });
 
   // Verify that the verification record was updated
   const updatedVerification = db.verification.findFirst({
@@ -68,6 +68,15 @@ test('it successfully completes 2FA setup', async () => {
   });
 
   expect(updatedVerification).toMatchObject({
+    algorithm: 'SHA-1',
+    charSet: 'ABCDEFGHJKLMNPQRSTUVWXYZ123456789',
+    createdAt: expect.any(Date),
+    digits: 6,
+    expiresAt: expect.any(Date),
+    id: verification.id,
+    period: 30,
+    secret: expect.any(String),
+    target: user.email,
     type: '2fa',
   });
 });
@@ -92,7 +101,7 @@ test('it returns an error if the transaction token is invalid', async () => {
 
   const result = await resolve({}, args, ctx);
 
-  expect(result).toEqual({
+  expect(result).toStrictEqual({
     error: {
       message: 'Verification for this operation is invalid or has expired.',
       title: 'Failed Verification',
@@ -135,7 +144,7 @@ test('it returns an error if there is no 2FA verification record', async () => {
 
   const result = await resolve({}, args, ctx);
 
-  expect(result).toEqual({
+  expect(result).toStrictEqual({
     error: {
       message: 'Verification for this operation is invalid or has expired.',
       title: 'Failed Verification',

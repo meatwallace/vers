@@ -40,17 +40,19 @@ export async function createSession(
       userID,
     });
 
-    const session: typeof schema.sessions.$inferSelect = {
+    const session = {
       createdAt: new Date(),
       expiresAt: refreshTokenExpiresAt,
       id: createId(),
       ipAddress,
-      refreshToken,
       updatedAt: new Date(),
       userID,
     };
 
-    await ctx.db.insert(schema.sessions).values(session);
+    await ctx.db.insert(schema.sessions).values({
+      ...session,
+      refreshToken,
+    });
 
     return {
       accessToken,

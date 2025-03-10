@@ -29,7 +29,7 @@ test('it sets a reset token, sends an email then returns success for an existing
 
   const result = await resolve({}, args, ctx);
 
-  expect(result).toMatchObject({ success: true });
+  expect(result).toStrictEqual({ success: true });
 
   const user = db.user.findFirst({
     where: {
@@ -71,7 +71,10 @@ test('it directs the user to verify an OTP when 2FA is enabled', async () => {
 
   const result = await resolve({}, args, ctx);
 
-  expect(result).toMatchObject({ transactionID: expect.any(String) });
+  expect(result).toStrictEqual({
+    sessionID: null,
+    transactionID: expect.any(String),
+  });
 
   const emails = sentEmails.get('test@example.com');
 
@@ -92,7 +95,7 @@ test('it returns success for non-existent user (to prevent user enumeration)', a
 
   const result = await resolve({}, args, ctx);
 
-  expect(result).toMatchObject({
+  expect(result).toStrictEqual({
     success: true,
   });
 

@@ -55,11 +55,12 @@ test('it validates a token with matching action, target, and IP', async () => {
     ctx,
   );
 
-  expect(result).toMatchObject({
+  expect(result).toStrictEqual({
     action: 'ONBOARDING',
     amr: ['otp'],
     auth_time: expect.any(Number),
     ip_address: '127.0.0.1',
+    jti: expect.any(String),
     mfa_verified: true,
     session_id: null,
     sub: 'user_123',
@@ -158,7 +159,15 @@ test('it returns null when token is reused', async () => {
     ctx,
   );
 
-  expect(firstResult).toMatchObject({
+  expect(firstResult).toStrictEqual({
+    action: 'ONBOARDING',
+    amr: ['otp'],
+    auth_time: expect.any(Number),
+    ip_address: '127.0.0.1',
+    jti: expect.any(String),
+    mfa_verified: true,
+    session_id: null,
+    sub: 'user_123',
     transaction_id: transactionID,
   });
 
@@ -208,7 +217,15 @@ test('it validates session for actions that require it', async () => {
     ctx,
   );
 
-  expect(result).toMatchObject({
+  expect(result).toStrictEqual({
+    action: 'CHANGE_EMAIL',
+    amr: ['otp'],
+    auth_time: expect.any(Number),
+    ip_address: '127.0.0.1',
+    jti: expect.any(String),
+    mfa_verified: true,
+    session_id: session.id,
+    sub: 'user_123',
     transaction_id: transactionID,
   });
 });

@@ -40,7 +40,7 @@ test('it returns an existing verification', async () => {
     type: 'onboarding',
   });
 
-  expect(result).toMatchObject({
+  expect(result).toStrictEqual({
     id: verification.id,
     target: verification.target,
     type: verification.type,

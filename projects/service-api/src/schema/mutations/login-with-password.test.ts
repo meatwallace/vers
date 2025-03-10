@@ -28,13 +28,15 @@ test('it returns an auth payload when credentials are valid and 2FA is not enabl
     },
   });
 
-  expect(result).toMatchObject({
+  expect(result).toStrictEqual({
     accessToken: expect.any(String),
     refreshToken: expect.any(String),
     session: {
+      createdAt: expect.any(Date),
       expiresAt: expect.any(Date),
       id: expect.any(String),
       ipAddress: ctx.ipAddress,
+      updatedAt: expect.any(Date),
       userID: user.id,
     },
   });
@@ -71,7 +73,8 @@ test('it returns an unverified auth payload when 2FA is enabled', async () => {
 
   const result = await resolve({}, args, ctx);
 
-  expect(result).toMatchObject({
+  expect(result).toStrictEqual({
+    sessionID: expect.any(String),
     transactionID: expect.any(String),
   });
 
@@ -90,7 +93,7 @@ test('it returns an error when the user does not exist', async () => {
 
   const result = await resolve({}, args, ctx);
 
-  expect(result).toMatchObject({
+  expect(result).toStrictEqual({
     error: {
       message: 'Wrong email or password',
       title: 'Invalid credentials',
@@ -117,7 +120,7 @@ test('it returns an error when the password is incorrect', async () => {
 
   const result = await resolve({}, args, ctx);
 
-  expect(result).toMatchObject({
+  expect(result).toStrictEqual({
     error: {
       message: 'Wrong email or password',
       title: 'Invalid credentials',

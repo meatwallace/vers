@@ -32,7 +32,13 @@ test('it handles input changes', async () => {
 
   await user.type(screen.getByLabelText('Email'), 'test@example.com');
 
-  expect(handleChange).toHaveBeenCalled();
+  expect(handleChange).toHaveBeenCalledWith(
+    expect.objectContaining({
+      target: expect.objectContaining({
+        value: 'test@example.com',
+      }),
+    }),
+  );
 });
 
 test('it displays error messages', () => {

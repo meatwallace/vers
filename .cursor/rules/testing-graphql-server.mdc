@@ -99,7 +99,7 @@ examples:
 
         const result = await loginWithPassword({}, args, ctx);
 
-        expect(result).toMatchObject({
+        expect(result).toStrictEqual({
           accessToken: expect.any(String),
           refreshToken: expect.any(String),
           session: {
@@ -127,7 +127,7 @@ examples:
 
         const result = await loginWithPassword({}, args, ctx);
 
-        expect(result).toMatchObject({
+        expect(result).toStrictEqual({
           error: {
             title: 'Invalid credentials',
             message: 'No user with that email',

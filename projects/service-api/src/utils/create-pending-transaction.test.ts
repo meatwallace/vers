@@ -13,7 +13,7 @@ test('it creates a new transaction ID and stores it in the cache', () => {
 
   const pendingTransaction = pendingTransactionCache.get(transactionID);
 
-  expect(pendingTransaction).toMatchObject({
+  expect(pendingTransaction).toStrictEqual({
     action: VerificationType.TWO_FACTOR_AUTH,
     attempts: 0,
     ipAddress: '127.0.0.1',

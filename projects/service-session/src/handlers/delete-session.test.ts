@@ -37,7 +37,7 @@ test('it deletes a session', async () => {
     userID: user.id,
   });
 
-  expect(result).toEqual({});
+  expect(result).toStrictEqual({});
 
   const deletedSession = await db.query.sessions.findFirst({
     where: (sessions, { eq }) => eq(sessions.id, session.id),
@@ -70,7 +70,7 @@ test('it does not delete a session when userID does not match', async () => {
     userID: 'different_user_id',
   });
 
-  expect(result).toEqual({});
+  expect(result).toStrictEqual({});
 
   // verify session was not deleted
   const existingSession = await db.query.sessions.findFirst({

@@ -91,9 +91,9 @@ test('it authorizes a valid token and extracts the payload and user ID', async (
 
   const res = await app.request(req);
 
-  expect(testHandlerSpy).toHaveBeenCalled();
+  expect(testHandlerSpy).toHaveBeenCalledTimes(1);
 
-  expect(await res.json()).toMatchObject({
+  await expect(res.json()).resolves.toStrictEqual({
     payload: TEST_TOKEN_PAYLOAD,
     userID: TEST_TOKEN_PAYLOAD.sub,
   });
@@ -108,7 +108,9 @@ test('it returns a 401 if no token is provided', async () => {
   const res = await app.request(req);
 
   expect(testHandlerSpy).not.toHaveBeenCalled();
-  expect(await res.text()).toBe('Unauthorized');
+
+  await expect(res.text()).resolves.toBe('Unauthorized');
+
   expect(res.status).toBe(401);
 });
 
@@ -122,7 +124,9 @@ test('it rejects an invalid authorization header', async () => {
   const res = await app.request(req);
 
   expect(testHandlerSpy).not.toHaveBeenCalled();
-  expect(await res.text()).toBe('Unauthorized');
+
+  await expect(res.text()).resolves.toBe('Unauthorized');
+
   expect(res.status).toBe(401);
   expect(res.headers.get('www-authenticate')).toMatchInlineSnapshot(
     `"Bearer realm="http://localhost/test",error="invalid_request",error_description="invalid authorization header structure""`,
@@ -139,7 +143,9 @@ test('it rejects an invalid token', async () => {
   const res = await app.request(req);
 
   expect(testHandlerSpy).not.toHaveBeenCalled();
-  expect(await res.text()).toBe('Unauthorized');
+
+  await expect(res.text()).resolves.toBe('Unauthorized');
+
   expect(res.status).toBe(401);
   expect(res.headers.get('www-authenticate')).toMatchInlineSnapshot(
     `"Bearer realm="http://localhost/test",error="invalid_token",error_description="token verification failure""`,
@@ -152,7 +158,7 @@ test('it allows requests without auth header when auth is optional', async () =>
   const req = new Request('http://localhost/test');
   const res = await app.request(req);
 
-  expect(testHandlerSpy).toHaveBeenCalled();
+  expect(testHandlerSpy).toHaveBeenCalledTimes(1);
   expect(res.status).toBe(200);
 });
 
@@ -166,7 +172,9 @@ test('it validates token when provided even if auth is optional', async () => {
   const res = await app.request(req);
 
   expect(testHandlerSpy).not.toHaveBeenCalled();
-  expect(await res.text()).toBe('Unauthorized');
+
+  await expect(res.text()).resolves.toBe('Unauthorized');
+
   expect(res.status).toBe(401);
   expect(res.headers.get('www-authenticate')).toMatchInlineSnapshot(
     `"Bearer realm="http://localhost/test",error="invalid_token",error_description="token verification failure""`,
@@ -182,9 +190,10 @@ test('it processes valid token when auth is optional', async () => {
 
   const res = await app.request(req);
 
-  expect(testHandlerSpy).toHaveBeenCalled();
+  expect(testHandlerSpy).toHaveBeenCalledTimes(1);
   expect(res.status).toBe(200);
-  expect(await res.json()).toMatchObject({
+
+  await expect(res.json()).resolves.toStrictEqual({
     payload: TEST_TOKEN_PAYLOAD,
     userID: TEST_TOKEN_PAYLOAD.sub,
   });
@@ -196,6 +205,6 @@ test('it defaults to optional auth when isAuthRequired is not provided', async (
   const req = new Request('http://localhost/test');
   const res = await app.request(req);
 
-  expect(testHandlerSpy).toHaveBeenCalled();
+  expect(testHandlerSpy).toHaveBeenCalledTimes(1);
   expect(res.status).toBe(200);
 });

@@ -6,7 +6,7 @@ test('returns true for expired tokens', () => {
   const expiredToken =
     'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MDAwMDAwMDB9.TQ7TZyZmhxN2o9vJmq7Hl2CjrJqjVVL95o_qvJqWXD8';
 
-  expect(isExpiredJWT(expiredToken)).toBe(true);
+  expect(isExpiredJWT(expiredToken)).toBeTrue();
 });
 
 test('returns false for valid tokens', () => {
@@ -14,5 +14,5 @@ test('returns false for valid tokens', () => {
   const validToken =
     'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjQwNzA5MDg4MDB9.DXvoVDK5BF_TjiX-pMj0t99mB2kj6Yz0Q8wzrCVtkpM';
 
-  expect(isExpiredJWT(validToken)).toBe(false);
+  expect(isExpiredJWT(validToken)).toBeFalse();
 });

@@ -32,7 +32,13 @@ test('it handles checkbox state changes', async () => {
 
   await user.click(screen.getByLabelText('Remember me'));
 
-  expect(handleChange).toHaveBeenCalled();
+  expect(handleChange).toHaveBeenCalledWith(
+    expect.objectContaining({
+      target: expect.objectContaining({
+        checked: true,
+      }),
+    }),
+  );
 });
 
 test('it displays error messages', () => {

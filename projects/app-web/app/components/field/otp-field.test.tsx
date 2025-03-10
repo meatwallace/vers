@@ -30,7 +30,13 @@ test('it handles input changes', async () => {
 
   await user.type(screen.getByLabelText('Enter code'), '123456');
 
-  expect(handleChange).toHaveBeenCalled();
+  expect(handleChange).toHaveBeenCalledTimes(6);
+  expect(handleChange).toHaveBeenNthCalledWith(1, '1');
+  expect(handleChange).toHaveBeenNthCalledWith(2, '2');
+  expect(handleChange).toHaveBeenNthCalledWith(3, '3');
+  expect(handleChange).toHaveBeenNthCalledWith(4, '4');
+  expect(handleChange).toHaveBeenNthCalledWith(5, '5');
+  expect(handleChange).toHaveBeenNthCalledWith(6, '6');
 });
 
 test('it displays error messages', () => {

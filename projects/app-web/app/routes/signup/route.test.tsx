@@ -121,5 +121,7 @@ test('it redirects to verify OTP page on successful signup', async () => {
 test('it redirects to the dashboard route when already authenticated', async () => {
   setupTest({ isAuthed: true });
 
-  expect(await screen.findByText('DASHBOARD_ROUTE')).toBeInTheDocument();
+  const dashboardRoute = await screen.findByText('DASHBOARD_ROUTE');
+
+  expect(dashboardRoute).toBeInTheDocument();
 });

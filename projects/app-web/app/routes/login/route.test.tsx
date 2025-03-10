@@ -90,7 +90,9 @@ test('it shows validation errors for an invalid email', async () => {
   await user.type(emailInput, 'invalid-email');
   await user.click(submitButton);
 
-  expect(await screen.findByText('Email is invalid')).toBeInTheDocument();
+  const error = await screen.findByText('Email is invalid');
+
+  expect(error).toBeInTheDocument();
 });
 
 test('it shows validation errors for a short password', async () => {
@@ -102,7 +104,9 @@ test('it shows validation errors for a short password', async () => {
   await user.type(passwordInput, 'short');
   await user.click(submitButton);
 
-  expect(await screen.findByText('Password is too short')).toBeInTheDocument();
+  const error = await screen.findByText('Password is too short');
+
+  expect(error).toBeInTheDocument();
 });
 
 test('it navigates to signup page when clicking the signup link', async () => {
@@ -112,7 +116,9 @@ test('it navigates to signup page when clicking the signup link', async () => {
 
   await user.click(signupLink);
 
-  expect(await screen.findByText('SIGN_UP_ROUTE')).toBeInTheDocument();
+  const signupRoute = await screen.findByText('SIGN_UP_ROUTE');
+
+  expect(signupRoute).toBeInTheDocument();
 });
 
 test('it redirects to dashboard on successful login', async () => {
@@ -131,7 +137,9 @@ test('it redirects to dashboard on successful login', async () => {
   await user.type(passwordInput, 'password123');
   await user.click(submitButton);
 
-  expect(await screen.findByText('DASHBOARD_ROUTE')).toBeInTheDocument();
+  const dashboardRoute = await screen.findByText('DASHBOARD_ROUTE');
+
+  expect(dashboardRoute).toBeInTheDocument();
 });
 
 test('it redirects to the specified route when provided', async () => {
@@ -153,7 +161,9 @@ test('it redirects to the specified route when provided', async () => {
   await user.type(passwordInput, 'password123');
   await user.click(submitButton);
 
-  expect(await screen.findByText('CUSTOM_REDIRECT_ROUTE')).toBeInTheDocument();
+  const redirectRoute = await screen.findByText('CUSTOM_REDIRECT_ROUTE');
+
+  expect(redirectRoute).toBeInTheDocument();
 });
 
 test('it shows error message for invalid credentials', async () => {
@@ -167,13 +177,15 @@ test('it shows error message for invalid credentials', async () => {
   await user.type(passwordInput, 'password123');
   await user.click(submitButton);
 
-  expect(
-    await screen.findByText('No user with that email'),
-  ).toBeInTheDocument();
+  const error = await screen.findByText('No user with that email');
+
+  expect(error).toBeInTheDocument();
 });
 
 test('it redirects to the dashboard route when already authenticated', async () => {
   setupTest({ isAuthed: true });
 
-  expect(await screen.findByText('DASHBOARD_ROUTE')).toBeInTheDocument();
+  const dashboardRoute = await screen.findByText('DASHBOARD_ROUTE');
+
+  expect(dashboardRoute).toBeInTheDocument();
 });

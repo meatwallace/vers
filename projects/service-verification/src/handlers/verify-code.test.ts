@@ -33,7 +33,7 @@ test('it verifies a valid code', async () => {
     type: 'onboarding',
   });
 
-  expect(verifyResult).toMatchObject({
+  expect(verifyResult).toStrictEqual({
     id: expect.any(String),
     target: 'test@example.com',
     type: 'onboarding',
@@ -121,7 +121,7 @@ test('it does not delete a 2FA setup verification', async () => {
     type: '2fa-setup',
   });
 
-  expect(verifyResult).toMatchObject({
+  expect(verifyResult).toStrictEqual({
     id: createResult.id,
     target: 'test@example.com',
     type: '2fa-setup',
@@ -131,7 +131,7 @@ test('it does not delete a 2FA setup verification', async () => {
     where: eq(schema.verifications.id, createResult.id),
   });
 
-  expect(verification).not.toBeUndefined();
+  expect(verification).toBeDefined();
 
   await teardown();
 });
@@ -150,7 +150,7 @@ test('it does not delete a 2FA verification', async () => {
     type: '2fa',
   });
 
-  expect(verifyResult).toMatchObject({
+  expect(verifyResult).toStrictEqual({
     id: createResult.id,
     target: 'test@example.com',
     type: '2fa',
@@ -160,7 +160,7 @@ test('it does not delete a 2FA verification', async () => {
     where: eq(schema.verifications.id, createResult.id),
   });
 
-  expect(verification).not.toBeUndefined();
+  expect(verification).toBeDefined();
 
   await teardown();
 });

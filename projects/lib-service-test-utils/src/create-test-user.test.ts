@@ -14,12 +14,14 @@ test('it creates a test user with the expected data', async () => {
 
   const user = await createTestUser({ db });
 
-  expect(user).toMatchObject({
+  expect(user).toStrictEqual({
     createdAt: expect.any(Date),
     email: 'user@test.com',
     id: expect.any(String),
     name: 'Test User',
     passwordHash: expect.any(String),
+    passwordResetToken: null,
+    passwordResetTokenExpiresAt: null,
     updatedAt: expect.any(Date),
     username: 'test_user',
   });

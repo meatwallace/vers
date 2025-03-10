@@ -1,3 +1,4 @@
+import path from 'node:path';
 import { createId } from '@paralleldrive/cuid2';
 import {
   PostgreSqlContainer,
@@ -6,7 +7,6 @@ import {
 import * as schema from '@vers/postgres-schema';
 import { drizzle, PostgresJsDatabase } from 'drizzle-orm/postgres-js';
 import { migrate } from 'drizzle-orm/postgres-js/migrator';
-import path from 'node:path';
 import postgres, { Sql } from 'postgres';
 
 const TEST_TEMPLATE_DB = 'test_template';

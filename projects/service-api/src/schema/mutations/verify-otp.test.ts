@@ -46,7 +46,7 @@ test('it verifies a valid onboarding otp and returns a valid transaction token',
 
   const result = await resolve({}, args, ctx);
 
-  expect(result).toMatchObject({
+  expect(result).toStrictEqual({
     transactionToken: expect.any(String),
   });
 
@@ -61,7 +61,15 @@ test('it verifies a valid onboarding otp and returns a valid transaction token',
     ctx,
   );
 
-  expect(isValid).toMatchObject({
+  expect(isValid).toStrictEqual({
+    action: VerificationType.ONBOARDING,
+    amr: ['otp'],
+    auth_time: expect.any(Number),
+    ip_address: ctx.ipAddress,
+    jti: expect.any(String),
+    mfa_verified: true,
+    session_id: null,
+    sub: 'test@example.com',
     transaction_id: transactionID,
   });
 });
@@ -101,7 +109,7 @@ test('it verifies a valid change email otp and returns a valid transaction token
 
   const result = await resolve({}, args, ctx);
 
-  expect(result).toMatchObject({
+  expect(result).toStrictEqual({
     transactionToken: expect.any(String),
   });
 
@@ -116,7 +124,15 @@ test('it verifies a valid change email otp and returns a valid transaction token
     ctx,
   );
 
-  expect(isValid).toMatchObject({
+  expect(isValid).toStrictEqual({
+    action: VerificationType.CHANGE_EMAIL,
+    amr: ['otp'],
+    auth_time: expect.any(Number),
+    ip_address: ctx.ipAddress,
+    jti: expect.any(String),
+    mfa_verified: true,
+    session_id: session.id,
+    sub: 'test@example.com',
     transaction_id: transactionID,
   });
 });
@@ -156,7 +172,7 @@ test('it verifies a valid change password otp and returns a valid transaction to
 
   const result = await resolve({}, args, ctx);
 
-  expect(result).toMatchObject({
+  expect(result).toStrictEqual({
     transactionToken: expect.any(String),
   });
 
@@ -171,7 +187,15 @@ test('it verifies a valid change password otp and returns a valid transaction to
     ctx,
   );
 
-  expect(isValid).toMatchObject({
+  expect(isValid).toStrictEqual({
+    action: VerificationType.CHANGE_PASSWORD,
+    amr: ['otp'],
+    auth_time: expect.any(Number),
+    ip_address: ctx.ipAddress,
+    jti: expect.any(String),
+    mfa_verified: true,
+    session_id: session.id,
+    sub: 'test@example.com',
     transaction_id: transactionID,
   });
 });
@@ -208,7 +232,7 @@ test('it verifies a valid reset password otp and returns a valid transaction tok
 
   const result = await resolve({}, args, ctx);
 
-  expect(result).toMatchObject({
+  expect(result).toStrictEqual({
     transactionToken: expect.any(String),
   });
 
@@ -223,7 +247,15 @@ test('it verifies a valid reset password otp and returns a valid transaction tok
     ctx,
   );
 
-  expect(isValid).toMatchObject({
+  expect(isValid).toStrictEqual({
+    action: VerificationType.RESET_PASSWORD,
+    amr: ['otp'],
+    auth_time: expect.any(Number),
+    ip_address: ctx.ipAddress,
+    jti: expect.any(String),
+    mfa_verified: true,
+    session_id: null,
+    sub: 'test@example.com',
     transaction_id: transactionID,
   });
 });
@@ -260,7 +292,7 @@ test('it verifies a valid change email confirmation otp and returns a valid tran
 
   const result = await resolve({}, args, ctx);
 
-  expect(result).toMatchObject({
+  expect(result).toStrictEqual({
     transactionToken: expect.any(String),
   });
 
@@ -275,7 +307,15 @@ test('it verifies a valid change email confirmation otp and returns a valid tran
     ctx,
   );
 
-  expect(isValid).toMatchObject({
+  expect(isValid).toStrictEqual({
+    action: VerificationType.CHANGE_EMAIL_CONFIRMATION,
+    amr: ['otp'],
+    auth_time: expect.any(Number),
+    ip_address: ctx.ipAddress,
+    jti: expect.any(String),
+    mfa_verified: true,
+    session_id: null,
+    sub: 'test@example.com',
     transaction_id: transactionID,
   });
 });

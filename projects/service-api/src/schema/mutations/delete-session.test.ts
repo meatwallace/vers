@@ -35,7 +35,7 @@ test('it deletes a session when the user is authenticated', async () => {
 
   const result = await resolve({}, args, ctx);
 
-  expect(result).toMatchObject({
+  expect(result).toStrictEqual({
     success: true,
   });
 

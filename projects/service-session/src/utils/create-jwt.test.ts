@@ -18,11 +18,11 @@ test('it creates a valid JWT with correct claims', async () => {
     issuer: env.API_IDENTIFIER,
   });
 
-  expect(protectedHeader).toMatchObject({
+  expect(protectedHeader).toStrictEqual({
     alg: 'RS256',
   });
 
-  expect(payload).toMatchObject({
+  expect(payload).toStrictEqual({
     aud: env.API_IDENTIFIER,
     exp: Number.parseInt(data.expiresAt.getTime().toString().slice(0, 10)),
     iat: expect.any(Number),
