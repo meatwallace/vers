@@ -1,15 +1,19 @@
 import { generateResetPasswordEmail } from '@vers/email-templates';
-import { GraphQLError } from 'graphql';
+import type { Context } from '~/types.ts';
 import { env } from '~/env.ts';
 import { logger } from '~/logger.ts';
-import { Context } from '~/types.ts';
 import { createPendingTransaction } from '~/utils/create-pending-transaction.ts';
 import { builder } from '../builder.ts';
+import { UNKNOWN_ERROR } from '../errors.ts';
 import { MutationErrorPayload } from '../types/mutation-error-payload.ts';
 import { MutationSuccess } from '../types/mutation-success.ts';
 import { TwoFactorRequiredPayload } from '../types/two-factor-required-payload.ts';
 import { VerificationType } from '../types/verification-type.ts';
 import { createPayloadResolver } from '../utils/create-payload-resolver.ts';
+
+interface Args {
+  input: typeof StartPasswordResetInput.$inferInput;
+}
 
 /**
  * @description Initiates a password reset for a user by sending a verification email
@@ -36,18 +40,13 @@ import { createPayloadResolver } from '../utils/create-payload-resolver.ts';
  * }
  * ```
  */
-
-interface Args {
-  input: typeof StartPasswordResetInput.$inferInput;
-}
-
 export async function startPasswordReset(
   _: object,
   args: Args,
   ctx: Context,
 ): Promise<typeof StartPasswordResetPayload.$inferType> {
   try {
-    const user = await ctx.services.user.getUser({
+    const user = await ctx.services.user.getUser.query({
       email: args.input.email,
     });
 
@@ -56,12 +55,13 @@ export async function startPasswordReset(
       return { success: true };
     }
 
-    const resetToken = await ctx.services.user.createPasswordResetToken({
-      id: user.id,
-    });
+    const { resetToken } =
+      await ctx.services.user.createPasswordResetToken.mutate({
+        id: user.id,
+      });
 
     const twoFactorVerification =
-      await ctx.services.verification.getVerification({
+      await ctx.services.verification.getVerification.query({
         target: args.input.email,
         type: '2fa',
       });
@@ -102,7 +102,7 @@ export async function startPasswordReset(
       resetURL: resetURL.toString(),
     });
 
-    await ctx.services.email.sendEmail({
+    await ctx.services.email.sendEmail.mutate({
       html,
       plainText,
       subject: 'Reset Your Password',
@@ -127,11 +127,7 @@ export async function startPasswordReset(
       logger.error(error.message);
     }
 
-    throw new GraphQLError('An unknown error occurred', {
-      extensions: {
-        code: 'INTERNAL_SERVER_ERROR',
-      },
-    });
+    return { error: UNKNOWN_ERROR };
   }
 }
 

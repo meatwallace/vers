@@ -1,6 +1,7 @@
 ---
 description: HTTP Services Testing Standards
 globs: "projects/service-*/src/handlers/*.test.ts"
+alwaysApply: false
 ---
 
 # Service Testing Standards
@@ -21,36 +22,18 @@ actions:
 
       1. Test Setup:
          - Create reusable `setupTest` function per handler
-         - Return Hono `app`, dependencies, and teardown function
+         - Return trpc `caller`, dependencies, and teardown function
          - Use type-safe test utilities
-         - Create test data in setup when needed
          - Clean up after each test with teardown
          - Reset mocks in `afterEach`
 
       2. Handler Testing:
          - Test happy path with full data
          - Test partial updates where applicable
-         - Verify both response and persisted data
+         - Verify both result and persisted data
          - Test validation and constraints
          - Check error responses
          - Verify timestamps and audit fields
-         - Test authorization rules
-
-      3. Database Integration:
-         - Use isolated test databases
-         - Clean up data between tests
-         - Use proper database transactions
-         - Test database constraints
-         - Verify data persistence
-         - Check data relationships
-
-      4. Response Standards:
-         - Type response data explicitly
-         - Verify success/error shape
-         - Check HTTP status codes
-         - Test response body structure
-         - Validate error messages
-         - Ensure consistent formats
 
 examples:
   - input: |
@@ -58,63 +41,50 @@ examples:
       // Bad - poor test structure and setup
       test('create user works', async () => {
         const db = getDB();
-        const app = new Hono();
-        app.post('/create', handler);
-        
-        const res = await app.request('/create', {
-          body: JSON.stringify({ email: 'test@test.com' })
-        });
 
-        expect(res.status).toBe(200);
+        const res = handle({ email: 'test@test.com' }, db);
+
+        expect(res).toBe({ success: true });
       });
 
       // Good - proper service handler testing
       import { Hono } from 'hono';
       import { PostgresTestUtils } from '@vers/service-test-utils';
-      import { createUser } from './create-user';
       import { pgTestConfig } from '../pg-test-config';
+      import { router } from '../router';
+      import { t } from '../t';
+
+      const createCaller = t.createCallerFactory(router);
 
       async function setupTest() {
-        const app = new Hono();
-
         // Good - create a test DB
         const { db, teardown } = await PostgresTestUtils.createTestDB(pgTestConfig);
 
-        app.post('/create-user', async (ctx) => createUser(ctx, db));
+        const caller = createCaller({ db });
 
-        return { app, db, teardown };
+        return { caller, db, teardown };
       }
 
       test('it creates a user with a hashed password', async () => {
-        const { app, db, teardown } = await setupTest();
+        const { caller, db, teardown } = await setupTest();
 
         const password = 'password123';
 
-        const req = new Request('http://localhost/create-user', {
-          method: 'POST',
-          body: JSON.stringify({
-            email: 'user@test.com',
-            name: 'Test User',
-            username: 'test_user',
-            password,
-          }),
+        const result = await caller.createUser({
+          email: 'user@test.com',
+          name: 'Test User',
+          username: 'test_user',
+          password,
         });
 
-        const res = await app.request(req);
-        const body = await res.json();
-
         // Good - verify the response data
-        expect(res.status).toBe(200);
-        expect(body).toMatchObject({
-          success: true,
-          data: {
-            id: expect.any(String),
-            email: 'user@test.com',
-            name: 'Test User',
-            username: 'test_user',
-            createdAt: expect.any(String),
-            updatedAt: expect.any(String),
-          },
+        expect(result).toMatchObject({
+          id: expect.any(String),
+          email: 'user@test.com',
+          name: 'Test User',
+          username: 'test_user',
+          createdAt: expect.any(String),
+          updatedAt: expect.any(String),
         });
 
         // Good - verify any persisted data is created, changed, or deleted
@@ -132,60 +102,25 @@ examples:
 
       // Good - test error cases
       test('it returns an error if a user with that email already exists', async () => {
-        const { app, teardown } = await setupTest();
+        const { caller, teardown } = await setupTest();
 
         // create an initial user
-        const req1 = new Request('http://localhost/create-user', {
-          method: 'POST',
-          body: JSON.stringify({
-            email: 'user@test.com',
-            name: 'Test User',
-            username: 'test_user',
-            password: 'password123',
-          }),
+        await caller.createUser({
+          email: 'user@test.com',
+          name: 'Test User',
+          username: 'test_user',
+          password: 'password123',
         });
-
-        await app.request(req1);
 
         // try to create another user with the same email
-        const req2 = new Request('http://localhost/create-user', {
-          method: 'POST',
-          body: JSON.stringify({
-            email: 'user@test.com',
-            name: 'Another User',
-            username: 'another_user',
-            password: 'password456',
-          }),
-        });
-
-        const res = await app.request(req2);
-        const body = await res.json();
-
-        expect(res.status).toBe(200);
-        expect(body).toMatchObject({
-          success: false,
-          error: 'A user with that email already exists',
-        });
-
-        await teardown();
-      });
-
-      // Good - test total failures
-      test('it handles invalid request body', async () => {
-        const { app, teardown } = await setupTest();
-
-        const req = new Request('http://localhost/create-user', {
-          method: 'POST',
-          body: 'invalid json',
-        });
-
-        const res = await app.request(req);
-        const body = await res.json();
-
-        expect(res.status).toBe(200);
-        expect(body).toMatchObject({
-          success: false,
-          error: 'An unknown error occurred',
+        await expect(caller.createUser({
+          email: 'user@test.com',
+          name: 'Another User',
+          username: 'another_user',
+          password: 'password456',
+        })).rejects.toMatchObject({
+          code: 'CONFLICT',
+          message: 'User already exists with the provided email',
         });
 
         await teardown();

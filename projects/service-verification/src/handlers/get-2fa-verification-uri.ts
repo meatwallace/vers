@@ -1,36 +1,37 @@
+import type { Get2FAVerificationURIPayload } from '@vers/service-types';
 import { getTOTPAuthUri } from '@epic-web/totp';
+import { TRPCError } from '@trpc/server';
 import * as schema from '@vers/postgres-schema';
-import {
-  Get2FAVerificationURIRequest,
-  Get2FAVerificationURIResponse,
-} from '@vers/service-types';
 import { and, eq } from 'drizzle-orm';
-import { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
-import { Context } from 'hono';
+import { z } from 'zod';
+import type { Context } from '../types';
+import { t } from '../t';
+
+export const Get2FAVerificationURIInputSchema = z.object({
+  target: z.string(),
+});
 
 export async function get2FAVerificationURI(
+  input: z.infer<typeof Get2FAVerificationURIInputSchema>,
   ctx: Context,
-  db: PostgresJsDatabase<typeof schema>,
-) {
+): Promise<Get2FAVerificationURIPayload> {
   try {
-    const { target } = await ctx.req.json<Get2FAVerificationURIRequest>();
-
-    const verification = await db.query.verifications.findFirst({
+    const verification = await ctx.db.query.verifications.findFirst({
       where: and(
         eq(schema.verifications.type, '2fa-setup'),
-        eq(schema.verifications.target, target),
+        eq(schema.verifications.target, input.target),
       ),
     });
 
     if (!verification) {
-      return ctx.json({
-        error: 'No 2FA verification found for this target',
-        success: false,
+      throw new TRPCError({
+        code: 'BAD_REQUEST',
+        message: 'No 2FA verification found for this target',
       });
     }
 
     const otpURI = getTOTPAuthUri({
-      accountName: target,
+      accountName: input.target,
       algorithm: verification.algorithm,
       digits: verification.digits,
       issuer: 'vers',
@@ -38,25 +39,21 @@ export async function get2FAVerificationURI(
       secret: verification.secret,
     });
 
-    const response: Get2FAVerificationURIResponse = {
-      data: {
-        otpURI,
-      },
-      success: true,
-    };
-
-    return ctx.json(response);
+    return { otpURI };
   } catch (error: unknown) {
     // TODO(#16): capture via Sentry
-    if (error instanceof Error) {
-      const response = {
-        error: 'An unknown error occurred',
-        success: false,
-      };
-
-      return ctx.json(response);
+    if (error instanceof TRPCError) {
+      throw error;
     }
 
-    throw error;
+    throw new TRPCError({
+      cause: error,
+      code: 'INTERNAL_SERVER_ERROR',
+      message: 'An unknown error occurred',
+    });
   }
 }
+
+export const procedure = t.procedure
+  .input(Get2FAVerificationURIInputSchema)
+  .query(async ({ ctx, input }) => get2FAVerificationURI(input, ctx));

@@ -1,7 +1,8 @@
+import type { Context } from '~/types';
 import { logger } from '~/logger';
-import { Context } from '~/types';
 import { verifyTransactionToken } from '~/utils/verify-transaction-token';
 import { builder } from '../builder';
+import { UNKNOWN_ERROR } from '../errors';
 import { AuthPayload } from '../types/auth-payload';
 import { MutationErrorPayload } from '../types/mutation-error-payload';
 import { VerificationType } from '../types/verification-type';
@@ -10,11 +11,6 @@ import { createPayloadResolver } from '../utils/create-payload-resolver';
 interface Args {
   input: typeof FinishEmailSignupInput.$inferInput;
 }
-
-const AMBIGUOUS_UNKNOWN_ERROR = {
-  message: 'An unknown error occurred',
-  title: 'An unknown error occurred',
-};
 
 const AMBIGUOUS_FAILED_VERIFICATION_ERROR = {
   message: 'Verification for this operation is invalid or has expired.',
@@ -40,39 +36,35 @@ export async function finishEmailSignup(
       return { error: AMBIGUOUS_FAILED_VERIFICATION_ERROR };
     }
 
-    const existingUser = await ctx.services.user.getUser({
+    const existingUser = await ctx.services.user.getUser.query({
       email: args.input.email,
     });
 
     if (existingUser) {
-      return { error: AMBIGUOUS_UNKNOWN_ERROR };
+      return { error: UNKNOWN_ERROR };
     }
 
-    const user = await ctx.services.user.createUser({
+    const user = await ctx.services.user.createUser.mutate({
       email: args.input.email,
       name: args.input.name,
       password: args.input.password,
       username: args.input.username,
     });
 
-    const authPayload = await ctx.services.session.createSession({
+    const authPayload = await ctx.services.session.createSession.mutate({
       ipAddress: ctx.ipAddress,
       rememberMe: args.input.rememberMe,
       userID: user.id,
     });
 
-    const tokens = await ctx.services.session.refreshTokens({
-      refreshToken: authPayload.refreshToken,
-    });
-
-    return tokens;
+    return authPayload;
   } catch (error: unknown) {
     // TODO(#16): capture via Sentry
     if (error instanceof Error) {
       logger.error(error.message);
     }
 
-    return { error: AMBIGUOUS_UNKNOWN_ERROR };
+    return { error: UNKNOWN_ERROR };
   }
 }
 

@@ -1,5 +1,7 @@
+import { GraphQLError } from 'graphql';
 import invariant from 'tiny-invariant';
-import { Context } from '~/types';
+import type { Context } from '~/types';
+import { logger } from '~/logger';
 import { builder } from '../builder';
 import { Session } from '../types/session';
 import { requireAuth } from '../utils/require-auth';
@@ -17,16 +19,23 @@ export async function getSessions(
 ): Promise<Array<typeof Session.$inferType>> {
   invariant(ctx.user, 'user is required in an authed resolver');
 
-  // eslint-disable-next-line no-useless-catch
   try {
-    const sessions = await ctx.services.session.getSessions({
+    const sessions = await ctx.services.session.getSessions.query({
       userID: ctx.user.id,
     });
 
     return sessions;
   } catch (error: unknown) {
     // TODO(#16): capture via Sentry
-    throw error;
+    if (error instanceof Error) {
+      logger.error(error.message);
+    }
+
+    throw new GraphQLError('An unknown error occurred', {
+      extensions: {
+        code: 'INTERNAL_SERVER_ERROR',
+      },
+    });
   }
 }
 

@@ -1,9 +1,9 @@
-import { GraphQLError } from 'graphql';
+import type { Context } from '~/types';
 import { logger } from '~/logger';
-import { Context } from '~/types';
 import { createTransactionToken } from '~/utils/create-transaction-token';
 import { trackTransactionAttempt } from '~/utils/track-transaction-attempt';
 import { builder } from '../builder';
+import { UNKNOWN_ERROR } from '../errors';
 import { MutationErrorPayload } from '../types/mutation-error-payload';
 import { TwoFactorSuccessPayload } from '../types/two-factor-success-payload';
 import { VerificationType } from '../types/verification-type';
@@ -22,7 +22,7 @@ export async function verifyOTP(
   try {
     trackTransactionAttempt(args.input.transactionID);
 
-    const verification = await ctx.services.verification.verifyCode({
+    const verification = await ctx.services.verification.verifyCode.mutate({
       code: args.input.code,
       target: args.input.target,
       type: resolveVerificationType(args.input.type),
@@ -52,11 +52,7 @@ export async function verifyOTP(
       logger.error(error.message);
     }
 
-    throw new GraphQLError('An unknown error occurred', {
-      extensions: {
-        code: 'INTERNAL_SERVER_ERROR',
-      },
-    });
+    return { error: UNKNOWN_ERROR };
   }
 }
 

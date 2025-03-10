@@ -2,74 +2,48 @@ import { expect, test } from 'vitest';
 import { createId } from '@paralleldrive/cuid2';
 import * as schema from '@vers/postgres-schema';
 import { PostgresTestUtils } from '@vers/service-test-utils';
-import { CreateVerificationResponse } from '@vers/service-types';
 import { eq } from 'drizzle-orm';
-import { Hono } from 'hono';
 import invariant from 'tiny-invariant';
 import { pgTestConfig } from '../pg-test-config';
-import { createVerification } from './create-verification';
-import { verifyCode } from './verify-code';
+import { router } from '../router';
+import { t } from '../t';
+
+const createCaller = t.createCallerFactory(router);
 
 async function setupTest() {
-  const app = new Hono();
-
   const { db, teardown } = await PostgresTestUtils.createTestDB(pgTestConfig);
 
-  app.post('/verify-code', async (ctx) => verifyCode(ctx, db));
-  app.post('/create-verification', async (ctx) => createVerification(ctx, db));
+  const caller = createCaller({ db });
 
-  return { app, db, teardown };
+  return { caller, db, teardown };
 }
 
 test('it verifies a valid code', async () => {
-  const { app, db, teardown } = await setupTest();
+  const { caller, db, teardown } = await setupTest();
 
-  const createReq = new Request('http://localhost/create-verification', {
-    body: JSON.stringify({
-      period: 300,
-      target: 'test@example.com',
-      type: 'onboarding',
-    }),
-    method: 'POST',
+  const createResult = await caller.createVerification({
+    period: 300,
+    target: 'test@example.com',
+    type: 'onboarding',
   });
 
-  const createRes = await app.request(createReq);
-  const createBody = (await createRes.json()) as CreateVerificationResponse;
-
-  invariant(createBody.success);
-
-  const verifyReq = new Request('http://localhost/verify-code', {
-    body: JSON.stringify({
-      code: createBody.data.otp,
-      target: 'test@example.com',
-      type: 'onboarding',
-    }),
-    method: 'POST',
+  const verifyResult = await caller.verifyCode({
+    code: createResult.otp,
+    target: 'test@example.com',
+    type: 'onboarding',
   });
 
-  const verifyRes = await app.request(verifyReq);
-  const verifyBody = (await verifyRes.json()) as {
-    data: {
-      id: string;
-      target: string;
-      type: string;
-    };
-    success: boolean;
-  };
-
-  expect(verifyRes.status).toBe(200);
-  expect(verifyBody).toMatchObject({
-    data: {
-      id: expect.any(String),
-      target: 'test@example.com',
-      type: 'onboarding',
-    },
-    success: true,
+  expect(verifyResult).toMatchObject({
+    id: expect.any(String),
+    target: 'test@example.com',
+    type: 'onboarding',
   });
+
+  invariant(verifyResult);
 
   // verify the record was deleted
   const verifications = await db.query.verifications.findMany({
-    where: eq(schema.verifications.id, verifyBody.data.id),
+    where: eq(schema.verifications.id, verifyResult.id),
   });
 
   expect(verifications).toHaveLength(0);
@@ -77,32 +51,25 @@ test('it verifies a valid code', async () => {
   await teardown();
 });
 
-test('it handles invalid code', async () => {
-  const { app, teardown } = await setupTest();
+test('it rejects invalid code', async () => {
+  const { caller, teardown } = await setupTest();
 
-  const req = new Request('http://localhost/verify-code', {
-    body: JSON.stringify({
+  await expect(
+    caller.verifyCode({
       code: 'INVALID',
       target: 'test@example.com',
       type: 'onboarding',
     }),
-    method: 'POST',
-  });
-
-  const res = await app.request(req);
-  const body = await res.json();
-
-  expect(res.status).toBe(200);
-  expect(body).toMatchObject({
-    error: 'Invalid verification code',
-    success: false,
+  ).rejects.toMatchObject({
+    code: 'BAD_REQUEST',
+    message: 'Invalid verification code',
   });
 
   await teardown();
 });
 
-test('it handles expired codes', async () => {
-  const { app, db, teardown } = await setupTest();
+test('it rejects expired codes', async () => {
+  const { caller, db, teardown } = await setupTest();
 
   const verification = {
     algorithm: 'sha1',
@@ -119,22 +86,15 @@ test('it handles expired codes', async () => {
 
   await db.insert(schema.verifications).values(verification);
 
-  const req = new Request('http://localhost/verify-code', {
-    body: JSON.stringify({
+  await expect(
+    caller.verifyCode({
       code: verification.secret,
       target: 'test@example.com',
       type: 'onboarding',
     }),
-    method: 'POST',
-  });
-
-  const res = await app.request(req);
-  const body = await res.json();
-
-  expect(res.status).toBe(200);
-  expect(body).toMatchObject({
-    error: 'Verification code has expired',
-    success: false,
+  ).rejects.toMatchObject({
+    code: 'BAD_REQUEST',
+    message: 'Verification code has expired',
   });
 
   // verify the record was deleted
@@ -147,106 +107,60 @@ test('it handles expired codes', async () => {
   await teardown();
 });
 
+test('it does not delete a 2FA setup verification', async () => {
+  const { caller, db, teardown } = await setupTest();
+
+  const createResult = await caller.createVerification({
+    target: 'test@example.com',
+    type: '2fa-setup',
+  });
+
+  const verifyResult = await caller.verifyCode({
+    code: createResult.otp,
+    target: 'test@example.com',
+    type: '2fa-setup',
+  });
+
+  expect(verifyResult).toMatchObject({
+    id: createResult.id,
+    target: 'test@example.com',
+    type: '2fa-setup',
+  });
+
+  const verification = await db.query.verifications.findFirst({
+    where: eq(schema.verifications.id, createResult.id),
+  });
+
+  expect(verification).not.toBeUndefined();
+
+  await teardown();
+});
+
 test('it does not delete a 2FA verification', async () => {
-  const { app, db, teardown } = await setupTest();
+  const { caller, db, teardown } = await setupTest();
 
-  const createReq = new Request('http://localhost/create-verification', {
-    body: JSON.stringify({
-      target: 'test@example.com',
-      type: '2fa-setup',
-    }),
-    method: 'POST',
+  const createResult = await caller.createVerification({
+    target: 'test@example.com',
+    type: '2fa',
   });
 
-  const createRes = await app.request(createReq);
-  const createBody = (await createRes.json()) as CreateVerificationResponse;
-
-  invariant(createBody.success);
-
-  const req = new Request('http://localhost/verify-code', {
-    body: JSON.stringify({
-      code: createBody.data.otp,
-      target: 'test@example.com',
-      type: '2fa-setup',
-    }),
-    method: 'POST',
+  const verifyResult = await caller.verifyCode({
+    code: createResult.otp,
+    target: 'test@example.com',
+    type: '2fa',
   });
 
-  const res = await app.request(req);
-  const body = await res.json();
-
-  expect(res.status).toBe(200);
-  expect(body).toMatchObject({
-    success: true,
+  expect(verifyResult).toMatchObject({
+    id: createResult.id,
+    target: 'test@example.com',
+    type: '2fa',
   });
 
   const verification = await db.query.verifications.findFirst({
-    where: eq(schema.verifications.id, createBody.data.id),
+    where: eq(schema.verifications.id, createResult.id),
   });
 
   expect(verification).not.toBeUndefined();
-
-  await teardown();
-});
-
-test('it does not delete a 2FA disable verification', async () => {
-  const { app, db, teardown } = await setupTest();
-
-  const createReq = new Request('http://localhost/create-verification', {
-    body: JSON.stringify({
-      target: 'test@example.com',
-      type: '2fa',
-    }),
-    method: 'POST',
-  });
-
-  const createRes = await app.request(createReq);
-  const createBody = (await createRes.json()) as CreateVerificationResponse;
-
-  invariant(createBody.success);
-
-  const req = new Request('http://localhost/verify-code', {
-    body: JSON.stringify({
-      code: createBody.data.otp,
-      target: 'test@example.com',
-      type: '2fa',
-    }),
-    method: 'POST',
-  });
-
-  const res = await app.request(req);
-  const body = await res.json();
-
-  expect(res.status).toBe(200);
-  expect(body).toMatchObject({
-    success: true,
-  });
-
-  const verification = await db.query.verifications.findFirst({
-    where: eq(schema.verifications.id, createBody.data.id),
-  });
-
-  expect(verification).not.toBeUndefined();
-
-  await teardown();
-});
-
-test('handles an invalid request body', async () => {
-  const { app, teardown } = await setupTest();
-
-  const req = new Request('http://localhost/verify-code', {
-    body: 'invalid json',
-    method: 'POST',
-  });
-
-  const res = await app.request(req);
-  const body = await res.json();
-
-  expect(res.status).toBe(200);
-  expect(body).toMatchObject({
-    error: 'An unknown error occurred',
-    success: false,
-  });
 
   await teardown();
 });

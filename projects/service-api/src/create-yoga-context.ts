@@ -1,13 +1,14 @@
+import type { ServiceRouter as EmailServiceRouter } from '@vers/service-email';
+import type { ServiceRouter as SessionServiceRouter } from '@vers/service-session';
+import type { ServiceRouter as UserServiceRouter } from '@vers/service-user';
+import type { ServiceRouter as VerificationServiceRouter } from '@vers/service-verification';
+import type { YogaInitialContext } from 'graphql-yoga';
+import type { Context as HonoContext } from 'hono';
 import { ServiceID } from '@vers/service-types';
 import { getTokenFromHeader } from '@vers/service-utils';
-import { YogaInitialContext } from 'graphql-yoga';
-import { Context as HonoContext } from 'hono';
-import { createEmailService } from '~/services/email-service/create-email-service';
-import { createSessionService } from '~/services/session-service/create-session-service';
-import { createUserService } from '~/services/user-service/create-user-service';
-import { createVerificationService } from '~/services/verification-service/create-verification-service';
+import type { AuthedContext, Context, UnverifiedAuthContext } from './types';
 import { env } from './env';
-import { AuthedContext, Context, UnverifiedAuthContext } from './types';
+import { createTRPCClient } from './utils/create-trpc-client';
 
 export async function createYogaContext(
   yogaCtx: YogaInitialContext,
@@ -17,28 +18,28 @@ export async function createYogaContext(
   const authHeader = yogaCtx.request.headers.get('authorization');
   const accessToken = getTokenFromHeader(authHeader);
 
-  const emailService = createEmailService({
+  const email = createTRPCClient<EmailServiceRouter>({
     accessToken,
     apiURL: env.EMAILS_SERVICE_URL,
     requestID,
     serviceID: ServiceID.ServiceEmail,
   });
 
-  const userService = createUserService({
+  const user = createTRPCClient<UserServiceRouter>({
     accessToken,
     apiURL: env.USERS_SERVICE_URL,
     requestID,
     serviceID: ServiceID.ServiceUser,
   });
 
-  const sessionService = createSessionService({
+  const session = createTRPCClient<SessionServiceRouter>({
     accessToken,
     apiURL: env.SESSIONS_SERVICE_URL,
     requestID,
     serviceID: ServiceID.ServiceSession,
   });
 
-  const verificationService = createVerificationService({
+  const verification = createTRPCClient<VerificationServiceRouter>({
     accessToken,
     apiURL: env.VERIFICATIONS_SERVICE_URL,
     requestID,
@@ -52,24 +53,24 @@ export async function createYogaContext(
     ipAddress: honoCtx.get('ipAddress'),
     request: yogaCtx.request,
     services: {
-      email: emailService,
-      session: sessionService,
-      user: userService,
-      verification: verificationService,
+      email,
+      session,
+      user,
+      verification,
     },
   };
 
   // if we're missing a user ID, attempt to return an unverified auth context
   if (sessionID && !userID) {
-    const session = await sessionService.getSession({ id: sessionID });
+    const activeSession = await session.getSession.query({ id: sessionID });
 
-    if (!session) {
+    if (!activeSession) {
       throw new Error('Invalid request');
     }
 
     const unverifiedAuthContext: UnverifiedAuthContext = {
       ...sharedContext,
-      session,
+      session: activeSession,
       user: null,
     };
 
@@ -78,17 +79,17 @@ export async function createYogaContext(
 
   // if we have both userID and sessionID, attempt to return an authed context
   if (sessionID && userID) {
-    const session = await sessionService.getSession({ id: sessionID });
-    const user = await userService.getUser({ id: userID });
+    const activeSession = await session.getSession.query({ id: sessionID });
+    const activeUser = await user.getUser.query({ id: userID });
 
-    if (!user || !session) {
+    if (!activeUser || !activeSession) {
       throw new Error('Invalid request');
     }
 
     const authedContext: AuthedContext = {
       ...sharedContext,
-      session,
-      user,
+      session: activeSession,
+      user: activeUser,
     };
 
     return authedContext;

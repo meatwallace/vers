@@ -1,13 +1,13 @@
-import { afterEach, expect, test } from 'vitest';
+import { afterEach, expect, test, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { createRoutesStub, LoaderFunctionArgs } from 'react-router';
 import { drop } from '@mswjs/data';
-import { GraphQLClient } from 'graphql-request';
 import invariant from 'tiny-invariant';
 import { db } from '~/mocks/db.ts';
 import { authSessionStorage } from '~/session/auth-session-storage.server.ts';
 import { withAuthedUser } from '~/test-utils/with-authed-user.ts';
 import { Routes } from '~/types.ts';
+import { createGQLClient } from './create-gql-client.server.ts';
 import { logout } from './logout.server.ts';
 
 interface TestConfig {
@@ -33,7 +33,8 @@ vi.stubGlobal(
 );
 
 function setupTest(config: TestConfig = {}) {
-  const client = new GraphQLClient('http://localhost:3000/graphql');
+  const client = createGQLClient();
+
   const loader = async ({ request }: LoaderFunctionArgs) => {
     await logout(request, {
       client,
@@ -44,6 +45,7 @@ function setupTest(config: TestConfig = {}) {
   const TestRoutesStub = createRoutesStub([
     {
       Component: () => 'LOGOUT_ROUTE',
+      // @ts-expect-error(#35) - react router test types are out of date
       loader: withAuthedUser(loader, {
         sessionID: config.sessionID,
         user: { id: config.userID },

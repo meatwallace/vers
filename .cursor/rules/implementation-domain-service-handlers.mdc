@@ -1,6 +1,7 @@
 ---
 description: Domain Service Handler Implementation Standards
 globs: "**/service-*/src/handlers/**/*.ts"
+alwaysApply: false
 ---
 
 # Domain Service Handler Standards
@@ -25,24 +26,18 @@ actions:
          - Place handlers in `src/handlers/` directory
          - Use kebab-case for filenames matching the operation (e.g. `create-user.ts`)
          - Co-locate test files with handlers (e.g. `create-user.test.ts`)
-         - Export handlers from `index.ts`
-         - Group related handlers by domain concept
 
       2. Handler Structure:
+         - Export `zod` schema used for validation
          - Export async functions with consistent naming
-         - Accept `Context` and `PostgresJsDatabase` parameters
-         - Use type-safe request/response types from `@vers/service-types`
+         - Use type-safe payload types from `@vers/service-types`
          - Follow consistent error handling patterns
-         - Return JSON responses via `ctx.json()`
-         - Use proper HTTP status codes
          - Document complex logic with comments
 
       3. Type Safety:
          - Import types from shared packages
          - Use database types from schema
-         - Define explicit request/response types
-         - Properly type error handling
-         - Use type inference where possible
+         - Infer input arg type from `zod` schema
          - Never use `any` or `unknown` without constraints
 
       4. Database Operations:
@@ -56,16 +51,10 @@ actions:
       5. Error Handling:
          - Catch and handle known errors explicitly
          - Return standardized error responses
-         - Use consistent error message format
          - Include proper error details
          - Log errors appropriately
-         - Throw unknown errors
 
-      6. Response Format:
-         - Use consistent success/error shape
-         - Include `success` boolean flag
-         - Return data on success
-         - Return error message on failure
+      6. Payload Format:
          - Omit sensitive data from responses
          - Format dates consistently
 
@@ -73,34 +62,41 @@ examples:
   - input: |
       ```ts
       // Bad - inconsistent parameters, missing types
-      export async function createThing(ctx) {
-        const data = await ctx.req.json();
-        return ctx.json({ ok: true });
+      export async function createThing(input) {
+        const { thing } = input;
+        return { data: thing };
       }
 
       // Bad - poor error handling
-      export async function badHandler(ctx: Context, db: Database) {
+      export async function badHandler(input: z.infer<typeof Schema>, db: Database) {
         try {
           // ...
         } catch (e) {
-          return ctx.json({ error: e.message });
+          throw new Error('Unhandled!');
         }
       }
 
       // Good - proper handler implementation
-      import { Context } from 'hono';
+      import { z } from 'zod';
       import * as schema from '@vers/postgres-schema';
-      import { CreateUserRequest, CreateUserResponse } from '@vers/service-types';
+      import { CreateUserPayload } from '@vers/service-types';
       import { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
       import { createId } from '@paralleldrive/cuid2';
       import { isUniqueConstraintError } from '@vers/service-utils';
+      import type { Context } from '~/types';
+
+      const CreateUserSchema = z.object({
+        email: z.string(),
+        name: z.string(),
+        username: z.string(),
+      });
 
       export async function createUser(
+        input: z.infer<typeof CreateUserSchema>,
         ctx: Context,
-        db: PostgresJsDatabase<typeof schema>,
       ) {
         try {
-          const { email, name, username } = await ctx.req.json<CreateUserRequest>();
+          const { email, name, username } = input;
 
           const createdAt = new Date();
 
@@ -114,38 +110,37 @@ examples:
             updatedAt: createdAt,
           };
 
-          await db.insert(schema.users).values(user);
+          await ctx.db.insert(schema.users).values(user);
 
-          // Good - enforcing the response data type
-          const response: CreateUserResponse = {
-            success: true,
-            data: {
-              id: user.id,
-              email: user.email,
-              name: user.name,
-              username: user.username,
-              createdAt: user.createdAt,
-              updatedAt: user.updatedAt,
-            },
+          // Good - enforcing the payload data type
+          const payload: CreateUserPayload = {
+            id: user.id,
+            email: user.email,
+            name: user.name,
+            username: user.username,
+            createdAt: user.createdAt,
+            updatedAt: user.updatedAt,
           };
 
-          return ctx.json(response);
+          return payload;
         } catch (error: unknown) {
           // Good - Postgres error handling
           if (error instanceof pg.PostgresError) {
             if (isUniqueConstraintError(error, 'users_email_unique')) {
-              return ctx.json({
-                success: false,
-                error: 'A user with that email already exists',
+              throw new TRPCError({
+                cause: error,
+                code: 'CONFLICT',
+                message: 'A user with that email address already exists',
               });
             }
           }
 
           // Good - generic error handling 
           if (error instanceof Error) {
-            return ctx.json({
-              success: false,
-              error: 'An unknown error occurred',
+            throw new TRPCError({
+              cause: error,
+              code: 'INTERNAL_SERVER_ERROR',
+              message: 'An unknown error occurred',
             });
           }
 

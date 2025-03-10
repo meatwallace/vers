@@ -1,6 +1,7 @@
+import { afterEach, expect, test } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { ActionFunction, createRoutesStub, LoaderFunction } from 'react-router';
+import { createRoutesStub } from 'react-router';
 import { drop } from '@mswjs/data';
 import { db } from '~/mocks/db.ts';
 import { withAuthedUser } from '~/test-utils/with-authed-user.ts';
@@ -19,10 +20,8 @@ interface TestConfig {
 function setupTest(config: TestConfig) {
   const user = userEvent.setup();
 
-  // @ts-expect-error(#35) - react router test types are out of date
-  let _loader: LoaderFunction = loader;
-  // @ts-expect-error(#35) - react router test types are out of date
-  let _action: ActionFunction = action;
+  let _loader = loader;
+  let _action = action;
 
   if (config.isAuthed) {
     _loader = withAuthedUser(_loader);
@@ -51,8 +50,10 @@ function setupTest(config: TestConfig) {
 
   const OnboardingStub = createRoutesStub([
     {
+      // @ts-expect-error(#35) - react router test types are out of date
       action: _action,
       Component: withRouteProps(Onboarding),
+      // @ts-expect-error(#35) - react router test types are out of date
       loader: _loader,
       path: '/',
     },

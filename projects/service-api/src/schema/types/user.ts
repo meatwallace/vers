@@ -1,4 +1,4 @@
-import { UserData } from '~/services/user-service/types';
+import type { UserData } from '@vers/service-types';
 import { builder } from '../builder';
 
 export const User = builder.objectRef<UserData>('User');
@@ -10,10 +10,11 @@ User.implement({
     id: t.exposeID('id'),
     is2FAEnabled: t.boolean({
       resolve: async (user, _, ctx) => {
-        const verification = await ctx.services.verification.getVerification({
-          target: user.email,
-          type: '2fa',
-        });
+        const verification =
+          await ctx.services.verification.getVerification.query({
+            target: user.email,
+            type: '2fa',
+          });
         return !!verification;
       },
     }),

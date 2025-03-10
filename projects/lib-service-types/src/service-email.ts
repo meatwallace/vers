@@ -1,10 +1,8 @@
-import { ServiceResponse } from './service-response';
-
-export interface SendEmailRequest {
+export interface SendEmailArgs {
   html: string;
   plainText: string;
   subject: string;
   to: string;
 }
 
-export type SendEmailResponse = ServiceResponse<Record<string, never>>;
+export type SendEmailPayload = Record<string, never>;

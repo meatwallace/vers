@@ -5,7 +5,6 @@ export const envSchema = z
   .object({
     API_IDENTIFIER: z.string(),
     HOSTNAME: z.string(),
-
     JWT_SIGNING_SECRET: z.string(),
     LOGGING: LoggingSchema,
     NODE_ENV: NodeEnvSchema,

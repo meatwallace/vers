@@ -1,5 +1,7 @@
-import { Context } from '~/types';
+import type { Context } from '~/types';
+import { logger } from '~/logger';
 import { builder } from '../builder';
+import { UNKNOWN_ERROR } from '../errors';
 import { AuthPayload } from '../types/auth-payload';
 import { MutationErrorPayload } from '../types/mutation-error-payload';
 import { createPayloadResolver } from '../utils/create-payload-resolver';
@@ -13,16 +15,19 @@ export async function refreshAccessToken(
   args: Args,
   ctx: Context,
 ): Promise<typeof RefreshAccessTokenPayload.$inferType> {
-  // eslint-disable-next-line no-useless-catch
   try {
-    const payload = await ctx.services.session.refreshTokens({
+    const payload = await ctx.services.session.refreshTokens.mutate({
       refreshToken: args.input.refreshToken,
     });
 
     return payload;
   } catch (error: unknown) {
     // TODO(#16): capture via Sentry
-    throw error;
+    if (error instanceof Error) {
+      logger.error(error.message);
+    }
+
+    return { error: UNKNOWN_ERROR };
   }
 }
 

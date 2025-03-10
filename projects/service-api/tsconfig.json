@@ -12,7 +12,11 @@
       "@vers/postgres-schema": ["../lib-postgres-schema/src/index.ts"],
       "@vers/service-test-utils": ["../lib-service-test-utils/src/index.ts"],
       "@vers/service-types": ["../lib-service-types/src/index.ts"],
-      "@vers/service-utils": ["../lib-service-utils/src/index.ts"]
+      "@vers/service-utils": ["../lib-service-utils/src/index.ts"],
+      "@vers/service-email": ["../service-email/src/index.ts"],
+      "@vers/service-user": ["../service-user/src/index.ts"],
+      "@vers/service-session": ["../service-session/src/index.ts"],
+      "@vers/service-verification": ["../service-verification/src/index.ts"]
     }
   },
   "references": [

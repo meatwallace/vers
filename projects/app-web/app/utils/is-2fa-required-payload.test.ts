@@ -1,3 +1,4 @@
+import { expect, test } from 'vitest';
 import { is2FARequiredPayload } from './is-2fa-required-payload';
 
 test('it returns true if the provided data is a 2fa required payload', () => {

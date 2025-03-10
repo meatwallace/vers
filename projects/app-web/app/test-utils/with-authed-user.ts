@@ -1,4 +1,4 @@
-import { ActionFunction, LoaderFunction } from 'react-router';
+import { AppLoadContext } from 'react-router';
 import { authSessionStorage } from '~/session/auth-session-storage.server';
 import { createAuthedUser } from '~/test-utils/create-authed-user.ts';
 import { combineCookies } from './combine-cookies';
@@ -14,18 +14,24 @@ interface Config {
   };
 }
 
-export function withAuthedUser(
-  dataFn: ActionFunction | LoaderFunction,
+interface DataFnArgs {
+  context: AppLoadContext;
+  params: Record<string, string | undefined>;
+  request: Request;
+}
+
+export function withAuthedUser<Args extends DataFnArgs, Data>(
+  dataFn: (args: Args) => Promise<Data>,
   config: Config = {},
-): ActionFunction | LoaderFunction {
-  return async ({ request, ...rest }) => {
+) {
+  return async (args: Args): Promise<Data> => {
     const { accessToken, refreshToken, session } = await createAuthedUser(
       config.user ?? {},
       config.sessionID,
     );
 
     const authSession = await authSessionStorage.getSession(
-      request.headers.get('cookie'),
+      args.request.headers.get('cookie'),
     );
 
     authSession.set('accessToken', accessToken);
@@ -34,11 +40,11 @@ export function withAuthedUser(
 
     const setCookieHeader = await authSessionStorage.commitSession(authSession);
 
-    const existingCookie = request.headers.get('cookie');
+    const existingCookie = args.request.headers.get('cookie');
     const cookieHeader = combineCookies(setCookieHeader, existingCookie);
 
-    request.headers.set('cookie', cookieHeader);
+    args.request.headers.set('cookie', cookieHeader);
 
-    return dataFn({ request, ...rest });
+    return dataFn(args);
   };
 }

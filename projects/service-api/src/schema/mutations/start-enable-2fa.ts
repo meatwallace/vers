@@ -1,8 +1,8 @@
-import { GraphQLError } from 'graphql';
+import type { AuthedContext } from '~/types';
 import { logger } from '~/logger';
-import { AuthedContext } from '~/types';
 import { createPendingTransaction } from '~/utils/create-pending-transaction';
 import { builder } from '../builder';
+import { UNKNOWN_ERROR } from '../errors';
 import { MutationErrorPayload } from '../types/mutation-error-payload';
 import { TwoFactorRequiredPayload } from '../types/two-factor-required-payload';
 import { VerificationType } from '../types/verification-type';
@@ -30,14 +30,13 @@ import { requireAuth } from '../utils/require-auth';
  * }
  * ```
  */
-
 export async function startEnable2FA(
   _: object,
   __: object,
   ctx: AuthedContext,
 ): Promise<typeof StartEnable2FAPayload.$inferType> {
   try {
-    const is2FAEnabled = await ctx.services.verification.getVerification({
+    const is2FAEnabled = await ctx.services.verification.getVerification.query({
       target: ctx.user.email,
       type: '2fa',
     });
@@ -53,19 +52,19 @@ export async function startEnable2FA(
     }
 
     const existing2FASetupVerification =
-      await ctx.services.verification.getVerification({
+      await ctx.services.verification.getVerification.query({
         target: ctx.user.email,
         type: '2fa-setup',
       });
 
     // If there's an existing 2FA setup verification, delete it
     if (existing2FASetupVerification) {
-      await ctx.services.verification.deleteVerification({
+      await ctx.services.verification.deleteVerification.mutate({
         id: existing2FASetupVerification.id,
       });
     }
 
-    await ctx.services.verification.createVerification({
+    await ctx.services.verification.createVerification.mutate({
       target: ctx.user.email,
       type: '2fa-setup',
     });
@@ -84,11 +83,7 @@ export async function startEnable2FA(
       logger.error(error.message);
     }
 
-    throw new GraphQLError('An unknown error occurred', {
-      extensions: {
-        code: 'INTERNAL_SERVER_ERROR',
-      },
-    });
+    return { error: UNKNOWN_ERROR };
   }
 }
 

@@ -2,24 +2,22 @@ import { expect, test } from 'vitest';
 import { createId } from '@paralleldrive/cuid2';
 import * as schema from '@vers/postgres-schema';
 import { PostgresTestUtils } from '@vers/service-test-utils';
-import { Hono } from 'hono';
 import { pgTestConfig } from '../pg-test-config';
-import { get2FAVerificationURI } from './get-2fa-verification-uri';
+import { router } from '../router';
+import { t } from '../t';
+
+const createCaller = t.createCallerFactory(router);
 
 async function setupTest() {
-  const app = new Hono();
-
   const { db, teardown } = await PostgresTestUtils.createTestDB(pgTestConfig);
 
-  app.post('/get-2fa-verification-uri', async (ctx) =>
-    get2FAVerificationURI(ctx, db),
-  );
+  const caller = createCaller({ db });
 
-  return { app, db, teardown };
+  return { caller, db, teardown };
 }
 
 test('it returns a TOTP auth URI for a valid 2FA verification record', async () => {
-  const { app, db, teardown } = await setupTest();
+  const { caller, db, teardown } = await setupTest();
 
   const verification = {
     algorithm: 'SHA-1',
@@ -36,64 +34,27 @@ test('it returns a TOTP auth URI for a valid 2FA verification record', async () 
 
   await db.insert(schema.verifications).values(verification);
 
-  const req = new Request('http://localhost/get-2fa-verification-uri', {
-    body: JSON.stringify({
-      target: 'test@example.com',
-    }),
-    method: 'POST',
+  const result = await caller.get2FAVerificationURI({
+    target: 'test@example.com',
   });
 
-  const res = await app.request(req);
-  const body = await res.json();
-
-  expect(res.status).toBe(200);
-  expect(body).toMatchObject({
-    data: {
-      otpURI: expect.stringContaining('otpauth://totp/vers:test%40example.com'),
-    },
-    success: true,
+  expect(result).toMatchObject({
+    otpURI: expect.stringContaining('otpauth://totp/vers:test%40example.com'),
   });
 
   await teardown();
 });
 
-test('it returns an error for non-existent 2FA verification record', async () => {
-  const { app, teardown } = await setupTest();
+test('it throws an error for non-existent 2FA verification record', async () => {
+  const { caller, teardown } = await setupTest();
 
-  const req = new Request('http://localhost/get-2fa-verification-uri', {
-    body: JSON.stringify({
+  await expect(
+    caller.get2FAVerificationURI({
       target: 'test@example.com',
     }),
-    method: 'POST',
-  });
-
-  const res = await app.request(req);
-  const body = await res.json();
-
-  expect(res.status).toBe(200);
-  expect(body).toMatchObject({
-    error: 'No 2FA verification found for this target',
-    success: false,
-  });
-
-  await teardown();
-});
-
-test('it handles an invalid request body', async () => {
-  const { app, teardown } = await setupTest();
-
-  const req = new Request('http://localhost/get-2fa-verification-uri', {
-    body: 'invalid json',
-    method: 'POST',
-  });
-
-  const res = await app.request(req);
-  const body = await res.json();
-
-  expect(res.status).toBe(200);
-  expect(body).toMatchObject({
-    error: 'An unknown error occurred',
-    success: false,
+  ).rejects.toMatchObject({
+    code: 'BAD_REQUEST',
+    message: 'No 2FA verification found for this target',
   });
 
   await teardown();

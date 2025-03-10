@@ -25,8 +25,7 @@ function setupTest(config: TestConfig) {
       Component: withRouteProps(Dashboard),
       // @ts-expect-error(#35) - react router test types are out of date
       loader: config.isAuthed
-        ? // @ts-expect-error(#35) - react router test types are out of date
-          withAuthedUser(loader, { user: config.user })
+        ? withAuthedUser(loader, { user: config.user })
         : loader,
       path: '/',
     },

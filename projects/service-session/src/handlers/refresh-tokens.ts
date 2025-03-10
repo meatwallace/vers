@@ -1,41 +1,42 @@
+import { TRPCError } from '@trpc/server';
 import * as schema from '@vers/postgres-schema';
-import {
-  RefreshTokensRequest,
-  RefreshTokensResponse,
-} from '@vers/service-types';
+import { RefreshTokensPayload } from '@vers/service-types';
 import { eq } from 'drizzle-orm';
-import { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
-import { Context } from 'hono';
+import { z } from 'zod';
+import type { Context } from '../types';
 import * as consts from '../consts';
+import { t } from '../t';
 import { createJWT } from '../utils/create-jwt';
 
-export async function refreshTokens(
-  ctx: Context,
-  db: PostgresJsDatabase<typeof schema>,
-) {
-  try {
-    const body = await ctx.req.json<RefreshTokensRequest>();
+export const RefreshTokensInputSchema = z.object({
+  refreshToken: z.string(),
+});
 
-    const existingSession = await db.query.sessions.findFirst({
-      where: eq(schema.sessions.refreshToken, body.refreshToken),
+export async function refreshTokens(
+  input: z.infer<typeof RefreshTokensInputSchema>,
+  ctx: Context,
+): Promise<RefreshTokensPayload> {
+  try {
+    const existingSession = await ctx.db.query.sessions.findFirst({
+      where: eq(schema.sessions.refreshToken, input.refreshToken),
     });
 
     if (!existingSession) {
-      return ctx.json({
-        error: 'Invalid refresh token',
-        success: false,
+      throw new TRPCError({
+        code: 'UNAUTHORIZED',
+        message: 'Invalid refresh token',
       });
     }
 
     // Check if the session has expired
     if (existingSession.expiresAt < new Date()) {
-      await db
+      await ctx.db
         .delete(schema.sessions)
         .where(eq(schema.sessions.id, existingSession.id));
 
-      return ctx.json({
-        error: 'Session expired',
-        success: false,
+      throw new TRPCError({
+        code: 'UNAUTHORIZED',
+        message: 'Session expired',
       });
     }
 
@@ -50,16 +51,15 @@ export async function refreshTokens(
         userID: existingSession.userID,
       });
 
-      const data = {
-        ...existingSession,
+      return {
         accessToken,
+        refreshToken: existingSession.refreshToken,
+        session: existingSession,
       };
-
-      return ctx.json({ data, success: true });
     }
 
     // generate a new refresh token so we can rotate it, using the same expiry as before
-    const refreshToken = await createJWT({
+    const newRefreshToken = await createJWT({
       expiresAt: existingSession.expiresAt,
       userID: existingSession.userID,
     });
@@ -71,35 +71,32 @@ export async function refreshTokens(
 
     const updatedAt = new Date();
 
-    await db
+    await ctx.db
       .update(schema.sessions)
       .set({
-        refreshToken,
+        refreshToken: newRefreshToken,
         updatedAt,
       })
       .where(eq(schema.sessions.id, existingSession.id));
 
-    const response: RefreshTokensResponse = {
-      data: {
-        ...existingSession,
-        accessToken,
-        refreshToken,
-        updatedAt,
-      },
-      success: true,
+    return {
+      accessToken,
+      refreshToken: newRefreshToken,
+      session: existingSession,
     };
-
-    return ctx.json(response);
   } catch (error: unknown) {
-    if (error instanceof Error) {
-      const response = {
-        error: 'An unknown error occurred',
-        success: false,
-      };
-
-      return ctx.json(response);
+    if (error instanceof TRPCError) {
+      throw error;
     }
 
-    throw error;
+    throw new TRPCError({
+      cause: error,
+      code: 'INTERNAL_SERVER_ERROR',
+      message: 'An unknown error occurred',
+    });
   }
 }
+
+export const procedure = t.procedure
+  .input(RefreshTokensInputSchema)
+  .mutation(async ({ ctx, input }) => refreshTokens(input, ctx));

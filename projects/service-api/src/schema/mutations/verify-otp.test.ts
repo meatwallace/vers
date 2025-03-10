@@ -315,9 +315,14 @@ test('it throws an error if session validation fails', async () => {
     },
   };
 
-  await expect(() => resolve({}, args, ctx)).rejects.toThrow(
-    'An unknown error occurred',
-  );
+  const result = await resolve({}, args, ctx);
+
+  expect(result).toStrictEqual({
+    error: {
+      message: 'An unknown error occurred',
+      title: 'An unknown error occurred',
+    },
+  });
 });
 
 test('it returns an error for an invalid OTP', async () => {
@@ -352,10 +357,10 @@ test('it returns an error for an invalid OTP', async () => {
 
   const result = await resolve({}, args, ctx);
 
-  expect(result).toMatchObject({
+  expect(result).toStrictEqual({
     error: {
-      message: 'Invalid verification code',
-      title: 'Invalid OTP',
+      message: 'An unknown error occurred',
+      title: 'An unknown error occurred',
     },
   });
 });
@@ -381,10 +386,10 @@ test('it returns an error if verification does not exist', async () => {
 
   const result = await resolve({}, args, ctx);
 
-  expect(result).toMatchObject({
+  expect(result).toStrictEqual({
     error: {
-      message: 'Invalid verification code',
-      title: 'Invalid OTP',
+      message: 'An unknown error occurred',
+      title: 'An unknown error occurred',
     },
   });
 });

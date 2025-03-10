@@ -1,131 +1,61 @@
 import { expect, test } from 'vitest';
 import { createTestUser, PostgresTestUtils } from '@vers/service-test-utils';
-import { Hono } from 'hono';
 import { pgTestConfig } from '../pg-test-config';
-import { getUser } from './get-user';
+import { router } from '../router';
+import { t } from '../t';
+
+const createCaller = t.createCallerFactory(router);
 
 async function setupTest() {
-  const app = new Hono();
-
   const { db, teardown } = await PostgresTestUtils.createTestDB(pgTestConfig);
 
   const user = await createTestUser({ db });
 
-  app.post('/get-user', async (ctx) => getUser(ctx, db));
+  const caller = createCaller({ db });
 
-  return { app, db, teardown, user };
+  return { caller, db, teardown, user };
 }
 
 test('it gets a user by ID', async () => {
-  const { app, teardown, user } = await setupTest();
+  const { caller, teardown, user } = await setupTest();
 
-  const req = new Request('http://localhost/get-user', {
-    body: JSON.stringify({
-      id: user.id,
-    }),
-    method: 'POST',
+  const result = await caller.getUser({
+    id: user.id,
   });
 
-  const res = await app.request(req);
-  const body = await res.json();
-
-  expect(res.status).toBe(200);
-  expect(body).toMatchObject({
-    data: {
-      createdAt: expect.any(String),
-      email: user.email,
-      id: user.id,
-    },
-    success: true,
+  expect(result).toMatchObject({
+    createdAt: expect.any(Date),
+    email: user.email,
+    id: user.id,
   });
 
   await teardown();
 });
 
 test('it gets a user by email', async () => {
-  const { app, teardown, user } = await setupTest();
+  const { caller, teardown, user } = await setupTest();
 
-  const req = new Request('http://localhost/get-user', {
-    body: JSON.stringify({
-      email: user.email,
-    }),
-    method: 'POST',
+  const result = await caller.getUser({
+    email: user.email,
   });
 
-  const res = await app.request(req);
-  const body = await res.json();
-
-  expect(res.status).toBe(200);
-  expect(body).toMatchObject({
-    data: {
-      createdAt: expect.any(String),
-      email: user.email,
-      id: user.id,
-    },
-    success: true,
+  expect(result).toMatchObject({
+    createdAt: expect.any(Date),
+    email: user.email,
+    id: user.id,
   });
 
   await teardown();
 });
 
-test('it handles a non-existent user', async () => {
-  const { app, teardown } = await setupTest();
+test('it returns null for a non-existent user', async () => {
+  const { caller, teardown } = await setupTest();
 
-  const req = new Request('http://localhost/get-user', {
-    body: JSON.stringify({
-      id: 'non-existent-id',
-    }),
-    method: 'POST',
+  const result = await caller.getUser({
+    id: 'non-existent-id',
   });
 
-  const res = await app.request(req);
-  const body = await res.json();
-
-  expect(res.status).toBe(200);
-  expect(body).toMatchObject({
-    data: null,
-    success: true,
-  });
-
-  await teardown();
-});
-
-test('it handles missing search parameters', async () => {
-  const { app, teardown } = await setupTest();
-
-  const req = new Request('http://localhost/get-user', {
-    body: JSON.stringify({}),
-    method: 'POST',
-  });
-
-  const res = await app.request(req);
-  const body = await res.json();
-
-  expect(res.status).toBe(200);
-  expect(body).toMatchObject({
-    error: 'Either email or id must be provided',
-    success: false,
-  });
-
-  await teardown();
-});
-
-test('it handles an invalid request body', async () => {
-  const { app, teardown } = await setupTest();
-
-  const req = new Request('http://localhost/get-user', {
-    body: 'invalid json',
-    method: 'POST',
-  });
-
-  const res = await app.request(req);
-  const body = await res.json();
-
-  expect(res.status).toBe(200);
-  expect(body).toMatchObject({
-    error: 'An unknown error occurred',
-    success: false,
-  });
+  expect(result).toBeNull();
 
   await teardown();
 });

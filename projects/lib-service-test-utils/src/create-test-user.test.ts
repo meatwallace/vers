@@ -1,3 +1,4 @@
+import { expect, test } from 'vitest';
 import { createTestUser } from './create-test-user';
 import { pgTestConfig } from './pg-test-config';
 import { PostgresTestUtils } from './postgres-test-utils';

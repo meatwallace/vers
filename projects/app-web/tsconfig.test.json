@@ -4,13 +4,7 @@
     "jsx": "react-jsx",
     "module": "ESNext",
     "moduleResolution": "Bundler",
-    "types": [
-      "vitest",
-      "vitest/globals",
-      "vitest/importMeta",
-      "vite/client",
-      "node"
-    ]
+    "types": ["vitest", "vitest/importMeta", "vite/client", "node"]
   },
   "include": [
     "vite.config.ts",

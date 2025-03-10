@@ -1,9 +1,9 @@
 import * as jose from 'jose';
 import { z } from 'zod';
+import type { Context } from '~/types';
 import { env } from '~/env';
 import { logger } from '~/logger';
 import { VerificationType } from '~/schema/types/verification-type';
-import { Context } from '~/types';
 import { transactionJTIBlocklist } from './transaction-jti-blocklist';
 
 const JWTPayloadSchema = z.object({
@@ -123,7 +123,7 @@ export async function verifyTransactionToken(
       return null;
     }
 
-    const session = await ctx.services.session.getSession({
+    const session = await ctx.services.session.getSession.query({
       id: payload.session_id,
     });
 

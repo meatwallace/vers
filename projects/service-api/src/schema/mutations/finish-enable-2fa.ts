@@ -1,13 +1,23 @@
-import { GraphQLError } from 'graphql';
 import { logger } from '~/logger';
 import { AuthedContext } from '~/types';
 import { verifyTransactionToken } from '~/utils/verify-transaction-token';
 import { builder } from '../builder';
+import { UNKNOWN_ERROR } from '../errors';
 import { MutationErrorPayload } from '../types/mutation-error-payload';
 import { MutationSuccess } from '../types/mutation-success';
 import { VerificationType } from '../types/verification-type';
 import { createPayloadResolver } from '../utils/create-payload-resolver';
 import { requireAuth } from '../utils/require-auth';
+
+interface Args {
+  input: typeof FinishEnable2FAInput.$inferInput;
+}
+
+// ensure we use the same error message for all failures to avoid enumeration
+const AMBIGUOUS_FAILED_VERIFICATION_ERROR = {
+  message: 'Verification for this operation is invalid or has expired.',
+  title: 'Failed Verification',
+};
 
 /**
  * @description Completes the 2FA setup process by verifying the transaction token and updating the verification record
@@ -30,17 +40,6 @@ import { requireAuth } from '../utils/require-auth';
  * }
  * ```
  */
-
-interface Args {
-  input: typeof FinishEnable2FAInput.$inferInput;
-}
-
-// ensure we use the same error message for all failures to avoid enumeration
-const AMBIGUOUS_FAILED_VERIFICATION_ERROR = {
-  message: 'Verification for this operation is invalid or has expired.',
-  title: 'Failed Verification',
-};
-
 export async function finishEnable2FA(
   _: object,
   args: Args,
@@ -63,7 +62,7 @@ export async function finishEnable2FA(
     }
 
     const twoFactorVerification =
-      await ctx.services.verification.getVerification({
+      await ctx.services.verification.getVerification.query({
         target: ctx.user.email,
         type: '2fa-setup',
       });
@@ -74,7 +73,7 @@ export async function finishEnable2FA(
       };
     }
 
-    await ctx.services.verification.updateVerification({
+    await ctx.services.verification.updateVerification.mutate({
       id: twoFactorVerification.id,
       type: '2fa',
     });
@@ -86,11 +85,7 @@ export async function finishEnable2FA(
       logger.error(error.message);
     }
 
-    throw new GraphQLError('An unknown error occurred', {
-      extensions: {
-        code: 'INTERNAL_SERVER_ERROR',
-      },
-    });
+    return { error: UNKNOWN_ERROR };
   }
 }
 

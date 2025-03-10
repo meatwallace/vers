@@ -33,21 +33,20 @@ async function setupTest(config: TestConfig = {}) {
     verifySession.set('transactionID', config.transactionID);
   }
 
-  // @ts-expect-error(#35) - react router test types are out of date
   const actionWithSession = withSession(action, {
     transactionID: config.transactionID,
   });
 
   const ProfileVerify2FAStub = createRoutesStub([
     {
+      // @ts-expect-error(#35) - react router test types are out of date
       action: config.isAuthed
         ? withAuthedUser(actionWithSession, { user: config.user })
         : actionWithSession,
       Component: withRouteProps(ProfileVerify2FARoute),
       // @ts-expect-error(#35) - react router test types are out of date
       loader: config.isAuthed
-        ? // @ts-expect-error(#35) - react router test types are out of date
-          withAuthedUser(loader, { user: config.user })
+        ? withAuthedUser(loader, { user: config.user })
         : loader,
       path: '/',
     },

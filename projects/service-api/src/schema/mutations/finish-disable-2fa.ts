@@ -2,14 +2,16 @@ import { logger } from '~/logger';
 import { AuthedContext } from '~/types';
 import { verifyTransactionToken } from '~/utils/verify-transaction-token';
 import { builder } from '../builder';
-import {
-  MutationErrorPayload,
-  MutationErrorPayloadData,
-} from '../types/mutation-error-payload';
+import { UNKNOWN_ERROR } from '../errors';
+import { MutationErrorPayload } from '../types/mutation-error-payload';
 import { MutationSuccess } from '../types/mutation-success';
 import { VerificationType } from '../types/verification-type';
 import { createPayloadResolver } from '../utils/create-payload-resolver';
 import { requireAuth } from '../utils/require-auth';
+
+interface Args {
+  input: typeof FinishDisable2FAInput.$inferInput;
+}
 
 /**
  * @description Finishes the process of disabling 2FA after verifying the provided
@@ -35,20 +37,11 @@ import { requireAuth } from '../utils/require-auth';
  * }
  * ```
  */
-
-interface MutationSuccessResult {
-  success: true;
-}
-
-interface Args {
-  input: typeof FinishDisable2FAInput.$inferInput;
-}
-
 export async function finishDisable2FA(
   _: object,
   args: Args,
   ctx: AuthedContext,
-): Promise<MutationErrorPayloadData | MutationSuccessResult> {
+): Promise<typeof FinishDisable2FAPayload.$inferType> {
   try {
     const isValidTransaction = await verifyTransactionToken(
       {
@@ -60,15 +53,10 @@ export async function finishDisable2FA(
     );
 
     if (!isValidTransaction) {
-      return {
-        error: {
-          message: 'An unknown error occurred',
-          title: 'An unknown error occurred',
-        },
-      };
+      return { error: UNKNOWN_ERROR };
     }
 
-    const verification = await ctx.services.verification.getVerification({
+    const verification = await ctx.services.verification.getVerification.query({
       target: ctx.user.email,
       type: '2fa',
     });
@@ -83,7 +71,7 @@ export async function finishDisable2FA(
     }
 
     // Delete the 2FA verification record
-    await ctx.services.verification.deleteVerification({
+    await ctx.services.verification.deleteVerification.mutate({
       id: verification.id,
     });
 
@@ -94,12 +82,7 @@ export async function finishDisable2FA(
       logger.error(error.message);
     }
 
-    return {
-      error: {
-        message: 'An unknown error occurred',
-        title: 'An unknown error occurred',
-      },
-    };
+    return { error: UNKNOWN_ERROR };
   }
 }
 

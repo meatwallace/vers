@@ -1,14 +1,14 @@
-import { afterEach, expect, test } from 'vitest';
+import { afterEach, expect, test, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { createRoutesStub, type LoaderFunction } from 'react-router';
 import { drop } from '@mswjs/data';
-import { GraphQLClient } from 'graphql-request';
 import invariant from 'tiny-invariant';
 import { db } from '~/mocks/db.ts';
 import { decodeMockJWT } from '~/mocks/utils/decode-mock-jwt.ts';
 import { encodeMockJWT } from '~/mocks/utils/encode-mock-jwt.ts';
 import { authSessionStorage } from '~/session/auth-session-storage.server.ts';
 import { Routes } from '~/types.ts';
+import { createGQLClient } from './create-gql-client.server.ts';
 import { requireAuth } from './require-auth.server.ts';
 
 interface TestConfig {
@@ -35,7 +35,7 @@ vi.stubGlobal(
 );
 
 async function setupTest(config: Partial<TestConfig> = {}) {
-  const client = new GraphQLClient('http://localhost:3000/graphql');
+  const client = createGQLClient();
 
   const session = await authSessionStorage.getSession();
 
@@ -71,7 +71,7 @@ async function setupTest(config: Partial<TestConfig> = {}) {
     await requireAuth(request, { client });
   };
 
-  const TestRoutesSTub = createRoutesStub([
+  const TestRoutesStub = createRoutesStub([
     {
       Component: () => 'TEST_ROUTE',
       loader,
@@ -87,7 +87,7 @@ async function setupTest(config: Partial<TestConfig> = {}) {
     },
   ]);
 
-  render(<TestRoutesSTub />);
+  render(<TestRoutesStub />);
 }
 
 afterEach(() => {

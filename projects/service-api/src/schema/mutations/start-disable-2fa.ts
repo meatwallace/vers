@@ -1,13 +1,17 @@
-import { GraphQLError } from 'graphql';
+import type { AuthedContext } from '~/types';
 import { logger } from '~/logger';
-import { AuthedContext } from '~/types';
 import { createPendingTransaction } from '~/utils/create-pending-transaction';
 import { builder } from '../builder';
+import { UNKNOWN_ERROR } from '../errors';
 import { MutationErrorPayload } from '../types/mutation-error-payload';
 import { TwoFactorRequiredPayload } from '../types/two-factor-required-payload';
 import { VerificationType } from '../types/verification-type';
 import { createPayloadResolver } from '../utils/create-payload-resolver';
 import { requireAuth } from '../utils/require-auth';
+
+interface Args {
+  input: typeof StartDisable2FAInput.$inferInput;
+}
 
 /**
  * @description Starts the process of disabling 2FA
@@ -32,18 +36,13 @@ import { requireAuth } from '../utils/require-auth';
  * }
  * ```
  */
-
-interface Args {
-  input: typeof StartDisable2FAInput.$inferInput;
-}
-
 export async function startDisable2FA(
   _: object,
   args: Args,
   ctx: AuthedContext,
 ): Promise<typeof StartDisable2FAPayload.$inferType> {
   try {
-    const verification = await ctx.services.verification.getVerification({
+    const verification = await ctx.services.verification.getVerification.query({
       target: ctx.user.email,
       type: '2fa',
     });
@@ -74,11 +73,7 @@ export async function startDisable2FA(
       logger.error(error.message);
     }
 
-    throw new GraphQLError('An unknown error occurred', {
-      extensions: {
-        code: 'INTERNAL_SERVER_ERROR',
-      },
-    });
+    return { error: UNKNOWN_ERROR };
   }
 }
 

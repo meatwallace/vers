@@ -1,41 +1,42 @@
+import { TRPCError } from '@trpc/server';
 import * as schema from '@vers/postgres-schema';
-import {
-  ChangePasswordRequest,
-  ChangePasswordResponse,
-} from '@vers/service-types';
+import { ChangePasswordPayload } from '@vers/service-types';
 import { hashPassword } from '@vers/service-utils';
 import { eq } from 'drizzle-orm';
-import { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
-import { Context } from 'hono';
-import { logger } from '../logger';
+import { z } from 'zod';
+import type { Context } from '../types';
+import { t } from '../t';
 
-const log = logger.child({ module: 'changePassword' });
+export const ChangePasswordInputSchema = z.object({
+  id: z.string(),
+  password: z.string(),
+  resetToken: z.string(),
+});
 
 export async function changePassword(
+  input: z.infer<typeof ChangePasswordInputSchema>,
   ctx: Context,
-  db: PostgresJsDatabase<typeof schema>,
-) {
+): Promise<ChangePasswordPayload> {
   try {
-    const { id, password, resetToken } =
-      await ctx.req.json<ChangePasswordRequest>();
+    const { id, password, resetToken } = input;
 
-    const user = await db.query.users.findFirst({
+    const user = await ctx.db.query.users.findFirst({
       where: eq(schema.users.id, id),
     });
 
     if (!user) {
-      return ctx.json({
-        error: 'User not found',
-        success: false,
+      throw new TRPCError({
+        code: 'NOT_FOUND',
+        message: 'No user with that ID',
       });
     }
 
     const isTokenMismatch = user.passwordResetToken !== resetToken;
 
     if (isTokenMismatch) {
-      return ctx.json({
-        error: 'Invalid reset token',
-        success: false,
+      throw new TRPCError({
+        code: 'BAD_REQUEST',
+        message: 'Invalid reset token',
       });
     }
 
@@ -44,15 +45,15 @@ export async function changePassword(
       user.passwordResetTokenExpiresAt < new Date();
 
     if (isTokenExpired) {
-      return ctx.json({
-        error: 'Reset token expired',
-        success: false,
+      throw new TRPCError({
+        code: 'BAD_REQUEST',
+        message: 'Reset token expired',
       });
     }
 
     const passwordHash = await hashPassword(password);
 
-    await db.transaction(async (tx) => {
+    await ctx.db.transaction(async (tx) => {
       // delete all sessions for this user
       await tx.delete(schema.sessions).where(eq(schema.sessions.userID, id));
 
@@ -71,24 +72,21 @@ export async function changePassword(
       return [updatedUser];
     });
 
-    const response: ChangePasswordResponse = {
-      data: {},
-      success: true,
-    };
-
-    return ctx.json(response);
+    return {};
   } catch (error: unknown) {
     // TODO(#16): capture via Sentry
-    log.error('unknown error');
-    log.error(error);
-
-    if (error instanceof Error) {
-      return ctx.json({
-        error: 'An unknown error occurred',
-        success: false,
-      });
+    if (error instanceof TRPCError) {
+      throw error;
     }
 
-    throw error;
+    throw new TRPCError({
+      cause: error,
+      code: 'INTERNAL_SERVER_ERROR',
+      message: 'An unknown error occurred',
+    });
   }
 }
+
+export const procedure = t.procedure
+  .input(ChangePasswordInputSchema)
+  .mutation(async ({ ctx, input }) => changePassword(input, ctx));

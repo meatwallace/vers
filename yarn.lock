@@ -3402,6 +3402,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@hono/trpc-server@npm:0.3.4":
+  version: 0.3.4
+  resolution: "@hono/trpc-server@npm:0.3.4"
+  peerDependencies:
+    "@trpc/server": ^10.10.0 || >11.0.0-rc
+    hono: ">=4.*"
+  checksum: 10c0/ae18a1a0b17218807cdded7b55638a45aa9e73ef8edfc47d34769e8e15f435c47286fc70d6e5c115dfaeee2d690fe82fde594f869db9a2f28bca5268b2812b5c
+  languageName: node
+  linkType: hard
+
 "@humanfs/core@npm:^0.19.1":
   version: 0.19.1
   resolution: "@humanfs/core@npm:0.19.1"
@@ -6428,6 +6438,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@trpc/client@npm:^11.0.0-rc.795":
+  version: 11.0.0-rc.828
+  resolution: "@trpc/client@npm:11.0.0-rc.828"
+  peerDependencies:
+    "@trpc/server": 11.0.0-rc.828+322552736
+    typescript: ">=5.7.2"
+  checksum: 10c0/433cad2e3c81a5da57c3549476f94339b5b469c34287a58ec3e87157983010c3932257849f7bf9fdf38620c366a797c526bf9cdb719932fce3071340f77e84e9
+  languageName: node
+  linkType: hard
+
 "@trpc/server@npm:11.0.0-rc.824":
   version: 11.0.0-rc.824
   resolution: "@trpc/server@npm:11.0.0-rc.824"
@@ -7047,6 +7067,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@vafanassieff/msw-trpc@npm:2.0.0-beta.7":
+  version: 2.0.0-beta.7
+  resolution: "@vafanassieff/msw-trpc@npm:2.0.0-beta.7"
+  dependencies:
+    "@trpc/client": "npm:^11.0.0-rc.795"
+    msw: "npm:^2.0.0"
+  peerDependencies:
+    "@trpc/server": ^11.0.0-rc.795
+    msw: ^2.0.0
+  checksum: 10c0/bbbdf43b1b9411348a0a8a232edf411eea7febb4882f357f0c3c261258f9394c5f955e582d9ff9e15bca34c4986a664629822af84fe24a52ac5fcea710862e55
+  languageName: node
+  linkType: hard
+
 "@vanilla-extract/babel-plugin-debug-ids@npm:^1.2.0":
   version: 1.2.0
   resolution: "@vanilla-extract/babel-plugin-debug-ids@npm:1.2.0"
@@ -7162,6 +7195,7 @@ __metadata:
     "@graphql-tools/executor-http": "npm:1.2.7"
     "@graphql-typed-document-node/core": "npm:3.2.0"
     "@hono/node-server": "npm:1.13.8"
+    "@hono/trpc-server": "npm:0.3.4"
     "@isaacs/ttlcache": "npm:1.4.1"
     "@mswjs/data": "npm:0.16.2"
     "@nx/devkit": "npm:20.4.6"
@@ -7205,6 +7239,7 @@ __metadata:
     "@typescript-eslint/eslint-plugin": "npm:8.25.0"
     "@typescript-eslint/parser": "npm:8.25.0"
     "@typescript-eslint/utils": "npm:8.25.0"
+    "@vafanassieff/msw-trpc": "npm:2.0.0-beta.7"
     "@vanilla-extract/css": "npm:1.17.1"
     "@vanilla-extract/recipes": "npm:0.5.5"
     "@vanilla-extract/sprinkles": "npm:1.6.3"
@@ -7247,6 +7282,7 @@ __metadata:
     jwt-decode: "npm:4.0.0"
     lint-staged: "npm:15.4.3"
     msw: "npm:2.7.0"
+    msw-trpc: "npm:2.0.0-beta.1"
     node-mocks-http: "npm:1.16.2"
     nx: "npm:20.3.4"
     open-props: "npm:1.7.12"
@@ -7268,6 +7304,7 @@ __metadata:
     remix-utils: "npm:8.1.0"
     resend: "npm:4.1.2"
     spin-delay: "npm:2.0.1"
+    superjson: "npm:2.2.2"
     tiny-invariant: "npm:1.3.3"
     tsconfig-paths: "npm:4.2.0"
     tslib: "npm:2.8.1"
@@ -9617,6 +9654,15 @@ __metadata:
     depd: "npm:~2.0.0"
     keygrip: "npm:~1.1.0"
   checksum: 10c0/3ffa1c0e992b62ee119adae4dd2ddd4a89166fa5434cd9bd9ff84ec4d2f14dfe2318a601280abfe32a4f64f884ec9345fb1912e488b002d188d2efa0d3919ba3
+  languageName: node
+  linkType: hard
+
+"copy-anything@npm:^3.0.2":
+  version: 3.0.5
+  resolution: "copy-anything@npm:3.0.5"
+  dependencies:
+    is-what: "npm:^4.1.8"
+  checksum: 10c0/01eadd500c7e1db71d32d95a3bfaaedcb839ef891c741f6305ab0461398056133de08f2d1bf4c392b364e7bdb7ce498513896e137a7a183ac2516b065c28a4fe
   languageName: node
   linkType: hard
 
@@ -13700,6 +13746,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"is-what@npm:^4.1.8":
+  version: 4.1.16
+  resolution: "is-what@npm:4.1.16"
+  checksum: 10c0/611f1947776826dcf85b57cfb7bd3b3ea6f4b94a9c2f551d4a53f653cf0cb9d1e6518846648256d46ee6c91d114b6d09d2ac8a07306f7430c5900f87466aae5b
+  languageName: node
+  linkType: hard
+
 "is-windows@npm:^1.0.1":
   version: 1.0.2
   resolution: "is-windows@npm:1.0.2"
@@ -15489,6 +15542,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"msw-trpc@npm:2.0.0-beta.1":
+  version: 2.0.0-beta.1
+  resolution: "msw-trpc@npm:2.0.0-beta.1"
+  peerDependencies:
+    "@trpc/server": ">=10.9.0"
+    msw: ^2.0.0
+  checksum: 10c0/dc280355eae0b668c970e93b9850edd67c8450a118b4e9085dc72613b3a560352f629769b33195f5b08fdc492d9156030c2685c143ab1af024126dafc3a896e8
+  languageName: node
+  linkType: hard
+
 "msw@npm:2.7.0, msw@npm:^2.0.8":
   version: 2.7.0
   resolution: "msw@npm:2.7.0"
@@ -15519,6 +15582,39 @@ __metadata:
   bin:
     msw: cli/index.js
   checksum: 10c0/14fb8299dcb6bcf2c6b3777a3127ed6be795a281598394022650b82889f1b70e0ada96559fefead351b18ed5db4e0a3a64367b758dd64f74dea63edc8eb2b551
+  languageName: node
+  linkType: hard
+
+"msw@npm:^2.0.0":
+  version: 2.7.3
+  resolution: "msw@npm:2.7.3"
+  dependencies:
+    "@bundled-es-modules/cookie": "npm:^2.0.1"
+    "@bundled-es-modules/statuses": "npm:^1.0.1"
+    "@bundled-es-modules/tough-cookie": "npm:^0.1.6"
+    "@inquirer/confirm": "npm:^5.0.0"
+    "@mswjs/interceptors": "npm:^0.37.0"
+    "@open-draft/deferred-promise": "npm:^2.2.0"
+    "@open-draft/until": "npm:^2.1.0"
+    "@types/cookie": "npm:^0.6.0"
+    "@types/statuses": "npm:^2.0.4"
+    graphql: "npm:^16.8.1"
+    headers-polyfill: "npm:^4.0.2"
+    is-node-process: "npm:^1.2.0"
+    outvariant: "npm:^1.4.3"
+    path-to-regexp: "npm:^6.3.0"
+    picocolors: "npm:^1.1.1"
+    strict-event-emitter: "npm:^0.5.1"
+    type-fest: "npm:^4.26.1"
+    yargs: "npm:^17.7.2"
+  peerDependencies:
+    typescript: ">= 4.8.x"
+  peerDependenciesMeta:
+    typescript:
+      optional: true
+  bin:
+    msw: cli/index.js
+  checksum: 10c0/47cad1c4b4615b312477c8977fddfda3e90becd8efc2d81d73be8fb860e45ad0d3f7bca6d4f70ae7ed21894e93975bda66d609aafc3a1c99cb923c5ef67f8686
   languageName: node
   linkType: hard
 
@@ -19110,6 +19206,15 @@ __metadata:
     "@tokenizer/token": "npm:^0.3.0"
     peek-readable: "npm:^5.3.1"
   checksum: 10c0/ef9cd2a6cd21aec368c7f6fbd1d93548adc2c5b69ee28fa9a4b4e8fb6be6e539f3fcdf21107196e0c3fdff1c433db7e5d0fb8cab132c0b013ed9eef220bdcf2f
+  languageName: node
+  linkType: hard
+
+"superjson@npm:2.2.2":
+  version: 2.2.2
+  resolution: "superjson@npm:2.2.2"
+  dependencies:
+    copy-anything: "npm:^3.0.2"
+  checksum: 10c0/aa49ebe6653e963020bc6a1ed416d267dfda84cfcc3cbd3beffd75b72e44eb9df7327215f3e3e77528f6e19ad8895b16a4964fdcd56d1799d14350db8c92afbc
   languageName: node
   linkType: hard
 

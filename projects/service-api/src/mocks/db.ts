@@ -1,7 +1,6 @@
 import { factory, nullable, primaryKey } from '@mswjs/data';
 import { createId } from '@paralleldrive/cuid2';
 
-// TODO: extract & centralise
 export const db = factory({
   session: {
     createdAt: () => new Date(),

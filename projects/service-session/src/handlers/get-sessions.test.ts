@@ -1,24 +1,25 @@
+import { expect, test } from 'vitest';
 import { createId } from '@paralleldrive/cuid2';
 import { sessions } from '@vers/postgres-schema';
 import { createTestUser, PostgresTestUtils } from '@vers/service-test-utils';
-import { Hono } from 'hono';
 import { pgTestConfig } from '../pg-test-config';
-import { getSessions } from './get-sessions';
+import { router } from '../router';
+import { t } from '../t';
+
+const createCaller = t.createCallerFactory(router);
 
 async function setupTest() {
-  const app = new Hono();
-
   const { db, teardown } = await PostgresTestUtils.createTestDB(pgTestConfig);
 
   const user = await createTestUser({ db });
 
-  app.post('/get-sessions', async (ctx) => getSessions(ctx, db));
+  const caller = createCaller({ db });
 
-  return { app, db, teardown, user };
+  return { caller, db, teardown, user };
 }
 
 test('it returns all sessions for the user', async () => {
-  const { app, db, teardown, user } = await setupTest();
+  const { caller, db, teardown, user } = await setupTest();
 
   const now = new Date();
   const sessionID1 = createId();
@@ -45,60 +46,44 @@ test('it returns all sessions for the user', async () => {
     },
   ]);
 
-  const req = new Request('http://localhost/get-sessions', {
-    body: JSON.stringify({
+  const result = await caller.getSessions({
+    userID: user.id,
+  });
+
+  expect(result).toHaveLength(2);
+  expect(result).toMatchObject([
+    {
+      createdAt: expect.any(Date),
+      expiresAt: expect.any(Date),
+      id: sessionID1,
+      ipAddress: '127.0.0.1',
+      refreshToken: 'refresh-token-1',
+      updatedAt: expect.any(Date),
       userID: user.id,
-    }),
-    method: 'POST',
-  });
-
-  const res = await app.request(req);
-
-  expect(res.status).toBe(200);
-  expect(await res.json()).toMatchObject({
-    data: [
-      {
-        createdAt: expect.any(String),
-        expiresAt: expect.any(String),
-        id: sessionID1,
-        ipAddress: '127.0.0.1',
-        refreshToken: 'refresh-token-1',
-        updatedAt: expect.any(String),
-        userID: user.id,
-      },
-      {
-        createdAt: expect.any(String),
-        expiresAt: expect.any(String),
-        id: sessionID2,
-        ipAddress: '127.0.0.2',
-        refreshToken: 'refresh-token-2',
-        updatedAt: expect.any(String),
-        userID: user.id,
-      },
-    ],
-    success: true,
-  });
+    },
+    {
+      createdAt: expect.any(Date),
+      expiresAt: expect.any(Date),
+      id: sessionID2,
+      ipAddress: '127.0.0.2',
+      refreshToken: 'refresh-token-2',
+      updatedAt: expect.any(Date),
+      userID: user.id,
+    },
+  ]);
 
   await teardown();
 });
 
 test('it returns an empty array if the user has no sessions', async () => {
-  const { app, teardown, user } = await setupTest();
+  const { caller, teardown, user } = await setupTest();
 
-  const req = new Request('http://localhost/get-sessions', {
-    body: JSON.stringify({
-      userID: user.id,
-    }),
-    method: 'POST',
+  const result = await caller.getSessions({
+    userID: user.id,
   });
 
-  const res = await app.request(req);
-
-  expect(res.status).toBe(200);
-  expect(await res.json()).toMatchObject({
-    data: [],
-    success: true,
-  });
+  expect(result).toHaveLength(0);
+  expect(result).toEqual([]);
 
   await teardown();
 });

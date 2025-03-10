@@ -2,22 +2,22 @@ import { expect, test } from 'vitest';
 import { createId } from '@paralleldrive/cuid2';
 import * as schema from '@vers/postgres-schema';
 import { PostgresTestUtils } from '@vers/service-test-utils';
-import { Hono } from 'hono';
 import { pgTestConfig } from '../pg-test-config';
-import { deleteVerification } from './delete-verification';
+import { router } from '../router';
+import { t } from '../t';
+
+const createCaller = t.createCallerFactory(router);
 
 async function setupTest() {
-  const app = new Hono();
-
   const { db, teardown } = await PostgresTestUtils.createTestDB(pgTestConfig);
 
-  app.post('/delete-verification', async (ctx) => deleteVerification(ctx, db));
+  const caller = createCaller({ db });
 
-  return { app, db, teardown };
+  return { caller, db, teardown };
 }
 
 test('it deletes a verification record', async () => {
-  const { app, db, teardown } = await setupTest();
+  const { caller, db, teardown } = await setupTest();
 
   const id = createId();
 
@@ -33,25 +33,9 @@ test('it deletes a verification record', async () => {
     type: '2fa',
   });
 
-  const response = await app.request('/delete-verification', {
-    body: JSON.stringify({
-      id,
-    }),
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    method: 'POST',
-  });
+  const result = await caller.deleteVerification({ id });
 
-  const result = await response.json();
-
-  expect(response.status).toBe(200);
-  expect(result).toEqual({
-    data: {
-      deletedID: id,
-    },
-    success: true,
-  });
+  expect(result).toStrictEqual({ deletedID: id });
 
   // Verify the record was actually deleted
   const verification = await db.query.verifications.findFirst({
@@ -59,27 +43,6 @@ test('it deletes a verification record', async () => {
   });
 
   expect(verification).toBeUndefined();
-
-  await teardown();
-});
-
-test('it handles errors gracefully', async () => {
-  const { app, teardown } = await setupTest();
-
-  const response = await app.request('/delete-verification', {
-    body: 'invalid-json',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    method: 'POST',
-  });
-
-  const result = await response.json();
-
-  expect(result).toEqual({
-    error: 'An unknown error occurred',
-    success: false,
-  });
 
   await teardown();
 });

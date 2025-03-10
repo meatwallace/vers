@@ -1,5 +1,4 @@
 import * as schema from '@vers/postgres-schema';
-import { ServiceResponse } from './service-response';
 
 export type VerificationType =
   (typeof schema.verifications.$inferSelect)['type'];
@@ -10,51 +9,51 @@ interface VerificationData {
   type: VerificationType;
 }
 
-export interface CreateVerificationRequest {
+export interface CreateVerificationArgs {
   expiresAt?: Date | null;
   period?: number;
   target: string;
   type: VerificationType;
 }
 
-export type CreateVerificationResponse = ServiceResponse<
-  VerificationData & { otp: string }
->;
+export type CreateVerificationPayload = VerificationData & { otp: string };
 
-export interface VerifyCodeRequest {
+export interface VerifyCodeArgs {
   code: string;
   target: string;
   type: VerificationType;
 }
 
-export type VerifyCodeResponse = ServiceResponse<VerificationData>;
+export type VerifyCodePayload = null | VerificationData;
 
-export interface GetVerificationRequest {
+export interface GetVerificationArgs {
   target: string;
   type: VerificationType;
 }
 
-export type GetVerificationResponse = ServiceResponse<null | VerificationData>;
+export type GetVerificationPayload = null | VerificationData;
 
-export interface UpdateVerificationRequest {
+export interface UpdateVerificationArgs {
   id: string;
   type?: VerificationType;
 }
 
-export type UpdateVerificationResponse = ServiceResponse<{
+export interface UpdateVerificationPayload {
   updatedID: string;
-}>;
+}
 
-export interface DeleteVerificationRequest {
+export interface DeleteVerificationArgs {
   id: string;
 }
 
-export type DeleteVerificationResponse = ServiceResponse<{ deletedID: string }>;
+export interface DeleteVerificationPayload {
+  deletedID: string;
+}
 
-export interface Get2FAVerificationURIRequest {
+export interface Get2FAVerificationURIArgs {
   target: string;
 }
 
-export type Get2FAVerificationURIResponse = ServiceResponse<{
+export interface Get2FAVerificationURIPayload {
   otpURI: string;
-}>;
+}
