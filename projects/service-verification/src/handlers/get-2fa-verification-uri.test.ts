@@ -38,7 +38,7 @@ test('it returns a TOTP auth URI for a valid 2FA verification record', async () 
     target: 'test@example.com',
   });
 
-  expect(result).toMatchObject({
+  expect(result).toStrictEqual({
     otpURI: expect.stringContaining('otpauth://totp/vers:test%40example.com'),
   });
 

@@ -28,7 +28,7 @@ test('it creates a user with a hashed password', async () => {
     username: 'test_user',
   });
 
-  expect(result).toMatchObject({
+  expect(result).toStrictEqual({
     createdAt: expect.any(Date),
     email: 'user@test.com',
     id: expect.any(String),
@@ -43,7 +43,9 @@ test('it creates a user with a hashed password', async () => {
 
   invariant(user?.passwordHash, 'user with password hash must be created');
 
-  expect(await bcrypt.compare(password, user.passwordHash)).toBe(true);
+  await expect(
+    bcrypt.compare(password, user.passwordHash),
+  ).resolves.toBeTruthy();
 
   await teardown();
 });

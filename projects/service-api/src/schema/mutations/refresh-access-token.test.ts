@@ -12,9 +12,7 @@ test('it refreshes access token with valid refresh token', async () => {
     userID: user.id,
   });
 
-  const ctx = createMockGQLContext({
-    user,
-  });
+  const ctx = createMockGQLContext({ user });
 
   const args = {
     input: {
@@ -24,13 +22,15 @@ test('it refreshes access token with valid refresh token', async () => {
 
   const result = await resolve({}, args, ctx);
 
-  expect(result).toMatchObject({
+  expect(result).toStrictEqual({
     accessToken: expect.any(String),
     refreshToken: expect.any(String),
     session: {
+      createdAt: expect.any(Date),
       expiresAt: expect.any(Date),
       id: expect.any(String),
       ipAddress: session.ipAddress,
+      updatedAt: expect.any(Date),
       userID: user.id,
     },
   });

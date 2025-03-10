@@ -35,13 +35,10 @@ test('it updates the provided user', async () => {
     where: eq(users.id, user.id),
   });
 
-  expect(result).toEqual({
-    updatedID: user.id,
-  });
+  expect(result).toStrictEqual({ updatedID: user.id });
 
-  expect(updatedUser).toMatchObject({
-    createdAt: expect.any(Date),
-    id: user.id,
+  expect(updatedUser).toStrictEqual({
+    ...user,
     name: 'Updated Name',
     updatedAt: expect.any(Date),
     username: 'updated_username',
@@ -70,17 +67,12 @@ test('it allows partial updating', async () => {
     where: eq(users.id, user.id),
   });
 
-  expect(result).toEqual({
-    updatedID: user.id,
-  });
+  expect(result).toStrictEqual({ updatedID: user.id });
 
-  expect(updatedUser).toMatchObject({
-    createdAt: expect.any(Date),
-    email: user.email,
-    id: user.id,
+  expect(updatedUser).toStrictEqual({
+    ...user,
     name: 'Updated Name',
     updatedAt: expect.any(Date),
-    username: user.username,
   });
 
   await teardown();

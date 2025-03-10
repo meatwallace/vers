@@ -63,7 +63,7 @@ test('it uses a simple charset for 2FA verification codes', async () => {
     type: '2fa',
   });
 
-  expect(result).toMatchObject({
+  expect(result).toStrictEqual({
     id: expect.any(String),
     otp: expect.any(String),
     target: 'test@example.com',
@@ -77,12 +77,13 @@ test('it uses a simple charset for 2FA verification codes', async () => {
     ),
   });
 
-  expect(verification).toMatchObject({
+  expect(verification).toStrictEqual({
     algorithm: 'SHA-256',
     charSet: '0123456789',
     createdAt: expect.any(Date),
     digits: 6,
     expiresAt: null,
+    id: expect.any(String),
     period: 30,
     secret: expect.any(String),
     target: 'test@example.com',
@@ -100,7 +101,7 @@ test('it uses a simple charset for 2FA setup verification codes', async () => {
     type: '2fa-setup',
   });
 
-  expect(result).toMatchObject({
+  expect(result).toStrictEqual({
     id: expect.any(String),
     otp: expect.any(String),
     target: 'test@example.com',
@@ -114,12 +115,13 @@ test('it uses a simple charset for 2FA setup verification codes', async () => {
     ),
   });
 
-  expect(verification).toMatchObject({
+  expect(verification).toStrictEqual({
     algorithm: 'SHA-256',
     charSet: '0123456789',
     createdAt: expect.any(Date),
     digits: 6,
     expiresAt: null,
+    id: expect.any(String),
     period: 30,
     secret: expect.any(String),
     target: 'test@example.com',
@@ -174,7 +176,7 @@ test('creates a verification with explicit expiry time', async () => {
     type: 'onboarding',
   });
 
-  expect(result).toMatchObject({
+  expect(result).toStrictEqual({
     id: expect.any(String),
     otp: expect.any(String),
     target: 'test@example.com',
@@ -188,9 +190,16 @@ test('creates a verification with explicit expiry time', async () => {
     ),
   });
 
-  expect(verification).not.toBeUndefined();
-  expect(verification).toMatchObject({
+  expect(verification).toBeDefined();
+  expect(verification).toStrictEqual({
+    algorithm: 'SHA-256',
+    charSet: 'ABCDEFGHJKLMNPQRSTUVWXYZ123456789',
+    createdAt: expect.any(Date),
+    digits: 6,
     expiresAt: new Date(now + 10 * 60 * 1000),
+    id: expect.any(String),
+    period: 30,
+    secret: expect.any(String),
     target: 'test@example.com',
     type: 'onboarding',
   });

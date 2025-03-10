@@ -78,7 +78,7 @@ examples:
         });
 
         // Good - verify the response data
-        expect(result).toMatchObject({
+        expect(result).toStrictEqual({
           id: expect.any(String),
           email: 'user@test.com',
           name: 'Test User',

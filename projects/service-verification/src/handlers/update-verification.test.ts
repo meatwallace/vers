@@ -39,7 +39,7 @@ test('should update a verification record', async () => {
     type: '2fa',
   });
 
-  expect(result).toEqual({
+  expect(result).toStrictEqual({
     updatedID: id,
   });
 
@@ -47,11 +47,12 @@ test('should update a verification record', async () => {
     where: eq(schema.verifications.id, id),
   });
 
-  expect(updatedVerification).toMatchObject({
+  expect(updatedVerification).toStrictEqual({
     algorithm: 'SHA-256',
     charSet: 'ABCDEFGHJKLMNPQRSTUVWXYZ123456789',
     createdAt: expect.any(Date),
     digits: 6,
+    expiresAt: null,
     id,
     period: 30,
     secret: 'test-secret',

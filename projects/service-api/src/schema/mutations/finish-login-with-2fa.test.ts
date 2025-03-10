@@ -57,13 +57,15 @@ test('it returns an auth payload when the transaction token is valid', async () 
 
   const result = await resolve({}, args, ctx);
 
-  expect(result).toMatchObject({
+  expect(result).toStrictEqual({
     accessToken: expect.any(String),
     refreshToken: expect.any(String),
     session: {
+      createdAt: expect.any(Date),
       expiresAt: expect.any(Date),
       id: expect.any(String),
       ipAddress: ctx.ipAddress,
+      updatedAt: expect.any(Date),
       userID: user.id,
     },
   });
@@ -115,7 +117,7 @@ test('it returns an error when 2FA is not enabled', async () => {
 
   const result = await resolve({}, args, ctx);
 
-  expect(result).toMatchObject({
+  expect(result).toStrictEqual({
     error: {
       message: '2FA verification is invalid or has expired',
       title: 'Invalid code',
@@ -144,7 +146,7 @@ test('it returns an error when the transaction token is invalid', async () => {
 
   const result = await resolve({}, args, ctx);
 
-  expect(result).toMatchObject({
+  expect(result).toStrictEqual({
     error: {
       message: '2FA verification is invalid or has expired',
       title: 'Invalid code',

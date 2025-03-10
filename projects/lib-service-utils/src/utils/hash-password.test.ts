@@ -15,7 +15,7 @@ test('it hashes a password using bcrypt', async () => {
   // verify we can compare the hash with the original password
   const isMatch = await bcrypt.compare(password, hashedPassword);
 
-  expect(isMatch).toBe(true);
+  expect(isMatch).toBeTrue();
 });
 
 test('it generates different hashes for the same password', async () => {
@@ -31,8 +31,8 @@ test('it generates different hashes for the same password', async () => {
   const firstMatch = await bcrypt.compare(password, firstHash);
   const secondMatch = await bcrypt.compare(password, secondHash);
 
-  expect(firstMatch).toBe(true);
-  expect(secondMatch).toBe(true);
+  expect(firstMatch).toBeTrue();
+  expect(secondMatch).toBeTrue();
 });
 
 test('it generates hashes of consistent length', async () => {

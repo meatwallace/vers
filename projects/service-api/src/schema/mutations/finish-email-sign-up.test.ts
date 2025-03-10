@@ -45,13 +45,15 @@ test('it completes the email signup process when transaction token is valid', as
 
   const result = await resolve({}, args, ctx);
 
-  expect(result).toMatchObject({
+  expect(result).toStrictEqual({
     accessToken: expect.any(String),
     refreshToken: expect.any(String),
     session: {
+      createdAt: expect.any(Date),
       expiresAt: expect.any(Date),
       id: expect.any(String),
       ipAddress: ctx.ipAddress,
+      updatedAt: expect.any(Date),
       userID: expect.any(String),
     },
   });
@@ -61,8 +63,14 @@ test('it completes the email signup process when transaction token is valid', as
   });
 
   expect(user).toMatchObject({
+    createdAt: expect.any(Date),
     email: args.input.email,
+    id: expect.any(String),
     name: args.input.name,
+    passwordHash: null,
+    passwordResetToken: null,
+    passwordResetTokenExpiresAt: null,
+    updatedAt: expect.any(Date),
     username: args.input.username,
   });
 });
@@ -82,7 +90,7 @@ test('it returns an error if the transaction token is invalid', async () => {
 
   const result = await resolve({}, args, ctx);
 
-  expect(result).toMatchObject({
+  expect(result).toStrictEqual({
     error: {
       message: 'Verification for this operation is invalid or has expired.',
       title: 'Failed Verification',
@@ -107,7 +115,7 @@ test('it returns an ambiguous error if the user already exists', async () => {
     target: 'user@test.com',
   });
 
-  db.user.create({
+  const initialUser = db.user.create({
     email: 'user@test.com',
     name: 'Existing User',
     username: 'existing_user',
@@ -137,7 +145,7 @@ test('it returns an ambiguous error if the user already exists', async () => {
 
   const result = await resolve({}, args, ctx);
 
-  expect(result).toMatchObject({
+  expect(result).toStrictEqual({
     error: {
       message: 'An unknown error occurred',
       title: 'An unknown error occurred',
@@ -149,8 +157,5 @@ test('it returns an ambiguous error if the user already exists', async () => {
     where: { email: { equals: args.input.email } },
   });
 
-  expect(user).toMatchObject({
-    name: 'Existing User',
-    username: 'existing_user',
-  });
+  expect(user).toStrictEqual(initialUser);
 });

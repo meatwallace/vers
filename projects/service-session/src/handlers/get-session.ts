@@ -17,7 +17,13 @@ export async function getSession(
       where: (sessions, { eq }) => eq(sessions.id, input.id),
     });
 
-    return session ?? null;
+    if (!session) {
+      return null;
+    }
+
+    const { refreshToken, ...sessionWithoutRefreshToken } = session;
+
+    return sessionWithoutRefreshToken;
   } catch (error: unknown) {
     // TODO(#16): capture via Sentry
     throw new TRPCError({

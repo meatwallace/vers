@@ -28,7 +28,7 @@ test('it retrieves the 2FA verification URI', async () => {
 
   const result = await resolve({}, {}, ctx);
 
-  expect(result).toMatchObject({
+  expect(result).toStrictEqual({
     otpURI: expect.any(String),
   });
 

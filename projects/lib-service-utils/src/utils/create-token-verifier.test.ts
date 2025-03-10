@@ -57,15 +57,13 @@ test('it authorizes a valid token and extracts the payload', async () => {
 
   const payload = await verifyToken(token);
 
-  expect(payload).toMatchObject(TEST_TOKEN_PAYLOAD);
+  expect(payload).toStrictEqual(TEST_TOKEN_PAYLOAD);
 });
 
 test('should throws an error if no token is provided', async () => {
-  await expect(verifyToken('')).rejects.toThrowError('Invalid Compact JWS');
+  await expect(verifyToken('')).rejects.toThrow('Invalid Compact JWS');
 });
 
 test('should throws an error if an invalid token is provided', async () => {
-  await expect(verifyToken('abc123')).rejects.toThrowError(
-    'Invalid Compact JWS',
-  );
+  await expect(verifyToken('abc123')).rejects.toThrow('Invalid Compact JWS');
 });

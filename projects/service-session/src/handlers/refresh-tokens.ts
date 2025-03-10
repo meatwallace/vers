@@ -28,11 +28,13 @@ export async function refreshTokens(
       });
     }
 
+    const { refreshToken, ...session } = existingSession;
+
     // Check if the session has expired
-    if (existingSession.expiresAt < new Date()) {
+    if (session.expiresAt < new Date()) {
       await ctx.db
         .delete(schema.sessions)
-        .where(eq(schema.sessions.id, existingSession.id));
+        .where(eq(schema.sessions.id, session.id));
 
       throw new TRPCError({
         code: 'UNAUTHORIZED',
@@ -41,20 +43,20 @@ export async function refreshTokens(
     }
 
     const now = Date.now();
-    const sessionAge = now - existingSession.createdAt.getTime();
+    const sessionAge = now - session.createdAt.getTime();
 
     // if our session has existed for less than our short refresh token duration,
     // we can just create a new access token and skip rotating the refresh token
     if (sessionAge < consts.REFRESH_TOKEN_DURATION) {
       const accessToken = await createJWT({
         expiresAt: new Date(Date.now() + consts.ACCESS_TOKEN_DURATION),
-        userID: existingSession.userID,
+        userID: session.userID,
       });
 
       return {
         accessToken,
-        refreshToken: existingSession.refreshToken,
-        session: existingSession,
+        refreshToken,
+        session,
       };
     }
 
@@ -82,7 +84,7 @@ export async function refreshTokens(
     return {
       accessToken,
       refreshToken: newRefreshToken,
-      session: existingSession,
+      session,
     };
   } catch (error: unknown) {
     if (error instanceof TRPCError) {

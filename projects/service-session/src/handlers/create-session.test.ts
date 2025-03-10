@@ -36,7 +36,7 @@ test('it creates a session with default refresh token duration', async () => {
     userID: user.id,
   });
 
-  expect(result).toMatchObject({
+  expect(result).toStrictEqual({
     accessToken: 'mock-access-token',
     refreshToken: 'mock-refresh-token',
     session: {
@@ -44,6 +44,7 @@ test('it creates a session with default refresh token duration', async () => {
       expiresAt: expect.any(Date),
       id: expect.any(String),
       ipAddress: '127.0.0.1',
+      updatedAt: expect.any(Date),
       userID: user.id,
     },
   });
@@ -74,7 +75,7 @@ test('it creates a session with extended refresh token duration', async () => {
     userID: user.id,
   });
 
-  expect(result).toMatchObject({
+  expect(result).toStrictEqual({
     accessToken: 'mock-access-token',
     refreshToken: 'mock-refresh-token',
     session: {
@@ -82,6 +83,7 @@ test('it creates a session with extended refresh token duration', async () => {
       expiresAt: expect.any(Date),
       id: expect.any(String),
       ipAddress: '127.0.0.1',
+      updatedAt: expect.any(Date),
       userID: user.id,
     },
   });

@@ -10,7 +10,7 @@ test('it returns true for unique constraint violations', () => {
   error.code = '23505';
   error.constraint_name = 'users_email_unique';
 
-  expect(isUniqueConstraintError(error, 'users_email_unique')).toBe(true);
+  expect(isUniqueConstraintError(error, 'users_email_unique')).toBeTrue();
 });
 
 test('it returns false for non-matching constraint names', () => {
@@ -21,7 +21,7 @@ test('it returns false for non-matching constraint names', () => {
   error.code = '23505';
   error.constraint_name = 'users_email_unique';
 
-  expect(isUniqueConstraintError(error, 'users_username_unique')).toBe(false);
+  expect(isUniqueConstraintError(error, 'users_username_unique')).toBeFalse();
 });
 
 test('it returns false for non-unique constraint errors', () => {
@@ -31,7 +31,7 @@ test('it returns false for non-unique constraint errors', () => {
 
   error.code = '23503'; // foreign key violation
 
-  expect(isUniqueConstraintError(error, 'users_email_unique')).toBe(false);
+  expect(isUniqueConstraintError(error, 'users_email_unique')).toBeFalse();
 });
 
 test('it returns false for other postgres errors', () => {
@@ -39,5 +39,5 @@ test('it returns false for other postgres errors', () => {
 
   error.code = '42P01'; // undefined table
 
-  expect(isUniqueConstraintError(error, 'users_email_unique')).toBe(false);
+  expect(isUniqueConstraintError(error, 'users_email_unique')).toBeFalse();
 });

@@ -29,7 +29,7 @@ test('it successfully sends an email', async () => {
 
   const result = await caller.sendEmail(email);
 
-  expect(result).toEqual({});
+  expect(result).toStrictEqual({});
 });
 
 test('it throws an error for Resend errors', async () => {

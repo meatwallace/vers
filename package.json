@@ -175,6 +175,7 @@
     "commander": "13.1.0",
     "date-fns": "4.1.0",
     "drizzle-orm": "0.39.3",
+    "eslint-plugin-vitest": "0.5.4",
     "execa": "9.5.2",
     "got": "14.4.6",
     "graphql": "16.10.0",

@@ -51,7 +51,7 @@ test('it creates a valid transaction token with required data', async () => {
     ],
   });
 
-  expect(verifiedToken.payload).toMatchObject({
+  expect(verifiedToken.payload).toStrictEqual({
     action: data.action,
     amr: ['otp'],
     aud: env.API_IDENTIFIER,
@@ -64,6 +64,7 @@ test('it creates a valid transaction token with required data', async () => {
     mfa_verified: true,
     session_id: null,
     sub: data.target,
+    transaction_id: data.transactionID,
   });
 });
 
@@ -108,15 +109,20 @@ test('it creates a valid transaction token with session data', async () => {
     ],
   });
 
-  expect(verifiedToken.payload).toMatchObject({
+  expect(verifiedToken.payload).toStrictEqual({
     action: data.action,
     amr: ['otp'],
     aud: env.API_IDENTIFIER,
+    auth_time: expect.any(Number),
+    exp: expect.any(Number),
+    iat: expect.any(Number),
     ip_address: data.ipAddress,
     iss: env.API_IDENTIFIER,
+    jti: expect.any(String),
     mfa_verified: true,
     session_id: session.id,
     sub: data.target,
+    transaction_id: data.transactionID,
   });
 });
 

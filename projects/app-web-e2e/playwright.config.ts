@@ -1,8 +1,8 @@
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { workspaceRoot } from '@nx/devkit';
 import { nxE2EPreset } from '@nx/playwright/preset';
 import { defineConfig, devices } from '@playwright/test';
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
 
 // patch cjs
 const __filename = fileURLToPath(import.meta.url);

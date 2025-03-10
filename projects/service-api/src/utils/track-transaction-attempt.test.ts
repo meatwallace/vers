@@ -1,13 +1,15 @@
-import { beforeEach, expect, test } from 'vitest';
+import { expect, test } from 'vitest';
 import { VerificationType } from '~/schema/types/verification-type';
 import { pendingTransactionCache } from './pending-transaction-cache';
 import { trackTransactionAttempt } from './track-transaction-attempt';
 
-beforeEach(() => {
+function setupTest() {
   pendingTransactionCache.clear();
-});
+}
 
 test('it increments the attempt count for a pending transaction', () => {
+  setupTest();
+
   const transactionID = 'test_transaction';
 
   const initialTransaction = {
@@ -28,12 +30,16 @@ test('it increments the attempt count for a pending transaction', () => {
 });
 
 test('it throws an error when transaction is not found', () => {
+  setupTest();
+
   expect(() => trackTransactionAttempt('non_existent')).toThrow(
     'Pending transaction not found',
   );
 });
 
 test('it deletes the transaction when max attempts are reached', () => {
+  setupTest();
+
   const transactionID = 'test_transaction';
 
   const initialTransaction = {
@@ -52,6 +58,8 @@ test('it deletes the transaction when max attempts are reached', () => {
 });
 
 test('it increments attempts up to max attempts', () => {
+  setupTest();
+
   const transactionID = 'test_transaction';
 
   const initialTransaction = {

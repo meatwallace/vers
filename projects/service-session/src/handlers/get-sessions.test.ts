@@ -51,7 +51,7 @@ test('it returns all sessions for the user', async () => {
   });
 
   expect(result).toHaveLength(2);
-  expect(result).toMatchObject([
+  expect(result).toStrictEqual([
     {
       createdAt: expect.any(Date),
       expiresAt: expect.any(Date),
@@ -83,7 +83,7 @@ test('it returns an empty array if the user has no sessions', async () => {
   });
 
   expect(result).toHaveLength(0);
-  expect(result).toEqual([]);
+  expect(result).toStrictEqual([]);
 
   await teardown();
 });

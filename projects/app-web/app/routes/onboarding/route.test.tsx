@@ -83,7 +83,9 @@ test('it redirects to the signup route when no email is stored in the verificati
     isOnboarding: false,
   });
 
-  expect(await screen.findByText('SIGNUP_ROUTE')).toBeInTheDocument();
+  const signupRoute = await screen.findByText('SIGNUP_ROUTE');
+
+  expect(signupRoute).toBeInTheDocument();
 });
 
 test('it redirects to the signup route when no transaction token is stored in the verification session', async () => {
@@ -93,13 +95,17 @@ test('it redirects to the signup route when no transaction token is stored in th
     transactionToken: '',
   });
 
-  expect(await screen.findByText('SIGNUP_ROUTE')).toBeInTheDocument();
+  const signupRoute = await screen.findByText('SIGNUP_ROUTE');
+
+  expect(signupRoute).toBeInTheDocument();
 });
 
 test('it redirects to the dashboard route when authenticated', async () => {
   setupTest({ isAuthed: true, isOnboarding: true });
 
-  expect(await screen.findByText('DASHBOARD_ROUTE')).toBeInTheDocument();
+  const dashboardRoute = await screen.findByText('DASHBOARD_ROUTE');
+
+  expect(dashboardRoute).toBeInTheDocument();
 });
 
 test('it renders the onboarding form', async () => {

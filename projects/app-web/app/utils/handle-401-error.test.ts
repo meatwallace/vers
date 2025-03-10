@@ -13,7 +13,7 @@ test('it logs the user out and redirects to the login page when the error is a 4
   const request = new Request('http://localhost:3000/dashboard');
   const error = new ClientError({ status: 401 }, { query: '' });
 
-  await expect(handle401Error(request, error)).rejects.toMatchObject(
+  await expect(handle401Error(request, error)).rejects.toStrictEqual(
     new Response(null, {
       headers: {
         Location: '/login?redirect=%2Fdashboard%3F',

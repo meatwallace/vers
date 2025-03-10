@@ -20,7 +20,7 @@ test('it creates a verification record for 2FA setup with a pending transaction'
 
   const result = await resolve({}, {}, ctx);
 
-  expect(result).toMatchObject({
+  expect(result).toStrictEqual({
     sessionID: null,
     transactionID: expect.any(String),
   });
@@ -35,6 +35,15 @@ test('it creates a verification record for 2FA setup with a pending transaction'
   });
 
   expect(verification).toMatchObject({
+    algorithm: 'SHA-256',
+    charSet: 'ABCDEFGHJKLMNPQRSTUVWXYZ123456789',
+    createdAt: expect.any(Date),
+    digits: 6,
+    expiresAt: null,
+    id: expect.any(String),
+    period: 300,
+    secret: expect.any(String),
+    target: user.email,
     type: '2fa-setup',
   });
 
@@ -42,8 +51,9 @@ test('it creates a verification record for 2FA setup with a pending transaction'
 
   const pendingTransaction = pendingTransactionCache.get(result.transactionID);
 
-  expect(pendingTransaction).toMatchObject({
+  expect(pendingTransaction).toStrictEqual({
     action: VerificationType.TWO_FACTOR_AUTH_SETUP,
+    attempts: 0,
     ipAddress: ctx.ipAddress,
     sessionID: ctx.session?.id,
     target: user.email,
@@ -64,7 +74,7 @@ test('it returns an error if 2FA is already enabled', async () => {
 
   const result = await resolve({}, {}, ctx);
 
-  expect(result).toEqual({
+  expect(result).toStrictEqual({
     error: {
       message: 'Two-factor authentication is already enabled for your account.',
       title: 'Two-factor authentication already enabled',
@@ -86,7 +96,7 @@ test('it replaces an existing 2FA setup verification record', async () => {
 
   const result = await resolve({}, {}, ctx);
 
-  expect(result).toMatchObject({
+  expect(result).toStrictEqual({
     sessionID: null,
     transactionID: expect.any(String),
   });
@@ -100,7 +110,7 @@ test('it replaces an existing 2FA setup verification record', async () => {
     },
   });
 
-  expect(verifications.length).toBe(1);
+  expect(verifications).toHaveLength(1);
   expect(verifications[0].id).not.toBe(firstVerification.id);
 });
 

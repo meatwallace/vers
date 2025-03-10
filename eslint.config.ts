@@ -1,16 +1,18 @@
+import path from 'node:path';
+import url from 'node:url';
 import { FlatCompat } from '@eslint/eslintrc';
 import eslint from '@eslint/js';
 import prettierConfig from 'eslint-config-prettier';
 import drizzlePlugin from 'eslint-plugin-drizzle';
 import jsxA11yPlugin from 'eslint-plugin-jsx-a11y';
 import perfectionist from 'eslint-plugin-perfectionist';
+import playwright from 'eslint-plugin-playwright';
 import reactPlugin from 'eslint-plugin-react';
 import unicornPlugin from 'eslint-plugin-unicorn';
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
+import vitest from 'eslint-plugin-vitest';
 import tseslint from 'typescript-eslint';
 
-const __filename = fileURLToPath(import.meta.url);
+const __filename = url.fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const compat = new FlatCompat({
@@ -95,11 +97,13 @@ export default tseslint.config(
         {
           customGroups: {
             type: {
+              node: ['^node:.+'],
               react: ['^react$', '^react-.+'],
               'testing-library': ['^@testing-library'],
               vitest: ['^vitest$'],
             },
             value: {
+              node: ['^node:.+'],
               react: ['^react$', '^react-.+'],
               'testing-library': ['^@testing-library'],
               vitest: ['^vitest$'],
@@ -110,6 +114,7 @@ export default tseslint.config(
             'testing-library',
             'react',
             'type',
+            'node',
             ['builtin', 'external'],
             'internal-type',
             'internal',
@@ -145,6 +150,34 @@ export default tseslint.config(
         pragma: 'React',
         version: 'detect',
       },
+    },
+  },
+  {
+    files: ['**/*.test.ts', '**/*.test.tsx'],
+    plugins: {
+      vitest,
+    },
+    rules: {
+      ...vitest.configs.all.rules,
+      'vitest/max-expects': 'off',
+      'vitest/no-alias-methods': 'error',
+      'vitest/no-conditional-in-test': 'error',
+      'vitest/no-hooks': [
+        'error',
+        {
+          allow: ['afterEach'],
+        },
+      ],
+      'vitest/prefer-expect-assertions': 'off',
+      'vitest/prefer-strict-equal': 'error',
+      'vitest/require-top-level-describe': 'off',
+    },
+  },
+  {
+    ...playwright.configs['flat/recommended'],
+    files: ['**/*.spec.ts'],
+    rules: {
+      ...playwright.configs['flat/recommended'].rules,
     },
   },
   {
