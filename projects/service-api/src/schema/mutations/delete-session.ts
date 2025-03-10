@@ -50,6 +50,12 @@ builder.mutationField('deleteSession', (t) =>
     args: {
       input: t.arg({ required: true, type: DeleteSessionInput }),
     },
+    directives: {
+      rateLimit: {
+        duration: 60,
+        limit: 10,
+      },
+    },
     resolve,
     type: DeleteSessionPayload,
   }),

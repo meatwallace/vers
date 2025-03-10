@@ -1,1 +1,101 @@
- 
+---
+description: Test Setup Standards
+globs: "projects/*/src/**/*.test.ts"
+alwaysApply: false
+---
+
+# Test Setup Standards
+
+Standards for setting up tests with automatic resource cleanup.
+
+<rule>
+name: testing_setup_standards
+description: Standards for test setup with automatic resource cleanup
+filters:
+  - type: file_path
+    pattern: ".*\\.test\\.ts$"
+
+actions:
+  - type: suggest
+    message: |
+      Test Setup Standards:
+
+      1. Database Setup:
+         - Use `await using handle = await createTestDB()` pattern for automatic cleanup
+         - Extract database with `const { db } = handle`
+         - Never use manual teardown calls
+         - Use setupTest function for test-specific setup
+
+      2. Test Structure:
+         - Keep test setup focused on the specific test case
+         - Create test data within each test for clarity
+         - Use descriptive test names that explain what's being tested
+         - Test both success and error cases
+
+examples:
+  - input: |
+      ```ts
+      // Bad - manual teardown
+      test('it works', async () => {
+        const { db, teardown } = await PostgresTestUtils.createTestDB(pgTestConfig);
+        
+        // test code
+        
+        await teardown(); // Bad - manual teardown
+      });
+
+      // Good - automatic cleanup with await using
+      test('it works', async () => {
+        await using handle = await createTestDB();
+        
+        const { db } = handle;
+        
+        // test code
+        // No teardown needed - automatic cleanup
+      });
+
+      // Good - setupTest function for test-specific setup
+      interface TestConfig {
+        db: PostgresJsDatabase<typeof schema>;
+      }
+
+      function setupTest(config: TestConfig) {
+        const caller = createCaller({ db: config.db });
+        return { caller };
+      }
+
+      test('it works', async () => {
+        await using handle = await createTestDB();
+        
+        const { db } = handle;
+        
+        const { caller } = setupTest({ db });
+        
+        // test code
+      });
+
+      // Good - async setupTest with additional setup
+      async function setupTest(config: TestConfig) {
+        const caller = createCaller({ db: config.db });
+        
+        const user = await createTestUser({ db: config.db });
+        
+        return { caller, user };
+      }
+
+      test('it works', async () => {
+        await using handle = await createTestDB();
+        
+        const { db } = handle;
+        
+        const { caller, user } = await setupTest({ db });
+        
+        // test code
+      });
+      ```
+    output: "Test setup following standards"
+
+metadata:
+  priority: high
+  version: 1.0
+</rule> 

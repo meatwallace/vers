@@ -22,9 +22,9 @@ actions:
 
       1. Test Setup:
          - Create reusable `setupTest` function per handler
-         - Return trpc `caller`, dependencies, and teardown function
+         - Return trpc `caller` and any other test-specific setup
          - Use type-safe test utilities
-         - Clean up after each test with teardown
+         - Use `await using` pattern for automatic resource cleanup
          - Reset mocks in `afterEach`
 
       2. Handler Testing:
@@ -49,8 +49,9 @@ examples:
 
       // Good - proper service handler testing
       import { Hono } from 'hono';
-      import { createTestDB } from '@vers/service-test-utils';
-      import type { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
+      import * as schema from '@vers/postgres-schema';
+      import { createTestDB, createTestUser } from '@vers/service-test-utils';
+      import { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
       import { router } from '../router';
       import { t } from '../t';
 
@@ -60,19 +61,18 @@ examples:
         db: PostgresJsDatabase<typeof schema>;
       }
 
-      async function setupTest(config: TestConfig) {
+      function setupTest(config: TestConfig) {
         const caller = createCaller({ db: config.db });
-
         return { caller };
       }
 
       test('it creates a user with a hashed password', async () => {
-        // Good - use our utils with automatic disposal and pass to setup fn
-        await using handler = await createTestDB();
+        // Good - use await using pattern for automatic cleanup
+        await using handle = await createTestDB();
         
-        const { db } = handler;
-
-        const { caller } = await setupTest({ db });
+        const { db } = handle;
+        
+        const { caller } = setupTest({ db });
 
         const password = 'password123';
 
@@ -106,7 +106,11 @@ examples:
 
       // Good - test error cases
       test('it returns an error if a user with that email already exists', async () => {
-        const { caller, teardown } = await setupTest();
+        await using handle = await createTestDB();
+        
+        const { db } = handle;
+        
+        const { caller } = setupTest({ db });
 
         // create an initial user
         await caller.createUser({
@@ -126,8 +130,6 @@ examples:
           code: 'CONFLICT',
           message: 'User already exists with the provided email',
         });
-
-        await teardown();
       });
       ```
     output: "Service tests following standards"

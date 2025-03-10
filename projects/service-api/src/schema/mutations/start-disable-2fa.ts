@@ -95,6 +95,12 @@ builder.mutationField('startDisable2FA', (t) =>
     args: {
       input: t.arg({ required: true, type: StartDisable2FAInput }),
     },
+    directives: {
+      rateLimit: {
+        duration: 60,
+        limit: 10,
+      },
+    },
     resolve: resolve,
     type: StartDisable2FAPayload,
   }),

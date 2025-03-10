@@ -152,6 +152,12 @@ builder.mutationField('startPasswordReset', (t) =>
     args: {
       input: t.arg({ required: true, type: StartPasswordResetInput }),
     },
+    directives: {
+      rateLimit: {
+        duration: 60,
+        limit: 10,
+      },
+    },
     resolve: startPasswordReset,
     type: StartPasswordResetPayload,
   }),

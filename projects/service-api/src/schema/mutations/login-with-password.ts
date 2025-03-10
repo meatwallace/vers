@@ -103,6 +103,12 @@ builder.mutationField('loginWithPassword', (t) =>
     args: {
       input: t.arg({ required: true, type: LoginWithPasswordInput }),
     },
+    directives: {
+      rateLimit: {
+        duration: 60,
+        limit: 10,
+      },
+    },
     resolve: loginWithPassword,
     type: LoginWithPasswordPayload,
   }),

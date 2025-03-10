@@ -52,6 +52,12 @@ builder.queryField('getSessions', (t) =>
     args: {
       input: t.arg({ required: true, type: GetSessionsInput }),
     },
+    directives: {
+      rateLimit: {
+        duration: 60,
+        limit: 20,
+      },
+    },
     resolve,
     type: [Session],
   }),
