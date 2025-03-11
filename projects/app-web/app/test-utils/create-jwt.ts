@@ -1,7 +1,6 @@
 import * as jose from 'jose';
 
 interface JWTConfig {
-  alg?: string;
   audience: string;
   expirationTime?: string;
   issuer: string;
@@ -12,7 +11,7 @@ export async function createJWT(config: JWTConfig): Promise<string> {
   const signingKey = new TextEncoder().encode('secret');
 
   const jwt = await new jose.SignJWT({ sub: config.sub })
-    .setProtectedHeader({ alg: config.alg ?? 'HS256' })
+    .setProtectedHeader({ alg: 'HS256' })
     .setIssuedAt()
     .setIssuer(config.issuer)
     .setAudience(config.audience)

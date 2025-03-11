@@ -42,7 +42,7 @@ services:
       - projects/service-email/.env.development
       - projects/service-email/.env.development.local
     environment:
-      - POSTGRES_URL=postgresql://admin:password@postgres:5433/vers
+      - DATABASE_URL=postgresql://admin:password@postgres:5433/vers
     ports:
       - '3001:3001'
     depends_on:
@@ -57,7 +57,7 @@ services:
     env_file:
       - projects/service-session/.env.development
     environment:
-      - POSTGRES_URL=postgresql://admin:password@postgres:5433/vers
+      - DATABASE_URL=postgresql://admin:password@postgres:5433/vers
     ports:
       - '3002:3002'
     depends_on:
@@ -72,7 +72,7 @@ services:
     env_file:
       - projects/service-user/.env.development
     environment:
-      - POSTGRES_URL=postgresql://admin:password@postgres:5433/vers
+      - DATABASE_URL=postgresql://admin:password@postgres:5433/vers
     ports:
       - '3003:3003'
     depends_on:
@@ -87,7 +87,7 @@ services:
     env_file:
       - projects/service-verification/.env.development
     environment:
-      - POSTGRES_URL=postgresql://admin:password@postgres:5433/vers
+      - DATABASE_URL=postgresql://admin:password@postgres:5433/vers
     ports:
       - '3004:3004'
     depends_on:

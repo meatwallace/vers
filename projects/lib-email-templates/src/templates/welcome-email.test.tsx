@@ -5,7 +5,7 @@ import { WelcomeEmail } from './welcome-email';
 test('it renders a welcome email with provided configuration', () => {
   const props = {
     verificationCode: '123456',
-    verificationURL: 'https://vers.com/verification?token=123456',
+    verificationURL: 'https://versidlecom/verification?token=123456',
   };
 
   render(<WelcomeEmail {...props} />);
@@ -13,7 +13,7 @@ test('it renders a welcome email with provided configuration', () => {
   const welcomeMessage = screen.getByText('Welcome to vers.');
   const verificationCode = screen.getByText('123456');
   const verificationLink = screen.getByText(
-    'https://vers.com/verification?token=123456',
+    'https://versidlecom/verification?token=123456',
   );
 
   expect(welcomeMessage).toBeInTheDocument();

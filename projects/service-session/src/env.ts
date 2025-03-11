@@ -4,12 +4,17 @@ import { z } from 'zod';
 export const envSchema = z
   .object({
     API_IDENTIFIER: z.string(),
+    DATABASE_URL: z.string(),
     HOSTNAME: z.string(),
-    JWT_SIGNING_SECRET: z.string(),
+    JWT_SIGNING_PRIVKEY: z
+      .string()
+      .transform((val) => val.replace(String.raw`\n`, '\n')),
+    JWT_SIGNING_PUBKEY: z
+      .string()
+      .transform((val) => val.replace(String.raw`\n`, '\n')),
     LOGGING: LoggingSchema,
     NODE_ENV: NodeEnvSchema,
     PORT: z.string().transform(Number),
-    POSTGRES_URL: z.string(),
   })
   .transform(addEnvUtils);
 

@@ -139,6 +139,12 @@ export default tseslint.config(
         },
       ],
       'perfectionist/sort-modules': 'off',
+      'perfectionist/sort-objects': [
+        'error',
+        {
+          partitionByComment: true,
+        },
+      ],
 
       'unicorn/no-null': 'off',
       'unicorn/prevent-abbreviations': 'off',

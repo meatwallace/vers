@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 const envSchema = z.object({
-  POSTGRES_URL: z
+  DATABASE_URL: z
     .string()
     .default('postgresql://admin:password@localhost:5433/vers'),
 });

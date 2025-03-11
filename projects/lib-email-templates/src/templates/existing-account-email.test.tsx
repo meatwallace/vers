@@ -16,6 +16,6 @@ test('it renders the existing account email with all required elements', () => {
   expect(resetButton).toBeInTheDocument();
   expect(resetButton).toHaveAttribute(
     'href',
-    'https://vers.com/forgot-password',
+    'https://versidlecom/forgot-password',
   );
 });

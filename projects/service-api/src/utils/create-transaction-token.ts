@@ -25,8 +25,6 @@ export async function createTransactionToken(
   data: Data,
   ctx: Context,
 ): Promise<string> {
-  const alg = 'RS256';
-
   const pendingTransaction = pendingTransactionCache.get(data.transactionID);
 
   if (!pendingTransaction) {
@@ -72,12 +70,12 @@ export async function createTransactionToken(
 
   const jti = createId();
 
-  const privateKey = await jose.importPKCS8(env.JWT_SIGNING_SECRET, alg);
+  const privateKey = await jose.importPKCS8(env.JWT_SIGNING_PRIVKEY, 'RS256');
 
   const expirationTime = VERIFICATION_TYPE_EXPIRATION_TIME[data.action];
 
   const jwt = await new jose.SignJWT(payload)
-    .setProtectedHeader({ alg })
+    .setProtectedHeader({ alg: 'RS256' })
     .setIssuedAt()
     .setIssuer(env.API_IDENTIFIER)
     .setAudience(env.API_IDENTIFIER)

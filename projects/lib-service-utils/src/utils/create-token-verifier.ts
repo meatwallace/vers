@@ -4,7 +4,7 @@ import invariant from 'tiny-invariant';
 export interface TokenVerifierConfig {
   audience: string;
   issuer: string;
-  signingKey: string;
+  spkiKey: string;
 }
 
 interface RelevantJWTPayload {
@@ -14,7 +14,7 @@ interface RelevantJWTPayload {
 
 export function createTokenVerifier(config: TokenVerifierConfig) {
   return async (token: string): Promise<RelevantJWTPayload> => {
-    const publicKey = await jose.importPKCS8(config.signingKey, 'RS256');
+    const publicKey = await jose.importSPKI(config.spkiKey, 'RS256');
 
     const { payload } = await jose.jwtVerify(token, publicKey, {
       algorithms: ['RS256'],
