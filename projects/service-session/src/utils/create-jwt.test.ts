@@ -11,7 +11,7 @@ test('it creates a valid JWT with correct claims', async () => {
 
   const jwt = await createJWT(data);
 
-  const publicKey = await jose.importPKCS8(env.JWT_SIGNING_SECRET, 'RS256');
+  const publicKey = await jose.importSPKI(env.JWT_SIGNING_PUBKEY, 'RS256');
 
   const { payload, protectedHeader } = await jose.jwtVerify(jwt, publicKey, {
     audience: env.API_IDENTIFIER,

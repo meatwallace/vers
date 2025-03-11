@@ -45,10 +45,27 @@ yarn stack:stop
 yarn stack:stop:<service>
 ```
 
-## generating PKSC8 private key for JWT signing
+## generating keys for JWT signing & verification
 
 ```sh
-openssl genpkey -out rsakey.pem -algorithm RSA -pkeyopt rsa_keygen_bits:2048
+
+# generate rs256 private key
+openssl genpkey -algorithm RSA -pkeyopt rsa_keygen_bits:2048 | openssl pkcs8 -topk8 -nocrypt > privkey.pem
+
+# extract pubkey
+openssl pkey -pubout -in privkey.pem -out pubkey.crt
+```
+
+## creating a new fly deployment
+
+```sh
+cd projects/<project-name>
+
+# initial deployment
+fly launch
+
+# attach our service to our postgres instance
+fly pg attach vers-pg --database-name=vers
 ```
 
 ## development with cursor

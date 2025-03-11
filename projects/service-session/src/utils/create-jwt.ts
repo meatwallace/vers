@@ -7,16 +7,15 @@ interface Data {
 }
 
 export async function createJWT(data: Data): Promise<string> {
-  const alg = 'RS256';
-  const privateKey = await jose.importPKCS8(env.JWT_SIGNING_SECRET, alg);
+  const pkcs8Key = await jose.importPKCS8(env.JWT_SIGNING_PRIVKEY, 'RS256');
 
   const jwt = await new jose.SignJWT({ sub: data.userID })
-    .setProtectedHeader({ alg })
+    .setProtectedHeader({ alg: 'RS256' })
     .setIssuedAt()
     .setIssuer(env.API_IDENTIFIER)
     .setAudience(env.API_IDENTIFIER)
     .setExpirationTime(data.expiresAt)
-    .sign(privateKey);
+    .sign(pkcs8Key);
 
   return jwt;
 }

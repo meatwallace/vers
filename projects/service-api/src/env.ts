@@ -5,17 +5,17 @@ export const envSchema = z
   .object({
     API_IDENTIFIER: z.string(),
     APP_WEB_URL: z.string().url(),
+    HOSTNAME: z.string(),
+    JWT_SIGNING_PRIVKEY: z.string(),
+    JWT_SIGNING_PUBKEY: z
+      .string()
+      .transform((val) => val.replace(String.raw`\n`, '\n')),
+    LOGGING: LoggingSchema,
+    NODE_ENV: NodeEnvSchema,
+    PORT: z.string().transform(Number),
 
     // service URLs
     EMAILS_SERVICE_URL: z.string().url(),
-    HOSTNAME: z.string(),
-
-    JWT_SIGNING_SECRET: z.string(),
-    LOGGING: LoggingSchema,
-
-    NODE_ENV: NodeEnvSchema,
-
-    PORT: z.string().transform(Number),
     SESSIONS_SERVICE_URL: z.string().url(),
     USERS_SERVICE_URL: z.string().url(),
     VERIFICATIONS_SERVICE_URL: z.string().url(),

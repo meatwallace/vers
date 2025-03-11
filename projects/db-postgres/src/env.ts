@@ -3,10 +3,9 @@ import { z } from 'zod';
 
 export const envSchema = z
   .object({
+    DATABASE_URL: z.string(),
     LOGGING: LoggingSchema,
     NODE_ENV: NodeEnvSchema,
-
-    POSTGRES_URL: z.string(),
   })
   .transform(addEnvUtils);
 

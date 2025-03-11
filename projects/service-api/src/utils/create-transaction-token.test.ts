@@ -33,7 +33,7 @@ test('it creates a valid transaction token with required data', async () => {
   const ctx = createMockGQLContext({});
 
   const token = await createTransactionToken(data, ctx);
-  const key = await jose.importPKCS8(env.JWT_SIGNING_SECRET, 'RS256');
+  const key = await jose.importSPKI(env.JWT_SIGNING_PUBKEY, 'RS256');
 
   const verifiedToken = await jose.jwtVerify(token, key, {
     algorithms: ['RS256'],
@@ -91,7 +91,7 @@ test('it creates a valid transaction token with session data', async () => {
 
   const ctx = createMockGQLContext({});
   const token = await createTransactionToken(data, ctx);
-  const key = await jose.importPKCS8(env.JWT_SIGNING_SECRET, 'RS256');
+  const key = await jose.importSPKI(env.JWT_SIGNING_PUBKEY, 'RS256');
 
   const verifiedToken = await jose.jwtVerify(token, key, {
     algorithms: ['RS256'],
@@ -194,7 +194,7 @@ test.each([
 
     const ctx = createMockGQLContext({});
     const token = await createTransactionToken(data, ctx);
-    const key = await jose.importPKCS8(env.JWT_SIGNING_SECRET, 'RS256');
+    const key = await jose.importSPKI(env.JWT_SIGNING_PUBKEY, 'RS256');
 
     const verifiedToken = await jose.jwtVerify(token, key, {
       algorithms: ['RS256'],

@@ -47,7 +47,7 @@ export async function verifyTransactionToken(
     return null;
   }
 
-  const publicKey = await jose.importPKCS8(env.JWT_SIGNING_SECRET, 'RS256');
+  const publicKey = await jose.importSPKI(env.JWT_SIGNING_PUBKEY, 'RS256');
 
   try {
     const verifiedJWT = await jose.jwtVerify(data.token, publicKey, {

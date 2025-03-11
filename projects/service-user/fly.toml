@@ -1,18 +1,15 @@
-app = 'service-user'
+app = 'vers-service-user'
 primary_region = 'syd'
 
-[[services]]
-  internal_port = 3001
-  protocol = "tcp"
-  auto_stop_machines = true
+[build]
+
+[http_service]
+  internal_port = 3003
+  force_https = true
+  auto_stop_machines = 'stop'
   auto_start_machines = true
   min_machines_running = 0
   processes = ['app']
-
-  [[services.ports]]
-    handlers = ["http"]
-    port = 3001
-    force_https = false
 
 [[vm]]
   memory = '256mb'

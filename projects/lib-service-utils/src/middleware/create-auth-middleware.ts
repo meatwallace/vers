@@ -17,7 +17,7 @@ export function createAuthMiddleware(config: AuthMiddlewareConfig) {
   const verifyToken = createTokenVerifier({
     audience: config.tokenVerifierConfig.audience,
     issuer: config.tokenVerifierConfig.issuer,
-    signingKey: config.tokenVerifierConfig.signingKey,
+    spkiKey: config.tokenVerifierConfig.spkiKey,
   });
 
   return async (ctx: Context, next: Next) => {

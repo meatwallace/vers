@@ -1,18 +1,17 @@
 import * as jose from 'jose';
 
 interface TestTokenConfig {
-  alg?: string;
   audience: string;
   issuer: string;
-  signingKey?: jose.KeyLike | Uint8Array;
+  pkcs8Key?: jose.CryptoKey;
   sub: string;
 }
 
 export async function createTestJWT(config: TestTokenConfig): Promise<string> {
-  const signingKey = config.signingKey ?? new TextEncoder().encode('secret');
+  const signingKey = config.pkcs8Key ?? new TextEncoder().encode('secret');
 
   const jwt = await new jose.SignJWT({ sub: config.sub })
-    .setProtectedHeader({ alg: config.alg ?? 'HS256' })
+    .setProtectedHeader({ alg: config.pkcs8Key ? 'RS256' : 'HS256' })
     .setIssuedAt()
     .setIssuer(config.issuer)
     .setAudience(config.audience)
