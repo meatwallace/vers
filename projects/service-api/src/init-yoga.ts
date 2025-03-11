@@ -8,7 +8,7 @@ import { schema } from './schema';
 const tokenVerifierConfig = {
   audience: env.API_IDENTIFIER,
   issuer: env.API_IDENTIFIER,
-  signingKey: env.JWT_SIGNING_PRIVKEY,
+  spkiKey: env.JWT_SIGNING_PUBKEY,
 };
 
 const authMiddleware = createAuthMiddleware({ tokenVerifierConfig });

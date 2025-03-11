@@ -3,6 +3,7 @@ import * as schema from '@vers/postgres-schema';
 import { GetUserPayload } from '@vers/service-types';
 import { eq, or } from 'drizzle-orm';
 import { z } from 'zod';
+import { logger } from '~/logger';
 import type { Context } from '../types';
 import { t } from '../t';
 
@@ -31,6 +32,8 @@ export async function getUser(
 
     return user ?? null;
   } catch (error: unknown) {
+    logger.error(error);
+
     // TODO(#16): capture via Sentry
     throw new TRPCError({
       cause: error,

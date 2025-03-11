@@ -4,6 +4,7 @@ import { VerifyPasswordPayload } from '@vers/service-types';
 import bcrypt from 'bcryptjs';
 import { eq } from 'drizzle-orm';
 import { z } from 'zod';
+import { logger } from '~/logger';
 import type { Context } from '../types';
 import { t } from '../t';
 
@@ -43,6 +44,8 @@ export async function verifyPassword(
 
     return { success: true };
   } catch (error: unknown) {
+    logger.error(error);
+
     // TODO(#16): capture via Sentry
     if (error instanceof TRPCError) {
       throw error;

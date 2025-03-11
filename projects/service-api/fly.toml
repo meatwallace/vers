@@ -3,6 +3,18 @@ primary_region = 'syd'
 
 [build]
 
+[env]
+  API_IDENTIFIER = 'https://api.versidle.com/'
+  APP_WEB_URL = 'https://versidle.com'
+  EMAILS_SERVICE_URL = 'http://vers-service-email.internal:3001/'
+  HOSTNAME = '0.0.0.0'
+  LOGGING = 'info'
+  NODE_ENV = 'production'
+  PORT = '3000'
+  SESSIONS_SERVICE_URL = 'http://vers-service-session.internal:3002/'
+  USERS_SERVICE_URL = 'http://vers-service-user.internal:3003/'
+  VERIFICATIONS_SERVICE_URL = 'http://vers-service-verification.internal:3004/'
+
 [http_service]
   internal_port = 3000
   force_https = true
