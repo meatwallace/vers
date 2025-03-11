@@ -44,7 +44,6 @@ export async function get2FAVerificationURI(
   } catch (error: unknown) {
     logger.error(error);
 
-    // TODO(#16): capture via Sentry
     if (error instanceof TRPCError) {
       throw error;
     }

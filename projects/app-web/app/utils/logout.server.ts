@@ -1,4 +1,5 @@
 import { redirect } from 'react-router';
+import { captureException } from '@sentry/react';
 import { GraphQLClient } from 'graphql-request';
 import { safeRedirect } from 'remix-utils/safe-redirect';
 import { graphql } from '~/gql';
@@ -52,8 +53,7 @@ export async function logout(request: Request, ctx: Context = {}) {
         },
       });
     } catch (error) {
-      // TODO(#16): capture error with sentry
-      console.error(error);
+      captureException(error);
     }
   }
 

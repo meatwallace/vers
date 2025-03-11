@@ -12,6 +12,7 @@
     "module": "ESNext",
     "lib": ["ESNext"],
     "jsx": "react-jsx",
+    "allowJs": false,
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "baseUrl": ".",

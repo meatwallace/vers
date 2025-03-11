@@ -18,7 +18,6 @@ import { requireAnonymous } from '~/utils/require-anonymous.server.ts';
 import { withErrorHandling } from '~/utils/with-error-handling.ts';
 import { ConfirmPasswordSchema } from '~/validation/confirm-password-schema.ts';
 import type { Route } from './+types/route.ts';
-import * as styles from './route.css.ts';
 
 const finishPasswordResetMutation = graphql(/* GraphQL */ `
   mutation FinishPasswordReset($input: FinishPasswordResetInput!) {
@@ -153,19 +152,13 @@ export function ResetPassword(props: Route.ComponentProps) {
     : StatusButton.Status.Idle;
 
   return (
-    <main className={styles.resetPasswordFormContainer}>
-      <div className={styles.resetPasswordHeader}>
-        <h1 className={styles.resetPasswordTitle}>Reset Password</h1>
-        <p className={styles.resetPasswordSubtitle}>
-          Please enter your new password
-        </p>
+    <main>
+      <div>
+        <h1>Reset Password</h1>
+        <p>Please enter your new password</p>
       </div>
 
-      <Form
-        method="POST"
-        {...getFormProps(form)}
-        className={styles.resetPasswordForm}
-      >
+      <Form method="POST" {...getFormProps(form)}>
         <HoneypotInputs />
         <input {...getInputProps(fields.email, { type: 'hidden' })} />
         <Field
@@ -198,11 +191,9 @@ export function ResetPassword(props: Route.ComponentProps) {
         >
           Reset Password
         </StatusButton>
-        <div className={styles.loginContainer}>
-          <span className={styles.loginText}>Remember your password?</span>
-          <Link className={styles.loginLink} to={Routes.Login}>
-            Login
-          </Link>
+        <div>
+          <span>Remember your password?</span>
+          <Link to={Routes.Login}>Login</Link>
         </div>
       </Form>
     </main>

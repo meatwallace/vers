@@ -78,7 +78,6 @@ export async function startEnable2FA(
 
     return { sessionID: null, transactionID };
   } catch (error) {
-    // TODO(#16): capture via Sentry
     if (error instanceof Error) {
       logger.error(error.message);
     }

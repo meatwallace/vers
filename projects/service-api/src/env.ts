@@ -13,6 +13,7 @@ export const envSchema = z
     LOGGING: LoggingSchema,
     NODE_ENV: NodeEnvSchema,
     PORT: z.string().transform(Number),
+    SENTRY_DSN: z.string().url().optional(),
 
     // service URLs
     EMAILS_SERVICE_URL: z.string().url(),

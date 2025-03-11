@@ -1,6 +1,7 @@
 import { data, Form, redirect, useSearchParams } from 'react-router';
 import { getFormProps, getInputProps, useForm } from '@conform-to/react';
 import { getZodConstraint, parseWithZod } from '@conform-to/zod';
+import { captureException } from '@sentry/react';
 import { HoneypotInputs } from 'remix-utils/honeypot/react';
 import { z } from 'zod';
 import { OTPField } from '~/components/field/index.ts';
@@ -43,12 +44,14 @@ export const loader = withErrorHandling(async (args: Route.LoaderArgs) => {
 
   const url = new URL(request.url);
 
-  const typeParsedWithZod = VerificationTypeSchema.safeParse(
-    url.searchParams.get(QueryParam.Type),
-  );
+  const typeParam = url.searchParams.get(QueryParam.Type);
+  const typeParsedWithZod = VerificationTypeSchema.safeParse(typeParam);
 
   if (!typeParsedWithZod.success) {
-    // TODO(#16): capture invalid verify type
+    const error = new Error(`Invalid verification type: ${typeParam}`);
+
+    captureException(error);
+
     return redirect(Routes.Signup);
   }
 

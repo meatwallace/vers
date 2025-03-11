@@ -21,8 +21,6 @@ const compat = new FlatCompat({
 
 export default tseslint.config(
   eslint.configs.recommended,
-  tseslint.configs.strictTypeChecked,
-  tseslint.configs.stylisticTypeChecked,
   prettierConfig,
   unicornPlugin.configs.recommended,
   reactPlugin.configs.flat.recommended,
@@ -30,6 +28,8 @@ export default tseslint.config(
   ...compat.extends('plugin:react-hooks/recommended'),
   jsxA11yPlugin.flatConfigs.recommended,
   perfectionist.configs['recommended-natural'],
+  tseslint.configs.strictTypeChecked,
+  tseslint.configs.stylisticTypeChecked,
   {
     languageOptions: {
       globals: {
@@ -81,11 +81,8 @@ export default tseslint.config(
           allowNumber: true,
         },
       ],
-
       'drizzle/enforce-delete-with-where': 'off',
-
       'drizzle/enforce-update-with-where': 'error',
-
       'perfectionist/sort-exports': [
         'error',
         {
@@ -158,6 +155,8 @@ export default tseslint.config(
       },
     },
   },
+
+  // --- test specific config
   {
     files: ['**/*.test.ts', '**/*.test.tsx'],
     plugins: {
@@ -179,11 +178,40 @@ export default tseslint.config(
       'vitest/require-top-level-describe': 'off',
     },
   },
+
+  // --- playwright specific config
   {
     ...playwright.configs['flat/recommended'],
     files: ['**/*.spec.ts'],
     rules: {
       ...playwright.configs['flat/recommended'].rules,
+    },
+  },
+
+  // --- mjs config
+  {
+    extends: [tseslint.configs.disableTypeChecked],
+    files: ['**/*.mjs'],
+    languageOptions: {
+      globals: {
+        process: true,
+      },
+    },
+  },
+
+  // --- cjs config
+  {
+    extends: [tseslint.configs.disableTypeChecked],
+    files: ['**/*.cjs'],
+    languageOptions: {
+      globals: {
+        exports: true,
+        process: true,
+        require: true,
+      },
+    },
+    rules: {
+      '@typescript-eslint/no-require-imports': 'off',
     },
   },
   {

@@ -1,7 +1,17 @@
+import * as Sentry from '@sentry/node';
 import { migrate } from 'drizzle-orm/postgres-js/migrator';
 import { db } from './src/db';
 import { pg } from './src/pg';
 
-await migrate(db, { migrationsFolder: './migrations' });
+Sentry.init({
+  dsn: process.env.SENTRY_DSN,
+});
 
-await pg.end();
+try {
+  await migrate(db, { migrationsFolder: './migrations' });
+} catch (error) {
+  Sentry.captureException(error);
+  console.error(error);
+} finally {
+  await pg.end();
+}

@@ -51,11 +51,7 @@ export async function refreshAccessToken(
   );
 
   if (isMutationError(refreshAccessToken)) {
-    // TODO(#16): capture error
-    await logout(request, {
-      client: ctx.client,
-      redirectTo: Routes.Login,
-    });
+    await logout(request, { client: ctx.client, redirectTo: Routes.Login });
   }
 
   invariant('session' in refreshAccessToken, 'session must be in payload');

@@ -35,7 +35,6 @@ export async function sendEmail(
     if (result.error) {
       logger.error(result.error, 'failed to send email with resend:');
 
-      // TODO(#16): capture via Sentry
       throw new TRPCError({
         code: 'INTERNAL_SERVER_ERROR',
         message: 'Failed to send email',
@@ -46,7 +45,6 @@ export async function sendEmail(
   } catch (error: unknown) {
     logger.error(error, 'unknown error');
 
-    // TODO(#16): capture via Sentry
     if (error instanceof TRPCError) {
       throw error;
     }

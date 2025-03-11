@@ -77,7 +77,6 @@ export async function finishDisable2FA(
 
     return { success: true };
   } catch (error) {
-    // TODO(#16): capture via Sentry
     if (error instanceof Error) {
       logger.error(error.message);
     }

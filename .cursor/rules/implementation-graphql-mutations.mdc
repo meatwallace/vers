@@ -75,6 +75,7 @@ actions:
 examples:
   - input: |
       ```ts
+      import { captureException } from '@sentry/node';
       import { GraphQLError } from 'graphql';
       import { logger } from '~/logger';
       import type { Context } from '~/types';
@@ -137,9 +138,9 @@ examples:
 
           return world;
         } catch (error: unknown) {
-          // TODO(#16): capture via Sentry
+          // Good - log & capture errors
           if (error instanceof Error) {
-            // Good - log errors
+            captureException(error);
             logger.error(error.message);
           }
 

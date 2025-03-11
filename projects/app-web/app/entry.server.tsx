@@ -1,8 +1,14 @@
 import { renderToPipeableStream } from 'react-dom/server';
-import type { EntryContext } from 'react-router';
+import type {
+  ActionFunctionArgs,
+  EntryContext,
+  LoaderFunctionArgs,
+} from 'react-router';
 import { ServerRouter } from 'react-router';
 import { PassThrough } from 'node:stream';
+import { styleText } from 'node:util';
 import { createReadableStreamFromReadable } from '@react-router/node';
+import * as Sentry from '@sentry/node';
 import { isbot } from 'isbot';
 
 export const streamTimeout = 5000;
@@ -24,6 +30,10 @@ export default function handleRequest(
   responseHeaders: Headers,
   reactRouterContext: EntryContext,
 ) {
+  if (process.env.NODE_ENV === 'production' && process.env.SENTRY_DSN) {
+    responseHeaders.append('Document-Policy', 'js-profiling');
+  }
+
   const prohibitOutOfOrderStreaming =
     isBotRequest(request.headers.get('user-agent')) ||
     reactRouterContext.isSpaMode;
@@ -41,6 +51,25 @@ export default function handleRequest(
         responseHeaders,
         reactRouterContext,
       );
+}
+
+export function handleError(
+  error: unknown,
+  { request }: ActionFunctionArgs | LoaderFunctionArgs,
+) {
+  // Skip capturing if the request is aborted as Remix docs suggest
+  // Ref: https://remix.run/docs/en/main/file-conventions/entry.server#handleerror
+  if (request.signal.aborted) {
+    return;
+  }
+
+  if (error instanceof Error) {
+    console.error(styleText('red', String(error.stack)));
+  } else {
+    console.error(error);
+  }
+
+  Sentry.captureException(error);
 }
 
 function isBotRequest(userAgent: null | string) {

@@ -38,10 +38,7 @@ export async function requireAuth(
   const isExpiredAccessToken = isExpiredJWT(accessToken);
 
   if (isExpiredAccessToken && isExpiredJWT(refreshToken)) {
-    await logout(request, {
-      client: ctx.client,
-      redirectTo: Routes.Login,
-    });
+    await logout(request, { client: ctx.client, redirectTo: Routes.Login });
   }
 
   if (isExpiredAccessToken) {

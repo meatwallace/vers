@@ -27,7 +27,6 @@ import { PasswordSchema } from '~/validation/password-schema.ts';
 import { UserEmailSchema } from '~/validation/user-email-schema.ts';
 import type { Route } from './+types/route.ts';
 import { QueryParam } from '../verify-otp/types.ts';
-import * as styles from './route.css.ts';
 
 const loginWithPasswordMutation = graphql(/* GraphQL */ `
   mutation LoginWithPassword($input: LoginWithPasswordInput!) {
@@ -181,15 +180,13 @@ export function Login(props: Route.ComponentProps) {
     : StatusButton.Status.Idle;
 
   return (
-    <main className={styles.loginFormContainer}>
-      <div className={styles.loginHeader}>
-        <h1 className={styles.loginTitle}>Welcome back</h1>
-        <p className={styles.loginSubtitle}>
-          Please enter your details to sign in
-        </p>
+    <main>
+      <div>
+        <h1>Welcome back</h1>
+        <p>Please enter your details to sign in</p>
       </div>
 
-      <Form method="POST" {...getFormProps(form)} className={styles.loginForm}>
+      <Form method="POST" {...getFormProps(form)}>
         <HoneypotInputs />
         <Field
           errors={fields.email.errors ?? []}
@@ -211,7 +208,7 @@ export function Login(props: Route.ComponentProps) {
           }}
         />
         <input {...getInputProps(fields.redirect, { type: 'hidden' })} />
-        <div className={styles.rememberMeContainer}>
+        <div>
           <Field
             errors={fields.rememberMe.errors ?? []}
             inputProps={{
@@ -222,12 +219,7 @@ export function Login(props: Route.ComponentProps) {
               htmlFor: fields.rememberMe.id,
             }}
           />
-          <Link
-            className={styles.forgotPasswordLink}
-            to={Routes.ForgotPassword}
-          >
-            Forgot password?
-          </Link>
+          <Link to={Routes.ForgotPassword}>Forgot password?</Link>
         </div>
         <FormErrorList errors={form.errors ?? []} id={form.errorId} />
         <StatusButton
@@ -237,11 +229,9 @@ export function Login(props: Route.ComponentProps) {
         >
           Sign in
         </StatusButton>
-        <div className={styles.signupContainer}>
-          <span className={styles.signupText}>Don&apos;t have an account?</span>
-          <Link className={styles.signupLink} to={Routes.Signup}>
-            Signup
-          </Link>
+        <div>
+          <span>Don&apos;t have an account?</span>
+          <Link to={Routes.Signup}>Signup</Link>
         </div>
       </Form>
     </main>

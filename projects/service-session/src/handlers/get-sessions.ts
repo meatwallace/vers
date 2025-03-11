@@ -24,7 +24,6 @@ export async function getSessions(
   } catch (error: unknown) {
     logger.error(error);
 
-    // TODO(#16): capture via Sentry
     throw new TRPCError({
       cause: error,
       code: 'INTERNAL_SERVER_ERROR',

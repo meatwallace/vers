@@ -4,7 +4,7 @@ import { expect, test } from '@playwright/test';
 test('it signs the user up and displays their dashboard', async ({ page }) => {
   await page.goto('/');
 
-  await page.getByRole('button', { name: 'Signup' }).click();
+  await page.getByRole('link', { name: 'Signup' }).click();
 
   await expect(page).toHaveURL(/localhost:4000\/signup/);
 
