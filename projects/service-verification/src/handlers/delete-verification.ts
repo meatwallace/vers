@@ -4,6 +4,7 @@ import * as schema from '@vers/postgres-schema';
 import { eq } from 'drizzle-orm';
 import { z } from 'zod';
 import type { Context } from '../types';
+import { logger } from '../logger';
 import { t } from '../t';
 
 export const DeleteVerificationInputSchema = z.object({
@@ -28,6 +29,8 @@ export async function deleteVerification(
 
     return payload;
   } catch (error: unknown) {
+    logger.error(error);
+
     // TODO(#16): capture via Sentry
     throw new TRPCError({
       cause: error,

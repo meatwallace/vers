@@ -4,6 +4,7 @@ import { GetSessionsPayload } from '@vers/service-types';
 import { eq } from 'drizzle-orm';
 import { z } from 'zod';
 import type { Context } from '../types';
+import { logger } from '../logger';
 import { t } from '../t';
 
 export const GetSessionsInputSchema = z.object({
@@ -21,6 +22,8 @@ export async function getSessions(
 
     return sessions;
   } catch (error: unknown) {
+    logger.error(error);
+
     // TODO(#16): capture via Sentry
     throw new TRPCError({
       cause: error,

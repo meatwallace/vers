@@ -5,6 +5,7 @@ import * as schema from '@vers/postgres-schema';
 import { and, eq } from 'drizzle-orm';
 import { z } from 'zod';
 import type { Context } from '../types';
+import { logger } from '../logger';
 import { t } from '../t';
 
 export const Get2FAVerificationURIInputSchema = z.object({
@@ -41,6 +42,8 @@ export async function get2FAVerificationURI(
 
     return { otpURI };
   } catch (error: unknown) {
+    logger.error(error);
+
     // TODO(#16): capture via Sentry
     if (error instanceof TRPCError) {
       throw error;

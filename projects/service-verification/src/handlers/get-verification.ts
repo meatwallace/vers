@@ -4,6 +4,7 @@ import * as schema from '@vers/postgres-schema';
 import { and, eq } from 'drizzle-orm';
 import { z } from 'zod';
 import type { Context } from '../types';
+import { logger } from '../logger';
 import { t } from '../t';
 
 export const GetVerificationInputSchema = z.object({
@@ -42,6 +43,8 @@ export async function getVerification(
       type: verification.type,
     };
   } catch (error: unknown) {
+    logger.error(error);
+
     // TODO(#16): capture via Sentry
     throw new TRPCError({
       cause: error,

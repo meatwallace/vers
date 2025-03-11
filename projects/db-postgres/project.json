@@ -5,6 +5,47 @@
   "projectType": "application",
   "tags": [],
   "targets": {
+    "build": {
+      "executor": "@nx/esbuild:esbuild",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
+      "options": {
+        "platform": "node",
+        "outputPath": "projects/db-postgres/dist",
+        "format": ["esm"],
+        "bundle": true,
+        "main": "projects/db-postgres/migrate.ts",
+        "tsConfig": "projects/db-postgres/tsconfig.app.json",
+        "assets": ["projects/db-postgres/src/assets"],
+        "generatePackageJson": true,
+        "external": ["pino-pretty"],
+        "esbuildOptions": {
+          "sourcemap": true,
+          "outExtension": {
+            ".js": ".js"
+          }
+        }
+      },
+      "configurations": {
+        "development": {},
+        "production": {
+          "esbuildOptions": {
+            "sourcemap": false,
+            "outExtension": {
+              ".js": ".js"
+            }
+          }
+        }
+      }
+    },
+    "deploy": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "flyctl deploy --local-only --dockerfile projects/db-postgres/Dockerfile --config projects/db-postgres/fly.toml"
+        ]
+      }
+    },
     "typecheck": {
       "executor": "nx:run-commands",
       "options": {

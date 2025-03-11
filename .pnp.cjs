@@ -151,6 +151,7 @@ const RAW_RUNTIME_STATE =
           ["spin-delay", "virtual:2374804c710bce591a104410bcd13e40c0832c53c15df3ef835a8d768123341b4e7b02280752402cc164167c85ce67046da53fc5c3021eb9bc43a5c6039fb303#npm:2.0.1"],\
           ["superjson", "npm:2.2.2"],\
           ["tiny-invariant", "npm:1.3.3"],\
+          ["tsconfig-paths", "npm:4.2.0"],\
           ["tslib", "npm:2.8.1"],\
           ["tsx", "npm:4.19.3"],\
           ["type-fest", "npm:4.37.0"],\
@@ -11486,6 +11487,7 @@ const RAW_RUNTIME_STATE =
           ["spin-delay", "virtual:2374804c710bce591a104410bcd13e40c0832c53c15df3ef835a8d768123341b4e7b02280752402cc164167c85ce67046da53fc5c3021eb9bc43a5c6039fb303#npm:2.0.1"],\
           ["superjson", "npm:2.2.2"],\
           ["tiny-invariant", "npm:1.3.3"],\
+          ["tsconfig-paths", "npm:4.2.0"],\
           ["tslib", "npm:2.8.1"],\
           ["tsx", "npm:4.19.3"],\
           ["type-fest", "npm:4.37.0"],\

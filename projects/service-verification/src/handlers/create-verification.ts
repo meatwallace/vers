@@ -9,6 +9,7 @@ import * as schema from '@vers/postgres-schema';
 import { and, eq } from 'drizzle-orm';
 import { z } from 'zod';
 import type { Context } from '../types';
+import { logger } from '../logger';
 import { t } from '../t';
 
 // alphanumeirc excluding 0, O, and I on purpose to avoid confusing users
@@ -74,6 +75,8 @@ export async function createVerification(
 
     return payload;
   } catch (error: unknown) {
+    logger.error(error);
+
     // TODO(#16): capture via Sentry
     throw new TRPCError({
       cause: error,

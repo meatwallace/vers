@@ -93,7 +93,9 @@ jobs:
 
       - name: Deploy Postgres Migrations
         if: ${{ github.ref_name == 'main' && contains(steps.record-affected-projects.outputs.affected-projects, 'db-postgres') }}
-        run: yarn pg:migrations-run:prod
+        run: yarn deploy:db-postgres --configuration=production
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
 
       - name: Deploy API Service
         if: ${{ github.ref_name == 'main' && contains(steps.record-affected-projects.outputs.affected-projects, 'service-api') }}

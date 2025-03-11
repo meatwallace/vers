@@ -5,6 +5,7 @@ import { eq } from 'drizzle-orm';
 import { z } from 'zod';
 import type { Context } from '../types';
 import * as consts from '../consts';
+import { logger } from '../logger';
 import { t } from '../t';
 import { createJWT } from '../utils/create-jwt';
 
@@ -87,6 +88,8 @@ export async function refreshTokens(
       session,
     };
   } catch (error: unknown) {
+    logger.error(error);
+
     if (error instanceof TRPCError) {
       throw error;
     }

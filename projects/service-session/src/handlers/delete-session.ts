@@ -4,6 +4,7 @@ import { DeleteSessionPayload } from '@vers/service-types';
 import { and, eq } from 'drizzle-orm';
 import { z } from 'zod';
 import type { Context } from '../types';
+import { logger } from '../logger';
 import { t } from '../t';
 
 export const DeleteSessionInputSchema = z.object({
@@ -27,6 +28,8 @@ export async function deleteSession(
 
     return {};
   } catch (error: unknown) {
+    logger.error(error);
+
     // TODO(#16): capture via Sentry
     throw new TRPCError({
       cause: error,
