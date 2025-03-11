@@ -36,10 +36,15 @@ export function RouteErrorBoundary() {
     );
   }
 
+  const errorMessage =
+    process.env.NODE_ENV === 'development'
+      ? getErrorMessage(error)
+      : 'An unknown error occurred';
+
   return (
     <div className={styles.container}>
       <h1>Error</h1>
-      <p>{getErrorMessage(error)}</p>
+      <p>{errorMessage}</p>
     </div>
   );
 }
