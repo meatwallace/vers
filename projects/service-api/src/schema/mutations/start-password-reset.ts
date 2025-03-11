@@ -122,7 +122,6 @@ export async function startPasswordReset(
 
     return { success: true };
   } catch (error: unknown) {
-    // TODO(#16): capture via Sentry
     if (error instanceof Error) {
       logger.error(error.message);
     }

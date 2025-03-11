@@ -1,17 +1,7 @@
-import { RecipeVariants } from '@vanilla-extract/recipes';
-import clsx from 'clsx';
-import * as styles from './brand.css.ts';
-
-type Props = RecipeVariants<typeof styles.container> & {
+interface Props {
   className?: string;
-};
+}
 
 export function Brand(props: Props) {
-  return (
-    <h1
-      className={clsx(styles.container({ size: props.size }), props.className)}
-    >
-      vers
-    </h1>
-  );
+  return <h1 className={props.className}>vers</h1>;
 }

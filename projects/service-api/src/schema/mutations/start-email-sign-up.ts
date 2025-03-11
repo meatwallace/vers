@@ -85,7 +85,6 @@ export async function startEmailSignup(
       transactionID,
     };
   } catch (error: unknown) {
-    // TODO(#16): capture via Sentry
     if (error instanceof Error) {
       logger.error(error.message);
     }

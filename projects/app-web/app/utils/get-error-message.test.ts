@@ -14,8 +14,8 @@ test('it extracts message from error-like objects', () => {
 });
 
 test('it returns a fallback for non-error values', () => {
-  expect(getErrorMessage({})).toBe('Unknown Error');
-  expect(getErrorMessage(null)).toBe('Unknown Error');
-  expect(getErrorMessage(void 0)).toBe('Unknown Error');
-  expect(getErrorMessage({ foo: 'bar' })).toBe('Unknown Error');
+  expect(getErrorMessage({})).toBe('An unknown error occurred');
+  expect(getErrorMessage(null)).toBe('An unknown error occurred');
+  expect(getErrorMessage(void 0)).toBe('An unknown error occurred');
+  expect(getErrorMessage({ foo: 'bar' })).toBe('An unknown error occurred');
 });

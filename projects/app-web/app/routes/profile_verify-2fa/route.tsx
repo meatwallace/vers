@@ -19,7 +19,6 @@ import { isMutationError } from '~/utils/is-mutation-error.ts';
 import { requireAuth } from '~/utils/require-auth.server.ts';
 import { withErrorHandling } from '~/utils/with-error-handling.ts';
 import type { Route } from './+types/route.ts';
-import * as styles from './route.css.ts';
 
 const GetEnable2FAVerification = graphql(/* GraphQL */ `
   query GetEnable2FAVerification {
@@ -183,11 +182,11 @@ export function ProfileVerify2FARoute(props: Route.ComponentProps) {
 
   return (
     <>
-      <main className={styles.container}>
-        <section className={styles.section}>
+      <main>
+        <section>
           <h1>Set Up 2FA</h1>
 
-          <div className={styles.instructions}>
+          <div>
             <p>Scan this QR code with your authenticator app.</p>
             <p>
               Once you&apos;ve added the account, enter the code from your
@@ -198,20 +197,16 @@ export function ProfileVerify2FARoute(props: Route.ComponentProps) {
             </p>
           </div>
 
-          <div className={styles.qrCodeContainer}>
-            <img
-              alt="QR code for 2FA"
-              className={styles.qrCode}
-              src={props.loaderData.qrCode}
-            />
+          <div>
+            <img alt="QR code for 2FA" src={props.loaderData.qrCode} />
           </div>
 
-          <div className={styles.manualCode}>
+          <div>
             <p>
               If you cannot scan the QR code, you can manually add this account
               to your authenticator app using this code:
             </p>
-            <code className={styles.code}>{props.loaderData.otpURI}</code>
+            <code>{props.loaderData.otpURI}</code>
           </div>
 
           <Form method="POST" {...getFormProps(form)}>

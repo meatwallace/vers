@@ -1,5 +1,4 @@
 import * as React from 'react';
-import * as styles from './field.css.ts';
 import { Input } from './input';
 import { Label } from './label';
 
@@ -15,7 +14,7 @@ export function Field(props: Props) {
   const errorID = `${id}-error`;
 
   return (
-    <div className={styles.container}>
+    <div>
       <Label htmlFor={id} {...props.labelProps} />
       <Input
         {...props.inputProps}
@@ -25,7 +24,7 @@ export function Field(props: Props) {
         id={id}
       />
       {props.errors.map((error) => (
-        <div key={error} className={styles.error} id={errorID}>
+        <div key={error} id={errorID}>
           {error}
         </div>
       ))}

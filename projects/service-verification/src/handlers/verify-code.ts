@@ -75,7 +75,6 @@ export async function verifyCode(
   } catch (error: unknown) {
     logger.error(error);
 
-    // TODO(#16): capture via Sentry
     if (error instanceof TRPCError) {
       throw error;
     }

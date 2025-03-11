@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { isRouteErrorResponse, useRouteError } from 'react-router';
+import { captureException } from '@sentry/react';
 import { getErrorMessage } from '~/utils/get-error-message';
-import * as styles from './route-error-boundary.css.ts';
 
 export function RouteErrorBoundary() {
   const error = useRouteError();
@@ -10,17 +10,18 @@ export function RouteErrorBoundary() {
     console.error(error);
   }
 
-  // TODO(#16): Add Sentry error capture
-  useEffect(() => {
-    // captureException(error);
-  }, [error]);
-
   const isRouteError = isRouteErrorResponse(error);
+
+  useEffect(() => {
+    if (!isRouteError) {
+      captureException(error);
+    }
+  }, [error, isRouteError]);
 
   // TODO(#30): nicer catch-all error page
   if (isRouteError && error.status === 404) {
     return (
-      <div className={styles.container}>
+      <div>
         <h1>404</h1>
         <p>Page not found</p>
       </div>
@@ -29,7 +30,7 @@ export function RouteErrorBoundary() {
 
   if (isRouteError && error.status === 500) {
     return (
-      <div className={styles.container}>
+      <div>
         <h1>500</h1>
         <p>Internal server error</p>
       </div>
@@ -42,7 +43,7 @@ export function RouteErrorBoundary() {
       : 'An unknown error occurred';
 
   return (
-    <div className={styles.container}>
+    <div>
       <h1>Error</h1>
       <p>{errorMessage}</p>
     </div>

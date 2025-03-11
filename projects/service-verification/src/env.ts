@@ -9,6 +9,7 @@ export const envSchema = z
     LOGGING: LoggingSchema,
     NODE_ENV: NodeEnvSchema,
     PORT: z.string().transform(Number),
+    SENTRY_DSN: z.string().url().optional(),
   })
   .transform(addEnvUtils);
 

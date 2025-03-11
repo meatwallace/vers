@@ -1,18 +1,13 @@
 import * as React from 'react';
-import { RecipeVariants } from '@vanilla-extract/recipes';
-import clsx from 'clsx';
-import * as styles from './button.css.ts';
 
-export type Props = React.ComponentProps<'button'> &
-  RecipeVariants<typeof styles.button>;
+export type Props = React.ButtonHTMLAttributes<HTMLButtonElement> & {
+  children: React.ReactNode;
+  className?: string;
+  disabled?: boolean;
+};
 
 export function Button(props: Props) {
   const { className, ...restProps } = props;
 
-  const buttonClassName = styles.button({
-    color: restProps.color,
-    size: restProps.size,
-  });
-
-  return <button {...restProps} className={clsx(buttonClassName, className)} />;
+  return <button {...restProps} className={className} />;
 }

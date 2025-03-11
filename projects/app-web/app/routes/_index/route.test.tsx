@@ -43,7 +43,7 @@ function setupTest(config: TestConfig) {
 test('it renders a sign up button that navigates to the signup route when clicked', async () => {
   const { user } = setupTest({ isAuthed: false });
 
-  const signUpButton = await screen.findByRole('button', { name: 'Signup' });
+  const signUpButton = await screen.findByRole('link', { name: 'Signup' });
 
   await waitFor(() => user.click(signUpButton));
 
@@ -55,7 +55,7 @@ test('it renders a sign up button that navigates to the signup route when clicke
 test('it renders a log in button that navigates to the log in route when clicked', async () => {
   const { user } = setupTest({ isAuthed: false });
 
-  const logInButton = await screen.findByRole('button', { name: 'Log in' });
+  const logInButton = await screen.findByRole('link', { name: 'Log in' });
 
   await waitFor(() => user.click(logInButton));
 

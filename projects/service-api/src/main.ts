@@ -1,4 +1,5 @@
 import { serve } from '@hono/node-server';
+import { sentry } from '@hono/sentry';
 import { createLoggerMiddleware } from '@vers/service-utils';
 import { requestId } from 'hono/request-id';
 import { app } from './app';
@@ -9,6 +10,7 @@ import { rateLimitMiddleware } from './middleware/rate-limit-middleware';
 import { remoteAddressMiddleware } from './middleware/remote-address-middleware';
 import { sessionHeaderMiddleware } from './middleware/session-header-middleware';
 
+app.use('*', sentry({ dsn: env.SENTRY_DSN }));
 app.use('*', requestId());
 app.use('*', remoteAddressMiddleware);
 app.use('*', sessionHeaderMiddleware);

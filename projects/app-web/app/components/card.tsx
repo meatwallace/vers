@@ -1,5 +1,4 @@
 import { type ReactNode } from 'react';
-import * as styles from './card.css.ts';
 
 interface CardProps {
   children: ReactNode;
@@ -18,19 +17,19 @@ interface BodyProps {
 }
 
 export function Card({ children }: CardProps) {
-  return <div className={styles.card}>{children}</div>;
+  return <div>{children}</div>;
 }
 
 function Header({ children }: HeaderProps) {
-  return <div className={styles.header}>{children}</div>;
+  return <div>{children}</div>;
 }
 
 function Title({ children }: TitleProps) {
-  return <h2 className={styles.title}>{children}</h2>;
+  return <h2>{children}</h2>;
 }
 
 function Body({ children }: BodyProps) {
-  return <div className={styles.body}>{children}</div>;
+  return <div>{children}</div>;
 }
 
 Card.Header = Header;

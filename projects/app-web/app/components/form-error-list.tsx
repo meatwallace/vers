@@ -1,5 +1,3 @@
-import * as styles from './form-error-list.css.ts';
-
 interface Props {
   errors: Array<string>;
   id: string;
@@ -13,11 +11,9 @@ export function FormErrorList(props: Props) {
   }
 
   return (
-    <ul className={styles.container} id={props.id}>
+    <ul id={props.id}>
       {errors.map((error) => (
-        <li key={error} className={styles.error}>
-          {error}
-        </li>
+        <li key={error}>{error}</li>
       ))}
     </ul>
   );

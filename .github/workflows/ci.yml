@@ -27,7 +27,6 @@ jobs:
         run: |
           echo "${{ secrets.DOTENV_APP_WEB_DEV }}" > projects/app-web/.env.development.local
           echo "${{ secrets.DOTENV_APP_WEB_E2E }}" > projects/app-web-e2e/.env
-          echo "${{ secrets.DOTENV_DB_POSTGRES }}" > projects/db-postgres/.env.production
 
       - name: Setup Node
         uses: actions/setup-node@v3
@@ -96,39 +95,46 @@ jobs:
         run: yarn deploy:db-postgres --configuration=production
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+          COMMIT_SHA: ${{ github.sha }}
 
       - name: Deploy API Service
         if: ${{ github.ref_name == 'main' && contains(steps.record-affected-projects.outputs.affected-projects, 'service-api') }}
         run: yarn deploy:service-api --configuration=production
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+          COMMIT_SHA: ${{ github.sha }}
 
       - name: Deploy Email Service
         if: ${{ github.ref_name == 'main' && contains(steps.record-affected-projects.outputs.affected-projects, 'service-email') }}
         run: yarn deploy:service-email --configuration=production
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+          COMMIT_SHA: ${{ github.sha }}
 
       - name: Deploy Session Service
         if: ${{ github.ref_name == 'main' && contains(steps.record-affected-projects.outputs.affected-projects, 'service-session') }}
         run: yarn deploy:service-session --configuration=production
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+          COMMIT_SHA: ${{ github.sha }}
 
       - name: Deploy User Service
         if: ${{ github.ref_name == 'main' && contains(steps.record-affected-projects.outputs.affected-projects, 'service-user') }}
         run: yarn deploy:service-user --configuration=production
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+          COMMIT_SHA: ${{ github.sha }}
 
       - name: Deploy Verification Service
         if: ${{ github.ref_name == 'main' && contains(steps.record-affected-projects.outputs.affected-projects, 'service-verification') }}
         run: yarn deploy:service-verification --configuration=production
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+          COMMIT_SHA: ${{ github.sha }}
 
       - name: Deploy Web App
         if: ${{ github.ref_name == 'main' && contains(steps.record-affected-projects.outputs.affected-projects, 'app-web') }}
         run: yarn deploy:app-web --configuration=production
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+          COMMIT_SHA: ${{ github.sha }}

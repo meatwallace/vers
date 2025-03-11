@@ -3,7 +3,6 @@ import { createGQLClient } from '~/utils/create-gql-client.server.ts';
 import { requireAuth } from '~/utils/require-auth.server.ts';
 import { withErrorHandling } from '~/utils/with-error-handling.ts';
 import type { Route } from './+types/route.ts';
-import * as styles from './route.css.ts';
 
 export const meta: Route.MetaFunction = () => [
   {
@@ -26,7 +25,7 @@ export const loader = withErrorHandling(async (args: Route.LoaderArgs) => {
 export function Dashboard(props: Route.ComponentProps) {
   return (
     <>
-      <main className={styles.container}>
+      <main>
         <h1>Dashboard</h1>
       </main>
     </>

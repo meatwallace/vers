@@ -1,7 +1,7 @@
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { reactRouter } from '@react-router/dev/vite';
-import { vanillaExtractPlugin } from '@vanilla-extract/vite-plugin';
+import { sentryVitePlugin } from '@sentry/vite-plugin';
 import { searchForWorkspaceRoot } from 'vite';
 import { defineConfig, loadEnv } from 'vite';
 import tsconfigPaths from 'vite-tsconfig-paths';
@@ -10,18 +10,38 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 export default defineConfig({
+  build: {
+    sourcemap: true,
+  },
   plugins: [
     !process.env.VITEST && reactRouter(),
-    vanillaExtractPlugin(),
     tsconfigPaths(),
+    process.env.SENTRY_AUTH_TOKEN
+      ? sentryVitePlugin({
+          authToken: process.env.SENTRY_AUTH_TOKEN,
+          disable: process.env.NODE_ENV !== 'production',
+          org: 'vers-idle',
+          project: 'app-web',
+          release: {
+            name: process.env.COMMIT_SHA,
+            setCommits: {
+              auto: true,
+            },
+          },
+          sourcemaps: {
+            filesToDeleteAfterUpload: [
+              './build/**/*.map',
+              '.server-build/**/*.map',
+            ],
+          },
+        })
+      : null,
   ],
   preview: {
     host: 'localhost',
     port: 4300,
   },
-
   root: __dirname,
-
   server: {
     fs: {
       allow: [
@@ -36,7 +56,6 @@ export default defineConfig({
     port: 4000,
     ws: process.env.VITEST === 'true' ? false : undefined,
   },
-
   // @ts-expect-error - we're not using vitest's `defineConfig` as it has errors with our plugin type definitions
   test: {
     coverage: {

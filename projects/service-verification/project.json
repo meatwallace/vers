@@ -19,23 +19,7 @@
         "assets": ["projects/service-verification/src/assets"],
         "generatePackageJson": true,
         "external": ["pino-pretty"],
-        "esbuildOptions": {
-          "sourcemap": true,
-          "outExtension": {
-            ".js": ".js"
-          }
-        }
-      },
-      "configurations": {
-        "development": {},
-        "production": {
-          "esbuildOptions": {
-            "sourcemap": false,
-            "outExtension": {
-              ".js": ".js"
-            }
-          }
-        }
+        "esbuildConfig": "projects/service-verification/esbuild.config.cjs"
       }
     },
     "deploy": {

@@ -1,8 +1,6 @@
 import * as React from 'react';
-import clsx from 'clsx';
 import { OTPInput, OTPInputContext } from 'input-otp';
 import invariant from 'tiny-invariant';
-import * as styles from './input-otp.css.ts';
 
 type Props = React.ComponentPropsWithoutRef<typeof OTPInput>;
 
@@ -12,26 +10,20 @@ export function InputOTP(props: Props) {
   return (
     <OTPInput
       {...restProps}
-      className={clsx(styles.input, className)}
-      containerClassName={clsx(styles.container, containerClassName)}
+      className={className}
+      containerClassName={containerClassName}
     />
   );
 }
 
 function InputOTPGroup(props: React.ComponentProps<'div'>) {
-  return <div {...props} className={clsx(styles.group, props.className)} />;
+  return <div {...props} className={props.className} />;
 }
 
 InputOTP.Group = InputOTPGroup;
 
 function InputOTPSeparator(props: React.ComponentProps<'div'>) {
-  return (
-    <div
-      {...props}
-      className={clsx(styles.separator, props.className)}
-      role="separator"
-    />
-  );
+  return <div {...props} className={props.className} role="separator" />;
 }
 
 InputOTP.Separator = InputOTPSeparator;
@@ -43,18 +35,11 @@ function InputOTPSlot(props: React.ComponentProps<'div'> & { index: number }) {
   invariant(slot, 'invalid slot index');
 
   return (
-    <div
-      className={clsx(
-        styles.slot,
-        slot.isActive && styles.activeSlot,
-        props.className,
-      )}
-      {...props}
-    >
+    <div className={props.className} {...props}>
       {slot.char}
       {slot.hasFakeCaret && (
-        <div className={styles.caret}>
-          <div className={styles.caretBlink} />
+        <div>
+          <div />
         </div>
       )}
     </div>

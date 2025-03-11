@@ -2,7 +2,6 @@ import * as React from 'react';
 import { type OTPInputProps, REGEXP_ONLY_DIGITS_AND_CHARS } from 'input-otp';
 import { InputOTP } from './input-otp.tsx';
 import { Label } from './label.tsx';
-import * as styles from './otp-field.css.ts';
 
 interface Props {
   errors: Array<string>;
@@ -16,7 +15,7 @@ export function OTPField(props: Props) {
   const errorID = `${id}-error`;
 
   return (
-    <div className={styles.container}>
+    <div>
       <Label htmlFor={id} {...props.labelProps} />
       <InputOTP
         {...props.inputProps}
@@ -39,7 +38,7 @@ export function OTPField(props: Props) {
         </InputOTP.Group>
       </InputOTP>
       {props.errors.map((error) => (
-        <div key={error} className={styles.error} id={errorID}>
+        <div key={error} id={errorID}>
           {error}
         </div>
       ))}

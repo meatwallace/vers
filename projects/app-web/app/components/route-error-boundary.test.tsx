@@ -66,5 +66,5 @@ test('it displays the error message for non-route errors', () => {
     error: new Error('Test error'),
   });
 
-  expect(screen.getByText('Test error')).toBeInTheDocument();
+  expect(screen.getByText('An unknown error occurred')).toBeInTheDocument();
 });

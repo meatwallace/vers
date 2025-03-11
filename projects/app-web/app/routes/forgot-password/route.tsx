@@ -1,6 +1,7 @@
 import { data, Form, Link, redirect } from 'react-router';
 import { getFormProps, getInputProps, useForm } from '@conform-to/react';
 import { getZodConstraint, parseWithZod } from '@conform-to/zod';
+import { captureException } from '@sentry/react';
 import { HoneypotInputs } from 'remix-utils/honeypot/react';
 import { z } from 'zod';
 import { Field } from '~/components/field';
@@ -19,7 +20,6 @@ import { requireAnonymous } from '~/utils/require-anonymous.server.ts';
 import { withErrorHandling } from '~/utils/with-error-handling.ts';
 import { UserEmailSchema } from '~/validation/user-email-schema.ts';
 import type { Route } from './+types/route.ts';
-import * as styles from './route.css.ts';
 
 const startPasswordResetMutation = graphql(/* GraphQL */ `
   mutation StartPasswordReset($input: StartPasswordResetInput!) {
@@ -117,9 +117,8 @@ export const action = withErrorHandling(async (args: Route.ActionArgs) => {
 
     return redirect(Routes.ResetPasswordStarted);
   } catch (error) {
-    // TODO(#16): capture error
     if (error instanceof Error) {
-      console.error('error', error.message);
+      captureException(error);
     }
   }
 
@@ -148,19 +147,13 @@ export function ForgotPassword(props: Route.ComponentProps) {
     : StatusButton.Status.Idle;
 
   return (
-    <main className={styles.forgotPasswordFormContainer}>
-      <div className={styles.forgotPasswordHeader}>
-        <h1 className={styles.forgotPasswordTitle}>Forgot Password</h1>
-        <p className={styles.forgotPasswordSubtitle}>
-          No worries, we&apos;ll send you reset instructions.
-        </p>
+    <main>
+      <div>
+        <h1>Forgot Password</h1>
+        <p>No worries, we&apos;ll send you reset instructions.</p>
       </div>
 
-      <Form
-        method="POST"
-        {...getFormProps(form)}
-        className={styles.forgotPasswordForm}
-      >
+      <Form method="POST" {...getFormProps(form)}>
         <HoneypotInputs />
         <Field
           errors={fields.email.errors ?? []}
@@ -178,11 +171,9 @@ export function ForgotPassword(props: Route.ComponentProps) {
         >
           Recover password
         </StatusButton>
-        <div className={styles.loginContainer}>
-          <span className={styles.loginText}>Remember your password?</span>
-          <Link className={styles.loginLink} to={Routes.Login}>
-            Login
-          </Link>
+        <div>
+          <span>Remember your password?</span>
+          <Link to={Routes.Login}>Login</Link>
         </div>
       </Form>
     </main>

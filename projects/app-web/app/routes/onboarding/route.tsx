@@ -1,6 +1,7 @@
 import { data, Form, redirect } from 'react-router';
 import { getFormProps, getInputProps, useForm } from '@conform-to/react';
 import { getZodConstraint, parseWithZod } from '@conform-to/zod';
+import { captureException } from '@sentry/react';
 import { HoneypotInputs } from 'remix-utils/honeypot/react';
 import { z } from 'zod';
 import { CheckboxField, Field } from '~/components/field';
@@ -138,8 +139,7 @@ export const action = withErrorHandling(async (args: Route.ActionArgs) => {
 
     return redirect(Routes.Dashboard, { headers });
   } catch (error) {
-    // TODO(#16): capture error
-    console.error('error', error);
+    captureException(error);
   }
 
   const result = submission.reply({

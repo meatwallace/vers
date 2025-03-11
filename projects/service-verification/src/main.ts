@@ -1,17 +1,18 @@
 import { serve } from '@hono/node-server';
+import { sentry } from '@hono/sentry';
 import { trpcServer } from '@hono/trpc-server';
-import { logger } from 'hono/logger';
+import { createLoggerMiddleware } from '@vers/service-utils';
 import { app } from './app';
 import { db } from './db';
 import { env } from './env';
+import { logger } from './logger';
 import { router } from './router';
 
-app.use(logger());
+app.use('*', sentry({ dsn: env.SENTRY_DSN }));
+app.use('*', createLoggerMiddleware(logger));
 
 app.use('/trpc/*', trpcServer({ createContext: () => ({ db }), router }));
 
 serve({ fetch: app.fetch, hostname: env.HOSTNAME, port: env.PORT });
 
-console.log(
-  `⚡️ Serving Verifications API @ http://${env.HOSTNAME}:${env.PORT}`,
-);
+logger.info(`Serving Verification API @ http://${env.HOSTNAME}:${env.PORT}`);

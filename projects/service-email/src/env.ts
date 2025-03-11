@@ -9,6 +9,7 @@ export const envSchema = z
     NODE_ENV: NodeEnvSchema,
     PORT: z.string().transform(Number),
     RESEND_API_KEY: z.string(),
+    SENTRY_DSN: z.string().url().optional(),
   })
   .transform(addEnvUtils);
 

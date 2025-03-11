@@ -1,5 +1,4 @@
 import * as React from 'react';
-import * as styles from './checkbox-field.css.ts';
 import { Input } from './input.tsx';
 import { Label } from './label.tsx';
 
@@ -16,7 +15,7 @@ export function CheckboxField(props: Props) {
   const errorID = `${id}-error`;
 
   return (
-    <div className={styles.container}>
+    <div>
       <Label htmlFor={id} {...props.labelProps} />
       <Input
         aria-describedby={errorID}
@@ -25,7 +24,7 @@ export function CheckboxField(props: Props) {
         {...props.checkboxProps}
       />
       {props.errors.map((error) => (
-        <div key={error} className={styles.error} id={errorID}>
+        <div key={error} id={errorID}>
           {error}
         </div>
       ))}

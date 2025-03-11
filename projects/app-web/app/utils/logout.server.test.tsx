@@ -36,10 +36,7 @@ function setupTest(config: TestConfig = {}) {
   const client = createGQLClient();
 
   const loader = async ({ request }: LoaderFunctionArgs) => {
-    await logout(request, {
-      client,
-      redirectTo: config.redirectTo,
-    });
+    await logout(request, { client, redirectTo: config.redirectTo });
   };
 
   const TestRoutesStub = createRoutesStub([

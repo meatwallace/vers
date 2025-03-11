@@ -36,7 +36,6 @@ export async function getEnable2FAVerification(
 
     return { otpURI };
   } catch (error) {
-    // TODO(#16): capture via Sentry
     if (error instanceof Error) {
       logger.error(error.message);
     }

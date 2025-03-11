@@ -16,7 +16,6 @@ import { requireAuth } from '~/utils/require-auth.server.ts';
 import { withErrorHandling } from '~/utils/with-error-handling.ts';
 import type { Route } from './+types/route.ts';
 import { QueryParam } from '../verify-otp/types.ts';
-import * as styles from './route.css.ts';
 
 const StartEnable2FAMutation = graphql(/* GraphQL */ `
   mutation StartEnable2FA($input: StartEnable2FAInput!) {
@@ -174,25 +173,19 @@ export function Profile(props: Route.ComponentProps) {
 
   return (
     <>
-      <main className={styles.container}>
-        <section className={styles.section}>
+      <main>
+        <section>
           <h1>Profile</h1>
-
-          <div className={styles.profileInfo}>
-            <dl>
-              <dt>Name</dt>
-              <dd>{user.name}</dd>
-
-              <dt>Email</dt>
-              <dd>{user.email}</dd>
-            </dl>
+          <div>
+            <p>Name</p>
+            <p>{user.name}</p>
+            <p>Email</p>
+            <p>{user.email}</p>
           </div>
         </section>
-
-        <section className={styles.section}>
+        <section>
           <h2>Security Settings</h2>
-
-          <div className={styles.securityInfo}>
+          <div>
             <h3>Two-Factor Authentication</h3>
 
             {user.is2FAEnabled && (
@@ -211,9 +204,7 @@ export function Profile(props: Route.ComponentProps) {
                   </StatusButton>
                 </twoFactorFetcher.Form>
                 {twoFactorFetcher.data?.error && (
-                  <p className={styles.twoFactorError}>
-                    {twoFactorFetcher.data.error}
-                  </p>
+                  <p>{twoFactorFetcher.data.error}</p>
                 )}
               </>
             )}

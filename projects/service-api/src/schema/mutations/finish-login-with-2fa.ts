@@ -79,7 +79,6 @@ export async function finishLoginWith2FA(
 
     return authPayload;
   } catch (error: unknown) {
-    // TODO(#16): capture via Sentry
     if (error instanceof Error) {
       logger.error(error.message);
     }
