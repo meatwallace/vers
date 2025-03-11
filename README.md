@@ -66,6 +66,9 @@ fly launch
 
 # attach our service to our postgres instance
 fly pg attach vers-pg --database-name=vers
+
+# create secrets if needed
+fly secrets set SESSION_SECRET=$(openssl rand -hex 32) HONEYPOT_SECRET=$(openssl rand -hex 32)
 ```
 
 ## development with cursor
