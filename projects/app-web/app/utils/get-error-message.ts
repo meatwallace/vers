@@ -12,5 +12,5 @@ export function getErrorMessage(error: unknown) {
     return error.message;
   }
 
-  return 'Unknown Error';
+  return 'An unknown error occurred';
 }
