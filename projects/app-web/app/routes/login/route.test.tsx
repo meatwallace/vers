@@ -27,16 +27,12 @@ function setupTest(config: TestConfig) {
 
   const LoginStub = createRoutesStub([
     {
-      // @ts-expect-error(#35) - react router test types are out of date
       action: config.isAuthed
-        ? // @ts-expect-error(#35) - react router test types are out of date
-          withAuthedUser(action, { client, user: config.user })
+        ? withAuthedUser(action, { user: config.user })
         : action,
       Component: withRouteProps(Login),
-      // @ts-expect-error(#35) - react router test types are out of date
       loader: config.isAuthed
-        ? // @ts-expect-error(#35) - react router test types are out of date
-          withAuthedUser(loader, { client, user: config.user })
+        ? withAuthedUser(loader, { user: config.user })
         : loader,
       path: '/',
     },

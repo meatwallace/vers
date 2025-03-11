@@ -50,11 +50,9 @@ function setupTest(config: TestConfig = {}) {
 
   const VerifyOTPStub = createRoutesStub([
     {
-      // @ts-expect-error(#35) - react router test types are out of date
       action: wrappedAction,
       Component: withRouteProps(VerifyOTPRoute),
       ErrorBoundary: () => 'ERROR_BOUNDARY',
-      // @ts-expect-error(#35) - react router test types are out of date
       loader,
       path: '/',
     },

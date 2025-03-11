@@ -45,7 +45,6 @@ function setupTest(config: TestConfig = {}) {
   const TestRoutesStub = createRoutesStub([
     {
       Component: () => 'LOGOUT_ROUTE',
-      // @ts-expect-error(#35) - react router test types are out of date
       loader: withAuthedUser(loader, {
         sessionID: config.sessionID,
         user: { id: config.userID },
