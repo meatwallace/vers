@@ -2,6 +2,7 @@ import type { GetSessionPayload } from '@vers/service-types';
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
 import type { Context } from '../types';
+import { logger } from '../logger';
 import { t } from '../t';
 
 export const GetSessionInputSchema = z.object({
@@ -25,6 +26,8 @@ export async function getSession(
 
     return sessionWithoutRefreshToken;
   } catch (error: unknown) {
+    logger.error(error);
+
     // TODO(#16): capture via Sentry
     throw new TRPCError({
       cause: error,

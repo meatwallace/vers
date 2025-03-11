@@ -5,6 +5,7 @@ import { CreateSessionPayload } from '@vers/service-types';
 import { z } from 'zod';
 import type { Context } from '../types';
 import * as consts from '../consts';
+import { logger } from '../logger';
 import { t } from '../t';
 import { createJWT } from '../utils/create-jwt';
 
@@ -60,6 +61,8 @@ export async function createSession(
       session,
     };
   } catch (error: unknown) {
+    logger.error(error);
+
     // TODO(#16): capture via Sentry
     throw new TRPCError({
       cause: error,

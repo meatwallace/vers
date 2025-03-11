@@ -1,65 +1,11 @@
-app = 'vers-pg'
+app = 'vers-db-postgres'
 primary_region = 'syd'
 
 [env]
-  FLY_SCALE_TO_ZERO = '1h'
-  PRIMARY_REGION = 'syd'
+  LOGGING = 'info'
+  NODE_ENV = 'production'
 
-[[mounts]]
-  source = 'pg_data'
-  destination = '/data'
-
-[[services]]
-  protocol = 'tcp'
-  internal_port = 5432
-  auto_start_machines = true
-
-  [[services.ports]]
-    port = 5432
-    handlers = ['pg_tls']
-
-  [services.concurrency]
-    type = 'connections'
-    hard_limit = 1000
-    soft_limit = 1000
-
-[[services]]
-  protocol = 'tcp'
-  internal_port = 5433
-  auto_start_machines = true
-
-  [[services.ports]]
-    port = 5433
-    handlers = ['pg_tls']
-
-  [services.concurrency]
-    type = 'connections'
-    hard_limit = 1000
-    soft_limit = 1000
-
-[checks]
-  [checks.pg]
-    port = 5500
-    type = 'http'
-    interval = '15s'
-    timeout = '10s'
-    path = '/flycheck/pg'
-
-  [checks.role]
-    port = 5500
-    type = 'http'
-    interval = '15s'
-    timeout = '10s'
-    path = '/flycheck/role'
-
-  [checks.vm]
-    port = 5500
-    type = 'http'
-    interval = '15s'
-    timeout = '10s'
-    path = '/flycheck/vm'
-
-[[metrics]]
-  port = 9187
-  path = '/metrics'
-  https = false
+[[vm]]
+  memory = '256mb'
+  cpu_kind = 'shared'
+  cpus = 1
