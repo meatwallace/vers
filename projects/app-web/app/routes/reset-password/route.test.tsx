@@ -42,10 +42,8 @@ async function setupTest(config: TestConfig) {
 
   const ResetPasswordStub = createRoutesStub([
     {
-      // @ts-expect-error(#35) - react router test types are out of date
       action: actionWithCookie,
       Component: withRouteProps(ResetPassword),
-      // @ts-expect-error(#35) - react router test types are out of date
       loader: loaderWithCookie,
       path: '/',
     },

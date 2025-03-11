@@ -28,7 +28,6 @@ function setupTest(config: TestConfig) {
       path: Routes.Dashboard,
     },
     {
-      // @ts-expect-error(#35) - react router test types are out of date
       action: withAuthedUser(action, { sessionID: config.sessionID }),
       Component: () => 'LOGOUT_ROUTE',
       loader,

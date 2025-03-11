@@ -50,10 +50,8 @@ function setupTest(config: TestConfig) {
 
   const OnboardingStub = createRoutesStub([
     {
-      // @ts-expect-error(#35) - react router test types are out of date
       action: _action,
       Component: withRouteProps(Onboarding),
-      // @ts-expect-error(#35) - react router test types are out of date
       loader: _loader,
       path: '/',
     },

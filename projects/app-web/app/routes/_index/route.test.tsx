@@ -16,7 +16,6 @@ function setupTest(config: TestConfig) {
   const IndexStub = createRoutesStub([
     {
       Component: Index,
-      // @ts-expect-error(#35) - react router test types are out of date
       loader: config.isAuthed ? withAuthedUser(loader) : loader,
       path: '/',
     },

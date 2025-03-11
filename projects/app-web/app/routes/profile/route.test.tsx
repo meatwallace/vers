@@ -25,7 +25,6 @@ function setupTest(config: TestConfig) {
   const ProfileStub = createRoutesStub([
     {
       Component: withRouteProps(Profile),
-      // @ts-expect-error(#35) - react router test types are out of date
       loader: config.isAuthed
         ? withAuthedUser(loader, { user: config.user })
         : loader,
