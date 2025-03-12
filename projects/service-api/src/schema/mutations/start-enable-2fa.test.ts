@@ -76,8 +76,8 @@ test('it returns an error if 2FA is already enabled', async () => {
 
   expect(result).toStrictEqual({
     error: {
-      message: 'Two-factor authentication is already enabled for your account.',
-      title: 'Two-factor authentication already enabled',
+      message: '2FA is already enabled for your account.',
+      title: '2FA already enabled',
     },
   });
 });

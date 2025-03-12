@@ -100,7 +100,7 @@ test('it returns an error with an invalid transaction token', async () => {
   expect(result).toStrictEqual({
     error: {
       message: 'An unknown error occurred',
-      title: 'An unknown error occurred',
+      title: 'Unknown error occurred',
     },
   });
 });
@@ -123,7 +123,7 @@ test('it returns an error if 2FA is not enabled', async () => {
   expect(result).toStrictEqual({
     error: {
       message: 'An unknown error occurred',
-      title: 'An unknown error occurred',
+      title: 'Unknown error occurred',
     },
   });
 });

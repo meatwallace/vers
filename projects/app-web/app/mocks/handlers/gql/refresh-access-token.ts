@@ -4,6 +4,7 @@ import {
   RefreshAccessTokenPayload,
 } from '~/gql/graphql';
 import { db } from '../../db';
+import { UNKNOWN_ERROR } from '../../errors';
 import { encodeMockJWT } from '../../utils/encode-mock-jwt';
 import { addUserResolvedFields } from './utils/add-user-resolved-fields';
 
@@ -33,10 +34,7 @@ export const RefreshAccessToken = graphql.mutation<
     return HttpResponse.json({
       data: {
         refreshAccessToken: {
-          error: {
-            message: 'The refresh token is invalid',
-            title: 'Invalid refresh token',
-          },
+          error: UNKNOWN_ERROR,
         },
       },
     });
@@ -54,10 +52,7 @@ export const RefreshAccessToken = graphql.mutation<
     return HttpResponse.json({
       data: {
         refreshAccessToken: {
-          error: {
-            message: 'The refresh token is invalid',
-            title: 'Invalid refresh token',
-          },
+          error: UNKNOWN_ERROR,
         },
       },
     });

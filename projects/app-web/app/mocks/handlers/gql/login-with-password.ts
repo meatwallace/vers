@@ -4,6 +4,7 @@ import {
   LoginWithPasswordPayload,
 } from '~/gql/graphql';
 import { db } from '../../db';
+import { INVALID_CREDENTIALS_ERROR } from '../../errors';
 import { encodeMockJWT } from '../../utils/encode-mock-jwt';
 import { addUserResolvedFields } from './utils/add-user-resolved-fields';
 
@@ -35,10 +36,7 @@ export const LoginWithPassword = graphql.mutation<
     return HttpResponse.json({
       data: {
         loginWithPassword: {
-          error: {
-            message: 'No user with that email',
-            title: 'Invalid credentials',
-          },
+          error: INVALID_CREDENTIALS_ERROR,
         },
       },
     });
@@ -48,10 +46,7 @@ export const LoginWithPassword = graphql.mutation<
     return HttpResponse.json({
       data: {
         loginWithPassword: {
-          error: {
-            message: 'Incorrect password',
-            title: 'Invalid credentials',
-          },
+          error: INVALID_CREDENTIALS_ERROR,
         },
       },
     });

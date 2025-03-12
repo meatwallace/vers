@@ -119,8 +119,8 @@ test('it returns an error when 2FA is not enabled', async () => {
 
   expect(result).toStrictEqual({
     error: {
-      message: '2FA verification is invalid or has expired',
-      title: 'Invalid code',
+      message: 'An unknown error occurred',
+      title: 'Unknown error occurred',
     },
   });
 });
@@ -148,8 +148,8 @@ test('it returns an error when the transaction token is invalid', async () => {
 
   expect(result).toStrictEqual({
     error: {
-      message: '2FA verification is invalid or has expired',
-      title: 'Invalid code',
+      message: 'An unknown error occurred',
+      title: 'Unknown error occurred',
     },
   });
 });

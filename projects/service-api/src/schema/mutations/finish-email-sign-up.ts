@@ -12,11 +12,6 @@ interface Args {
   input: typeof FinishEmailSignupInput.$inferInput;
 }
 
-const AMBIGUOUS_FAILED_VERIFICATION_ERROR = {
-  message: 'Verification for this operation is invalid or has expired.',
-  title: 'Failed Verification',
-};
-
 export async function finishEmailSignup(
   _: object,
   args: Args,
@@ -33,7 +28,7 @@ export async function finishEmailSignup(
     );
 
     if (!isValidTransaction) {
-      return { error: AMBIGUOUS_FAILED_VERIFICATION_ERROR };
+      return { error: UNKNOWN_ERROR };
     }
 
     const existingUser = await ctx.services.user.getUser.query({

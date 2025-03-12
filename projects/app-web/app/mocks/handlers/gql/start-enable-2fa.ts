@@ -5,6 +5,7 @@ import {
   VerificationType,
 } from '~/gql/graphql';
 import { db } from '../../db';
+import { TWO_FACTOR_ALREADY_ENABLED_ERROR, UNKNOWN_ERROR } from '../../errors';
 import { decodeMockJWT } from '../../utils/decode-mock-jwt';
 
 interface StartEnable2FAVariables {
@@ -38,10 +39,7 @@ export const StartEnable2FA = graphql.mutation<
     return HttpResponse.json({
       data: {
         startEnable2FA: {
-          error: {
-            message: 'User not found',
-            title: 'User not found',
-          },
+          error: UNKNOWN_ERROR,
         },
       },
     });
@@ -58,11 +56,7 @@ export const StartEnable2FA = graphql.mutation<
     return HttpResponse.json({
       data: {
         startEnable2FA: {
-          error: {
-            message:
-              'Two-factor authentication is already enabled for your account.',
-            title: 'Two-factor authentication already enabled',
-          },
+          error: TWO_FACTOR_ALREADY_ENABLED_ERROR,
         },
       },
     });

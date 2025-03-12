@@ -4,6 +4,7 @@ import {
   FinishEmailSignupPayload,
 } from '~/gql/graphql';
 import { db } from '../../db';
+import { UNKNOWN_ERROR } from '../../errors';
 import { encodeMockJWT } from '../../utils/encode-mock-jwt';
 import { addUserResolvedFields } from './utils/add-user-resolved-fields';
 
@@ -29,10 +30,7 @@ export const FinishEmailSignup = graphql.mutation<
     return HttpResponse.json({
       data: {
         finishEmailSignup: {
-          error: {
-            message: 'A user already exists with this email',
-            title: 'User already exists',
-          },
+          error: UNKNOWN_ERROR,
         },
       },
     });

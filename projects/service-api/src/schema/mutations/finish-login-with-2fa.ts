@@ -12,12 +12,6 @@ interface Args {
   input: typeof FinishLoginWith2FAInput.$inferInput;
 }
 
-// ensure we use the same error message for all failures to avoid enumeration
-const AMBIGUOUS_INVALID_VERIFICATION_ERROR = {
-  message: '2FA verification is invalid or has expired',
-  title: 'Invalid code',
-};
-
 export async function finishLoginWith2FA(
   _: object,
   args: Args,
@@ -29,7 +23,7 @@ export async function finishLoginWith2FA(
     });
 
     if (!user) {
-      return { error: AMBIGUOUS_INVALID_VERIFICATION_ERROR };
+      return { error: UNKNOWN_ERROR };
     }
 
     const verification = await ctx.services.verification.getVerification.query({
@@ -38,7 +32,7 @@ export async function finishLoginWith2FA(
     });
 
     if (!verification) {
-      return { error: AMBIGUOUS_INVALID_VERIFICATION_ERROR };
+      return { error: UNKNOWN_ERROR };
     }
 
     const payload = await verifyTransactionToken(
@@ -52,7 +46,7 @@ export async function finishLoginWith2FA(
 
     // our transaction token isn't valid or we don't have a session ID
     if (!payload?.session_id) {
-      return { error: AMBIGUOUS_INVALID_VERIFICATION_ERROR };
+      return { error: UNKNOWN_ERROR };
     }
 
     const previousSession = await ctx.services.session.getSession.query({
@@ -60,7 +54,7 @@ export async function finishLoginWith2FA(
     });
 
     if (!previousSession) {
-      return { error: AMBIGUOUS_INVALID_VERIFICATION_ERROR };
+      return { error: UNKNOWN_ERROR };
     }
 
     // create a new session now that 2FA is verified, using the expiry of the

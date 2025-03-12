@@ -173,7 +173,7 @@ test('it shows error message for invalid credentials', async () => {
   await user.type(passwordInput, 'password123');
   await user.click(submitButton);
 
-  const error = await screen.findByText('No user with that email');
+  const error = await screen.findByText('Wrong email or password');
 
   expect(error).toBeInTheDocument();
 });
