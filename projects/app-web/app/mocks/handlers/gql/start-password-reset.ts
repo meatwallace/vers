@@ -4,7 +4,7 @@ import {
   StartPasswordResetPayload,
   VerificationType,
 } from '~/gql/graphql';
-import { db } from '~/mocks/db';
+import { db } from '../../db';
 
 interface StartPasswordResetVariables {
   input: StartPasswordResetInput;

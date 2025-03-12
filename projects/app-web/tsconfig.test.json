@@ -1,16 +1,14 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "jsx": "react-jsx",
-    "module": "ESNext",
-    "moduleResolution": "Bundler",
     "types": ["vitest", "vitest/importMeta", "vite/client", "node"]
   },
+  "files": [],
   "include": [
-    "vite.config.ts",
-    "vitest.config.ts",
     "vitest.setup.ts",
-    "app/**/*.test.ts",
-    "app/**/*.test.tsx"
-  ]
+    "app/**/*.test.tsx",
+    "mocks/**/*.ts",
+    "server/**/*.test.tsx"
+  ],
+  "exclude": []
 }

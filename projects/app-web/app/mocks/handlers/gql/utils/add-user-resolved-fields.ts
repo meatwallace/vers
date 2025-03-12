@@ -1,5 +1,5 @@
 import { User, VerificationType } from '~/gql/graphql';
-import { db } from '~/mocks/db';
+import { db } from '../../../db';
 
 interface DBUser {
   createdAt: string;

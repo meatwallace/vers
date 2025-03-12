@@ -18,7 +18,7 @@
         "tsConfig": "projects/service-verification/tsconfig.app.json",
         "assets": ["projects/service-verification/src/assets"],
         "generatePackageJson": true,
-        "external": ["pino-pretty"],
+        "external": ["pino-pretty", "pino-sentry-transport"],
         "esbuildConfig": "projects/service-verification/esbuild.config.cjs"
       }
     },
@@ -30,27 +30,12 @@
         ]
       }
     },
-    "serve": {
-      "executor": "@nx/js:node",
-      "defaultConfiguration": "development",
-      "options": {
-        "buildTarget": "service-verification:build"
-      },
-      "configurations": {
-        "development": {
-          "buildTarget": "service-verification:build:development"
-        },
-        "production": {
-          "buildTarget": "service-verification:build:production"
-        }
-      }
-    },
     "typecheck": {
       "executor": "nx:run-commands",
       "options": {
         "commands": [
           {
-            "command": "tsc -p tsconfig.app.json --noEmit",
+            "command": "tsc -p tsconfig.json --noEmit",
             "forwardAllArgs": false
           }
         ],

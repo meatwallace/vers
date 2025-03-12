@@ -1,3 +1,4 @@
+import { reactRouterHonoServer } from 'react-router-hono-server/dev';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { reactRouter } from '@react-router/dev/vite';
@@ -14,6 +15,7 @@ export default defineConfig({
     sourcemap: true,
   },
   plugins: [
+    reactRouterHonoServer({ serverEntryPoint: './server/index.ts' }),
     !process.env.VITEST && reactRouter(),
     tsconfigPaths(),
     process.env.SENTRY_AUTH_TOKEN

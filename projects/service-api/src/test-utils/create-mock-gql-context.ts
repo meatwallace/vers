@@ -81,6 +81,14 @@ export function createMockGQLContext(config: MockContextConfig): Context {
   const authedSession =
     config.session ?? db.session.create({ userID: authedUser.id });
 
+  if (!config.user) {
+    return {
+      ...sharedContext,
+      session: authedSession,
+      user: null,
+    };
+  }
+
   return {
     ...sharedContext,
     session: authedSession,

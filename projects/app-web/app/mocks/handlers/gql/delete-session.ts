@@ -1,6 +1,6 @@
 import { graphql, HttpResponse } from 'msw';
 import { DeleteSessionInput, DeleteSessionPayload } from '~/gql/graphql';
-import { db } from '~/mocks/db.ts';
+import { db } from '../../db';
 
 interface DeleteSessionVariables {
   input: DeleteSessionInput;

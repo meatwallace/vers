@@ -2,12 +2,13 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "lib": ["ESNext", "DOM", "DOM.Iterable"],
-    "esModuleInterop": false,
-    "allowSyntheticDefaultImports": true,
-    "noEmit": true,
-    "allowImportingTsExtensions": true,
-    "strict": true,
-    "types": ["@react-router/node", "vitest", "vite/client"],
+    "types": [
+      "@react-router/node",
+      "vitest",
+      "vitest/importMeta",
+      "vite/client",
+      "node"
+    ],
     "rootDirs": [".", "./.react-router/types"],
     "baseUrl": ".",
     "paths": {
@@ -16,17 +17,21 @@
       "@vers/postgres-schema": ["../lib-postgres-schema/src/index.ts"],
       "@vers/service-test-utils": ["../lib-service-test-utils/src/index.ts"],
       "@vers/service-types": ["../lib-service-types/src/index.ts"],
-      "@vers/service-utils": ["../lib-service-utils/src/index.ts"]
+      "@vers/service-utils": ["../lib-service-utils/src/index.ts"],
+      "@vers/utils": ["../lib-utils/src/index.ts"]
     }
   },
   "files": [],
-  "include": [".react-router/types/**/*", "react-router.config.ts"],
-  "references": [
-    {
-      "path": "./tsconfig.app.json"
-    },
-    {
-      "path": "./tsconfig.test.json"
-    }
+  "include": [
+    ".react-router/types/**/*",
+    "react-router.config.ts",
+    "vite.config.ts",
+    "vitest.config.ts",
+    "vitest.setup.ts",
+    "app/**/*.ts",
+    "app/**/*.tsx",
+    "app/mocks/**/*.ts",
+    "server/**/*.ts",
+    "server/**/*.tsx"
   ]
 }

@@ -1,9 +1,9 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "module": "ESNext",
     "types": ["node"]
   },
+  "files": [],
   "exclude": ["src/**/*.test.ts"],
-  "include": ["src/**/*.ts", "src/**/*.d.ts", "vitest.global-setup.ts"]
+  "include": ["src/**/*.ts"]
 }

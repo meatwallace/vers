@@ -1,9 +1,14 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "module": "ESNext",
     "types": ["node"]
   },
-  "exclude": ["src/test-utils/**/*.ts", "src/**/*.test.ts"],
-  "include": ["src/**/*.ts"]
+  "files": [],
+  "include": [
+    "vitest.config.ts",
+    "vitest.setup.ts",
+    "src/**/*.ts",
+    "../lib-service-utils/src/middleware/remote-address-middleware.ts"
+  ],
+  "exclude": ["src/**/*.test.ts"]
 }

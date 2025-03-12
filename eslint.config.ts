@@ -188,6 +188,11 @@ export default tseslint.config(
     },
   },
 
+  // --- json config
+  {
+    ignores: ['**/*.json'],
+  },
+
   // --- mjs config
   {
     extends: [tseslint.configs.disableTypeChecked],
