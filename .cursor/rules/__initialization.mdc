@@ -23,3 +23,8 @@ alwaysApply: true
 * All projects can be found under [projects/](mdc:projects)
 * Use kebab-case for filenames matching a single named export (e.g. `create-user.ts`)
 * Co-locate test files with implementation code (e.g. `create-user.test.ts`)
+
+## Contributing
+
+* New work should be branched off `main` as per [_project-version-control.mdc](mdc:.cursor/rules/_project-version-control.mdc)
+* Format submitted PRs formatted as per [pull_request_template.md](mdc:.github/pull_request_template.md) 
