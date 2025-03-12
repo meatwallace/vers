@@ -4,8 +4,8 @@ import {
   FinishEnable2FaPayload,
   VerificationType,
 } from '~/gql/graphql';
-import { db } from '~/mocks/db';
-import { decodeMockJWT } from '~/mocks/utils/decode-mock-jwt';
+import { db } from '../../db';
+import { decodeMockJWT } from '../../utils/decode-mock-jwt';
 
 interface FinishEnable2FAVariables {
   input: FinishEnable2FaInput;

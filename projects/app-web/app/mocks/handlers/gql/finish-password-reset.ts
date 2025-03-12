@@ -3,7 +3,7 @@ import {
   FinishPasswordResetInput,
   FinishPasswordResetPayload,
 } from '~/gql/graphql';
-import { db } from '~/mocks/db';
+import { db } from '../../db';
 
 interface FinishPasswordResetVariables {
   input: FinishPasswordResetInput;

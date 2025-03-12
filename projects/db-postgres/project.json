@@ -18,7 +18,7 @@
         "tsConfig": "projects/db-postgres/tsconfig.app.json",
         "assets": ["projects/db-postgres/src/assets"],
         "generatePackageJson": true,
-        "external": ["pino-pretty"],
+        "external": ["pino-pretty", "pino-sentry-transport"],
         "esbuildConfig": "projects/db-postgres/esbuild.config.cjs"
       }
     },

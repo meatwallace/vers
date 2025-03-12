@@ -1,10 +1,7 @@
 {
   "extends": "../../tsconfig.base.json",
-  "files": [],
-  "include": [],
   "compilerOptions": {
-    "jsx": "react-jsx",
-    "esModuleInterop": true,
+    "types": ["node"],
     "baseUrl": ".",
     "paths": {
       "~/*": ["./src/*"],
@@ -13,18 +10,20 @@
       "@vers/service-test-utils": ["../lib-service-test-utils/src/index.ts"],
       "@vers/service-types": ["../lib-service-types/src/index.ts"],
       "@vers/service-utils": ["../lib-service-utils/src/index.ts"],
+      "@vers/utils": ["../lib-utils/src/index.ts"],
+
       "@vers/service-email": ["../service-email/src/index.ts"],
       "@vers/service-user": ["../service-user/src/index.ts"],
       "@vers/service-session": ["../service-session/src/index.ts"],
       "@vers/service-verification": ["../service-verification/src/index.ts"]
     }
   },
-  "references": [
-    {
-      "path": "./tsconfig.app.json"
-    },
-    {
-      "path": "./tsconfig.test.json"
-    }
-  ]
+  "files": [],
+  "include": [
+    "vitest.config.ts",
+    "vitest.setup.ts",
+    "src/**/*.ts",
+    "../lib-service-utils/src/middleware/remote-address-middleware.ts"
+  ],
+  "exclude": []
 }

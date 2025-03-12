@@ -1,24 +1,19 @@
 {
   "extends": "../../tsconfig.base.json",
-  "files": [],
-  "include": [],
   "compilerOptions": {
-    "esModuleInterop": true,
+    "types": ["node"],
     "baseUrl": ".",
     "paths": {
       "~/*": ["./src/*"],
       "@vers/email-templates": ["../lib-email-templates/src/index.ts"],
       "@vers/postgres-schema": ["../lib-postgres-schema/src/index.ts"],
       "@vers/service-test-utils": ["../lib-service-test-utils/src/index.ts"],
-      "@vers/service-types": ["../lib-service-types/src/index.ts"]
+      "@vers/service-types": ["../lib-service-types/src/index.ts"],
+      "@vers/service-utils": ["../lib-service-utils/src/index.ts"],
+      "@vers/utils": ["../lib-utils/src/index.ts"]
     }
   },
-  "references": [
-    {
-      "path": "./tsconfig.lib.json"
-    },
-    {
-      "path": "./tsconfig.test.json"
-    }
-  ]
+  "files": [],
+  "include": ["vitest.config.ts", "vitest.setup.ts", "src/**/*.ts"],
+  "exclude": []
 }

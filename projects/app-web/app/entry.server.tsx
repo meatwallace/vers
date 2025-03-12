@@ -1,6 +1,7 @@
 import { renderToPipeableStream } from 'react-dom/server';
 import type {
   ActionFunctionArgs,
+  AppLoadContext,
   EntryContext,
   LoaderFunctionArgs,
 } from 'react-router';
@@ -10,11 +11,14 @@ import { styleText } from 'node:util';
 import { createReadableStreamFromReadable } from '@react-router/node';
 import * as Sentry from '@sentry/node';
 import { isbot } from 'isbot';
+import { createTimings } from './utils/create-timings.server.ts';
+import { getServerTimingHeader } from './utils/get-server-timing-header.server.ts';
+import { NonceProvider } from './utils/nonce-provider.ts';
 
 export const streamTimeout = 5000;
 
 if (!import.meta.env.PROD && import.meta.env.VITE_ENABLE_MSW === 'true') {
-  const { server } = await import('./mocks/node');
+  const { server } = await import('./mocks/node.ts');
 
   server.listen();
 }
@@ -24,33 +28,73 @@ if (!import.meta.env.PROD) {
   process.loadEnvFile('.env.development.local');
 }
 
+declare module 'react-router' {
+  interface AppLoadContext {
+    cspNonce: string;
+  }
+}
+
 export default function handleRequest(
   request: Request,
   responseStatusCode: number,
   responseHeaders: Headers,
   reactRouterContext: EntryContext,
+  loadContext: AppLoadContext,
 ) {
   if (process.env.NODE_ENV === 'production' && process.env.SENTRY_DSN) {
     responseHeaders.append('Document-Policy', 'js-profiling');
   }
 
-  const prohibitOutOfOrderStreaming =
-    isBotRequest(request.headers.get('user-agent')) ||
-    reactRouterContext.isSpaMode;
+  const callbackName = isbot(request.headers.get('user-agent'))
+    ? 'onAllReady'
+    : 'onShellReady';
 
-  return prohibitOutOfOrderStreaming
-    ? handleBotRequest(
-        request,
-        responseStatusCode,
-        responseHeaders,
-        reactRouterContext,
-      )
-    : handleBrowserRequest(
-        request,
-        responseStatusCode,
-        responseHeaders,
-        reactRouterContext,
-      );
+  return new Promise((resolve, reject) => {
+    let didError = false;
+
+    // NOTE: this timing will only include things that are rendered in the shell
+    // and will not include suspended components and deferred loaders
+    const timings = createTimings('render', 'renderToPipeableStream');
+
+    const { abort, pipe } = renderToPipeableStream(
+      <NonceProvider value={loadContext.cspNonce}>
+        <ServerRouter
+          context={reactRouterContext}
+          nonce={loadContext.cspNonce}
+          url={request.url}
+        />
+      </NonceProvider>,
+      {
+        [callbackName]: () => {
+          const body = new PassThrough();
+
+          responseHeaders.set('Content-Type', 'text/html');
+          responseHeaders.append(
+            'Server-Timing',
+            getServerTimingHeader(timings),
+          );
+
+          resolve(
+            new Response(createReadableStreamFromReadable(body), {
+              headers: responseHeaders,
+              status: didError ? 500 : responseStatusCode,
+            }),
+          );
+
+          pipe(body);
+        },
+        nonce: loadContext.cspNonce,
+        onError: () => {
+          didError = true;
+        },
+        onShellError: (err: unknown) => {
+          reject(err as Error);
+        },
+      },
+    );
+
+    setTimeout(abort, streamTimeout + 5000);
+  });
 }
 
 export function handleError(
@@ -70,110 +114,4 @@ export function handleError(
   }
 
   Sentry.captureException(error);
-}
-
-function isBotRequest(userAgent: null | string) {
-  if (!userAgent) {
-    return false;
-  }
-
-  return isbot(userAgent);
-}
-
-function handleBotRequest(
-  request: Request,
-  responseStatusCode: number,
-  responseHeaders: Headers,
-  reactRouterContext: EntryContext,
-) {
-  return new Promise((resolve, reject) => {
-    let shellRendered = false;
-
-    const { abort, pipe } = renderToPipeableStream(
-      <ServerRouter context={reactRouterContext} url={request.url} />,
-      {
-        onAllReady() {
-          shellRendered = true;
-
-          const body = new PassThrough();
-          const stream = createReadableStreamFromReadable(body);
-
-          responseHeaders.set('Content-Type', 'text/html');
-
-          resolve(
-            new Response(stream, {
-              headers: responseHeaders,
-              status: responseStatusCode,
-            }),
-          );
-
-          pipe(body);
-        },
-        onError(error: unknown) {
-          responseStatusCode = 500;
-
-          // Log streaming rendering errors from inside the shell.  Don't log
-          // errors encountered during initial shell rendering since they'll
-          // reject and get logged in handleDocumentRequest.
-          if (shellRendered) {
-            console.error(error);
-          }
-        },
-        onShellError(error: unknown) {
-          reject(error as Error);
-        },
-      },
-    );
-
-    setTimeout(abort, streamTimeout + 1000);
-  });
-}
-
-function handleBrowserRequest(
-  request: Request,
-  responseStatusCode: number,
-  responseHeaders: Headers,
-  reactRouterContext: EntryContext,
-) {
-  return new Promise((resolve, reject) => {
-    let shellRendered = false;
-
-    const { abort, pipe } = renderToPipeableStream(
-      <ServerRouter context={reactRouterContext} url={request.url} />,
-      {
-        onError(error: unknown) {
-          responseStatusCode = 500;
-
-          // Log streaming rendering errors from inside the shell.  Don't log
-          // errors encountered during initial shell rendering since they'll
-          // reject and get logged in handleDocumentRequest.
-          if (shellRendered) {
-            console.error(error);
-          }
-        },
-        onShellError(error: unknown) {
-          reject(error as Error);
-        },
-        onShellReady() {
-          shellRendered = true;
-
-          const body = new PassThrough();
-          const stream = createReadableStreamFromReadable(body);
-
-          responseHeaders.set('Content-Type', 'text/html');
-
-          resolve(
-            new Response(stream, {
-              headers: responseHeaders,
-              status: responseStatusCode,
-            }),
-          );
-
-          pipe(body);
-        },
-      },
-    );
-
-    setTimeout(abort, streamTimeout + 1000);
-  });
 }

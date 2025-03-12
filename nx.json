@@ -1,5 +1,4 @@
 {
-  "$schema": "./node_modules/nx/schemas/nx-schema.json",
   "namedInputs": {
     "default": ["{projectRoot}/**/*", "sharedGlobals"],
     "production": [
@@ -22,35 +21,12 @@
       }
     },
     {
-      "plugin": "@nx/eslint/plugin",
-      "options": {
-        "targetName": "lint"
-      }
-    },
-    {
       "plugin": "@nx/playwright/plugin",
       "options": {
         "targetName": "e2e"
       }
     }
   ],
-  "generators": {
-    "@nx/react": {
-      "application": {
-        "babel": true,
-        "style": "styled-components",
-        "linter": "eslint",
-        "bundler": "vite"
-      },
-      "component": {
-        "style": "styled-components"
-      },
-      "library": {
-        "style": "styled-components",
-        "linter": "eslint"
-      }
-    }
-  },
   "nxCloudAccessToken": "YTRjZDAxOTYtOTI0Mi00ODFkLWFmM2ItYjM3NjBiMmRlZjVifHJlYWQ=",
   "targetDefaults": {
     "@nx/esbuild:esbuild": {

@@ -1,10 +1,7 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "module": "ESNext",
     "types": ["node"],
-    "sourceMap": false,
-    "esModuleInterop": true,
     "baseUrl": ".",
     "paths": {
       "~/*": ["./src/*"],
@@ -12,13 +9,9 @@
       "@vers/postgres-schema": ["../lib-postgres-schema/src/index.ts"],
       "@vers/service-test-utils": ["../lib-service-test-utils/src/index.ts"],
       "@vers/service-types": ["../lib-service-types/src/index.ts"],
-      "@vers/service-utils": ["../lib-service-utils/src/index.ts"]
+      "@vers/service-utils": ["../lib-service-utils/src/index.ts"],
+      "@vers/utils": ["../lib-utils/src/index.ts"]
     }
   },
-  "include": [
-    "**/*.ts",
-    "playwright.config.ts",
-    "src/**/*.test.ts",
-    "src/**/*.d.ts"
-  ]
+  "include": ["playwright.config.ts", "src/**/*.ts"]
 }

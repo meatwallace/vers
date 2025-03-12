@@ -12,3 +12,9 @@ export enum Routes {
   Signup = '/signup',
   VerifyOTP = '/verify-otp',
 }
+
+type TimingMetric =
+  | { description?: string; start: number; time?: never }
+  | { description?: string; start?: never; time: number };
+
+export type Timings = Record<string, Array<TimingMetric>>;

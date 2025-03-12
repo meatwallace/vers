@@ -1,16 +1,8 @@
 import { expect, test } from 'vitest';
-import { createMockServices } from '../test-utils/create-mock-services';
+import { createMockGQLContext } from '../test-utils/create-mock-gql-context';
 import { isAuthed } from './is-authed';
 
-const services = createMockServices();
-
 test('it returns true if it is an authed request', () => {
-  const request = new Request('https://test.com/', {
-    headers: {
-      authorization: 'Bearer token',
-    },
-  });
-
   const user = {
     createdAt: new Date(),
     email: 'user@test.com',
@@ -29,14 +21,18 @@ test('it returns true if it is an authed request', () => {
     userID: 'test-user-id',
   };
 
-  const authed = isAuthed({ request, services, session, user });
+  const context = createMockGQLContext({
+    accessToken: 'Bearer token',
+    session,
+    user,
+  });
+
+  const authed = isAuthed(context);
 
   expect(authed).toBeTrue();
 });
 
 test(`it returns false if there is no user`, () => {
-  const request = new Request('https://test.com/', {});
-
   const session = {
     createdAt: new Date(),
     expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24),
@@ -46,14 +42,17 @@ test(`it returns false if there is no user`, () => {
     userID: 'test-user-id',
   };
 
-  const authed = isAuthed({ request, services, session, user: null });
+  const context = createMockGQLContext({
+    accessToken: 'Bearer token',
+    session,
+  });
+
+  const authed = isAuthed(context);
 
   expect(authed).toBeFalse();
 });
 
 test(`it returns false if there is no session`, () => {
-  const request = new Request('https://test.com/', {});
-
   const user = {
     createdAt: new Date(),
     email: 'user@test.com',
@@ -63,7 +62,12 @@ test(`it returns false if there is no session`, () => {
     username: 'test_user',
   };
 
-  const authed = isAuthed({ request, services, session: null, user });
+  const context = createMockGQLContext({
+    accessToken: 'Bearer token',
+    user,
+  });
+
+  const authed = isAuthed(context);
 
   expect(authed).toBeFalse();
 });

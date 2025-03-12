@@ -22,27 +22,12 @@
         "esbuildConfig": "projects/service-api/esbuild.config.cjs"
       }
     },
-    "serve": {
-      "executor": "@nx/js:node",
-      "defaultConfiguration": "development",
-      "options": {
-        "buildTarget": "service-api:build"
-      },
-      "configurations": {
-        "development": {
-          "buildTarget": "service-api:build:development"
-        },
-        "production": {
-          "buildTarget": "service-api:build:production"
-        }
-      }
-    },
     "typecheck": {
       "executor": "nx:run-commands",
       "options": {
         "commands": [
           {
-            "command": "tsc -p tsconfig.app.json --noEmit",
+            "command": "tsc -p tsconfig.json --noEmit",
             "forwardAllArgs": false
           }
         ],

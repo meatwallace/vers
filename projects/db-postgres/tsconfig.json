@@ -1,9 +1,7 @@
 {
   "extends": "../../tsconfig.base.json",
-  "files": [],
-  "include": ["drizzle.config.ts"],
   "compilerOptions": {
-    "esModuleInterop": true,
+    "types": ["node"],
     "baseUrl": ".",
     "paths": {
       "~/*": ["./src/*"],
@@ -11,15 +9,11 @@
       "@vers/postgres-schema": ["../lib-postgres-schema/src/index.ts"],
       "@vers/service-test-utils": ["../lib-service-test-utils/src/index.ts"],
       "@vers/service-types": ["../lib-service-types/src/index.ts"],
-      "@vers/service-utils": ["../lib-service-utils/src/index.ts"]
+      "@vers/service-utils": ["../lib-service-utils/src/index.ts"],
+      "@vers/utils": ["../lib-utils/src/index.ts"]
     }
   },
-  "references": [
-    {
-      "path": "./tsconfig.app.json"
-    },
-    {
-      "path": "./tsconfig.test.json"
-    }
-  ]
+  "files": [],
+  "include": ["drizzle.config.ts", "migrate.ts", "src/**/*.ts"],
+  "exclude": []
 }

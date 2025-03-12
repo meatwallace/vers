@@ -11,7 +11,7 @@
       "options": {
         "commands": [
           {
-            "command": "tsc -p tsconfig.lib.json --noEmit",
+            "command": "tsc -p tsconfig.json --noEmit",
             "forwardAllArgs": false
           }
         ],
