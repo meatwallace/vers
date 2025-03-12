@@ -13,12 +13,6 @@ interface Args {
   input: typeof FinishEnable2FAInput.$inferInput;
 }
 
-// ensure we use the same error message for all failures to avoid enumeration
-const AMBIGUOUS_FAILED_VERIFICATION_ERROR = {
-  message: 'Verification for this operation is invalid or has expired.',
-  title: 'Failed Verification',
-};
-
 /**
  * @description Completes the 2FA setup process by verifying the transaction token and updating the verification record
  *
@@ -57,7 +51,7 @@ export async function finishEnable2FA(
 
     if (!isValidTransactionToken) {
       return {
-        error: AMBIGUOUS_FAILED_VERIFICATION_ERROR,
+        error: UNKNOWN_ERROR,
       };
     }
 
@@ -69,7 +63,7 @@ export async function finishEnable2FA(
 
     if (!twoFactorVerification) {
       return {
-        error: AMBIGUOUS_FAILED_VERIFICATION_ERROR,
+        error: UNKNOWN_ERROR,
       };
     }
 

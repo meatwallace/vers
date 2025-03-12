@@ -18,7 +18,7 @@
         "tsConfig": "projects/service-user/tsconfig.app.json",
         "assets": ["projects/service-user/src/assets"],
         "generatePackageJson": true,
-        "external": ["pino-pretty", "pino-sentry-transport"],
+        "external": ["pino-pretty", "pino-sentry-transport", "@sentry/node"],
         "esbuildConfig": "projects/service-user/esbuild.config.cjs"
       }
     },

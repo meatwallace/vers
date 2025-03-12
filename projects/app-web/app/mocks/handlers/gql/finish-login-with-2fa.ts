@@ -4,6 +4,7 @@ import {
   FinishLoginWith2FaPayload,
 } from '~/gql/graphql';
 import { db } from '../../db';
+import { UNKNOWN_ERROR } from '../../errors';
 import { encodeMockJWT } from '../../utils/encode-mock-jwt';
 import { addUserResolvedFields } from './utils/add-user-resolved-fields';
 
@@ -16,11 +17,6 @@ interface FinishLoginWith2FAResponse {
 }
 
 const EXPIRATION_IN_MS = 1000 * 60 * 60 * 24; // 24 hours
-
-const AMBIGUOUS_INVALID_VERIFICATION_ERROR = {
-  message: '2FA verification is invalid or has expired',
-  title: 'Invalid code',
-};
 
 export const FinishLoginWith2FA = graphql.mutation<
   FinishLoginWith2FAResponse,
@@ -40,7 +36,7 @@ export const FinishLoginWith2FA = graphql.mutation<
     return HttpResponse.json({
       data: {
         finishLoginWith2FA: {
-          error: AMBIGUOUS_INVALID_VERIFICATION_ERROR,
+          error: UNKNOWN_ERROR,
         },
       },
     });
@@ -50,7 +46,7 @@ export const FinishLoginWith2FA = graphql.mutation<
     return HttpResponse.json({
       data: {
         finishLoginWith2FA: {
-          error: AMBIGUOUS_INVALID_VERIFICATION_ERROR,
+          error: UNKNOWN_ERROR,
         },
       },
     });

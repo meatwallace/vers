@@ -2,7 +2,7 @@ import type { AuthedContext } from '~/types';
 import { logger } from '~/logger';
 import { createPendingTransaction } from '~/utils/create-pending-transaction';
 import { builder } from '../builder';
-import { UNKNOWN_ERROR } from '../errors';
+import { TWO_FACTOR_NOT_ENABLED_ERROR, UNKNOWN_ERROR } from '../errors';
 import { MutationErrorPayload } from '../types/mutation-error-payload';
 import { TwoFactorRequiredPayload } from '../types/two-factor-required-payload';
 import { VerificationType } from '../types/verification-type';
@@ -49,10 +49,7 @@ export async function startDisable2FA(
 
     if (!verification) {
       return {
-        error: {
-          message: '2FA is not enabled for your account.',
-          title: '2FA not enabled',
-        },
+        error: TWO_FACTOR_NOT_ENABLED_ERROR,
       };
     }
 

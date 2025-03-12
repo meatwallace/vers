@@ -5,6 +5,7 @@ import {
   VerifyOtpPayload,
 } from '~/gql/graphql';
 import { db } from '../../db';
+import { INVALID_OTP_ERROR } from '../../errors';
 
 interface VerifyOTPResponse {
   verifyOTP: VerifyOtpPayload;
@@ -29,10 +30,7 @@ export const VerifyOTP = graphql.mutation<
     return HttpResponse.json({
       data: {
         verifyOTP: {
-          error: {
-            message: 'Invalid verification code',
-            title: 'Invalid OTP',
-          },
+          error: INVALID_OTP_ERROR,
         },
       },
     });
@@ -42,10 +40,7 @@ export const VerifyOTP = graphql.mutation<
     return HttpResponse.json({
       data: {
         verifyOTP: {
-          error: {
-            message: 'Invalid verification code',
-            title: 'Invalid OTP',
-          },
+          error: INVALID_OTP_ERROR,
         },
       },
     });

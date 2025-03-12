@@ -3,7 +3,7 @@ import { logger } from '~/logger';
 import { createTransactionToken } from '~/utils/create-transaction-token';
 import { trackTransactionAttempt } from '~/utils/track-transaction-attempt';
 import { builder } from '../builder';
-import { UNKNOWN_ERROR } from '../errors';
+import { INVALID_OTP_ERROR, UNKNOWN_ERROR } from '../errors';
 import { MutationErrorPayload } from '../types/mutation-error-payload';
 import { TwoFactorSuccessPayload } from '../types/two-factor-success-payload';
 import { VerificationType } from '../types/verification-type';
@@ -30,7 +30,7 @@ export async function verifyOTP(
 
     if (!verification) {
       return {
-        error: { message: 'Invalid verification code', title: 'Invalid OTP' },
+        error: INVALID_OTP_ERROR,
       };
     }
 

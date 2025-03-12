@@ -2,7 +2,7 @@ import type { Context } from '~/types';
 import { logger } from '~/logger';
 import { createPendingTransaction } from '~/utils/create-pending-transaction';
 import { builder } from '../builder';
-import { UNKNOWN_ERROR } from '../errors';
+import { INVALID_CREDENTIALS_ERROR, UNKNOWN_ERROR } from '../errors';
 import { AuthPayload } from '../types/auth-payload';
 import { MutationErrorPayload } from '../types/mutation-error-payload';
 import { TwoFactorRequiredPayload } from '../types/two-factor-required-payload';
@@ -12,12 +12,6 @@ import { createPayloadResolver } from '../utils/create-payload-resolver';
 interface Args {
   input: typeof LoginWithPasswordInput.$inferInput;
 }
-
-// ensure we use the same error message for all failures to avoid enumeration
-const AMBIGUOUS_CREDENTIALS_ERROR = {
-  message: 'Wrong email or password',
-  title: 'Invalid credentials',
-};
 
 export async function loginWithPassword(
   _: object,
@@ -31,7 +25,7 @@ export async function loginWithPassword(
 
     if (!user) {
       return {
-        error: AMBIGUOUS_CREDENTIALS_ERROR,
+        error: INVALID_CREDENTIALS_ERROR,
       };
     }
 
@@ -42,7 +36,7 @@ export async function loginWithPassword(
 
     if (!verifyPasswordResult.success) {
       return {
-        error: AMBIGUOUS_CREDENTIALS_ERROR,
+        error: INVALID_CREDENTIALS_ERROR,
       };
     }
 

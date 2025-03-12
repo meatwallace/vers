@@ -5,6 +5,7 @@ import {
   VerificationType,
 } from '~/gql/graphql';
 import { db } from '../../db';
+import { UNKNOWN_ERROR } from '../../errors';
 import { decodeMockJWT } from '../../utils/decode-mock-jwt';
 
 interface FinishEnable2FAVariables {
@@ -14,11 +15,6 @@ interface FinishEnable2FAVariables {
 interface FinishEnable2FAResponse {
   finishEnable2FA: FinishEnable2FaPayload;
 }
-
-const AMBIGUOUS_INVALID_VERIFICATION_ERROR = {
-  message: '2FA verification is invalid or has expired',
-  title: 'Invalid code',
-};
 
 export const FinishEnable2FA = graphql.mutation<
   FinishEnable2FAResponse,
@@ -43,8 +39,7 @@ export const FinishEnable2FA = graphql.mutation<
     return HttpResponse.json({
       data: {
         finishEnable2FA: {
-          error: AMBIGUOUS_INVALID_VERIFICATION_ERROR,
-          success: false,
+          error: UNKNOWN_ERROR,
         },
       },
     });
@@ -54,8 +49,7 @@ export const FinishEnable2FA = graphql.mutation<
     return HttpResponse.json({
       data: {
         finishEnable2FA: {
-          error: AMBIGUOUS_INVALID_VERIFICATION_ERROR,
-          success: false,
+          error: UNKNOWN_ERROR,
         },
       },
     });
@@ -72,8 +66,7 @@ export const FinishEnable2FA = graphql.mutation<
     return HttpResponse.json({
       data: {
         finishEnable2FA: {
-          error: AMBIGUOUS_INVALID_VERIFICATION_ERROR,
-          success: false,
+          error: UNKNOWN_ERROR,
         },
       },
     });

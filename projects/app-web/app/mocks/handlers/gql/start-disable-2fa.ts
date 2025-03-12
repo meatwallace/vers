@@ -5,6 +5,7 @@ import {
   VerificationType,
 } from '~/gql/graphql';
 import { db } from '../../db';
+import { TWO_FACTOR_NOT_ENABLED_ERROR, UNKNOWN_ERROR } from '../../errors';
 import { decodeMockJWT } from '../../utils/decode-mock-jwt';
 
 interface StartDisable2FAVariables {
@@ -38,10 +39,7 @@ export const StartDisable2FA = graphql.mutation<
     return HttpResponse.json({
       data: {
         startDisable2FA: {
-          error: {
-            message: 'User not found',
-            title: 'User not found',
-          },
+          error: UNKNOWN_ERROR,
         },
       },
     });
@@ -58,10 +56,7 @@ export const StartDisable2FA = graphql.mutation<
     return HttpResponse.json({
       data: {
         startDisable2FA: {
-          error: {
-            message: '2FA is not enabled for your account.',
-            title: '2FA not enabled',
-          },
+          error: TWO_FACTOR_NOT_ENABLED_ERROR,
         },
       },
     });

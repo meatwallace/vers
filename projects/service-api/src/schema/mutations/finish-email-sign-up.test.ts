@@ -92,8 +92,8 @@ test('it returns an error if the transaction token is invalid', async () => {
 
   expect(result).toStrictEqual({
     error: {
-      message: 'Verification for this operation is invalid or has expired.',
-      title: 'Failed Verification',
+      message: 'An unknown error occurred',
+      title: 'Unknown error occurred',
     },
   });
 
@@ -148,7 +148,7 @@ test('it returns an ambiguous error if the user already exists', async () => {
   expect(result).toStrictEqual({
     error: {
       message: 'An unknown error occurred',
-      title: 'An unknown error occurred',
+      title: 'Unknown error occurred',
     },
   });
 

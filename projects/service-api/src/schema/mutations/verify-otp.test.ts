@@ -360,7 +360,7 @@ test('it throws an error if session validation fails', async () => {
   expect(result).toStrictEqual({
     error: {
       message: 'An unknown error occurred',
-      title: 'An unknown error occurred',
+      title: 'Unknown error occurred',
     },
   });
 });
@@ -400,7 +400,7 @@ test('it returns an error for an invalid OTP', async () => {
   expect(result).toStrictEqual({
     error: {
       message: 'An unknown error occurred',
-      title: 'An unknown error occurred',
+      title: 'Unknown error occurred',
     },
   });
 });
@@ -429,7 +429,7 @@ test('it returns an error if verification does not exist', async () => {
   expect(result).toStrictEqual({
     error: {
       message: 'An unknown error occurred',
-      title: 'An unknown error occurred',
+      title: 'Unknown error occurred',
     },
   });
 });
