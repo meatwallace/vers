@@ -1,67 +1,16 @@
 ---
 description: Standards for implementing type-safe environment configuration using Zod.
 globs: "**/src/env.ts"
+alwaysApply: false
 ---
 
 # Environment Configuration Standards
 
-Standards for implementing type-safe environment configuration using Zod.
+Example code: [env.ts](mdc:projects/service-api/src/env.ts)
 
-<rule>
-name: implementation_standards_environment
-description: Standards for implementing type-safe environment configuration
-filters:
-  - type: file_path
-    pattern: ".*/src/env\\.ts$"
-
-actions:
-  - type: suggest
-    message: |
-      Environment Configuration Standards:
-
-      1. File Setup:
-         - Create an `env.ts` file in the service's `src` directory
-         - Use Zod for schema validation
-         - Export typed env object
-         - Export env type definition
-
-      2. Schema Requirements:
-         - Define strict schemas with explicit types
-         - Use enums for known value sets
-         - Provide sensible defaults where appropriate
-         - Transform string values when needed (e.g. PORT to number)
-         - Make development-only vars optional
-
-examples:
-  - input: |
-      ```ts
-      import { z } from 'zod';
-      import { addEnvUtils } from '@vers/service-utils';
-
-      const envSchema = z
-        .object({
-          NODE_ENV: z.enum(['development', 'e2e', 'test', 'production']),
-          LOGGING: z
-            .enum(['debug', 'info', 'warn', 'error'])
-            .optional()
-            .default('info'),
-
-          HOSTNAME: z.string(),
-          PORT: z.string().transform(Number),
-
-          // Service-specific variables
-          API_IDENTIFIER: z.string(),
-          RESEND_API_KEY: z.string(),
-        })
-        .transform(addEnvUtils);
-
-      export const env = envSchema.parse(process.env);
-
-      export type Env = z.infer<typeof envSchema>;
-      ```
-    output: "Environment configuration following standards"
-
-metadata:
-  priority: high
-  version: 1.0
-</rule> 
+* Use Zod for schema validation
+* Use enums for known value sets
+* Provide sensible defaults where appropriate
+* Transform string values when needed (e.g. `PORT` to number)
+* Export parsed env object
+* Make development-only vars optional

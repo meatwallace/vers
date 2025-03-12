@@ -60,5 +60,5 @@ projects/app-web-e2e/.env
 projects/**/.env*.local
 
 # cursor context files
-.memory.md
-.todo.md
+memory.md
+todo.md

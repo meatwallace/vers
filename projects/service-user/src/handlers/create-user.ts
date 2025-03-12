@@ -9,14 +9,14 @@ import { logger } from '~/logger';
 import type { Context } from '../types';
 import { t } from '../t';
 
-export const CreateUserInputSchema = z.object({
+const CreateUserInputSchema = z.object({
   email: z.string().email(),
   name: z.string(),
   password: z.string(),
   username: z.string(),
 });
 
-export async function createUser(
+async function createUser(
   input: z.infer<typeof CreateUserInputSchema>,
   ctx: Context,
 ): Promise<CreateUserPayload> {
