@@ -73,11 +73,11 @@ fly secrets set SESSION_SECRET=$(openssl rand -hex 32) HONEYPOT_SECRET=$(openssl
 
 ## development with cursor
 
-all of our cursor rules & agentic process is stored in the [.cursor](.cursor) directory.
+all of our cursor rules are in the [.cursor](.cursor) directory.
 
 consider prompting an agentic composer like:
 
 > We are working on a new feature for the \<project-name> project.  
 > At a high level, we want to \<describe-feature>.
 >
-> Read @001-initialization.md and related files and confirm you're ready to proceed.
+> Read @\_\_initialization.mdc and confirm you're ready to proceed.

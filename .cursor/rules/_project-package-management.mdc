@@ -1,78 +1,18 @@
 ---
-description: Package Management and Command Standards
+description: Standards for package management using Yarn v2 with PnP and command conventions.
 globs: "{package.json,yarn.lock,.yarnrc.yml}"
+alwaysApply: true
 ---
-
 # Package Management Standards
 
-Standards for package management using Yarn v2 with PnP and command conventions.
+* Use `yarn` to execute repository commands
+* Commands must be executed from the repository root
+* Project specific scripts are available i.e. `yarn dev:app-web`
+* All available scripts are viewable in the root [package.json](mdc:package.json) 
 
-<rule>
-name: _project_standards_package_management 
-description: Standards for package management and commands
-filters:
-  - type: file_name
-    pattern: "(package\\.json|yarn\\.lock|\\.yarnrc\\.yml)$"
+## Common Commands
 
-actions:
-  - type: suggest
-    message: |
-      Package Management Standards:
-
-      1. Package Manager:
-         - Use Yarn v2 with PnP
-         - Keep dependencies up to date
-         - Use exact versions for dependencies
-         - Group dependencies logically
-
-      2. Command Execution Location:
-         - ALWAYS execute commands from the repository root
-         - NEVER cd into project directories to run commands
-         - Use project-specific yarn scripts to target specific projects
-         - Example: Use `yarn dev:app-web` from root instead of `cd projects/app-web && yarn dev`
-
-      3. Command Conventions:
-         - Use yarn scripts from `package.json` over direct nx commands
-         - Standard Commands:
-           - typecheck: `yarn typecheck`
-           - test: `yarn test`
-           - build: `yarn build`
-           - lint: `yarn lint`
-           - clean: `yarn clean`
-           - e2e: `yarn e2e`
-
-      4. Project-Specific Commands:
-         - Development: `yarn dev:$PROJECT`
-           Example: `yarn dev:app-web`
-         - Serve: `yarn serve:$PROJECT`
-           Example: `yarn serve:app-web`
-
-      5. Script Organization:
-         - Group related scripts together
-         - Use consistent naming patterns
-         - Document complex scripts
-         - Keep scripts focused and atomic
-
-examples:
-  - input: |
-      // Bad - Direct nx commands
-      ```sh
-      yarn nx build app-web
-      ```
-
-      // Bad - Changing directory to run commands
-      ```sh
-      cd projects/app-web && yarn dev
-      ```
-
-      // Good - Project-specific yarn scripts from root
-      ```sh
-      yarn build:app-web
-      yarn dev:app-web
-      ```
-    output: "Package.json following standards"
-
-metadata:
-  priority: high
-  version: 1.0
-</rule> 
+* typecheck - `yarn typecheck`
+* test - `yarn test:<project-name>`
+* lint - `yarn lint`
+* format - `yarn format`

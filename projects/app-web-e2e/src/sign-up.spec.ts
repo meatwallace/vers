@@ -1,7 +1,8 @@
 import { expect, test } from '@playwright/test';
-// import { env } from './env';
 
 test('it signs the user up and displays their dashboard', async ({ page }) => {
+  await page.setExtraHTTPHeaders({ 'x-forwarded-for': '127.0.0.1' });
+
   await page.goto('/');
 
   await page.getByRole('link', { name: 'Signup' }).click();

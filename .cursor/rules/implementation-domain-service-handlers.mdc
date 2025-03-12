@@ -1,156 +1,27 @@
 ---
-description: Domain Service Handler Implementation Standards
-globs: "**/service-*/src/handlers/**/*.ts"
+description: Standards for implementing domain service handlers across our microservices.
+globs: "**/service-*/src/handlers/*.ts"
 alwaysApply: false
 ---
-
 # Domain Service Handler Standards
 
-Standards for implementing domain service handlers across our microservices.
+Example code: [verify-code.ts](mdc:projects/service-verification/src/handlers/verify-code.ts) 
 
-<rule>
-name: implementation_standards_domain_service_handlers
-description: Standards for implementing domain service handlers
-filters:
-  - type: file_path
-    pattern: ".*/service-.*/src/handlers/.*\\.ts$"
-  - type: file_path
-    pattern: "!.*\\.test\\.ts$"
+## Handler Structure
 
-actions:
-  - type: suggest
-    message: |
-      Domain Service Handler Standards:
+* `zod` schema for input validation
+* Handler function for TRPC operation takes `input` and `ctx`
+* Return a type-safe payload type from `@vers/service-types`
+* Export a `procedure` that wires the input schema to the handler via TRPC
 
-      1. File Organization:
-         - Place handlers in `src/handlers/` directory
-         - Use kebab-case for filenames matching the operation (e.g. `create-user.ts`)
-         - Co-locate test files with handlers (e.g. `create-user.test.ts`)
+## Database Operations
 
-      2. Handler Structure:
-         - Export `zod` schema used for validation
-         - Export async functions with consistent naming
-         - Use type-safe payload types from `@vers/service-types`
-         - Follow consistent error handling patterns
-         - Document complex logic with comments
+* Use `drizzle-orm` for database operations
+* Set audit fields (`createdAt`, `updatedAt`)
+* Generate IDs using `createId()` from `@paralleldrive/cuid2`
 
-      3. Type Safety:
-         - Import types from shared packages
-         - Use database types from schema
-         - Infer input arg type from `zod` schema
-         - Never use `any` or `unknown` without constraints
+## Error Handling
 
-      4. Database Operations:
-         - Use `drizzle-orm` for database operations
-         - Handle unique constraint violations
-         - Use transactions for multi-step operations
-         - Follow schema conventions
-         - Set audit fields (`createdAt`, `updatedAt`)
-         - Generate IDs using `createId()` from `@paralleldrive/cuid2`
-
-      5. Error Handling:
-         - Catch and handle known errors explicitly
-         - Return standardized error responses
-         - Include proper error details
-         - Log errors appropriately
-
-      6. Payload Format:
-         - Omit sensitive data from responses
-         - Format dates consistently
-
-examples:
-  - input: |
-      ```ts
-      // Bad - inconsistent parameters, missing types
-      export async function createThing(input) {
-        const { thing } = input;
-        return { data: thing };
-      }
-
-      // Bad - poor error handling
-      export async function badHandler(input: z.infer<typeof Schema>, db: Database) {
-        try {
-          // ...
-        } catch (e) {
-          throw new Error('Unhandled!');
-        }
-      }
-
-      // Good - proper handler implementation
-      import { z } from 'zod';
-      import * as schema from '@vers/postgres-schema';
-      import { CreateUserPayload } from '@vers/service-types';
-      import { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
-      import { createId } from '@paralleldrive/cuid2';
-      import { isUniqueConstraintError } from '@vers/service-utils';
-      import type { Context } from '~/types';
-
-      const CreateUserSchema = z.object({
-        email: z.string(),
-        name: z.string(),
-        username: z.string(),
-      });
-
-      export async function createUser(
-        input: z.infer<typeof CreateUserSchema>,
-        ctx: Context,
-      ) {
-        try {
-          const { email, name, username } = input;
-
-          const createdAt = new Date();
-
-          // Good - enforcing the DB data type
-          const user: typeof schema.users.$inferSelect = {
-            id: createId(),
-            email,
-            name,
-            username,
-            createdAt,
-            updatedAt: createdAt,
-          };
-
-          await ctx.db.insert(schema.users).values(user);
-
-          // Good - enforcing the payload data type
-          const payload: CreateUserPayload = {
-            id: user.id,
-            email: user.email,
-            name: user.name,
-            username: user.username,
-            createdAt: user.createdAt,
-            updatedAt: user.updatedAt,
-          };
-
-          return payload;
-        } catch (error: unknown) {
-          // Good - Postgres error handling
-          if (error instanceof pg.PostgresError) {
-            if (isUniqueConstraintError(error, 'users_email_unique')) {
-              throw new TRPCError({
-                cause: error,
-                code: 'CONFLICT',
-                message: 'A user with that email address already exists',
-              });
-            }
-          }
-
-          // Good - generic error handling 
-          if (error instanceof Error) {
-            throw new TRPCError({
-              cause: error,
-              code: 'INTERNAL_SERVER_ERROR',
-              message: 'An unknown error occurred',
-            });
-          }
-
-          throw error;
-        }
-      }
-      ```
-    output: "Handler following implementation standards"
-
-metadata:
-  priority: high
-  version: 1.0
-</rule> 
+* Throw an ambiguous `INTERNAL_SERVER_ERROR` for unhandled errors
+* Throw `TRPCError`s for common error handling cases e.g. unique constraint violations
+* Log errors

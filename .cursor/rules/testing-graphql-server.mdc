@@ -1,193 +1,30 @@
 ---
 description: GraphQL Server Testing Standards
 globs: "projects/service-api/src/schema/**/*.test.ts"
+alwaysApply: false
 ---
-
-
 # GraphQL Testing Standards
 
-Standards for testing GraphQL server operations.
+* Example query test: [get-sessions.test.ts](mdc:projects/service-api/src/schema/queries/get-sessions.test.ts)
+* Example mutation test: [finish-email-sign-up.test.ts](mdc:projects/service-api/src/schema/mutations/finish-email-sign-up.test.ts)
 
-<rule>
-name: testing_standards_graphql_server
-description: Standards for testing GraphQL server queries, mutations, and resolvers
-filters:
-  - type: file_path
-    pattern: ".*/schema/(queries|mutations)/.*\\.test\\.ts$"
+## Test Setup
 
-actions:
-  - type: suggest
-    message: |
-      GraphQL Testing Standards:
+* Use `createMockGQLContext` for consistent context
+* Set up test data using MSW data stores
+* Clean up data after each test with `drop(db)`
+* Mock authentication tokens when needed
 
-      1. Test Setup:
-         - Use `createMockGQLContext` for consistent context
-         - Set up test data using MSW data stores
-         - Clean up data after each test with `drop(db)`
-         - Mock authentication tokens when needed
-         - Use type-safe test utilities
-         - Provide proper GQL context as needed (IP, tokens, etc.)
+## Query Testing
 
-      2. Query Testing:
-         - Test data retrieval with various filters
-         - Verify authorization rules
-         - Test pagination and sorting
-         - Check field selection
-         - Verify error handling
-         - Test data relationships
-         - Check field resolvers
+* Test data retrieval with various filters
+* Verify authorization rules
+* Verify error handling
 
-      3. Mutation Testing:
-         - Test input validation
-         - Verify state changes
-         - Test authorization rules
-         - Check error responses
-         - Verify side effects
-         - Validate return types
+## Mutation Testing
 
-      4. Error Handling:
-         - Test unauthorized access
-         - Check input validation errors
-         - Verify business rule violations
-         - Check error message format
-         - Verify error propagation
-
-examples:
-  - input: |
-      ```ts
-      // Bad - poor GraphQL test structure
-      test('login works', async () => {
-        const result = await loginWithPassword(
-          {},
-          { input: { email: 'test@test.com' } },
-          {}
-        );
-        expect(result.accessToken).toBeDefined();
-      });
-
-      // Good - proper GraphQL testing
-      import { drop } from '@mswjs/data';
-      import { createTestJWT } from '@vers/service-test-utils';
-      import { db } from '~/mocks/db';
-      import { createMockGQLContext } from '~/test-utils/create-mock-gql-context';
-      import { loginWithPassword } from './login-with-password';
-
-      afterEach(() => {
-        // Good - drop MSW mock DB after each test
-        drop(db);
-      });
-
-      // Good - test mutations
-      test('it logs in a user with valid credentials', async () => {
-        // Good - creating data in MSW mock DB
-        const user = db.user.create({
-          passwordHash: 'password123',
-        });
-
-        const ctx = createMockGQLContext({
-          // Good - pass specific values to GraphQL context mock as needed
-          ipAddress: '127.0.0.1',
-        });
-
-        const args = {
-          input: {
-            email: user.email,
-            password: 'password123',
-            rememberMe: true,
-          },
-        };
-
-        const result = await loginWithPassword({}, args, ctx);
-
-        expect(result).toStrictEqual({
-          accessToken: expect.any(String),
-          refreshToken: expect.any(String),
-          session: {
-            id: expect.any(String),
-            userID: user.id,
-            ipAddress: '127.0.0.1',
-            expiresAt: expect.any(Date),
-          },
-        });
-      });
-
-      // Good - test mutation error responses
-      test('it returns an error if the user does not exist', async () => {
-        const ctx = createMockGQLContext({
-          ipAddress: '127.0.0.1',
-        });
-
-        const args = {
-          input: {
-            email: 'nonexistent@test.com',
-            password: 'password123',
-            rememberMe: true,
-          },
-        };
-
-        const result = await loginWithPassword({}, args, ctx);
-
-        expect(result).toStrictEqual({
-          error: {
-            title: 'Invalid credentials',
-            message: 'No user with that email',
-          },
-        });
-      });
-
-      // Good - test queries
-      test('it returns all worlds for the authenticated user', async () => {
-        const user = db.user.create({});
-
-        db.world.create({
-          id: 'test_id_1',
-          ownerID: user.id,
-          name: 'New World #1',
-        });
-
-        db.world.create({
-          id: 'test_id_2',
-          ownerID: user.id,
-          name: 'New World #2',
-        });
-
-        // Good - create access tokens with our test utilities
-        const accessToken = await createTestJWT({
-          sub: user.id,
-          audience: env.API_IDENTIFIER,
-          issuer: `https://${env.API_IDENTIFIER}/`,
-        });
-
-        const ctx = createMockGQLContext({ accessToken, user });
-        const args = { input: {} };
-
-        const result = await getWorlds({}, args, ctx);
-
-        expect(result).toIncludeAllMembers([
-          {
-            id: 'test_id_1',
-            ownerID: user.id,
-            name: 'New World #1',
-          },
-          {
-            id: 'test_id_2',
-            ownerID: user.id,
-            name: 'New World #2',
-          },
-        ]);
-      });
-
-      // Good - test query errors
-      test('it returns an error if the user isnt authenticated', async () => {
-        const ctx = createMockGQLContext({});
-        const args = { input: {} };
-
-        await expect(() => resolve({}, args, ctx)).rejects.toThrow('Unauthorized');
-      });
-      ```
-    output: "GraphQL tests following standards"
-
-metadata:
-  priority: high
-  version: 1.0
-</rule> 
+* Test input validation
+* Verify state changes & side effect
+* Test authorization rules
+* Check error responses
+* Validate return types

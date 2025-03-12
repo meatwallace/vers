@@ -53,18 +53,8 @@ test(`it returns false if there is no user`, () => {
 });
 
 test(`it returns false if there is no session`, () => {
-  const user = {
-    createdAt: new Date(),
-    email: 'user@test.com',
-    id: 'test-id',
-    name: 'Test User',
-    updatedAt: new Date(),
-    username: 'test_user',
-  };
-
   const context = createMockGQLContext({
     accessToken: 'Bearer token',
-    user,
   });
 
   const authed = isAuthed(context);

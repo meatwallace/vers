@@ -47,6 +47,7 @@ export default defineConfig({
     command: 'yarn dev:app-web',
     cwd: workspaceRoot,
     reuseExistingServer: !process.env.CI,
+    stderr: 'pipe',
     stdout: 'pipe',
     timeout: 60 * 1000,
     url: 'http://localhost:4000',

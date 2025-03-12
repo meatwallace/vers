@@ -6,156 +6,18 @@ alwaysApply: false
 
 # GraphQL Type Implementation Standards
 
-Standards for implementing GraphQL types using Pothos Schema Builder.
+Example code: [user.ts](mdc:projects/service-api/src/schema/types/user.ts)
 
-<rule>
-name: implementation_standards_graphql_types
-description: Standards for implementing GraphQL types
-filters:
-  - type: file_path
-    pattern: ".*/schema/types/.*\\.ts$"
+## Type Categories
 
-actions:
-  - type: suggest
-    message: |
-      GraphQL Type Implementation Standards:
+Types are broken into 3 distinct categories:
 
-      1. File Organization:
-         - Place types in `schema/types/` directory
-         - One type per file
-         - Use kebab-case for filenames
-         - Export types from index files
+1. Domain Entities - core business objects, primarily representing database objects
+2. Response Payloads - operation-specific response types
+3. Utility Types - generic reusable types i.e. `MutationError`
 
-      2. Type Categories:
-         - Types are broken into 3 distinct categories:
-           1. Domain Entities - core business objects, primarilyrepresenting database objects
-           2. Response Payloads - operation-specific response types
-           3. Utility Types - generic reusable types i.e. `MutationError`
+## Documentation
 
-      3. Documentation:
-         - All types must have JSDoc documentation
-         - Document the type itself using `@description`
-         - Document relationships using `@see`
-         - Include usage examples for complex types
-         - Document special handling using `@remarks`
-
-      4. Type Safety:
-         - Define explicit TypeScript types
-         - Use type inference from schema
-         - Match service types where applicable
-         - Never use `any` or `unknown`
-         - Export TypeScript types for consumers
-
-      5. Scalar Types:
-         - Use built-in scalars when possible
-         - `DateTime` and `Date` scalars from `graphql-scalars` package are available
-         - Request approval for new scalar types
-         - Document scalar usage
-         - Validate scalar inputs
-
-      6. Field Resolution:
-         - Use `t.expose` for direct field mapping
-         - Use `t.field` for complex resolution
-         - Handle nullable fields appropriately
-
-examples:
-  - input: |
-      ```ts
-      // Bad - missing documentation, poor organization
-      export const World = builder.objectRef<WorldData>('World');
-      World.implement({
-        fields: (t) => ({
-          id: t.exposeID('id'),
-          name: t.exposeString('name'),
-        }),
-      });
-
-      // Bad - inconsistent error handling
-      export const AuthPayload = builder.objectRef('AuthPayload');
-      AuthPayload.implement({
-        fields: (t) => ({
-          error: t.field({ type: 'String' }),
-        }),
-      });
-
-      // Good - Domain Entity Type
-      import { WorldData } from '~/services/world-service/types';
-      import { builder } from '../builder';
-
-      /**
-       * @description Represents a world with its properties
-       * @remarks Used as the primary entity for world generation and management
-       */
-      export const World = builder.objectRef<WorldData>('World');
-
-      World.implement({
-        fields: (t) => ({
-          id: t.exposeID('id'),
-          name: t.exposeString('name'),
-          fantasyType: t.exposeString('fantasyType'),
-          technologyLevel: t.exposeString('technologyLevel'),
-          archetype: t.exposeString('archetype', { nullable: true }),
-          atmosphere: t.exposeString('atmosphere'),
-          population: t.exposeString('population'),
-          geographyType: t.exposeString('geographyType'),
-          geographyFeatures: t.exposeStringList('geographyFeatures'),
-          createdAt: t.expose('createdAt', { type: 'DateTime' }),
-          updatedAt: t.expose('updatedAt', { type: 'DateTime' }),
-        }),
-      });
-
-      // Good - Response Payload Type
-      import { builder } from '../builder';
-      import { Session } from './session';
-
-      /**
-       * @description Authentication response containing tokens and session
-       * @see Session - Associated session information
-       */
-      export type AuthPayloadData = {
-        refreshToken: string;
-        accessToken: string;
-        session: typeof Session.$inferType;
-      };
-
-      export const AuthPayload = builder.objectRef<AuthPayloadData>('AuthPayload');
-
-      AuthPayload.implement({
-        fields: (t) => ({
-          refreshToken: t.exposeString('refreshToken'),
-          accessToken: t.exposeString('accessToken'),
-          session: t.field({
-            type: Session,
-            resolve: (source) => source.session,
-          }),
-        }),
-      });
-
-      // Good - Utility Type
-      import { builder } from '../builder';
-
-      /**
-       * @description Standard error type for mutation responses
-       * @remarks Used as part of MutationErrorPayload
-       */
-      export interface MutationErrorData {
-        title: string;
-        message: string;
-      };
-
-      export const MutationError =
-        builder.objectRef<MutationErrorData>('MutationError');
-
-      MutationError.implement({
-        fields: (t) => ({
-          title: t.exposeString('title'),
-          message: t.exposeString('message'),
-        }),
-      });
-      ```
-    output: "GraphQL types following implementation standards"
-
-metadata:
-  priority: high
-  version: 1.0
-</rule> 
+* All types must have JSDoc documentation
+* Document the type itself using `@description`
+* Document relationships using `@see`

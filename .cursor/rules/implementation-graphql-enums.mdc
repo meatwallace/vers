@@ -1,127 +1,28 @@
 ---
 description: Standards for implementing GraphQL enums and their database mappings
-globs: "**/schema/types/**/*.ts"
+globs: "**/schema/**/*.ts"
+alwaysApply: false
 ---
 
 # GraphQL Enum Implementation Standards
 
-Standards for implementing GraphQL enums and their mappings to database values.
+## GraphQL Enum Type
 
-<rule>
-name: implementation_standards_graphql_enums
-description: Standards for implementing GraphQL enums and database enum mappings
-filters:
-  - type: file_path
-    pattern: ".*/schema/types/.*\\.ts$"
+Example code: [verification-type.ts](mdc:projects/service-api/src/schema/types/verification-type.ts)
 
-actions:
-  - type: suggest
-    message: |
-      GraphQL Enum Implementation Standards:
+* Place enum types in `schema/types/` directory
+* Use TypeScript enums with explicit values
+* Name enums in PascalCase
+* Use SCREAMING_SNAKE_CASE for enum values
+* Register enums with Pothos builder
 
-      1. Enum Definition:
-         - Place enum types in `schema/types/` directory
-         - Use TypeScript enums with explicit values
-         - Name enums in PascalCase
-         - Use SCREAMING_SNAKE_CASE for enum values
-         - One enum per file
-         - Export enum type for reuse
-         - Register with Pothos builder
+## GraphQL Enum -> DB value resolution
 
-      2. Database Mapping:
-         - Place mapping logic in `schema/utils/resolve-{enum-name}.ts`
-         - Create type-safe Record mapping using TypeScript Record type
-         - Use enum values as keys for type safety
-         - Keep database values in their original format
-         - Export single resolver function
-         - Name resolver function as `resolve{EnumName}`
+Example code: [resolve-verification-type.ts](mdc:projects/service-api/src/schema/utils/resolve-verification-type.ts)
 
-      3. Type Safety:
-         - Use TypeScript enums over string literals
-         - Define explicit mapping types
-         - Leverage database enum types from schema
-         - Never use type assertions for enum values
-         - Ensure exhaustive mapping coverage
-
-      4. File Organization:
-         - Separate enum definition from mapping logic
-         - Co-locate related enum types
-         - Export types for consumers
-         - Follow consistent file naming:
-           a. Enum: `{name}.ts`
-           b. Resolver: `resolve-{name}.ts`
-
-examples:
-  - input: |
-      ```ts
-      // Bad - mixing concerns, unsafe typing
-      // types/user-status.ts
-      export const UserStatus = builder.enumType('UserStatus', {
-        values: ['ACTIVE', 'INACTIVE'],
-      });
-
-      const statusMap = {
-        ACTIVE: 'active',
-        INACTIVE: 'inactive',
-      };
-
-      // Good - clean enum definition
-      // types/verification-type.ts
-      export enum VerificationType {
-        TWO_FACTOR_AUTH = 'TWO_FACTOR_AUTH',
-        CHANGE_EMAIL = 'CHANGE_EMAIL',
-        ONBOARDING = 'ONBOARDING',
-        RESET_PASSWORD = 'RESET_PASSWORD',
-      }
-
-      builder.enumType(VerificationType, {
-        name: 'VerificationType',
-      });
-
-      // Good - type-safe mapping in separate file
-      // utils/resolve-verification-type.ts
-      import { verifications } from '@vers/postgres-schema';
-      import { VerificationType } from '../types/verification-type';
-
-      type VerificationTypeMap = Record<
-        VerificationType,
-        (typeof verifications.type.enumValues)[number]
-      >;
-
-      const VERIFICATION_TYPE_MAP: VerificationTypeMap = {
-        [VerificationType.TWO_FACTOR_AUTH]: '2fa',
-        [VerificationType.CHANGE_EMAIL]: 'change-email',
-        [VerificationType.ONBOARDING]: 'onboarding',
-        [VerificationType.RESET_PASSWORD]: 'reset-password',
-      } as const;
-
-      export function resolveVerificationType(
-        type: VerificationType,
-      ): (typeof verifications.type.enumValues)[number] {
-        return VERIFICATION_TYPE_MAP[type];
-      }
-
-      // Good - clean usage in resolvers
-      // mutations/verify-otp.ts
-      const VerifyOTPInput = builder.inputType('VerifyOTPInput', {
-        fields: (t) => ({
-          type: t.field({ type: VerificationType, required: true }),
-        }),
-      });
-
-      export async function verifyOTP(
-        _: object,
-        args: Args,
-        ctx: Context,
-      ) {
-        const verification = await ctx.services.verification.verifyCode({
-          type: resolveVerificationType(args.input.type),
-        });
-      }
-      ```
-    output: "GraphQL enum implementation following standards"
-
-metadata:
-  priority: high
-  version: 1.0
-</rule> 
+* Place mapping logic in `schema/utils/resolve-{enum-name}.ts`
+* Create type-safe Record mapping using TypeScript Record type
+* Use enum values as keys for type safety
+* Keep database values in their original format
+* Export single resolver function
+* Name resolver function as `resolve{EnumName}`
