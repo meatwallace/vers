@@ -15,7 +15,11 @@ export async function createAuthedUser(
   userParts: UserParts,
   sessionID?: string,
 ) {
-  const user = db.user.create({ ...userParts });
+  const existingUser = db.user.findFirst({
+    where: { id: { equals: userParts.id } },
+  });
+
+  const user = existingUser ?? db.user.create({ ...userParts });
 
   const accessToken = await createJWT({
     audience: 'test.com',

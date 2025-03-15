@@ -3,8 +3,11 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { createRoutesStub } from 'react-router';
 import { drop } from '@mswjs/data';
+import { GraphQLError } from 'graphql';
+import { graphql } from 'msw';
 import { VerificationType } from '~/gql/graphql.ts';
 import { db } from '~/mocks/db.ts';
+import { server } from '~/mocks/node.ts';
 import { verifySessionStorage } from '~/session/verify-session-storage.server.ts';
 import { withRouteProps } from '~/test-utils/with-route-props.tsx';
 import { Routes } from '~/types.ts';
@@ -59,6 +62,8 @@ async function setupTest(config: TestConfig) {
 }
 
 afterEach(() => {
+  server.resetHandlers();
+
   drop(db);
 });
 
@@ -188,4 +193,28 @@ test('it passes the transaction token if 2FA was required for the reset', async 
   });
 
   expect(updatedUser?.password).toBe('newpassword123');
+});
+
+test('it shows a generic error if the mutation fails', async () => {
+  server.use(
+    graphql.mutation('FinishPasswordReset', () => {
+      throw new GraphQLError('Something went wrong');
+    }),
+  );
+
+  const { user } = await setupTest({
+    initialPath: '/?email=test@example.com&token=test_reset_token',
+  });
+
+  const newPasswordInput = await screen.findByLabelText(/new password/i);
+  const confirmPasswordInput = screen.getByLabelText(/confirm password/i);
+  const submitButton = screen.getByRole('button', { name: /reset password/i });
+
+  await user.type(newPasswordInput, 'newpassword123');
+  await user.type(confirmPasswordInput, 'newpassword123');
+  await user.click(submitButton);
+
+  const error = await screen.findByText('Something went wrong');
+
+  expect(error).toBeInTheDocument();
 });

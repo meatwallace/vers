@@ -7,34 +7,18 @@ import { Field } from '~/components/field';
 import { FormErrorList } from '~/components/form-error-list.tsx';
 import { RouteErrorBoundary } from '~/components/route-error-boundary.tsx';
 import { StatusButton } from '~/components/status-button.tsx';
-import { graphql } from '~/gql';
+import { FinishPasswordResetMutation } from '~/data/mutations/finish-password-reset';
 import { useIsFormPending } from '~/hooks/use-is-form-pending';
 import { verifySessionStorage } from '~/session/verify-session-storage.server.ts';
 import { Routes } from '~/types.ts';
 import { checkHoneypot } from '~/utils/check-honeypot.server.ts';
 import { createGQLClient } from '~/utils/create-gql-client.server.ts';
+import { handleGQLError } from '~/utils/handle-gql-error.ts';
 import { isMutationError } from '~/utils/is-mutation-error';
 import { requireAnonymous } from '~/utils/require-anonymous.server.ts';
 import { withErrorHandling } from '~/utils/with-error-handling.ts';
 import { ConfirmPasswordSchema } from '~/validation/confirm-password-schema.ts';
 import type { Route } from './+types/route.ts';
-
-const finishPasswordResetMutation = graphql(/* GraphQL */ `
-  mutation FinishPasswordReset($input: FinishPasswordResetInput!) {
-    finishPasswordReset(input: $input) {
-      ... on MutationSuccess {
-        success
-      }
-
-      ... on MutationErrorPayload {
-        error {
-          title
-          message
-        }
-      }
-    }
-  }
-`);
 
 const ResetPasswordFormSchema = z.intersection(
   z.object({
@@ -79,7 +63,7 @@ export const action = withErrorHandling(async (args: Route.ActionArgs) => {
     return redirect(Routes.Login);
   }
 
-  const client = createGQLClient();
+  const client = await createGQLClient(request);
 
   const formData = await request.formData();
 
@@ -103,24 +87,31 @@ export const action = withErrorHandling(async (args: Route.ActionArgs) => {
   // attach our transaction token incase 2FA was required for this reset
   const transactionToken = verifySession.get('transactionToken');
 
-  const { finishPasswordReset } = await client.request(
-    finishPasswordResetMutation,
-    {
-      input: {
-        email,
-        password: submission.value.password,
-        resetToken,
-        transactionToken,
-      },
+  const result = await client.mutation(FinishPasswordResetMutation, {
+    input: {
+      email,
+      password: submission.value.password,
+      resetToken,
+      transactionToken,
     },
-  );
+  });
 
-  if (isMutationError(finishPasswordReset)) {
-    const result = submission.reply({
-      formErrors: [finishPasswordReset.error.message],
+  if (result.error) {
+    handleGQLError(result.error);
+
+    const formResult = submission.reply({
+      formErrors: ['Something went wrong'],
     });
 
-    return data({ result }, { status: 400 });
+    return data({ result: formResult }, { status: 500 });
+  }
+
+  if (isMutationError(result.data?.finishPasswordReset)) {
+    const formResult = submission.reply({
+      formErrors: [result.data.finishPasswordReset.error.message],
+    });
+
+    return data({ result: formResult }, { status: 400 });
   }
 
   // Clear the verification session since we're done with it

@@ -2,12 +2,13 @@ import { data, Form, redirect } from 'react-router';
 import { getFormProps, getInputProps, useForm } from '@conform-to/react';
 import { getZodConstraint, parseWithZod } from '@conform-to/zod';
 import { HoneypotInputs } from 'remix-utils/honeypot/react';
+import invariant from 'tiny-invariant';
 import { z } from 'zod';
 import { Field } from '~/components/field';
 import { FormErrorList } from '~/components/form-error-list.tsx';
 import { RouteErrorBoundary } from '~/components/route-error-boundary.tsx';
 import { StatusButton } from '~/components/status-button.tsx';
-import { graphql } from '~/gql';
+import { StartEmailSignupMutation } from '~/data/mutations/start-email-signup.ts';
 import { VerificationType } from '~/gql/graphql.ts';
 import { useIsFormPending } from '~/hooks/use-is-form-pending.ts';
 import { verifySessionStorage } from '~/session/verify-session-storage.server.ts';
@@ -15,29 +16,13 @@ import { Routes } from '~/types.ts';
 import { checkHoneypot } from '~/utils/check-honeypot.server.ts';
 import { createGQLClient } from '~/utils/create-gql-client.server.ts';
 import { getDomainURL } from '~/utils/get-domain-url.ts';
+import { handleGQLError } from '~/utils/handle-gql-error.ts';
 import { isMutationError } from '~/utils/is-mutation-error.ts';
 import { requireAnonymous } from '~/utils/require-anonymous.server.ts';
 import { withErrorHandling } from '~/utils/with-error-handling.ts';
 import { UserEmailSchema } from '~/validation/user-email-schema.ts';
 import type { Route } from './+types/route.ts';
 import { QueryParam } from '../verify-otp/types.ts';
-
-const startEmailSignupMutation = graphql(/* GraphQL */ `
-  mutation StartEmailSignup($input: StartEmailSignupInput!) {
-    startEmailSignup(input: $input) {
-      ... on TwoFactorRequiredPayload {
-        transactionID
-      }
-
-      ... on MutationErrorPayload {
-        error {
-          title
-          message
-        }
-      }
-    }
-  }
-`);
 
 const SignupFormSchema = z.object({
   email: UserEmailSchema,
@@ -63,7 +48,7 @@ export const action = withErrorHandling(async (args: Route.ActionArgs) => {
 
   await requireAnonymous(request);
 
-  const client = createGQLClient();
+  const client = await createGQLClient(request);
 
   const formData = await request.formData();
 
@@ -78,25 +63,40 @@ export const action = withErrorHandling(async (args: Route.ActionArgs) => {
     return data({ result }, { status });
   }
 
-  const { startEmailSignup } = await client.request(startEmailSignupMutation, {
+  const result = await client.mutation(StartEmailSignupMutation, {
     input: {
       email: submission.value.email,
     },
   });
 
-  if (isMutationError(startEmailSignup)) {
-    const result = submission.reply({
-      formErrors: [startEmailSignup.error.message],
+  if (result.error) {
+    handleGQLError(result.error);
+
+    const formResult = submission.reply({
+      formErrors: ['Something went wrong'],
     });
 
-    return data({ result }, { status: 500 });
+    return data({ result: formResult }, { status: 500 });
+  }
+
+  invariant(result.data, 'if no error, there must be data');
+
+  if (isMutationError(result.data.startEmailSignup)) {
+    const formResult = submission.reply({
+      formErrors: [result.data.startEmailSignup.error.message],
+    });
+
+    return data({ result: formResult }, { status: 400 });
   }
 
   const verifySession = await verifySessionStorage.getSession(
     request.headers.get('cookie'),
   );
 
-  verifySession.set('transactionID', startEmailSignup.transactionID);
+  verifySession.set(
+    'transactionID',
+    result.data.startEmailSignup.transactionID,
+  );
 
   const verifyURL = new URL(`${getDomainURL(request)}${Routes.VerifyOTP}`);
 

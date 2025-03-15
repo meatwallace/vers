@@ -25,7 +25,7 @@ export async function sendEmail(
     const { html, plainText, subject, to } = input;
 
     const result = await resend.emails.send({
-      from: 'noreply@transactional.versidlecom',
+      from: 'noreply@transactional.versidle.com',
       html,
       subject,
       text: plainText,

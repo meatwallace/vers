@@ -7,7 +7,6 @@ import { db } from '~/mocks/db.ts';
 import { authSessionStorage } from '~/session/auth-session-storage.server.ts';
 import { withAuthedUser } from '~/test-utils/with-authed-user.ts';
 import { Routes } from '~/types.ts';
-import { createGQLClient } from './create-gql-client.server.ts';
 import { logout } from './logout.server.ts';
 
 interface TestConfig {
@@ -33,10 +32,8 @@ vi.stubGlobal(
 );
 
 function setupTest(config: TestConfig = {}) {
-  const client = createGQLClient();
-
   const loader = async ({ request }: LoaderFunctionArgs) => {
-    await logout(request, { client, redirectTo: config.redirectTo });
+    return logout(request, { redirectTo: config.redirectTo });
   };
 
   const TestRoutesStub = createRoutesStub([

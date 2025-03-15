@@ -1,5 +1,4 @@
 import { RouteErrorBoundary } from '~/components/route-error-boundary.tsx';
-import { createGQLClient } from '~/utils/create-gql-client.server.ts';
 import { requireAuth } from '~/utils/require-auth.server.ts';
 import { withErrorHandling } from '~/utils/with-error-handling.ts';
 import type { Route } from './+types/route.ts';
@@ -14,9 +13,7 @@ export const meta: Route.MetaFunction = () => [
 export const loader = withErrorHandling(async (args: Route.LoaderArgs) => {
   const { request } = args;
 
-  const client = createGQLClient();
-
-  await requireAuth(request, { client });
+  await requireAuth(request);
 
   return {};
 });

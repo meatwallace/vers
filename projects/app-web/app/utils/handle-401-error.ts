@@ -1,5 +1,5 @@
-import { ClientError } from 'graphql-request';
-import { Routes } from '~/types';
+import { getLoginPathWithRedirect } from './get-login-path-with-redirect.server';
+import { isURQLFetchError } from './is-urql-fetch-error.server';
 import { logout } from './logout.server';
 
 /**
@@ -12,11 +12,8 @@ import { logout } from './logout.server';
  * @param error - The error object.
  */
 export async function handle401Error(request: Request, error: unknown) {
-  if (error instanceof ClientError && error.response.status === 401) {
-    const url = new URL(request.url);
-    const loginRedirect = `${url.pathname}?${url.searchParams.toString()}`;
-    const searchParams = new URLSearchParams({ redirect: loginRedirect });
-    const redirectTo = `${Routes.Login}?${searchParams.toString()}`;
+  if (isURQLFetchError(error) && error.response.status === 401) {
+    const redirectTo = getLoginPathWithRedirect(request);
 
     await logout(request, { redirectTo });
   }

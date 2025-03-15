@@ -1,16 +1,16 @@
-import { Session } from 'react-router';
+import type { Session } from 'react-router';
+import type { SessionData } from './auth-session-storage.server.ts';
 
 interface AuthPayload {
   accessToken: string;
   refreshToken: string;
   session: {
-    expiresAt: string;
     id: string;
   };
 }
 
 export function storeAuthPayload(
-  authSession: Session,
+  authSession: Session<SessionData>,
   authPayload: AuthPayload,
 ) {
   authSession.set('sessionID', authPayload.session.id);

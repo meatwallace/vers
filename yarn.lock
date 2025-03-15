@@ -7123,6 +7123,28 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@urql/core@npm:5.1.1, @urql/core@npm:^5.1.1":
+  version: 5.1.1
+  resolution: "@urql/core@npm:5.1.1"
+  dependencies:
+    "@0no-co/graphql.web": "npm:^1.0.5"
+    wonka: "npm:^6.3.2"
+  checksum: 10c0/2a66f58452bbf153c251dd6d127fc0bc0473b4cde47171ca360960059eb08fc019202aee16911168a800814a3b9748300bb88b87817b5d05cf92c16f5772447b
+  languageName: node
+  linkType: hard
+
+"@urql/exchange-auth@npm:2.2.1":
+  version: 2.2.1
+  resolution: "@urql/exchange-auth@npm:2.2.1"
+  dependencies:
+    "@urql/core": "npm:^5.1.1"
+    wonka: "npm:^6.3.2"
+  peerDependencies:
+    "@urql/core": ^5.0.0
+  checksum: 10c0/ce849bee01cc619d972f8fe16c76f77008912e79510403a35de014cd5414e7fabc3fb7db3787691e60c52ae3e34970fbc84ad16e75535eb89523f0003a39d4d5
+  languageName: node
+  linkType: hard
+
 "@vafanassieff/msw-trpc@npm:2.0.0-beta.7":
   version: 2.0.0-beta.7
   resolution: "@vafanassieff/msw-trpc@npm:2.0.0-beta.7"
@@ -7202,6 +7224,8 @@ __metadata:
     "@typescript-eslint/eslint-plugin": "npm:8.26.1"
     "@typescript-eslint/parser": "npm:8.26.1"
     "@typescript-eslint/utils": "npm:8.26.1"
+    "@urql/core": "npm:5.1.1"
+    "@urql/exchange-auth": "npm:2.2.1"
     "@vafanassieff/msw-trpc": "npm:2.0.0-beta.7"
     "@vitest/coverage-v8": "npm:3.0.8"
     "@vitest/expect": "npm:3.0.8"
@@ -7880,6 +7904,8 @@ __metadata:
     "@types/react": "npm:19.0.10"
     "@types/react-dom": "npm:19.0.4"
     "@types/source-map-support": "npm:0.5.10"
+    "@urql/core": "npm:5.1.1"
+    "@urql/exchange-auth": "npm:2.2.1"
     "@vitest/expect": "npm:3.0.8"
     date-fns: "npm:4.1.0"
     eslint-plugin-jsx-a11y: "npm:6.10.2"
@@ -19162,6 +19188,13 @@ __metadata:
   bin:
     why-is-node-running: cli.js
   checksum: 10c0/1cde0b01b827d2cf4cb11db962f3958b9175d5d9e7ac7361d1a7b0e2dc6069a263e69118bd974c4f6d0a890ef4eedfe34cf3d5167ec14203dbc9a18620537054
+  languageName: node
+  linkType: hard
+
+"wonka@npm:^6.3.2":
+  version: 6.3.5
+  resolution: "wonka@npm:6.3.5"
+  checksum: 10c0/044fe5ae26c0a32b0a1603cc0ed71ede8c9febe5bb3adab4fad5e088ceee600a84a08d0deb95a72189bbaf0d510282d183b6fb7b6e9837e7a1c9b209f788dd07
   languageName: node
   linkType: hard
 

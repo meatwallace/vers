@@ -3,6 +3,8 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { createRoutesStub } from 'react-router';
 import { drop } from '@mswjs/data';
+import { GraphQLError } from 'graphql';
+import { graphql } from 'msw';
 import { VerificationType } from '~/gql/graphql.ts';
 import { db } from '~/mocks/db.ts';
 import { server } from '~/mocks/node.ts';
@@ -90,11 +92,11 @@ function setupTest(config: TestConfig = {}) {
 }
 
 afterEach(() => {
+  server.resetHandlers();
+
   drop(db);
 
   cookieHeader = null;
-
-  server.resetHandlers();
 });
 
 test('it renders the verify OTP form with accessible elements', async () => {
@@ -299,6 +301,28 @@ test('it shows error for invalid verification code', async () => {
   const errorText = await screen.findByText(/invalid verification code/i);
 
   expect(errorText).toBeInTheDocument();
+});
+
+test('it shows a generic error if the mutation fails', async () => {
+  server.use(
+    graphql.mutation('VerifyOTP', () => {
+      throw new GraphQLError('Something went wrong');
+    }),
+  );
+
+  const { user } = setupTest({
+    transactionID: 'test_transaction_id',
+  });
+
+  const codeInput = await screen.findByRole('textbox', { name: /code/i });
+  const submitButton = screen.getByRole('button', { name: /verify/i });
+
+  await user.type(codeInput, '999999');
+  await user.click(submitButton);
+
+  const error = await screen.findByText('Something went wrong');
+
+  expect(error).toBeInTheDocument();
 });
 
 test('it redirects to signup for invalid verification type', async () => {

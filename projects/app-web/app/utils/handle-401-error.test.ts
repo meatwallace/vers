@@ -1,5 +1,5 @@
 import { afterEach, expect, test, vi } from 'vitest';
-import { ClientError } from 'graphql-request';
+import { CombinedError } from '@urql/core';
 import { handle401Error } from './handle-401-error';
 import * as logoutModule from './logout.server';
 
@@ -9,25 +9,31 @@ afterEach(() => {
   vi.restoreAllMocks();
 });
 
-test('it logs the user out and redirects to the login page when the error is a 401', async () => {
-  const request = new Request('http://localhost:3000/dashboard');
-  const error = new ClientError({ status: 401 }, { query: '' });
+test('it logs the user out and redirects to the login page with the current URL as the redirect when the error is a 401', async () => {
+  const request = new Request('http://localhost:3000/dashboard?test=true');
+
+  const response = new Response(null, { status: 401 });
+  const error = new CombinedError({ response });
 
   await expect(handle401Error(request, error)).rejects.toStrictEqual(
     new Response(null, {
       headers: {
-        Location: '/login?redirect=%2Fdashboard%3F',
+        Location: '/login?redirect=%2Fdashboard%3Ftest%3Dtrue',
       },
       status: 302,
     }),
   );
 
   expect(logoutSpy).toHaveBeenCalledOnce();
+  expect(logoutSpy).toHaveBeenCalledWith(request, {
+    redirectTo: '/login?redirect=%2Fdashboard%3Ftest%3Dtrue',
+  });
 });
 
 test('it does not log out the user when the error is not a 401', async () => {
   const request = new Request('http://localhost:3000/dashboard');
-  const error = new ClientError({ status: 500 }, { query: '' });
+
+  const error = new Error('test');
 
   await expect(handle401Error(request, error)).resolves.toBeUndefined();
 

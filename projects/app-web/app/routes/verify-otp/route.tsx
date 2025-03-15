@@ -3,12 +3,13 @@ import { getFormProps, getInputProps, useForm } from '@conform-to/react';
 import { getZodConstraint, parseWithZod } from '@conform-to/zod';
 import { captureException } from '@sentry/react';
 import { HoneypotInputs } from 'remix-utils/honeypot/react';
+import invariant from 'tiny-invariant';
 import { z } from 'zod';
 import { OTPField } from '~/components/field/index.ts';
 import { FormErrorList } from '~/components/form-error-list.tsx';
 import { RouteErrorBoundary } from '~/components/route-error-boundary.tsx';
 import { StatusButton } from '~/components/status-button.tsx';
-import { VerifyOTP } from '~/data/mutations/verify-otp.ts';
+import { VerifyOTPMutation } from '~/data/mutations/verify-otp.ts';
 import { VerificationType } from '~/gql/graphql.ts';
 import { useIsFormPending } from '~/hooks/use-is-form-pending.ts';
 import { authSessionStorage } from '~/session/auth-session-storage.server.ts';
@@ -16,6 +17,7 @@ import { verifySessionStorage } from '~/session/verify-session-storage.server.ts
 import { Routes } from '~/types.ts';
 import { checkHoneypot } from '~/utils/check-honeypot.server.ts';
 import { createGQLClient } from '~/utils/create-gql-client.server.ts';
+import { handleGQLError } from '~/utils/handle-gql-error.ts';
 import { isMutationError } from '~/utils/is-mutation-error.ts';
 import { withErrorHandling } from '~/utils/with-error-handling.ts';
 import { Route } from './+types/route.ts';
@@ -61,7 +63,7 @@ export const loader = withErrorHandling(async (args: Route.LoaderArgs) => {
 export const action = withErrorHandling(async (args: Route.ActionArgs) => {
   const { request } = args;
 
-  const client = createGQLClient();
+  const client = await createGQLClient(request);
 
   const formData = await request.formData();
 
@@ -84,18 +86,9 @@ export const action = withErrorHandling(async (args: Route.ActionArgs) => {
     request.headers.get('cookie'),
   );
 
-  const accessToken = authSession.get('accessToken');
   const transactionID = verifySession.get('transactionID');
   const sessionID =
     verifySession.get('unverifiedSessionID') ?? authSession.get('sessionID');
-
-  if (sessionID) {
-    client.setHeader('x-session-id', sessionID);
-  }
-
-  if (accessToken) {
-    client.setHeader('authorization', `Bearer ${accessToken}`);
-  }
 
   // if we don't have a transaction ID then we really shouldn't be here.
   if (!transactionID) {
@@ -106,7 +99,7 @@ export const action = withErrorHandling(async (args: Route.ActionArgs) => {
     return data({ result }, { status: 400 });
   }
 
-  const { verifyOTP } = await client.request(VerifyOTP, {
+  const result = await client.mutation(VerifyOTPMutation, {
     input: {
       code: submission.value.code,
       sessionID,
@@ -116,12 +109,24 @@ export const action = withErrorHandling(async (args: Route.ActionArgs) => {
     },
   });
 
-  if (isMutationError(verifyOTP)) {
-    const result = submission.reply({
-      formErrors: [verifyOTP.error.message],
+  if (result.error) {
+    handleGQLError(result.error);
+
+    const formResult = submission.reply({
+      formErrors: ['Something went wrong'],
     });
 
-    return data({ result }, { status: 400 });
+    return data({ result: formResult }, { status: 500 });
+  }
+
+  invariant(result.data, 'if no error, there must be data');
+
+  if (isMutationError(result.data.verifyOTP)) {
+    const formResult = submission.reply({
+      formErrors: [result.data.verifyOTP.error.message],
+    });
+
+    return data({ result: formResult }, { status: 400 });
   }
 
   return await handleVerification(submission.value.type, {
@@ -129,7 +134,7 @@ export const action = withErrorHandling(async (args: Route.ActionArgs) => {
     client,
     request,
     submission,
-    transactionToken: verifyOTP.transactionToken,
+    transactionToken: result.data.verifyOTP.transactionToken,
   });
 });
 

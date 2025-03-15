@@ -3,14 +3,14 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { createRoutesStub } from 'react-router';
 import { drop } from '@mswjs/data';
+import { GraphQLError } from 'graphql';
+import { graphql } from 'msw';
 import { db } from '~/mocks/db.ts';
+import { server } from '~/mocks/node.ts';
 import { withAuthedUser } from '~/test-utils/with-authed-user.ts';
 import { withRouteProps } from '~/test-utils/with-route-props.tsx';
 import { Routes } from '~/types.ts';
-import { createGQLClient } from '~/utils/create-gql-client.server.ts';
 import { action, loader, Login } from './route.tsx';
-
-const client = createGQLClient();
 
 interface TestConfig {
   initialPath?: string;
@@ -56,9 +56,9 @@ function setupTest(config: TestConfig) {
 }
 
 afterEach(() => {
-  drop(db);
+  server.resetHandlers();
 
-  client.setHeader('authorization', '');
+  drop(db);
 });
 
 test('it renders the login form', async () => {
@@ -174,6 +174,28 @@ test('it shows error message for invalid credentials', async () => {
   await user.click(submitButton);
 
   const error = await screen.findByText('Wrong email or password');
+
+  expect(error).toBeInTheDocument();
+});
+
+test('it shows a generic error if the mutation fails', async () => {
+  server.use(
+    graphql.mutation('LoginWithPassword', () => {
+      throw new GraphQLError('Something went wrong');
+    }),
+  );
+
+  const { user } = setupTest({ isAuthed: false });
+
+  const emailInput = await screen.findByLabelText('Email');
+  const passwordInput = screen.getByLabelText('Password');
+  const submitButton = screen.getByRole('button', { name: 'Sign in' });
+
+  await user.type(emailInput, 'test@example.com');
+  await user.type(passwordInput, 'password123');
+  await user.click(submitButton);
+
+  const error = await screen.findByText('Something went wrong');
 
   expect(error).toBeInTheDocument();
 });
