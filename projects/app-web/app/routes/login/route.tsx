@@ -9,7 +9,7 @@ import { Field } from '~/components/field';
 import { FormErrorList } from '~/components/form-error-list.tsx';
 import { RouteErrorBoundary } from '~/components/route-error-boundary.tsx';
 import { StatusButton } from '~/components/status-button.tsx';
-import { graphql } from '~/gql';
+import { LoginWithPasswordMutation } from '~/data/mutations/login-with-password';
 import { VerificationType } from '~/gql/graphql.ts';
 import { useIsFormPending } from '~/hooks/use-is-form-pending';
 import { authSessionStorage } from '~/session/auth-session-storage.server.ts';
@@ -19,6 +19,7 @@ import { Routes } from '~/types.ts';
 import { checkHoneypot } from '~/utils/check-honeypot.server.ts';
 import { createGQLClient } from '~/utils/create-gql-client.server.ts';
 import { getDomainURL } from '~/utils/get-domain-url.ts';
+import { handleGQLError } from '~/utils/handle-gql-error.ts';
 import { is2FARequiredPayload } from '~/utils/is-2fa-required-payload.ts';
 import { isMutationError } from '~/utils/is-mutation-error';
 import { requireAnonymous } from '~/utils/require-anonymous.server.ts';
@@ -27,33 +28,6 @@ import { PasswordSchema } from '~/validation/password-schema.ts';
 import { UserEmailSchema } from '~/validation/user-email-schema.ts';
 import type { Route } from './+types/route.ts';
 import { QueryParam } from '../verify-otp/types.ts';
-
-const loginWithPasswordMutation = graphql(/* GraphQL */ `
-  mutation LoginWithPassword($input: LoginWithPasswordInput!) {
-    loginWithPassword(input: $input) {
-      ... on AuthPayload {
-        accessToken
-        refreshToken
-        session {
-          id
-          expiresAt
-        }
-      }
-
-      ... on TwoFactorRequiredPayload {
-        transactionID
-        sessionID
-      }
-
-      ... on MutationErrorPayload {
-        error {
-          title
-          message
-        }
-      }
-    }
-  }
-`);
 
 const LoginFormSchema = z.object({
   email: UserEmailSchema,
@@ -80,7 +54,7 @@ export const action = withErrorHandling(async (args: Route.ActionArgs) => {
 
   await requireAnonymous(request);
 
-  const client = createGQLClient();
+  const client = await createGQLClient(request);
 
   const formData = await request.formData();
 
@@ -95,26 +69,35 @@ export const action = withErrorHandling(async (args: Route.ActionArgs) => {
     return data({ result }, { status });
   }
 
-  const { loginWithPassword } = await client.request(
-    loginWithPasswordMutation,
-    {
-      input: {
-        email: submission.value.email,
-        password: submission.value.password,
-        rememberMe: submission.value.rememberMe,
-      },
+  const result = await client.mutation(LoginWithPasswordMutation, {
+    input: {
+      email: submission.value.email,
+      password: submission.value.password,
+      rememberMe: submission.value.rememberMe,
     },
-  );
+  });
 
-  if (isMutationError(loginWithPassword)) {
-    const result = submission.reply({
-      formErrors: [loginWithPassword.error.message],
+  if (result.error) {
+    handleGQLError(result.error);
+
+    const formResult = submission.reply({
+      formErrors: ['Something went wrong'],
     });
 
-    return data({ result }, { status: 401 });
+    return data({ result: formResult }, { status: 500 });
   }
 
-  if (is2FARequiredPayload(loginWithPassword)) {
+  invariant(result.data, 'if no error, there must be data');
+
+  if (isMutationError(result.data.loginWithPassword)) {
+    const formResult = submission.reply({
+      formErrors: [result.data.loginWithPassword.error.message],
+    });
+
+    return data({ result: formResult }, { status: 400 });
+  }
+
+  if (is2FARequiredPayload(result.data.loginWithPassword)) {
     const verifyURL = new URL(`${getDomainURL(request)}${Routes.VerifyOTP}`);
 
     verifyURL.searchParams.set(QueryParam.Target, submission.value.email);
@@ -127,14 +110,21 @@ export const action = withErrorHandling(async (args: Route.ActionArgs) => {
       );
     }
 
-    invariant(loginWithPassword.sessionID, 'sessionID is required');
+    invariant(result.data.loginWithPassword.sessionID, 'sessionID is required');
 
     const verifySession = await verifySessionStorage.getSession(
       request.headers.get('cookie'),
     );
 
-    verifySession.set('unverifiedSessionID', loginWithPassword.sessionID);
-    verifySession.set('transactionID', loginWithPassword.transactionID);
+    verifySession.set(
+      'unverifiedSessionID',
+      result.data.loginWithPassword.sessionID,
+    );
+
+    verifySession.set(
+      'transactionID',
+      result.data.loginWithPassword.transactionID,
+    );
 
     return redirect(verifyURL.toString(), {
       headers: {
@@ -147,12 +137,12 @@ export const action = withErrorHandling(async (args: Route.ActionArgs) => {
     request.headers.get('cookie'),
   );
 
-  storeAuthPayload(authSession, loginWithPassword);
+  storeAuthPayload(authSession, result.data.loginWithPassword);
 
   return redirect(safeRedirect(submission.value.redirect ?? Routes.Dashboard), {
     headers: {
       'set-cookie': await authSessionStorage.commitSession(authSession, {
-        expires: new Date(loginWithPassword.session.expiresAt),
+        expires: new Date(result.data.loginWithPassword.session.expiresAt),
       }),
     },
   });

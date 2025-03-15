@@ -24,7 +24,7 @@ export function ExistingAccountEmail(props: Props): ReactElement {
         </E.Text>
       </p>
       <E.Button
-        href="https://versidlecom/forgot-password"
+        href="https://versidle.com/forgot-password"
         style={{
           backgroundColor: '#000',
           borderRadius: '4px',

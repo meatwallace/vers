@@ -1,6 +1,6 @@
 import { afterEach, expect, test } from 'vitest';
 import { render, screen } from '@testing-library/react';
-import { createRoutesStub } from 'react-router';
+import { createRoutesStub, LoaderFunction } from 'react-router';
 import { drop } from '@mswjs/data';
 import { graphql, HttpResponse } from 'msw';
 import { db } from '~/mocks/db';
@@ -10,12 +10,19 @@ import { Routes } from '~/types';
 import { createGQLClient } from './create-gql-client.server';
 import { refreshAccessToken } from './refresh-access-token.server';
 
-const loader = async ({ request }: { request: Request }) => {
-  const client = createGQLClient();
+const loader: LoaderFunction = async ({ request }) => {
+  const client = await createGQLClient(request);
 
   const authPayload = await refreshAccessToken(request, {
-    client,
     refreshToken: 'valid-refresh-token',
+    utils: {
+      appendHeaders: (operation) => {
+        return operation;
+      },
+      mutate: async (...args) => {
+        return client.mutation(...args);
+      },
+    },
   });
 
   return authPayload;
@@ -76,7 +83,7 @@ test('it refreshes the access token', async () => {
   expect(sessionID).toBeInTheDocument();
 });
 
-test('it redirects to login on mutation error', async () => {
+test('it redirects to login with the current URL as the redirect on mutation error', async () => {
   server.use(
     graphql.mutation('RefreshAccessToken', () =>
       HttpResponse.json({

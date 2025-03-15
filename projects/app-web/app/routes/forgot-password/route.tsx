@@ -1,46 +1,26 @@
 import { data, Form, Link, redirect } from 'react-router';
 import { getFormProps, getInputProps, useForm } from '@conform-to/react';
 import { getZodConstraint, parseWithZod } from '@conform-to/zod';
-import { captureException } from '@sentry/react';
 import { HoneypotInputs } from 'remix-utils/honeypot/react';
+import invariant from 'tiny-invariant';
 import { z } from 'zod';
 import { Field } from '~/components/field';
 import { FormErrorList } from '~/components/form-error-list.tsx';
 import { RouteErrorBoundary } from '~/components/route-error-boundary.tsx';
 import { StatusButton } from '~/components/status-button.tsx';
-import { graphql } from '~/gql';
+import { StartPasswordResetMutation } from '~/data/mutations/start-password-reset';
 import { useIsFormPending } from '~/hooks/use-is-form-pending';
 import { verifySessionStorage } from '~/session/verify-session-storage.server.ts';
 import { Routes } from '~/types.ts';
 import { checkHoneypot } from '~/utils/check-honeypot.server.ts';
 import { createGQLClient } from '~/utils/create-gql-client.server.ts';
+import { handleGQLError } from '~/utils/handle-gql-error.ts';
 import { is2FARequiredPayload } from '~/utils/is-2fa-required-payload.ts';
 import { isMutationError } from '~/utils/is-mutation-error.ts';
 import { requireAnonymous } from '~/utils/require-anonymous.server.ts';
 import { withErrorHandling } from '~/utils/with-error-handling.ts';
 import { UserEmailSchema } from '~/validation/user-email-schema.ts';
 import type { Route } from './+types/route.ts';
-
-const startPasswordResetMutation = graphql(/* GraphQL */ `
-  mutation StartPasswordReset($input: StartPasswordResetInput!) {
-    startPasswordReset(input: $input) {
-      ... on MutationSuccess {
-        success
-      }
-
-      ... on TwoFactorRequiredPayload {
-        transactionID
-      }
-
-      ... on MutationErrorPayload {
-        error {
-          title
-          message
-        }
-      }
-    }
-  }
-`);
 
 const ForgotPasswordFormSchema = z.object({
   email: UserEmailSchema,
@@ -66,7 +46,7 @@ export const action = withErrorHandling(async (args: Route.ActionArgs) => {
 
   await requireAnonymous(request);
 
-  const client = createGQLClient();
+  const client = await createGQLClient(request);
 
   const formData = await request.formData();
 
@@ -83,50 +63,50 @@ export const action = withErrorHandling(async (args: Route.ActionArgs) => {
     return data({ result }, { status });
   }
 
-  try {
-    const { startPasswordReset } = await client.request(
-      startPasswordResetMutation,
-      {
-        input: {
-          email: submission.value.email,
-        },
-      },
-    );
-
-    if (isMutationError(startPasswordReset)) {
-      const result = submission.reply({
-        formErrors: [startPasswordReset.error.message],
-      });
-
-      return data({ result }, { status: 400 });
-    }
-
-    if (is2FARequiredPayload(startPasswordReset)) {
-      const verifySession = await verifySessionStorage.getSession(
-        request.headers.get('cookie'),
-      );
-
-      verifySession.set('transactionID', startPasswordReset.transactionID);
-
-      return redirect(Routes.ResetPasswordStarted, {
-        headers: {
-          'set-cookie': await verifySessionStorage.commitSession(verifySession),
-        },
-      });
-    }
-
-    return redirect(Routes.ResetPasswordStarted);
-  } catch (error) {
-    if (error instanceof Error) {
-      captureException(error);
-    }
-  }
-
-  const result = submission.reply({
-    formErrors: ['Something went wrong'],
+  const result = await client.mutation(StartPasswordResetMutation, {
+    input: {
+      email: submission.value.email,
+    },
   });
 
-  return data({ result }, { status: 500 });
+  if (result.error) {
+    handleGQLError(result.error);
+
+    const formResult = submission.reply({
+      formErrors: ['Something went wrong'],
+    });
+
+    return data({ result: formResult }, { status: 500 });
+  }
+
+  invariant(result.data, 'if no error, there must be data');
+
+  if (isMutationError(result.data.startPasswordReset)) {
+    const formResult = submission.reply({
+      formErrors: [result.data.startPasswordReset.error.message],
+    });
+
+    return data({ result: formResult }, { status: 400 });
+  }
+
+  if (is2FARequiredPayload(result.data.startPasswordReset)) {
+    const verifySession = await verifySessionStorage.getSession(
+      request.headers.get('cookie'),
+    );
+
+    verifySession.set(
+      'transactionID',
+      result.data.startPasswordReset.transactionID,
+    );
+
+    return redirect(Routes.ResetPasswordStarted, {
+      headers: {
+        'set-cookie': await verifySessionStorage.commitSession(verifySession),
+      },
+    });
+  }
+
+  return redirect(Routes.ResetPasswordStarted);
 });
 
 export function ForgotPassword(props: Route.ComponentProps) {

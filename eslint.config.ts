@@ -167,6 +167,7 @@ export default tseslint.config(
       'vitest/max-expects': 'off',
       'vitest/no-alias-methods': 'error',
       'vitest/no-conditional-in-test': 'error',
+      'vitest/no-focused-tests': 'off',
       'vitest/no-hooks': [
         'error',
         {

@@ -16,6 +16,7 @@ export default [
   route(Routes.ForgotPassword, 'routes/forgot-password/route.tsx'),
   route(Routes.ResetPassword, 'routes/reset-password/route.tsx'),
   route(Routes.ResetPasswordStarted, 'routes/reset-password-started/route.tsx'),
+
   layout('layouts/authed-layout.tsx', [
     route(Routes.Dashboard, 'routes/dashboard/route.tsx'),
     route(Routes.Profile, 'routes/profile/route.tsx'),

@@ -94,6 +94,8 @@ const RAW_RUNTIME_STATE =
           ["@typescript-eslint/eslint-plugin", "virtual:2374804c710bce591a104410bcd13e40c0832c53c15df3ef835a8d768123341b4e7b02280752402cc164167c85ce67046da53fc5c3021eb9bc43a5c6039fb303#npm:8.26.1"],\
           ["@typescript-eslint/parser", "virtual:2374804c710bce591a104410bcd13e40c0832c53c15df3ef835a8d768123341b4e7b02280752402cc164167c85ce67046da53fc5c3021eb9bc43a5c6039fb303#npm:8.26.1"],\
           ["@typescript-eslint/utils", "virtual:2374804c710bce591a104410bcd13e40c0832c53c15df3ef835a8d768123341b4e7b02280752402cc164167c85ce67046da53fc5c3021eb9bc43a5c6039fb303#npm:8.26.1"],\
+          ["@urql/core", "npm:5.1.1"],\
+          ["@urql/exchange-auth", "virtual:2374804c710bce591a104410bcd13e40c0832c53c15df3ef835a8d768123341b4e7b02280752402cc164167c85ce67046da53fc5c3021eb9bc43a5c6039fb303#npm:2.2.1"],\
           ["@vafanassieff/msw-trpc", "virtual:2374804c710bce591a104410bcd13e40c0832c53c15df3ef835a8d768123341b4e7b02280752402cc164167c85ce67046da53fc5c3021eb9bc43a5c6039fb303#npm:2.0.0-beta.7"],\
           ["@vitest/coverage-v8", "virtual:2374804c710bce591a104410bcd13e40c0832c53c15df3ef835a8d768123341b4e7b02280752402cc164167c85ce67046da53fc5c3021eb9bc43a5c6039fb303#npm:3.0.8"],\
           ["@vitest/expect", "npm:3.0.8"],\
@@ -178,6 +180,19 @@ const RAW_RUNTIME_STATE =
           ["@0no-co/graphql.web", "npm:1.1.2"]\
         ],\
         "linkType": "SOFT"\
+      }],\
+      ["virtual:43ea252a1c202570d381397462a596df38116c5cc11810acdb48cf65eed454f926ebba9a68ecec40d1d11a6ad3ddd7948cff5f084d284cf27e8fa8495db3dbbb#npm:1.1.2", {\
+        "packageLocation": "./.yarn/__virtual__/@0no-co-graphql.web-virtual-bfdcb36c48/0/cache/@0no-co-graphql.web-npm-1.1.2-25a1d5379e-7074de2968.zip/node_modules/@0no-co/graphql.web/",\
+        "packageDependencies": [\
+          ["@0no-co/graphql.web", "virtual:43ea252a1c202570d381397462a596df38116c5cc11810acdb48cf65eed454f926ebba9a68ecec40d1d11a6ad3ddd7948cff5f084d284cf27e8fa8495db3dbbb#npm:1.1.2"],\
+          ["@types/graphql", null],\
+          ["graphql", null]\
+        ],\
+        "packagePeers": [\
+          "@types/graphql",\
+          "graphql"\
+        ],\
+        "linkType": "HARD"\
       }],\
       ["virtual:5c4bbf35385a49a92c5bf6eee697fef2f771c41517c21af31c53056f3b50ba2a5a8f3a2eaf695ac2fd9c103d1de46aa6cd2a9539be2ec65c71b8466643fc7ce2#npm:1.1.2", {\
         "packageLocation": "./.yarn/__virtual__/@0no-co-graphql.web-virtual-cc69bcf1d8/0/cache/@0no-co-graphql.web-npm-1.1.2-25a1d5379e-7074de2968.zip/node_modules/@0no-co/graphql.web/",\
@@ -10647,6 +10662,40 @@ const RAW_RUNTIME_STATE =
         "linkType": "HARD"\
       }]\
     ]],\
+    ["@urql/core", [\
+      ["npm:5.1.1", {\
+        "packageLocation": "./.yarn/cache/@urql-core-npm-5.1.1-43ea252a1c-2a66f58452.zip/node_modules/@urql/core/",\
+        "packageDependencies": [\
+          ["@urql/core", "npm:5.1.1"],\
+          ["@0no-co/graphql.web", "virtual:43ea252a1c202570d381397462a596df38116c5cc11810acdb48cf65eed454f926ebba9a68ecec40d1d11a6ad3ddd7948cff5f084d284cf27e8fa8495db3dbbb#npm:1.1.2"],\
+          ["wonka", "npm:6.3.5"]\
+        ],\
+        "linkType": "HARD"\
+      }]\
+    ]],\
+    ["@urql/exchange-auth", [\
+      ["npm:2.2.1", {\
+        "packageLocation": "./.yarn/cache/@urql-exchange-auth-npm-2.2.1-5f7926189a-ce849bee01.zip/node_modules/@urql/exchange-auth/",\
+        "packageDependencies": [\
+          ["@urql/exchange-auth", "npm:2.2.1"]\
+        ],\
+        "linkType": "SOFT"\
+      }],\
+      ["virtual:2374804c710bce591a104410bcd13e40c0832c53c15df3ef835a8d768123341b4e7b02280752402cc164167c85ce67046da53fc5c3021eb9bc43a5c6039fb303#npm:2.2.1", {\
+        "packageLocation": "./.yarn/__virtual__/@urql-exchange-auth-virtual-05f7f72c6d/0/cache/@urql-exchange-auth-npm-2.2.1-5f7926189a-ce849bee01.zip/node_modules/@urql/exchange-auth/",\
+        "packageDependencies": [\
+          ["@urql/exchange-auth", "virtual:2374804c710bce591a104410bcd13e40c0832c53c15df3ef835a8d768123341b4e7b02280752402cc164167c85ce67046da53fc5c3021eb9bc43a5c6039fb303#npm:2.2.1"],\
+          ["@types/urql__core", null],\
+          ["@urql/core", "npm:5.1.1"],\
+          ["wonka", "npm:6.3.5"]\
+        ],\
+        "packagePeers": [\
+          "@types/urql__core",\
+          "@urql/core"\
+        ],\
+        "linkType": "HARD"\
+      }]\
+    ]],\
     ["@vafanassieff/msw-trpc", [\
       ["npm:2.0.0-beta.7", {\
         "packageLocation": "./.yarn/cache/@vafanassieff-msw-trpc-npm-2.0.0-beta.7-e3719599f3-bbbdf43b1b.zip/node_modules/@vafanassieff/msw-trpc/",\
@@ -10741,6 +10790,8 @@ const RAW_RUNTIME_STATE =
           ["@typescript-eslint/eslint-plugin", "virtual:2374804c710bce591a104410bcd13e40c0832c53c15df3ef835a8d768123341b4e7b02280752402cc164167c85ce67046da53fc5c3021eb9bc43a5c6039fb303#npm:8.26.1"],\
           ["@typescript-eslint/parser", "virtual:2374804c710bce591a104410bcd13e40c0832c53c15df3ef835a8d768123341b4e7b02280752402cc164167c85ce67046da53fc5c3021eb9bc43a5c6039fb303#npm:8.26.1"],\
           ["@typescript-eslint/utils", "virtual:2374804c710bce591a104410bcd13e40c0832c53c15df3ef835a8d768123341b4e7b02280752402cc164167c85ce67046da53fc5c3021eb9bc43a5c6039fb303#npm:8.26.1"],\
+          ["@urql/core", "npm:5.1.1"],\
+          ["@urql/exchange-auth", "virtual:2374804c710bce591a104410bcd13e40c0832c53c15df3ef835a8d768123341b4e7b02280752402cc164167c85ce67046da53fc5c3021eb9bc43a5c6039fb303#npm:2.2.1"],\
           ["@vafanassieff/msw-trpc", "virtual:2374804c710bce591a104410bcd13e40c0832c53c15df3ef835a8d768123341b4e7b02280752402cc164167c85ce67046da53fc5c3021eb9bc43a5c6039fb303#npm:2.0.0-beta.7"],\
           ["@vitest/coverage-v8", "virtual:2374804c710bce591a104410bcd13e40c0832c53c15df3ef835a8d768123341b4e7b02280752402cc164167c85ce67046da53fc5c3021eb9bc43a5c6039fb303#npm:3.0.8"],\
           ["@vitest/expect", "npm:3.0.8"],\
@@ -11514,6 +11565,8 @@ const RAW_RUNTIME_STATE =
           ["@types/react", "npm:19.0.10"],\
           ["@types/react-dom", "virtual:2374804c710bce591a104410bcd13e40c0832c53c15df3ef835a8d768123341b4e7b02280752402cc164167c85ce67046da53fc5c3021eb9bc43a5c6039fb303#npm:19.0.4"],\
           ["@types/source-map-support", "npm:0.5.10"],\
+          ["@urql/core", "npm:5.1.1"],\
+          ["@urql/exchange-auth", "virtual:2374804c710bce591a104410bcd13e40c0832c53c15df3ef835a8d768123341b4e7b02280752402cc164167c85ce67046da53fc5c3021eb9bc43a5c6039fb303#npm:2.2.1"],\
           ["@vitest/expect", "npm:3.0.8"],\
           ["date-fns", "npm:4.1.0"],\
           ["eslint-plugin-jsx-a11y", "virtual:b4dbac12e8c0eac19977455c27007fa0bab83d73d73781bdd06afb97db468ee42cd13130e5a6cca03948b2e68a51074131e9ffe5919a808a1f95312007ab4bc4#npm:6.10.2"],\
@@ -24617,6 +24670,15 @@ const RAW_RUNTIME_STATE =
           ["why-is-node-running", "npm:2.3.0"],\
           ["siginfo", "npm:2.0.0"],\
           ["stackback", "npm:0.0.2"]\
+        ],\
+        "linkType": "HARD"\
+      }]\
+    ]],\
+    ["wonka", [\
+      ["npm:6.3.5", {\
+        "packageLocation": "./.yarn/cache/wonka-npm-6.3.5-fa63f3edad-044fe5ae26.zip/node_modules/wonka/",\
+        "packageDependencies": [\
+          ["wonka", "npm:6.3.5"]\
         ],\
         "linkType": "HARD"\
       }]\

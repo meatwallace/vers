@@ -3,7 +3,10 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { createRoutesStub } from 'react-router';
 import { drop } from '@mswjs/data';
+import { GraphQLError } from 'graphql';
+import { graphql } from 'msw';
 import { db } from '~/mocks/db.ts';
+import { server } from '~/mocks/node.ts';
 import { withRouteProps } from '~/test-utils/with-route-props.tsx';
 import { Routes } from '~/types.ts';
 import { action, ForgotPassword, loader } from './route.tsx';
@@ -27,7 +30,7 @@ function setupTest() {
           </div>
         );
       }),
-      loader: ({ request }: { request: Request }) => {
+      loader: ({ request }) => {
         const url = new URL(request.url);
         const email = url.searchParams.get('email');
 
@@ -43,6 +46,8 @@ function setupTest() {
 }
 
 afterEach(() => {
+  server.resetHandlers();
+
   drop(db);
 });
 
@@ -92,4 +97,26 @@ test('it redirects to the reset password started route after submitting a valid 
   );
 
   expect(resetPasswordStartedRoute).toBeInTheDocument();
+});
+
+test('it shows a generic error if the mutation fails', async () => {
+  server.use(
+    graphql.mutation('StartPasswordReset', () => {
+      throw new GraphQLError('Something went wrong');
+    }),
+  );
+
+  const { user } = setupTest();
+
+  const emailInput = await screen.findByRole('textbox', { name: /email/i });
+  const submitButton = screen.getByRole('button', {
+    name: /recover password/i,
+  });
+
+  await user.type(emailInput, 'test@example.com');
+  await user.click(submitButton);
+
+  const errorText = await screen.findByText('Something went wrong');
+
+  expect(errorText).toBeInTheDocument();
 });

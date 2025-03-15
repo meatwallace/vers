@@ -8,7 +8,7 @@ type SessionKey =
   | 'sessionID'
   | 'verifiedTime';
 
-type SessionData = Record<SessionKey, string>;
+export type SessionData = Record<SessionKey, string>;
 
 interface SessionFlashData {
   error: string;

@@ -8,7 +8,7 @@ type SessionKey =
   | 'transactionToken'
   | 'unverifiedSessionID';
 
-type SessionData = Record<SessionKey, string>;
+export type SessionData = Record<SessionKey, string>;
 
 interface SessionFlashData {
   error: string;

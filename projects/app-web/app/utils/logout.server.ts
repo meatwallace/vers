@@ -1,53 +1,40 @@
 import { redirect } from 'react-router';
 import { captureException } from '@sentry/react';
-import { GraphQLClient } from 'graphql-request';
 import { safeRedirect } from 'remix-utils/safe-redirect';
-import { graphql } from '~/gql';
+import { DeleteSessionMutation } from '~/data/mutations/delete-session.ts';
 import { authSessionStorage } from '~/session/auth-session-storage.server';
 import { Routes } from '~/types';
 import { combineHeaders } from './combine-headers.server.ts';
 import { createGQLClient } from './create-gql-client.server.ts';
 
 interface Context {
-  client?: GraphQLClient;
   redirectTo?: string;
   responseInit?: ResponseInit;
 }
 
-const deleteSessionMutation = graphql(/* GraphQL */ `
-  mutation DeleteSession($input: DeleteSessionInput!) {
-    deleteSession(input: $input) {
-      ... on MutationSuccess {
-        success
-      }
-
-      ... on MutationErrorPayload {
-        error {
-          title
-          message
-        }
-      }
-    }
-  }
-`);
-
-export async function logout(request: Request, ctx: Context = {}) {
-  const client = ctx.client ?? createGQLClient();
-  const redirectTo = ctx.redirectTo ?? Routes.Index;
+/**
+ * Logs out the user by deleting their session and clearing cookies.
+ *
+ * @param request - The request object
+ * @param ctx - Context containing optional redirect path and response init
+ * @throws Redirect to the specified path or home page
+ */
+export async function logout(
+  request: Request,
+  ctx: Context = {},
+): Promise<never> {
+  const client = await createGQLClient(request);
 
   const authSession = await authSessionStorage.getSession(
     request.headers.get('cookie'),
   );
 
-  const accessToken = authSession.get('accessToken');
   const sessionID = authSession.get('sessionID');
-
-  client.setHeader('authorization', `Bearer ${accessToken}`);
 
   if (sessionID) {
     // if we fail our server side session cleanup, ignore error's and continue.
     try {
-      await client.request(deleteSessionMutation, {
+      await client.mutation(DeleteSessionMutation, {
         input: {
           id: sessionID,
         },
@@ -57,7 +44,7 @@ export async function logout(request: Request, ctx: Context = {}) {
     }
   }
 
-  throw redirect(safeRedirect(redirectTo), {
+  throw redirect(safeRedirect(ctx.redirectTo ?? Routes.Index), {
     ...ctx.responseInit,
     headers: combineHeaders(
       { 'set-cookie': await authSessionStorage.destroySession(authSession) },

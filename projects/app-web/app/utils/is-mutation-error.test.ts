@@ -20,3 +20,9 @@ test('it returns false if the provided data is not a mutation error', () => {
 
   expect(result).toBeFalse();
 });
+
+test('it returns false if the data is undefined', () => {
+  const result = isMutationError();
+
+  expect(result).toBeFalse();
+});

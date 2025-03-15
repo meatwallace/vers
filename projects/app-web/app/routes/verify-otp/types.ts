@@ -1,5 +1,5 @@
 import { type Submission } from '@conform-to/react';
-import { GraphQLClient } from 'graphql-request';
+import { Client } from '@urql/core';
 import { z } from 'zod';
 import { type VerifyOTPFormSchema } from './route.tsx';
 
@@ -12,7 +12,7 @@ export enum QueryParam {
 
 export interface HandleVerificationContext {
   body: FormData | URLSearchParams;
-  client: GraphQLClient;
+  client: Client;
   request: Request;
   submission: Submission<
     z.input<typeof VerifyOTPFormSchema>,

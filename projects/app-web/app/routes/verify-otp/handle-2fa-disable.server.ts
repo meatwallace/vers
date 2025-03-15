@@ -1,26 +1,10 @@
 import { redirect } from 'react-router';
 import invariant from 'tiny-invariant';
-import { graphql } from '~/gql/gql.ts';
+import { FinishDisable2FAMutation } from '~/data/mutations/finish-disable-2fa';
 import { verifySessionStorage } from '~/session/verify-session-storage.server.ts';
 import { Routes } from '~/types.ts';
+import { handleGQLError } from '~/utils/handle-gql-error.ts';
 import { type HandleVerificationContext } from './types.ts';
-
-const FinishDisable2FAMutation = graphql(/* GraphQL */ `
-  mutation FinishDisable2FA($input: FinishDisable2FAInput!) {
-    finishDisable2FA(input: $input) {
-      ... on MutationSuccess {
-        success
-      }
-
-      ... on MutationErrorPayload {
-        error {
-          title
-          message
-        }
-      }
-    }
-  }
-`);
 
 export async function handle2FADisable(ctx: HandleVerificationContext) {
   invariant(
@@ -35,11 +19,17 @@ export async function handle2FADisable(ctx: HandleVerificationContext) {
   // clean up the pending transaction ID
   verifySession.unset('transactionID');
 
-  await ctx.client.request(FinishDisable2FAMutation, {
+  const result = await ctx.client.mutation(FinishDisable2FAMutation, {
     input: {
       transactionToken: ctx.transactionToken,
     },
   });
+
+  if (result.error) {
+    handleGQLError(result.error);
+
+    throw result.error;
+  }
 
   // regardless of the outcome, redirect to our profile route to show the user the result.
   // if we failed, its low effort to have them try again.

@@ -11,6 +11,7 @@ export function createLogger(options: CreateLoggerOptions): Logger {
   const sentryTransport: pino.TransportTargetOptions = {
     options: {
       dsn: options.sentryDSN,
+      minLevel: 40,
     },
     target: 'pino-sentry-transport',
   };

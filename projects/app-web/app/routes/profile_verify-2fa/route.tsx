@@ -2,48 +2,26 @@ import { data, Form, redirect } from 'react-router';
 import { getFormProps, getInputProps, useForm } from '@conform-to/react';
 import { getZodConstraint, parseWithZod } from '@conform-to/zod';
 import QRCode from 'qrcode';
+import invariant from 'tiny-invariant';
 import { z } from 'zod';
 import { OTPField } from '~/components/field/otp-field';
 import { FormErrorList } from '~/components/form-error-list.tsx';
 import { RouteErrorBoundary } from '~/components/route-error-boundary.tsx';
 import { StatusButton } from '~/components/status-button';
-import { VerifyOTP } from '~/data/mutations/verify-otp';
-import { GetCurrentUser } from '~/data/queries/get-current-user.ts';
-import { graphql } from '~/gql';
+import { FinishEnable2FAMutation } from '~/data/mutations/finish-enable-2fa';
+import { VerifyOTPMutation } from '~/data/mutations/verify-otp';
+import { GetCurrentUserQuery } from '~/data/queries/get-current-user.ts';
+import { GetEnable2FAVerificationQuery } from '~/data/queries/get-enable-2fa-verification';
 import { VerificationType } from '~/gql/graphql.ts';
 import { useIsFormPending } from '~/hooks/use-is-form-pending.ts';
 import { verifySessionStorage } from '~/session/verify-session-storage.server.ts';
 import { Routes } from '~/types';
+import { captureGQLExceptions } from '~/utils/capture-gql-exceptions.server.ts';
 import { createGQLClient } from '~/utils/create-gql-client.server.ts';
 import { isMutationError } from '~/utils/is-mutation-error.ts';
 import { requireAuth } from '~/utils/require-auth.server.ts';
 import { withErrorHandling } from '~/utils/with-error-handling.ts';
 import type { Route } from './+types/route.ts';
-
-const GetEnable2FAVerification = graphql(/* GraphQL */ `
-  query GetEnable2FAVerification {
-    getEnable2FAVerification {
-      otpURI
-    }
-  }
-`);
-
-const FinishEnable2FA = graphql(/* GraphQL */ `
-  mutation FinishEnable2FA($input: FinishEnable2FAInput!) {
-    finishEnable2FA(input: $input) {
-      ... on MutationSuccess {
-        success
-      }
-
-      ... on MutationErrorPayload {
-        error {
-          title
-          message
-        }
-      }
-    }
-  }
-`);
 
 const VerifyOTPFormSchema = z.object({
   code: z.string().length(6, 'Invalid code'),
@@ -60,37 +38,51 @@ export const meta: Route.MetaFunction = () => [
 export const loader = withErrorHandling(async (args: Route.LoaderArgs) => {
   const { request } = args;
 
-  const client = createGQLClient();
+  await requireAuth(request);
 
-  await requireAuth(request, { client });
+  const client = await createGQLClient(request);
 
-  const { getCurrentUser } = await client.request(GetCurrentUser, {});
+  const currentUserResult = await client.query(GetCurrentUserQuery, {});
+
+  if (currentUserResult.error) {
+    throw currentUserResult.error;
+  }
+
+  invariant(currentUserResult.data, 'if no error, there should be data');
 
   // if we've already got 2FA enabled send us back to the profile page
-  if (getCurrentUser.is2FAEnabled) {
+  if (currentUserResult.data.getCurrentUser.is2FAEnabled) {
     return redirect(Routes.Profile);
   }
 
-  const { getEnable2FAVerification } = await client.request(
-    GetEnable2FAVerification,
+  const twoFactorVerifyResult = await client.query(
+    GetEnable2FAVerificationQuery,
     {},
   );
 
-  const qrCode = await QRCode.toDataURL(getEnable2FAVerification.otpURI);
+  if (twoFactorVerifyResult.error) {
+    throw twoFactorVerifyResult.error;
+  }
+
+  invariant(twoFactorVerifyResult.data, 'if no error, there should be data');
+
+  const qrCode = await QRCode.toDataURL(
+    twoFactorVerifyResult.data.getEnable2FAVerification.otpURI,
+  );
 
   return {
-    otpURI: getEnable2FAVerification.otpURI,
+    otpURI: twoFactorVerifyResult.data.getEnable2FAVerification.otpURI,
     qrCode,
-    target: getCurrentUser.email,
+    target: currentUserResult.data.getCurrentUser.email,
   };
 });
 
 export const action = withErrorHandling(async (args: Route.ActionArgs) => {
   const { request } = args;
 
-  const client = createGQLClient();
+  const { sessionID } = await requireAuth(request);
 
-  const { sessionID } = await requireAuth(request, { client });
+  const client = await createGQLClient(request);
 
   const formData = await request.formData();
 
@@ -115,10 +107,10 @@ export const action = withErrorHandling(async (args: Route.ActionArgs) => {
       formErrors: ['Something went wrong.'],
     });
 
-    return data({ result }, { status: 400 });
+    return data({ result }, { status: 500 });
   }
 
-  const { verifyOTP } = await client.request(VerifyOTP, {
+  const verifyOTPResult = await client.mutation(VerifyOTPMutation, {
     input: {
       code: submission.value.code,
       sessionID,
@@ -128,26 +120,50 @@ export const action = withErrorHandling(async (args: Route.ActionArgs) => {
     },
   });
 
-  if (isMutationError(verifyOTP)) {
+  if (verifyOTPResult.error) {
+    captureGQLExceptions(verifyOTPResult.error);
+
     const result = submission.reply({
-      formErrors: [verifyOTP.error.message],
+      formErrors: ['Something went wrong'],
+    });
+
+    return data({ result }, { status: 500 });
+  }
+
+  invariant(verifyOTPResult.data, 'if no error, there should be data');
+
+  if (isMutationError(verifyOTPResult.data.verifyOTP)) {
+    const result = submission.reply({
+      formErrors: [verifyOTPResult.data.verifyOTP.error.message],
     });
 
     return data({ result }, { status: 400 });
   }
 
-  const { finishEnable2FA } = await client.request(FinishEnable2FA, {
+  const finishEnable2FAResult = await client.mutation(FinishEnable2FAMutation, {
     input: {
-      transactionToken: verifyOTP.transactionToken,
+      transactionToken: verifyOTPResult.data.verifyOTP.transactionToken,
     },
   });
+
+  if (finishEnable2FAResult.error) {
+    captureGQLExceptions(finishEnable2FAResult.error);
+
+    const result = submission.reply({
+      formErrors: ['Something went wrong'],
+    });
+
+    return data({ result }, { status: 500 });
+  }
+
+  invariant(finishEnable2FAResult.data, 'if no error, there should be data');
 
   const setCookieHeader =
     await verifySessionStorage.destroySession(verifySession);
 
-  if (isMutationError(finishEnable2FA)) {
+  if (isMutationError(finishEnable2FAResult.data.finishEnable2FA)) {
     const result = submission.reply({
-      formErrors: [finishEnable2FA.error.message],
+      formErrors: [finishEnable2FAResult.data.finishEnable2FA.error.message],
     });
 
     return data(

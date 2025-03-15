@@ -1,6 +1,6 @@
 import { graphql } from '~/gql';
 
-export const GetCurrentUser = graphql(/* GraphQL */ `
+export const GetCurrentUserQuery = graphql(/* GraphQL */ `
   query GetCurrentUser {
     getCurrentUser {
       id

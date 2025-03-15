@@ -1,14 +1,14 @@
 import { data, Form, redirect } from 'react-router';
 import { getFormProps, getInputProps, useForm } from '@conform-to/react';
 import { getZodConstraint, parseWithZod } from '@conform-to/zod';
-import { captureException } from '@sentry/react';
 import { HoneypotInputs } from 'remix-utils/honeypot/react';
+import invariant from 'tiny-invariant';
 import { z } from 'zod';
 import { CheckboxField, Field } from '~/components/field';
 import { FormErrorList } from '~/components/form-error-list.tsx';
 import { RouteErrorBoundary } from '~/components/route-error-boundary.tsx';
 import { StatusButton } from '~/components/status-button.tsx';
-import { graphql } from '~/gql';
+import { FinishEmailSignupMutation } from '~/data/mutations/finish-email-signup';
 import { useIsFormPending } from '~/hooks/use-is-form-pending';
 import { authSessionStorage } from '~/session/auth-session-storage.server.ts';
 import { storeAuthPayload } from '~/session/store-auth-payload.ts';
@@ -16,6 +16,7 @@ import { verifySessionStorage } from '~/session/verify-session-storage.server.ts
 import { Routes } from '~/types.ts';
 import { checkHoneypot } from '~/utils/check-honeypot.server.ts';
 import { createGQLClient } from '~/utils/create-gql-client.server.ts';
+import { handleGQLError } from '~/utils/handle-gql-error.ts';
 import { isMutationError } from '~/utils/is-mutation-error';
 import { withErrorHandling } from '~/utils/with-error-handling.ts';
 import { ConfirmPasswordSchema } from '~/validation/confirm-password-schema.ts';
@@ -23,28 +24,6 @@ import { NameSchema } from '~/validation/name-schema.ts';
 import { UsernameSchema } from '~/validation/username-schema.ts';
 import type { Route } from './+types/route.ts';
 import { requireOnboardingSession } from './require-onboarding-session.server.ts';
-
-const finishEmailSignupMutation = graphql(/* GraphQL */ `
-  mutation FinishEmailSignup($input: FinishEmailSignupInput!) {
-    finishEmailSignup(input: $input) {
-      ... on AuthPayload {
-        accessToken
-        refreshToken
-        session {
-          id
-          expiresAt
-        }
-      }
-
-      ... on MutationErrorPayload {
-        error {
-          title
-          message
-        }
-      }
-    }
-  }
-`);
 
 const OnboardingFormSchema = z
   .object({
@@ -76,9 +55,10 @@ export const loader = withErrorHandling(async (args: Route.LoaderArgs) => {
 export const action = withErrorHandling(async (args: Route.ActionArgs) => {
   const { request } = args;
 
-  const client = createGQLClient();
-
   const { email, transactionToken } = await requireOnboardingSession(request);
+
+  const client = await createGQLClient(request);
+
   const formData = await request.formData();
 
   await checkHoneypot(formData);
@@ -92,61 +72,60 @@ export const action = withErrorHandling(async (args: Route.ActionArgs) => {
     return data({ result }, { status });
   }
 
-  try {
-    const { finishEmailSignup } = await client.request(
-      finishEmailSignupMutation,
-      {
-        input: {
-          email,
-          name: submission.value.name,
-          password: submission.value.password,
-          rememberMe: submission.value.rememberMe,
-          transactionToken,
-          username: submission.value.username,
-        },
-      },
-    );
-
-    if (isMutationError(finishEmailSignup)) {
-      const result = submission.reply({
-        formErrors: [finishEmailSignup.error.message],
-      });
-
-      return data({ result }, { status: 500 });
-    }
-
-    const authSession = await authSessionStorage.getSession(
-      request.headers.get('cookie'),
-    );
-
-    storeAuthPayload(authSession, finishEmailSignup);
-
-    const verifySession = await verifySessionStorage.getSession();
-
-    const headers = new Headers();
-
-    headers.append(
-      'set-cookie',
-      await authSessionStorage.commitSession(authSession, {
-        expires: new Date(finishEmailSignup.session.expiresAt),
-      }),
-    );
-
-    headers.append(
-      'set-cookie',
-      await verifySessionStorage.destroySession(verifySession),
-    );
-
-    return redirect(Routes.Dashboard, { headers });
-  } catch (error) {
-    captureException(error);
-  }
-
-  const result = submission.reply({
-    formErrors: ['Something went wrong'],
+  const result = await client.mutation(FinishEmailSignupMutation, {
+    input: {
+      email,
+      name: submission.value.name,
+      password: submission.value.password,
+      rememberMe: submission.value.rememberMe,
+      transactionToken,
+      username: submission.value.username,
+    },
   });
 
-  return data({ result }, { status: 500 });
+  if (result.error) {
+    handleGQLError(result.error);
+
+    const formResult = submission.reply({
+      formErrors: ['Something went wrong'],
+    });
+
+    return data({ result: formResult }, { status: 500 });
+  }
+
+  invariant(result.data, 'if no error, there should be data');
+
+  if (isMutationError(result.data.finishEmailSignup)) {
+    const formResult = submission.reply({
+      formErrors: [result.data.finishEmailSignup.error.message],
+    });
+
+    return data({ result: formResult }, { status: 400 });
+  }
+
+  const authSession = await authSessionStorage.getSession(
+    request.headers.get('cookie'),
+  );
+
+  storeAuthPayload(authSession, result.data.finishEmailSignup);
+
+  const verifySession = await verifySessionStorage.getSession();
+
+  const headers = new Headers();
+
+  headers.append(
+    'set-cookie',
+    await authSessionStorage.commitSession(authSession, {
+      expires: new Date(result.data.finishEmailSignup.session.expiresAt),
+    }),
+  );
+
+  headers.append(
+    'set-cookie',
+    await verifySessionStorage.destroySession(verifySession),
+  );
+
+  return redirect(Routes.Dashboard, { headers });
 });
 
 export function Onboarding(props: Route.ComponentProps) {

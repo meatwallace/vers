@@ -10,9 +10,9 @@ test('it generates an existing account email with the provided configuration', a
 
   expect(html).include('You Already Have an Account');
   expect(html).include('test@example.com');
-  expect(html).include('https://versidlecom/forgot-password');
+  expect(html).include('https://versidle.com/forgot-password');
 
   expect(plainText).include('YOU ALREADY HAVE AN ACCOUNT');
   expect(plainText).include('test@example.com');
-  expect(plainText).include('https://versidlecom/forgot-password');
+  expect(plainText).include('https://versidle.com/forgot-password');
 });

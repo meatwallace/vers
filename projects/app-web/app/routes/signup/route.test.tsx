@@ -3,6 +3,8 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { createRoutesStub } from 'react-router';
 import { drop } from '@mswjs/data';
+import { GraphQLError } from 'graphql';
+import { graphql } from 'msw';
 import { db } from '~/mocks/db.ts';
 import { server } from '~/mocks/node.ts';
 import { verifySessionStorage } from '~/session/verify-session-storage.server.ts';
@@ -114,6 +116,26 @@ test('it redirects to verify OTP page on successful signup', async () => {
   const verifySession = await verifySessionStorage.getSession(cookieHeader);
 
   expect(verifySession.get('transactionID')).toBe('valid-transaction-id');
+});
+
+test('it shows a generic error if the mutation fails', async () => {
+  server.use(
+    graphql.mutation('StartEmailSignup', () => {
+      throw new GraphQLError('Something went wrong');
+    }),
+  );
+
+  const { user } = setupTest({ isAuthed: false });
+
+  const emailInput = await screen.findByRole('textbox', { name: /email/i });
+  const submitButton = screen.getByRole('button', { name: /signup/i });
+
+  await user.type(emailInput, 'test@example.com');
+  await user.click(submitButton);
+
+  const errorMessage = await screen.findByText('Something went wrong');
+
+  expect(errorMessage).toBeInTheDocument();
 });
 
 test('it redirects to the dashboard route when already authenticated', async () => {

@@ -1,55 +1,24 @@
 import { data, redirect, useFetcher } from 'react-router';
+import type { Client } from '@urql/core';
 import { parseWithZod } from '@conform-to/zod';
-import { GraphQLClient } from 'graphql-request';
+import invariant from 'tiny-invariant';
 import { z } from 'zod';
 import { RouteErrorBoundary } from '~/components/route-error-boundary.tsx';
 import { StatusButton } from '~/components/status-button.tsx';
-import { GetCurrentUser } from '~/data/queries/get-current-user';
-import { graphql } from '~/gql';
+import { StartDisable2FAMutation } from '~/data/mutations/start-disable-2fa';
+import { StartEnable2FAMutation } from '~/data/mutations/start-enable-2fa';
+import { GetCurrentUserQuery } from '~/data/queries/get-current-user';
 import { VerificationType } from '~/gql/graphql.ts';
 import { useIsFormPending } from '~/hooks/use-is-form-pending.ts';
 import { verifySessionStorage } from '~/session/verify-session-storage.server.ts';
 import { Routes } from '~/types';
 import { createGQLClient } from '~/utils/create-gql-client.server.ts';
+import { handleGQLError } from '~/utils/handle-gql-error.ts';
 import { isMutationError } from '~/utils/is-mutation-error.ts';
 import { requireAuth } from '~/utils/require-auth.server.ts';
 import { withErrorHandling } from '~/utils/with-error-handling.ts';
 import type { Route } from './+types/route.ts';
 import { QueryParam } from '../verify-otp/types.ts';
-
-const StartEnable2FAMutation = graphql(/* GraphQL */ `
-  mutation StartEnable2FA($input: StartEnable2FAInput!) {
-    startEnable2FA(input: $input) {
-      ... on TwoFactorRequiredPayload {
-        transactionID
-      }
-
-      ... on MutationErrorPayload {
-        error {
-          title
-          message
-        }
-      }
-    }
-  }
-`);
-
-const StartDisable2FA = graphql(/* GraphQL */ `
-  mutation StartDisable2FA($input: StartDisable2FAInput!) {
-    startDisable2FA(input: $input) {
-      ... on TwoFactorRequiredPayload {
-        transactionID
-      }
-
-      ... on MutationErrorPayload {
-        error {
-          title
-          message
-        }
-      }
-    }
-  }
-`);
 
 const TwoFactorDisableFormSchema = z.object({
   target: z.string().min(1),
@@ -65,13 +34,21 @@ export const meta: Route.MetaFunction = () => [
 export const loader = withErrorHandling(async (args: Route.LoaderArgs) => {
   const { request } = args;
 
-  const client = createGQLClient();
+  await requireAuth(request);
 
-  await requireAuth(request, { client });
+  const client = await createGQLClient(request);
 
-  const { getCurrentUser } = await client.request(GetCurrentUser, {});
+  const result = await client.query(GetCurrentUserQuery, {});
 
-  return { user: getCurrentUser };
+  if (result.error) {
+    handleGQLError(result.error);
+
+    throw result.error;
+  }
+
+  invariant(result.data, 'if no error, there must be data');
+
+  return { user: result.data.getCurrentUser };
 });
 
 enum ActionIntent {
@@ -82,9 +59,9 @@ enum ActionIntent {
 export const action = withErrorHandling(async (args: Route.ActionArgs) => {
   const { request } = args;
 
-  const client = createGQLClient();
+  const client = await createGQLClient(request);
 
-  await requireAuth(request, { client });
+  await requireAuth(request);
 
   const formData = await request.formData();
   const intent = formData.get('intent');
@@ -100,20 +77,29 @@ export const action = withErrorHandling(async (args: Route.ActionArgs) => {
   return null;
 });
 
-async function handleEnable2FA(client: GraphQLClient, request: Request) {
-  const { startEnable2FA } = await client.request(StartEnable2FAMutation, {
-    input: {},
-  });
+async function handleEnable2FA(client: Client, request: Request) {
+  const result = await client.mutation(StartEnable2FAMutation, { input: {} });
 
-  if (isMutationError(startEnable2FA)) {
-    return data({ error: startEnable2FA.error.message }, { status: 400 });
+  if (result.error) {
+    handleGQLError(result.error);
+
+    return data({ error: 'Something went wrong' }, { status: 500 });
+  }
+
+  invariant(result.data, 'if no error, there must be data');
+
+  if (isMutationError(result.data.startEnable2FA)) {
+    return data(
+      { error: result.data.startEnable2FA.error.message },
+      { status: 400 },
+    );
   }
 
   const verifySession = await verifySessionStorage.getSession(
     request.headers.get('cookie'),
   );
 
-  verifySession.set('transactionID', startEnable2FA.transactionID);
+  verifySession.set('transactionID', result.data.startEnable2FA.transactionID);
 
   return redirect(Routes.ProfileVerify2FA, {
     headers: {
@@ -123,7 +109,7 @@ async function handleEnable2FA(client: GraphQLClient, request: Request) {
 }
 
 async function handleDisable2FA(
-  client: GraphQLClient,
+  client: Client,
   request: Request,
   formData: FormData,
 ) {
@@ -135,19 +121,28 @@ async function handleDisable2FA(
     return data({ error: submission.error?.message }, { status: 400 });
   }
 
-  const { startDisable2FA } = await client.request(StartDisable2FA, {
-    input: {},
-  });
+  const result = await client.mutation(StartDisable2FAMutation, { input: {} });
 
-  if (isMutationError(startDisable2FA)) {
-    return data({ error: startDisable2FA.error.message }, { status: 400 });
+  if (result.error) {
+    handleGQLError(result.error);
+
+    return data({ error: 'Something went wrong' }, { status: 500 });
+  }
+
+  invariant(result.data, 'if no error, there must be data');
+
+  if (isMutationError(result.data.startDisable2FA)) {
+    return data(
+      { error: result.data.startDisable2FA.error.message },
+      { status: 400 },
+    );
   }
 
   const verifySession = await verifySessionStorage.getSession(
     request.headers.get('cookie'),
   );
 
-  verifySession.set('transactionID', startDisable2FA.transactionID);
+  verifySession.set('transactionID', result.data.startDisable2FA.transactionID);
 
   const searchParams = new URLSearchParams({
     [QueryParam.Target]: submission.value.target,
@@ -229,6 +224,9 @@ export function Profile(props: Route.ComponentProps) {
                     Enable 2FA
                   </StatusButton>
                 </twoFactorFetcher.Form>
+                {twoFactorFetcher.data?.error && (
+                  <p>{twoFactorFetcher.data.error}</p>
+                )}
               </>
             )}
           </div>

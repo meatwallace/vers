@@ -3,11 +3,14 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { createRoutesStub } from 'react-router';
 import { drop } from '@mswjs/data';
+import { GraphQLError } from 'graphql';
+import { graphql } from 'msw';
 import { db } from '~/mocks/db.ts';
+import { server } from '~/mocks/node.ts';
 import { withAuthedUser } from '~/test-utils/with-authed-user.ts';
 import { withRouteProps } from '~/test-utils/with-route-props.tsx';
 import { Routes } from '~/types.ts';
-import { loader, Profile } from './route.tsx';
+import { action, loader, Profile } from './route.tsx';
 
 interface TestConfig {
   isAuthed: boolean;
@@ -24,6 +27,9 @@ function setupTest(config: TestConfig) {
 
   const ProfileStub = createRoutesStub([
     {
+      action: config.isAuthed
+        ? withAuthedUser(action, { user: config.user })
+        : action,
       Component: withRouteProps(Profile),
       loader: config.isAuthed
         ? withAuthedUser(loader, { user: config.user })
@@ -42,6 +48,8 @@ function setupTest(config: TestConfig) {
 }
 
 afterEach(() => {
+  server.resetHandlers();
+
   drop(db);
 });
 
@@ -110,4 +118,60 @@ test('it displays a 2FA status enabled message when the user has enabled 2FA', a
 
   expect(twoFactorStatus).toBeInTheDocument();
   expect(disable2FAButton).toBeInTheDocument();
+});
+
+test('it shows a generic error if the enable 2FA mutation fails', async () => {
+  server.use(
+    graphql.mutation('StartEnable2FA', () => {
+      throw new GraphQLError('Something went wrong');
+    }),
+  );
+
+  const { user } = setupTest({
+    isAuthed: true,
+    user: {
+      email: 'test@example.com',
+      id: 'user_id',
+      is2FAEnabled: false,
+      name: 'Test User',
+    },
+  });
+
+  const enable2FAButton = await screen.findByRole('button', {
+    name: 'Enable 2FA',
+  });
+
+  await user.click(enable2FAButton);
+
+  const error = await screen.findByText('Something went wrong');
+
+  expect(error).toBeInTheDocument();
+});
+
+test('it shows a generic error if the disable 2FA mutation fails', async () => {
+  server.use(
+    graphql.mutation('StartDisable2FA', () => {
+      throw new GraphQLError('Something went wrong');
+    }),
+  );
+
+  const { user } = setupTest({
+    isAuthed: true,
+    user: {
+      email: 'test@example.com',
+      id: 'user_id',
+      is2FAEnabled: true,
+      name: 'Test User',
+    },
+  });
+
+  const disable2FAButton = await screen.findByRole('button', {
+    name: 'Disable 2FA',
+  });
+
+  await user.click(disable2FAButton);
+
+  const error = await screen.findByText('Something went wrong');
+
+  expect(error).toBeInTheDocument();
 });
