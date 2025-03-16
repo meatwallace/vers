@@ -1,9 +1,9 @@
 import { TRPCError } from '@trpc/server';
-import { ChangePasswordPayload } from '@vers/service-types';
-import { db } from '../../db';
+import { ResetPasswordPayload } from '@vers/service-types';
+import { db } from '../../../db';
 import { trpc } from './trpc';
 
-export const changePassword = trpc.changePassword.mutation(({ input }) => {
+export const resetPassword = trpc.resetPassword.mutation(({ input }) => {
   try {
     const user = db.user.findFirst({
       where: {
@@ -55,7 +55,7 @@ export const changePassword = trpc.changePassword.mutation(({ input }) => {
       },
     });
 
-    const result: ChangePasswordPayload = {};
+    const result: ResetPasswordPayload = {};
 
     return result;
   } catch (error) {

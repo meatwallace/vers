@@ -9,9 +9,8 @@ import type { Context } from '../types';
 import { t } from '../t';
 
 export const ChangePasswordInputSchema = z.object({
-  id: z.string(),
   password: z.string(),
-  resetToken: z.string(),
+  userID: z.string(),
 });
 
 export async function changePassword(
@@ -19,10 +18,10 @@ export async function changePassword(
   ctx: Context,
 ): Promise<ChangePasswordPayload> {
   try {
-    const { id, password, resetToken } = input;
+    const { password, userID } = input;
 
     const user = await ctx.db.query.users.findFirst({
-      where: eq(schema.users.id, id),
+      where: eq(schema.users.id, userID),
     });
 
     if (!user) {
@@ -32,48 +31,20 @@ export async function changePassword(
       });
     }
 
-    const isTokenMismatch = user.passwordResetToken !== resetToken;
-
-    if (isTokenMismatch) {
-      throw new TRPCError({
-        code: 'BAD_REQUEST',
-        message: 'Invalid reset token',
-      });
-    }
-
-    const isTokenExpired =
-      user.passwordResetTokenExpiresAt &&
-      user.passwordResetTokenExpiresAt < new Date();
-
-    if (isTokenExpired) {
-      throw new TRPCError({
-        code: 'BAD_REQUEST',
-        message: 'Reset token expired',
-      });
-    }
-
     const passwordHash = await hashPassword(password);
 
-    await ctx.db.transaction(async (tx) => {
-      // delete all sessions for this user
-      await tx.delete(schema.sessions).where(eq(schema.sessions.userID, id));
+    const [updatedUser] = await ctx.db
+      .update(schema.users)
+      .set({
+        passwordHash,
+        updatedAt: new Date(),
+      })
+      .where(eq(schema.users.id, userID))
+      .returning({
+        updatedID: schema.users.id,
+      });
 
-      // update the user's password
-      const [updatedUser] = await tx
-        .update(schema.users)
-        .set({
-          passwordHash,
-          passwordResetToken: null,
-          passwordResetTokenExpiresAt: null,
-          updatedAt: new Date(),
-        })
-        .where(eq(schema.users.id, id))
-        .returning();
-
-      return [updatedUser];
-    });
-
-    return {};
+    return { updatedID: updatedUser.updatedID };
   } catch (error: unknown) {
     logger.error(error);
 

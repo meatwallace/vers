@@ -1,5 +1,5 @@
 import { CreateUserPayload } from '@vers/service-types';
-import { db } from '../../db';
+import { db } from '../../../db';
 import { trpc } from './trpc';
 
 export const createUser = trpc.createUser.mutation(({ input }) => {

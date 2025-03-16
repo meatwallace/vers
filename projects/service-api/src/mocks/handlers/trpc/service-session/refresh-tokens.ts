@@ -1,6 +1,6 @@
 import { TRPCError } from '@trpc/server';
 import { RefreshTokensPayload } from '@vers/service-types';
-import { db } from '../../db';
+import { db } from '../../../db';
 import { trpc } from './trpc';
 
 export const refreshTokens = trpc.refreshTokens.mutation(({ input }) => {

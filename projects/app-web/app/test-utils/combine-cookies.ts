@@ -5,13 +5,13 @@
  *
  * Header#append does NOT append the Cookie header in the correct format.
  *
- * @param setCookieHeader - The Set-Cookie header to be added to the request.
  * @param existingCookieHeader - The existing Cookie header from the request.
+ * @param setCookieHeader - The Set-Cookie header to be added to the request.
  * @returns The combined cookie header.
  */
 export function combineCookies(
-  setCookieHeader: string,
   existingCookieHeader: null | string,
+  setCookieHeader: string,
 ) {
   return existingCookieHeader
     ? `${existingCookieHeader}; ${setCookieHeader.split(';')[0]}`

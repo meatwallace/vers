@@ -38,13 +38,13 @@ function setupTest(config: TestConfig) {
 
   if (config.isOnboarding) {
     _loader = withSession(_loader, {
-      onboardingEmail: email,
-      transactionToken,
+      'onboarding#email': email,
+      'onboarding#transactionToken': transactionToken,
     });
 
     _action = withSession(_action, {
-      onboardingEmail: email,
-      transactionToken,
+      'onboarding#email': email,
+      'onboarding#transactionToken': transactionToken,
     });
   }
 

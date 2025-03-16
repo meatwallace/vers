@@ -47,7 +47,6 @@ export const action = withErrorHandling(async (args: Route.ActionArgs) => {
   await requireAnonymous(request);
 
   const client = await createGQLClient(request);
-
   const formData = await request.formData();
 
   await checkHoneypot(formData);
@@ -95,7 +94,7 @@ export const action = withErrorHandling(async (args: Route.ActionArgs) => {
     );
 
     verifySession.set(
-      'transactionID',
+      'resetPassword#transactionID',
       result.data.startPasswordReset.transactionID,
     );
 

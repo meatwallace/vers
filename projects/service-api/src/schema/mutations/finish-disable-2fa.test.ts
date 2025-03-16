@@ -22,12 +22,6 @@ test('it successfully disables 2FA with a valid transaction token', async () => 
   });
 
   const verification = db.verification.create({
-    algorithm: 'SHA-1',
-    charSet: 'ABCDEFGHJKLMNPQRSTUVWXYZ123456789',
-    digits: 6,
-    id: 'verification-id',
-    period: 30,
-    secret: 'ABCDEFGHIJKLMNOP',
     target: user.email,
     type: '2fa',
   });

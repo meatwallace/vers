@@ -1,6 +1,6 @@
 ---
 description: GraphQL Type Implementation Standards using Pothos
-globs: "**/schema/types/**/*.ts"
+globs: **/service-api/src/schema/types/**/*.ts
 alwaysApply: false
 ---
 

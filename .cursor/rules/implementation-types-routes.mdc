@@ -1,6 +1,6 @@
 ---
 description: Standards for working with generated React Route types (+types directory)
-globs: "**/routes/**/*.{ts,tsx}"
+globs: **/app-web/app/routes/**/*.ts,**/app-web/app/routes/**/*.tsx
 alwaysApply: false
 ---
 # Route Types Standards

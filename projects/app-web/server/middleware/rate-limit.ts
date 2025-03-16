@@ -38,6 +38,7 @@ const strictRoutes = [
   Routes.ResetPassword,
   Routes.Profile,
   Routes.ProfileVerify2FA,
+  Routes.ProfileChangePassword,
 ];
 
 export async function rateLimit(ctx: Context<object, string>, next: Next) {

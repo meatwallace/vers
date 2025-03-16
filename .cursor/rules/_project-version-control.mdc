@@ -1,6 +1,6 @@
 ---
 description: Standards for version control, including branch naming and commit messages
-globs: "*"
+globs: *
 alwaysApply: false
 ---
 # Version Control Standards

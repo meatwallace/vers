@@ -17,12 +17,6 @@ test('it successfully creates a pending transaction when 2FA is enabled', async 
   });
 
   db.verification.create({
-    algorithm: 'SHA-1',
-    charSet: 'ABCDEFGHJKLMNPQRSTUVWXYZ123456789',
-    digits: 6,
-    id: 'verification-id',
-    period: 30,
-    secret: 'ABCDEFGHIJKLMNOP',
     target: user.email,
     type: '2fa',
   });

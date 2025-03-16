@@ -1,5 +1,5 @@
 import { GetSessionPayload } from '@vers/service-types';
-import { db } from '../../db';
+import { db } from '../../../db';
 import { trpc } from './trpc';
 
 export const getSession = trpc.getSession.query(({ input }) => {

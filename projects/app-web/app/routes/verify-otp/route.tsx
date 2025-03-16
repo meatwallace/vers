@@ -5,6 +5,7 @@ import { captureException } from '@sentry/react';
 import { HoneypotInputs } from 'remix-utils/honeypot/react';
 import invariant from 'tiny-invariant';
 import { z } from 'zod';
+import type { SessionKey } from '~/session/verify-session-storage.server.ts';
 import { OTPField } from '~/components/field/index.ts';
 import { FormErrorList } from '~/components/form-error-list.tsx';
 import { RouteErrorBoundary } from '~/components/route-error-boundary.tsx';
@@ -54,17 +55,28 @@ export const loader = withErrorHandling(async (args: Route.LoaderArgs) => {
 
     captureException(error);
 
-    return redirect(Routes.Signup);
+    return redirect(Routes.Index);
   }
 
   return {};
 });
 
+const transactionIDKeys: Record<VerificationType, SessionKey> = {
+  [VerificationType.ChangeEmail]: 'changeEmail#transactionID',
+  [VerificationType.ChangeEmailConfirmation]:
+    'changeEmailConfirm#transactionID',
+  [VerificationType.ChangePassword]: 'changeUserPassword#transactionID',
+  [VerificationType.Onboarding]: 'onboarding#transactionID',
+  [VerificationType.ResetPassword]: 'resetPassword#transactionID',
+  [VerificationType.TwoFactorAuth]: 'login2FA#transactionID',
+  [VerificationType.TwoFactorAuthDisable]: 'disable2FA#transactionID',
+  [VerificationType.TwoFactorAuthSetup]: 'enable2FA#transactionID',
+} as const;
+
 export const action = withErrorHandling(async (args: Route.ActionArgs) => {
   const { request } = args;
 
   const client = await createGQLClient(request);
-
   const formData = await request.formData();
 
   await checkHoneypot(formData);
@@ -86,9 +98,12 @@ export const action = withErrorHandling(async (args: Route.ActionArgs) => {
     request.headers.get('cookie'),
   );
 
-  const transactionID = verifySession.get('transactionID');
+  const transactionID = verifySession.get(
+    transactionIDKeys[submission.value.type],
+  );
+
   const sessionID =
-    verifySession.get('unverifiedSessionID') ?? authSession.get('sessionID');
+    verifySession.get('login2FA#sessionID') ?? authSession.get('sessionID');
 
   // if we don't have a transaction ID then we really shouldn't be here.
   if (!transactionID) {

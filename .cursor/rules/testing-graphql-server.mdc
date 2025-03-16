@@ -1,6 +1,6 @@
 ---
 description: GraphQL Server Testing Standards
-globs: "projects/service-api/src/schema/**/*.test.ts"
+globs: **/service-api/src/schema/**/*.test.ts
 alwaysApply: false
 ---
 # GraphQL Testing Standards

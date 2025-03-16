@@ -83,7 +83,6 @@ export const action = withErrorHandling(async (args: Route.ActionArgs) => {
   const { sessionID } = await requireAuth(request);
 
   const client = await createGQLClient(request);
-
   const formData = await request.formData();
 
   const submission = parseWithZod(formData, { schema: VerifyOTPFormSchema });
@@ -99,7 +98,7 @@ export const action = withErrorHandling(async (args: Route.ActionArgs) => {
     request.headers.get('cookie'),
   );
 
-  const transactionID = verifySession.get('transactionID');
+  const transactionID = verifySession.get('enable2FA#transactionID');
 
   // if we don't have a transaction ID then we really shouldn't be here.
   if (!transactionID) {
@@ -158,8 +157,11 @@ export const action = withErrorHandling(async (args: Route.ActionArgs) => {
 
   invariant(finishEnable2FAResult.data, 'if no error, there should be data');
 
+  // clean up our session data
+  verifySession.unset('enable2FA#transactionID');
+
   const setCookieHeader =
-    await verifySessionStorage.destroySession(verifySession);
+    await verifySessionStorage.commitSession(verifySession);
 
   if (isMutationError(finishEnable2FAResult.data.finishEnable2FA)) {
     const result = submission.reply({

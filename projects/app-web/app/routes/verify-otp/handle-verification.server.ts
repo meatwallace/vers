@@ -1,6 +1,7 @@
 import { VerificationType } from '~/gql/graphql.ts';
 import { handle2FADisable } from './handle-2fa-disable.server.ts';
 import { handle2FA } from './handle-2fa.server.ts';
+import { handleChangePassword } from './handle-change-password.server.ts';
 import { handleOnboarding } from './handle-onboarding.server.ts';
 import { handleResetPassword } from './handle-reset-password.server.ts';
 import { handleUnsupported } from './handle-unsupported.server.ts';
@@ -24,7 +25,7 @@ type StrategyMap = Record<VerificationType, VerificationHandlerStrategy>;
 const HANDLE_VERIFICATION_TYPE_STRATEGY: StrategyMap = {
   [VerificationType.ChangeEmail]: noop,
   [VerificationType.ChangeEmailConfirmation]: noop,
-  [VerificationType.ChangePassword]: noop,
+  [VerificationType.ChangePassword]: handleChangePassword,
   [VerificationType.Onboarding]: handleOnboarding,
   [VerificationType.ResetPassword]: handleResetPassword,
   [VerificationType.TwoFactorAuth]: handle2FA,

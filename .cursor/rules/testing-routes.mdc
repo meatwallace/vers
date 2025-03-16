@@ -1,6 +1,6 @@
 ---
 description: Standards for testing React Router route components and handlers in our React application
-globs: "**/app-web/routes/**/*.test.{ts,tsx}"
+globs: **/app-web/app/routes/**/*.test.ts,**/app-web/app/routes/**/*.test.tsx
 alwaysApply: false
 ---
 # React Router Testing Standards

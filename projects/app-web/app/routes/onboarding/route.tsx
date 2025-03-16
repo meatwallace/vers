@@ -58,7 +58,6 @@ export const action = withErrorHandling(async (args: Route.ActionArgs) => {
   const { email, transactionToken } = await requireOnboardingSession(request);
 
   const client = await createGQLClient(request);
-
   const formData = await request.formData();
 
   await checkHoneypot(formData);
@@ -111,6 +110,10 @@ export const action = withErrorHandling(async (args: Route.ActionArgs) => {
 
   const verifySession = await verifySessionStorage.getSession();
 
+  // clean up our session data
+  verifySession.unset('onboarding#transactionToken');
+  verifySession.unset('onboarding#email');
+
   const headers = new Headers();
 
   headers.append(
@@ -122,7 +125,7 @@ export const action = withErrorHandling(async (args: Route.ActionArgs) => {
 
   headers.append(
     'set-cookie',
-    await verifySessionStorage.destroySession(verifySession),
+    await verifySessionStorage.commitSession(verifySession),
   );
 
   return redirect(Routes.Dashboard, { headers });

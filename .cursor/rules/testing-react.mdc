@@ -1,6 +1,6 @@
 ---
 description: React Component Testing Standards
-globs: "**/*.test.tsx"
+globs: **/*.test.tsx
 alwaysApply: false
 ---
 # React Testing Standards

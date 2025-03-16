@@ -1,6 +1,6 @@
 ---
 description: Styling Standards using base-ui and Panda CSS
-globs: "**/*.tsx"
+globs: **/*.tsx
 alwaysApply: false
 ---
 # Styling Standards

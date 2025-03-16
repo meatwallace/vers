@@ -1,6 +1,6 @@
 ---
 description: Standards for creating backend HTTP service MSW mocks
-globs: "**/service-api/**/mocks/handlers/trpc/**/*.ts"
+globs: **/mocks/handlers/trpc/**/*.ts
 alwaysApply: false
 ---
 # TRPC MSW Mock Standards

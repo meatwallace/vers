@@ -12,8 +12,8 @@ export async function requireOnboardingSession(
     request.headers.get('cookie'),
   );
 
-  const email = verifySession.get('onboardingEmail');
-  const transactionToken = verifySession.get('transactionToken');
+  const email = verifySession.get('onboarding#email');
+  const transactionToken = verifySession.get('onboarding#transactionToken');
   const isValidEmail = typeof email === 'string' && email.length > 0;
   const isValidTransactionToken =
     typeof transactionToken === 'string' && transactionToken.length > 0;

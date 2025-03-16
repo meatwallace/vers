@@ -1,6 +1,6 @@
 ---
 description: Universal Testing Standards using Vitest
-globs: "**/*.test.{ts,tsx}"
+globs: **/*.test.ts,**/*.test.tsx
 alwaysApply: false
 ---
 # Universal Testing Standards

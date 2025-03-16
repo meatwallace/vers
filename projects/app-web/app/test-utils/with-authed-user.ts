@@ -41,7 +41,7 @@ export function withAuthedUser<Args extends DataFnArgs, Data>(
     const setCookieHeader = await authSessionStorage.commitSession(authSession);
 
     const existingCookie = args.request.headers.get('cookie');
-    const cookieHeader = combineCookies(setCookieHeader, existingCookie);
+    const cookieHeader = combineCookies(existingCookie, setCookieHeader);
 
     args.request.headers.set('cookie', cookieHeader);
 

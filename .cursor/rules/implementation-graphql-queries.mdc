@@ -1,6 +1,6 @@
 ---
 description: GraphQL Query Implementation Standards using Pothos
-globs: "**/schema/queries/*.ts"
+globs: **/service-api/src/schema/queries/**/*.ts
 alwaysApply: false
 ---
 # GraphQL Query Implementation Standards

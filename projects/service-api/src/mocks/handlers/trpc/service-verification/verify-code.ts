@@ -1,7 +1,7 @@
 import { verifyTOTP } from '@epic-web/totp';
 import { TRPCError } from '@trpc/server';
 import { VerificationType, VerifyCodePayload } from '@vers/service-types';
-import { db } from '../../db';
+import { db } from '../../../db';
 import { trpc } from './trpc';
 
 export const verifyCode = trpc.verifyCode.mutation(async ({ input }) => {

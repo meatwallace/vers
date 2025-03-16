@@ -17,7 +17,7 @@ export async function handle2FADisable(ctx: HandleVerificationContext) {
   );
 
   // clean up the pending transaction ID
-  verifySession.unset('transactionID');
+  verifySession.unset('disable2FA#transactionID');
 
   const result = await ctx.client.mutation(FinishDisable2FAMutation, {
     input: {
@@ -35,7 +35,7 @@ export async function handle2FADisable(ctx: HandleVerificationContext) {
   // if we failed, its low effort to have them try again.
   return redirect(Routes.Profile, {
     headers: {
-      'set-cookie': await verifySessionStorage.destroySession(verifySession),
+      'set-cookie': await verifySessionStorage.commitSession(verifySession),
     },
   });
 }

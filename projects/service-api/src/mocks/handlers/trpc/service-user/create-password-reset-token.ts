@@ -1,6 +1,6 @@
 import { TRPCError } from '@trpc/server';
 import { CreatePasswordResetTokenPayload } from '@vers/service-types';
-import { db } from '../../db';
+import { db } from '../../../db';
 import { trpc } from './trpc';
 
 export const createPasswordResetToken = trpc.createPasswordResetToken.mutation(

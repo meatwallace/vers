@@ -3,7 +3,7 @@ import {
   CreateVerificationPayload,
   VerificationType,
 } from '@vers/service-types';
-import { db } from '../../db';
+import { db } from '../../../db';
 import { trpc } from './trpc';
 
 // alphanumeric excluding 0, O, and I to avoid confusion

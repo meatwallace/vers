@@ -1,6 +1,6 @@
 ---
 description: Standards for Writing Cursor Rules
-globs: "**/*.mdc"
+globs: **/*.mdc
 alwaysApply: false
 ---
 # Cursor Rule Standards

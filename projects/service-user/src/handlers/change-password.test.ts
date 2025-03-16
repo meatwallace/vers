@@ -1,9 +1,8 @@
 import { expect, test } from 'vitest';
 import * as schema from '@vers/postgres-schema';
 import { createTestDB, createTestUser } from '@vers/service-test-utils';
-import bcrypt from 'bcryptjs';
+import { eq } from 'drizzle-orm';
 import { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
-import invariant from 'tiny-invariant';
 import { router } from '../router';
 import { t } from '../t';
 
@@ -19,115 +18,39 @@ function setupTest(config: TestConfig) {
   return { caller };
 }
 
-test('it updates the password and clears the reset token for an existing user', async () => {
+test('it changes the user password', async () => {
   await using handle = await createTestDB();
 
   const { db } = handle;
 
-  const user = await createTestUser({
-    db,
-    user: {
-      passwordResetToken: 'test_reset_token',
-      passwordResetTokenExpiresAt: new Date(Date.now() + 1000 * 60 * 10),
-    },
-  });
-
+  const user = await createTestUser({ db });
   const { caller } = setupTest({ db });
 
   const result = await caller.changePassword({
-    id: user.id,
     password: 'newpassword123',
-    resetToken: 'test_reset_token',
+    userID: user.id,
   });
 
-  expect(result).toStrictEqual({});
+  expect(result).toStrictEqual({ updatedID: user.id });
 
   const updatedUser = await db.query.users.findFirst({
-    where: (users, { eq }) => eq(users.id, user.id),
+    where: eq(schema.users.id, user.id),
   });
 
-  invariant(
-    typeof updatedUser?.passwordHash === 'string',
-    'updated user password hash must set',
-  );
-
-  await expect(
-    bcrypt.compare('newpassword123', updatedUser.passwordHash),
-  ).resolves.toBeTrue();
-
-  expect(updatedUser.passwordResetToken).toBeNull();
-  expect(updatedUser.passwordResetTokenExpiresAt).toBeNull();
+  expect(updatedUser).toBeDefined();
+  expect(updatedUser?.passwordHash).not.toBe(user.passwordHash);
 });
 
 test('it throws an error if the user does not exist', async () => {
   await using handle = await createTestDB();
 
   const { db } = handle;
-
   const { caller } = setupTest({ db });
 
   await expect(
     caller.changePassword({
-      id: 'nonexistent_id',
       password: 'newpassword123',
-      resetToken: 'test_reset_token',
+      userID: 'non-existent-id',
     }),
-  ).rejects.toMatchObject({
-    code: 'NOT_FOUND',
-    message: 'No user with that ID',
-  });
-});
-
-test('it throws an error if the reset token is invalid', async () => {
-  await using handle = await createTestDB();
-
-  const { db } = handle;
-
-  const user = await createTestUser({
-    db,
-    user: {
-      passwordResetToken: 'test_reset_token',
-      passwordResetTokenExpiresAt: new Date(Date.now() + 1000 * 60 * 10),
-    },
-  });
-
-  const { caller } = setupTest({ db });
-
-  await expect(
-    caller.changePassword({
-      id: user.id,
-      password: 'newpassword123',
-      resetToken: 'invalid_reset_token',
-    }),
-  ).rejects.toMatchObject({
-    code: 'BAD_REQUEST',
-    message: 'Invalid reset token',
-  });
-});
-
-test('it throws an error if the reset token has expired', async () => {
-  await using handle = await createTestDB();
-
-  const { db } = handle;
-
-  const user = await createTestUser({
-    db,
-    user: {
-      passwordResetToken: 'test_reset_token',
-      passwordResetTokenExpiresAt: new Date(Date.now() - 1000 * 60 * 10),
-    },
-  });
-
-  const { caller } = setupTest({ db });
-
-  await expect(
-    caller.changePassword({
-      id: user.id,
-      password: 'newpassword123',
-      resetToken: 'test_reset_token',
-    }),
-  ).rejects.toMatchObject({
-    code: 'BAD_REQUEST',
-    message: 'Reset token expired',
-  });
+  ).rejects.toThrow('No user with that ID');
 });

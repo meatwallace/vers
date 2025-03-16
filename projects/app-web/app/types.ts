@@ -6,6 +6,7 @@ export enum Routes {
   Logout = '/logout',
   Onboarding = '/onboarding',
   Profile = '/profile',
+  ProfileChangePassword = '/profile/change-password',
   ProfileVerify2FA = '/profile/2fa/verify',
   ResetPassword = '/reset-password',
   ResetPasswordStarted = '/reset-password-started',

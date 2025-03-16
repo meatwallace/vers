@@ -59,11 +59,11 @@ enum ActionIntent {
 export const action = withErrorHandling(async (args: Route.ActionArgs) => {
   const { request } = args;
 
-  const client = await createGQLClient(request);
-
   await requireAuth(request);
 
+  const client = await createGQLClient(request);
   const formData = await request.formData();
+
   const intent = formData.get('intent');
 
   if (intent === ActionIntent.Enable2FA) {
@@ -99,7 +99,10 @@ async function handleEnable2FA(client: Client, request: Request) {
     request.headers.get('cookie'),
   );
 
-  verifySession.set('transactionID', result.data.startEnable2FA.transactionID);
+  verifySession.set(
+    'enable2FA#transactionID',
+    result.data.startEnable2FA.transactionID,
+  );
 
   return redirect(Routes.ProfileVerify2FA, {
     headers: {
@@ -142,7 +145,10 @@ async function handleDisable2FA(
     request.headers.get('cookie'),
   );
 
-  verifySession.set('transactionID', result.data.startDisable2FA.transactionID);
+  verifySession.set(
+    'disable2FA#transactionID',
+    result.data.startDisable2FA.transactionID,
+  );
 
   const searchParams = new URLSearchParams({
     [QueryParam.Target]: submission.value.target,

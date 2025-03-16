@@ -30,6 +30,8 @@ export { resolve as deleteSession } from './mutations/delete-session';
 export { resolve as getSessions } from './queries/get-sessions';
 
 // user
+export { resolve as changeUserPassword } from './mutations/change-user-password';
+export { resolve as startChangeUserPassword } from './mutations/start-change-user-password';
 export { resolve as getCurrentUser } from './queries/get-current-user';
 
 // types

@@ -1,6 +1,6 @@
 ---
 description: Standards for structuring React components and their files.
-globs: "**/*.tsx"
+globs: **/*.tsx
 alwaysApply: false
 ---
 # React Component Structure Standards

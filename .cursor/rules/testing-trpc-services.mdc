@@ -1,6 +1,6 @@
 ---
 description: TRPC Services Testing Standards
-globs: "projects/service-*/src/handlers/*.test.ts"
+globs: **/service-*/src/handlers/**/*.test.ts
 alwaysApply: false
 ---
 # TRPC Service Testing Standards

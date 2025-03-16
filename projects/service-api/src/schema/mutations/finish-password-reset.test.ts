@@ -2,7 +2,7 @@ import { afterEach, expect, test, vi } from 'vitest';
 import { drop } from '@mswjs/data';
 import { TRPCError } from '@trpc/server';
 import { db } from '~/mocks/db';
-import { trpc } from '~/mocks/handlers/service-user/trpc';
+import { trpc } from '~/mocks/handlers/trpc/service-user/trpc';
 import { server } from '~/mocks/node';
 import { createMockGQLContext } from '~/test-utils/create-mock-gql-context';
 import { createPendingTransaction } from '~/utils/create-pending-transaction';
@@ -180,14 +180,14 @@ test('it returns a success response for any errors returned from the change pass
 
   const ctx = createMockGQLContext({});
 
-  const changePasswordHandler = vi.fn(() => {
+  const resetPasswordHandler = vi.fn(() => {
     throw new TRPCError({
       code: 'INTERNAL_SERVER_ERROR',
       message: 'Failed to change password',
     });
   });
 
-  server.use(trpc.changePassword.mutation(changePasswordHandler));
+  server.use(trpc.resetPassword.mutation(resetPasswordHandler));
 
   const args = {
     input: {
@@ -199,6 +199,6 @@ test('it returns a success response for any errors returned from the change pass
 
   const result = await resolve({}, args, ctx);
 
-  expect(changePasswordHandler).toHaveBeenCalledTimes(1);
+  expect(resetPasswordHandler).toHaveBeenCalledTimes(1);
   expect(result).toStrictEqual({ success: true });
 });

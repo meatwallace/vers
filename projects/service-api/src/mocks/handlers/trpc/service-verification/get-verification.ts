@@ -1,5 +1,5 @@
 import { GetVerificationPayload, VerificationType } from '@vers/service-types';
-import { db } from '../../db';
+import { db } from '../../../db';
 import { trpc } from './trpc';
 
 export const getVerification = trpc.getVerification.query(({ input }) => {
