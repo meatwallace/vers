@@ -38,6 +38,10 @@ export async function handle2FA(ctx: HandleVerificationContext) {
     ctx.request.headers.get('cookie'),
   );
 
+  // clean up our session data
+  verifySession.unset('login2FA#transactionID');
+  verifySession.unset('login2FA#sessionID');
+
   const authSession = await authSessionStorage.getSession(
     ctx.request.headers.get('cookie'),
   );
@@ -49,7 +53,7 @@ export async function handle2FA(ctx: HandleVerificationContext) {
   return redirect(redirectTo, {
     headers: {
       'set-cookie': [
-        await verifySessionStorage.destroySession(verifySession),
+        await verifySessionStorage.commitSession(verifySession),
         await authSessionStorage.commitSession(authSession, {
           expires: new Date(result.data.finishLoginWith2FA.session.expiresAt),
         }),

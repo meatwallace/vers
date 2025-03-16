@@ -1,6 +1,6 @@
 ---
 description: Standards for implementing domain service handlers across our microservices.
-globs: "**/service-*/src/handlers/*.ts"
+globs: **/service-*/src/handlers/*.ts
 alwaysApply: false
 ---
 # Domain Service Handler Standards

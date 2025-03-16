@@ -1,7 +1,7 @@
 import { getTOTPAuthUri } from '@epic-web/totp';
 import { TRPCError } from '@trpc/server';
 import { Get2FAVerificationURIPayload } from '@vers/service-types';
-import { db } from '../../db';
+import { db } from '../../../db';
 import { trpc } from './trpc';
 
 export const get2FAVerificationURI = trpc.get2FAVerificationURI.query(

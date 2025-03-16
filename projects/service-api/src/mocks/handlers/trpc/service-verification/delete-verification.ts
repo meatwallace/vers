@@ -1,6 +1,6 @@
 import { TRPCError } from '@trpc/server';
 import { DeleteVerificationPayload } from '@vers/service-types';
-import { db } from '../../db';
+import { db } from '../../../db';
 import { trpc } from './trpc';
 
 export const deleteVerification = trpc.deleteVerification.mutation(

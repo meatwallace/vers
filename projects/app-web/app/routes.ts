@@ -1,9 +1,5 @@
-import {
-  index,
-  layout,
-  route,
-  type RouteConfig,
-} from '@react-router/dev/routes';
+import type { RouteConfig } from '@react-router/dev/routes';
+import { index, layout, route } from '@react-router/dev/routes';
 import { Routes } from './types.ts';
 
 export default [
@@ -21,5 +17,9 @@ export default [
     route(Routes.Dashboard, 'routes/dashboard/route.tsx'),
     route(Routes.Profile, 'routes/profile/route.tsx'),
     route(Routes.ProfileVerify2FA, 'routes/profile_verify-2fa/route.tsx'),
+    route(
+      Routes.ProfileChangePassword,
+      'routes/profile_change-password/route.tsx',
+    ),
   ]),
 ] satisfies RouteConfig;

@@ -25,7 +25,10 @@ async function setupTest(config: TestConfig) {
   const verifySession = await verifySessionStorage.getSession();
 
   if (config.transactionToken) {
-    verifySession.set('transactionToken', config.transactionToken);
+    verifySession.set(
+      'resetPassword#transactionToken',
+      config.transactionToken,
+    );
   }
 
   const cookie = await verifySessionStorage.commitSession(verifySession);

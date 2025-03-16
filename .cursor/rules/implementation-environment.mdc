@@ -1,6 +1,6 @@
 ---
 description: Standards for implementing type-safe environment configuration using Zod.
-globs: "**/src/env.ts"
+globs: env.ts
 alwaysApply: false
 ---
 

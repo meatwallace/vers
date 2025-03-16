@@ -27,6 +27,7 @@ test('it deletes a session when the user is authenticated', async () => {
   });
 
   const ctx = createMockGQLContext({ accessToken, user });
+
   const args = {
     input: {
       id: session.id,

@@ -5,6 +5,7 @@ import { createRoutesStub } from 'react-router';
 import { drop } from '@mswjs/data';
 import { GraphQLError } from 'graphql';
 import { graphql } from 'msw';
+import type { SessionData } from '~/session/verify-session-storage.server.ts';
 import { VerificationType } from '~/gql/graphql.ts';
 import { db } from '~/mocks/db.ts';
 import { server } from '~/mocks/node.ts';
@@ -16,16 +17,15 @@ import { Routes } from '~/types.ts';
 import { action, loader, VerifyOTPRoute } from './route.tsx';
 
 interface TestConfig {
-  initialPath?: string;
+  initialPath: string;
   isAuthed?: boolean;
-  transactionID?: string;
-  unverifiedSessionID?: string;
+  sessionData?: Partial<SessionData>;
   user?: {
     email?: string;
   };
 }
 
-let cookieHeader: null | string = null;
+let setCookieHeader: null | string = null;
 
 const _Response = globalThis.Response;
 
@@ -34,17 +34,17 @@ vi.stubGlobal(
   'Response',
   vi.fn((body?: BodyInit | null, init?: ResponseInit) => {
     if (init?.headers instanceof Headers) {
-      cookieHeader = init.headers.get('set-cookie');
+      setCookieHeader = init.headers.get('set-cookie');
     }
 
     return new _Response(body, init);
   }),
 );
 
-function setupTest(config: TestConfig = {}) {
+function setupTest(config: TestConfig) {
   const user = userEvent.setup();
 
-  let wrappedAction = withSession(action, config);
+  let wrappedAction = withSession(action, config.sessionData ?? {});
 
   if (config.isAuthed) {
     wrappedAction = withAuthedUser(wrappedAction, { user: config.user });
@@ -56,7 +56,7 @@ function setupTest(config: TestConfig = {}) {
       Component: withRouteProps(VerifyOTPRoute),
       ErrorBoundary: () => 'ERROR_BOUNDARY',
       loader,
-      path: '/',
+      path: Routes.VerifyOTP,
     },
     {
       Component: () => 'RESET_PASSWORD_ROUTE',
@@ -67,8 +67,8 @@ function setupTest(config: TestConfig = {}) {
       path: Routes.Onboarding,
     },
     {
-      Component: () => 'SIGNUP_ROUTE',
-      path: Routes.Signup,
+      Component: () => 'INDEX_ROUTE',
+      path: Routes.Index,
     },
     {
       Component: () => 'PROFILE_ROUTE',
@@ -78,15 +78,13 @@ function setupTest(config: TestConfig = {}) {
       Component: () => 'DASHBOARD_ROUTE',
       path: Routes.Dashboard,
     },
+    {
+      Component: () => 'CHANGE_PASSWORD_ROUTE',
+      path: Routes.ProfileChangePassword,
+    },
   ]);
 
-  render(
-    <VerifyOTPStub
-      initialEntries={[
-        config.initialPath ?? '/?type=RESET_PASSWORD&target=test@example.com',
-      ]}
-    />,
-  );
+  render(<VerifyOTPStub initialEntries={[config.initialPath]} />);
 
   return { user };
 }
@@ -96,11 +94,13 @@ afterEach(() => {
 
   drop(db);
 
-  cookieHeader = null;
+  setCookieHeader = null;
 });
 
 test('it renders the verify OTP form with accessible elements', async () => {
-  setupTest();
+  setupTest({
+    initialPath: '/verify-otp?type=TWO_FACTOR_AUTH&target=test@example.com',
+  });
 
   const codeInput = await screen.findByRole('textbox', { name: /code/i });
   const submitButton = screen.getByRole('button', { name: /verify/i });
@@ -110,7 +110,9 @@ test('it renders the verify OTP form with accessible elements', async () => {
 });
 
 test('it shows validation errors for invalid code', async () => {
-  const { user } = setupTest();
+  const { user } = setupTest({
+    initialPath: '/verify-otp?type=TWO_FACTOR_AUTH&target=test@example.com',
+  });
 
   const codeInput = await screen.findByRole('textbox', { name: /code/i });
   const submitButton = screen.getByRole('button', { name: /verify/i });
@@ -126,8 +128,10 @@ test('it shows validation errors for invalid code', async () => {
 test('it handles reset password verification and redirects to the reset password route on success', async () => {
   const { user } = setupTest({
     initialPath:
-      '/?type=RESET_PASSWORD&target=test@example.com&redirect=/reset-password?token=test_reset_token',
-    transactionID: 'test_transaction_id',
+      '/verify-otp?type=RESET_PASSWORD&target=test@example.com&redirect=/reset-password?token=test_reset_token',
+    sessionData: {
+      'resetPassword#transactionID': 'test_transaction_id',
+    },
   });
 
   db.verification.create({
@@ -145,15 +149,20 @@ test('it handles reset password verification and redirects to the reset password
 
   expect(resetPasswordRoute).toBeInTheDocument();
 
-  const verifySession = await verifySessionStorage.getSession(cookieHeader);
+  const verifySession = await verifySessionStorage.getSession(setCookieHeader);
 
-  expect(verifySession.get('transactionToken')).toBe('valid_transaction_token');
+  expect(verifySession.get('resetPassword#transactionID')).toBeUndefined();
+  expect(verifySession.get('resetPassword#transactionToken')).toBe(
+    'valid_transaction_token',
+  );
 });
 
 test('it handles onboarding verification and redirects to the onboarding route on success', async () => {
   const { user } = setupTest({
-    initialPath: '/?type=ONBOARDING&target=test@example.com',
-    transactionID: 'test_transaction_id',
+    initialPath: '/verify-otp?type=ONBOARDING&target=test@example.com',
+    sessionData: {
+      'onboarding#transactionID': 'test_transaction_id',
+    },
   });
 
   db.verification.create({
@@ -171,16 +180,22 @@ test('it handles onboarding verification and redirects to the onboarding route o
 
   expect(onboardingRoute).toBeInTheDocument();
 
-  const verifySession = await verifySessionStorage.getSession(cookieHeader);
+  const verifySession = await verifySessionStorage.getSession(setCookieHeader);
 
-  expect(verifySession.get('onboardingEmail')).toBe('test@example.com');
-  expect(verifySession.get('transactionToken')).toBe('valid_transaction_token');
+  expect(verifySession.get('onboarding#email')).toBe('test@example.com');
+  expect(verifySession.get('onboarding#transactionID')).toBeUndefined();
+  expect(verifySession.get('onboarding#transactionToken')).toBe(
+    'valid_transaction_token',
+  );
 });
 
 test('it handles 2FA setup verification and throws an error', async () => {
   const { user } = setupTest({
-    initialPath: '/?type=TWO_FACTOR_AUTH_SETUP&target=test@example.com',
-    transactionID: 'test_transaction_id',
+    initialPath:
+      '/verify-otp?type=TWO_FACTOR_AUTH_SETUP&target=test@example.com',
+    sessionData: {
+      'enable2FA#transactionID': 'test_transaction_id',
+    },
   });
 
   db.verification.create({
@@ -201,9 +216,12 @@ test('it handles 2FA setup verification and throws an error', async () => {
 
 test('it handles 2FA disable verification and redirects to the profile route on success', async () => {
   const { user } = setupTest({
-    initialPath: '/?type=TWO_FACTOR_AUTH_DISABLE&target=test@example.com',
+    initialPath:
+      '/verify-otp?type=TWO_FACTOR_AUTH_DISABLE&target=test@example.com',
     isAuthed: true,
-    transactionID: 'test_transaction_id',
+    sessionData: {
+      'disable2FA#transactionID': 'test_transaction_id',
+    },
     user: {
       email: 'test@example.com',
     },
@@ -245,6 +263,11 @@ test('it handles 2FA disable verification and redirects to the profile route on 
 
   expect(twoFactorAuth).toBeNull();
   expect(twoFactorAuthDisable).toBeNull();
+
+  const verifySession = await verifySessionStorage.getSession(setCookieHeader);
+
+  expect(verifySession.get('disable2FA#transactionID')).toBeUndefined();
+  expect(verifySession.get('disable2FA#transactionToken')).toBeUndefined();
 });
 
 test('it handles 2FA login verification and redirects to the dashboard on success', async () => {
@@ -253,9 +276,11 @@ test('it handles 2FA login verification and redirects to the dashboard on succes
   });
 
   const { user } = setupTest({
-    initialPath: '/?type=TWO_FACTOR_AUTH&target=test@example.com',
-    transactionID: 'test_transaction_id',
-    unverifiedSessionID: 'test_unverified_session_id',
+    initialPath: '/verify-otp?type=TWO_FACTOR_AUTH&target=test@example.com',
+    sessionData: {
+      'login2FA#sessionID': 'test_unverified_session_id',
+      'login2FA#transactionID': 'test_transaction_id',
+    },
   });
 
   db.verification.create({
@@ -272,19 +297,61 @@ test('it handles 2FA login verification and redirects to the dashboard on succes
   const dashboardRoute = await screen.findByText('DASHBOARD_ROUTE');
 
   expect(dashboardRoute).toBeInTheDocument();
+
+  const verifySession = await verifySessionStorage.getSession(setCookieHeader);
+
+  expect(verifySession.get('login2FA#sessionID')).toBeUndefined();
+  expect(verifySession.get('login2FA#transactionID')).toBeUndefined();
+  expect(verifySession.get('login2FA#transactionToken')).toBeUndefined();
 });
 
 test.todo(
-  'it handles change email verification and redirects to the profile route on success',
+  'it handles change email verification and redirects to the change emailroute on success',
 );
 
 test.todo(
-  'it handles change password verification and redirects to the profile route on success',
+  'it handles change email verification verification and redirects to the profile route on success',
 );
+
+test('it handles change password verification and redirects to the change password route on success', async () => {
+  const { user } = setupTest({
+    initialPath: '/verify-otp?type=CHANGE_PASSWORD&target=test@example.com',
+    sessionData: {
+      'changeUserPassword#transactionID': 'test_transaction_id',
+    },
+  });
+
+  db.verification.create({
+    target: 'test@example.com',
+    type: VerificationType.ChangePassword,
+  });
+
+  const codeInput = await screen.findByRole('textbox', { name: /code/i });
+  const submitButton = screen.getByRole('button', { name: /verify/i });
+
+  await user.type(codeInput, '999999');
+  await user.click(submitButton);
+
+  const changeUserPasswordRoute = await screen.findByText(
+    'CHANGE_PASSWORD_ROUTE',
+  );
+
+  expect(changeUserPasswordRoute).toBeInTheDocument();
+
+  const verifySession = await verifySessionStorage.getSession(setCookieHeader);
+
+  expect(verifySession.get('changeUserPassword#transactionID')).toBeUndefined();
+  expect(verifySession.get('changeUserPassword#transactionToken')).toBe(
+    'valid_transaction_token',
+  );
+});
 
 test('it shows error for invalid verification code', async () => {
   const { user } = setupTest({
-    transactionID: 'test_transaction_id',
+    initialPath: '/verify-otp?type=TWO_FACTOR_AUTH&target=test@example.com',
+    sessionData: {
+      'login2FA#transactionID': 'test_transaction_id',
+    },
   });
 
   db.verification.create({
@@ -311,7 +378,10 @@ test('it shows a generic error if the mutation fails', async () => {
   );
 
   const { user } = setupTest({
-    transactionID: 'test_transaction_id',
+    initialPath: '/verify-otp?type=TWO_FACTOR_AUTH&target=test@example.com',
+    sessionData: {
+      'login2FA#transactionID': 'test_transaction_id',
+    },
   });
 
   const codeInput = await screen.findByRole('textbox', { name: /code/i });
@@ -327,11 +397,10 @@ test('it shows a generic error if the mutation fails', async () => {
 
 test('it redirects to signup for invalid verification type', async () => {
   setupTest({
-    initialPath: '/?type=INVALID_TYPE&target=test@example.com',
-    transactionID: 'test_transaction_id',
+    initialPath: '/verify-otp?type=INVALID_TYPE&target=test@example.com',
   });
 
-  const signupRoute = await screen.findByText('SIGNUP_ROUTE');
+  const signupRoute = await screen.findByText('INDEX_ROUTE');
 
   expect(signupRoute).toBeInTheDocument();
 });

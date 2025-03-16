@@ -18,12 +18,6 @@ test('it successfully completes 2FA setup', async () => {
   });
 
   const verification = db.verification.create({
-    algorithm: 'SHA-1',
-    charSet: 'ABCDEFGHJKLMNPQRSTUVWXYZ123456789',
-    digits: 6,
-    id: 'setup-verification-id',
-    period: 30,
-    secret: 'ABCDEFGHIJKLMNOP',
     target: user.email,
     type: '2fa-setup',
   });
@@ -68,13 +62,13 @@ test('it successfully completes 2FA setup', async () => {
   });
 
   expect(updatedVerification).toMatchObject({
-    algorithm: 'SHA-1',
+    algorithm: 'SHA-256',
     charSet: 'ABCDEFGHJKLMNPQRSTUVWXYZ123456789',
     createdAt: expect.any(Date),
     digits: 6,
     expiresAt: expect.any(Date),
     id: verification.id,
-    period: 30,
+    period: 300,
     secret: expect.any(String),
     target: user.email,
     type: '2fa',

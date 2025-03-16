@@ -1,6 +1,6 @@
 ---
 description: Standards for creating and maintaining MSW (Mock Service Worker) mocks for client-side GraphQL operations.
-globs: "**/mocks/handlers/gql/**/*.ts"
+globs: **/mocks/handlers/gql/**/*.ts
 alwaysApply: false
 ---
 # GraphQL MSW Mock Standards

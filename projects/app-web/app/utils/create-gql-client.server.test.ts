@@ -90,7 +90,7 @@ test('it attaches the unverified session ID to the request if the session ID is 
 
   const verifySession = await verifySessionStorage.getSession();
 
-  verifySession.set('unverifiedSessionID', 'test_unverified_session_id');
+  verifySession.set('login2FA#sessionID', 'test_unverified_session_id');
 
   const cookieHeader = await verifySessionStorage.commitSession(verifySession);
 

@@ -13,8 +13,8 @@ export async function handleResetPassword(ctx: HandleVerificationContext) {
   const verifySession = await verifySessionStorage.getSession();
 
   // clean up the pending transaction ID & capture our transaction token
-  verifySession.unset('transactionID');
-  verifySession.set('transactionToken', ctx.transactionToken);
+  verifySession.unset('resetPassword#transactionID');
+  verifySession.set('resetPassword#transactionToken', ctx.transactionToken);
 
   return redirect(safeRedirect(ctx.submission.value.redirect), {
     headers: {

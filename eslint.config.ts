@@ -83,6 +83,7 @@ export default tseslint.config(
       ],
       'drizzle/enforce-delete-with-where': 'off',
       'drizzle/enforce-update-with-where': 'error',
+      'perfectionist/sort-enums': ['error', { partitionByComment: true }],
       'perfectionist/sort-exports': [
         'error',
         {
@@ -124,6 +125,7 @@ export default tseslint.config(
           newlinesBetween: 'never',
         },
       ],
+      'perfectionist/sort-interfaces': ['error', { partitionByComment: true }],
       'perfectionist/sort-jsx-props': [
         'error',
         {
@@ -136,12 +138,18 @@ export default tseslint.config(
         },
       ],
       'perfectionist/sort-modules': 'off',
+      'perfectionist/sort-object-types': [
+        'error',
+        { partitionByComment: true },
+      ],
       'perfectionist/sort-objects': [
         'error',
         {
           partitionByComment: true,
         },
       ],
+      'perfectionist/sort-sets': ['error', { partitionByComment: true }],
+      'perfectionist/sort-union-types': ['error', { partitionByComment: true }],
 
       'unicorn/no-null': 'off',
       'unicorn/prevent-abbreviations': 'off',

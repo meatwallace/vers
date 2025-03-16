@@ -115,7 +115,9 @@ test('it redirects to verify OTP page on successful signup', async () => {
 
   const verifySession = await verifySessionStorage.getSession(cookieHeader);
 
-  expect(verifySession.get('transactionID')).toBe('valid-transaction-id');
+  expect(verifySession.get('onboarding#transactionID')).toBe(
+    'valid-transaction-id',
+  );
 });
 
 test('it shows a generic error if the mutation fails', async () => {

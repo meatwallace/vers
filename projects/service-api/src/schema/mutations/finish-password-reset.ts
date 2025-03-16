@@ -71,7 +71,7 @@ export async function finishPasswordReset(
       return { success: true };
     }
 
-    await ctx.services.user.changePassword.mutate({
+    await ctx.services.user.resetPassword.mutate({
       id: user.id,
       password: args.input.password,
       resetToken: args.input.resetToken,

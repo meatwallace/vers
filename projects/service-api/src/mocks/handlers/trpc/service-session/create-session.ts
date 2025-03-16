@@ -1,4 +1,4 @@
-import { db } from '../../db';
+import { db } from '../../../db';
 import { trpc } from './trpc';
 
 const EXPIRES_AT_OFFSET = 1000 * 60 * 60 * 24 * 1;

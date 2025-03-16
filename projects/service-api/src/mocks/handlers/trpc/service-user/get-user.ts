@@ -1,5 +1,5 @@
 import { TRPCError } from '@trpc/server';
-import { db } from '../../db';
+import { db } from '../../../db';
 import { trpc } from './trpc';
 
 export const getUser = trpc.getUser.query(({ input }) => {

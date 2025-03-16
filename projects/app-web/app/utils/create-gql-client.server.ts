@@ -34,7 +34,7 @@ export async function createGQLClient(request: Request): Promise<Client> {
       addAuthToOperation: (operation) => {
         const accessToken = authSession.get('accessToken');
         const sessionID = authSession.get('sessionID');
-        const unverifiedSessionID = verifySession.get('unverifiedSessionID');
+        const unverifiedSessionID = verifySession.get('login2FA#sessionID');
 
         const headers: Record<string, string> = {};
 

@@ -1,6 +1,6 @@
 ---
 description: GraphQL Mutation Implementation Standards using Pothos
-globs: "**/schema/mutations/**/*.ts"
+globs: **/service-api/src/schema/mutations/**/*.ts
 alwaysApply: false
 ---
 # GraphQL Mutation Implementation Standards

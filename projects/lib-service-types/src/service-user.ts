@@ -32,13 +32,22 @@ export interface VerifyPasswordPayload {
   success: boolean;
 }
 
-export interface ChangePasswordArgs {
+export interface ResetPasswordArgs {
   id: string;
   password: string;
   resetToken: string;
 }
 
-export type ChangePasswordPayload = Record<string, never>;
+export type ResetPasswordPayload = Record<string, never>;
+
+export interface ChangePasswordArgs {
+  password: string;
+  userID: string;
+}
+
+export interface ChangePasswordPayload {
+  updatedID: string;
+}
 
 export interface CreatePasswordResetTokenArgs {
   id: string;

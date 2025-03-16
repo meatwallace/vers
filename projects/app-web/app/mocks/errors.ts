@@ -16,6 +16,11 @@ export const INVALID_CREDENTIALS_ERROR = {
   title: 'Invalid credentials',
 };
 
+export const INVALID_PASSWORD_ERROR = {
+  message: 'Wrong password',
+  title: 'Invalid password',
+};
+
 // 2FA errors
 export const TWO_FACTOR_NOT_ENABLED_ERROR = {
   message: '2FA is not enabled for your account.',

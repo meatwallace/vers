@@ -64,7 +64,6 @@ export const action = withErrorHandling(async (args: Route.ActionArgs) => {
   }
 
   const client = await createGQLClient(request);
-
   const formData = await request.formData();
 
   await checkHoneypot(formData);
@@ -85,7 +84,7 @@ export const action = withErrorHandling(async (args: Route.ActionArgs) => {
   );
 
   // attach our transaction token incase 2FA was required for this reset
-  const transactionToken = verifySession.get('transactionToken');
+  const transactionToken = verifySession.get('resetPassword#transactionToken');
 
   const result = await client.mutation(FinishPasswordResetMutation, {
     input: {
@@ -114,10 +113,13 @@ export const action = withErrorHandling(async (args: Route.ActionArgs) => {
     return data({ result: formResult }, { status: 400 });
   }
 
+  // clean up our session data
+  verifySession.unset('resetPassword#transactionToken');
+
   // Clear the verification session since we're done with it
   return redirect(Routes.Login, {
     headers: {
-      'set-cookie': await verifySessionStorage.destroySession(verifySession),
+      'set-cookie': await verifySessionStorage.commitSession(verifySession),
     },
   });
 });

@@ -15,9 +15,9 @@ export async function handleOnboarding(ctx: HandleVerificationContext) {
   );
 
   // clean up the pending transaction ID & capture our transaction token
-  verifySession.unset('transactionID');
-  verifySession.set('transactionToken', ctx.transactionToken);
-  verifySession.set('onboardingEmail', ctx.submission.value.target);
+  verifySession.unset('onboarding#transactionID');
+  verifySession.set('onboarding#transactionToken', ctx.transactionToken);
+  verifySession.set('onboarding#email', ctx.submission.value.target);
 
   return redirect(Routes.Onboarding, {
     headers: {

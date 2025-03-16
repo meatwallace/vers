@@ -1,6 +1,6 @@
 ---
 description: Standards for working with GraphQL's generated types.
-globs: "**/*.{ts,tsx}"
+globs: **/app-web/app/**/*.ts,**/app-web/app/**/*.tsx
 alwaysApply: false
 ---
 # GraphQL Types Standards

@@ -30,11 +30,11 @@ async function setupTest(config: TestConfig = {}) {
   const verifySession = await verifySessionStorage.getSession();
 
   if (config.transactionID) {
-    verifySession.set('transactionID', config.transactionID);
+    verifySession.set('enable2FA#transactionID', config.transactionID);
   }
 
   const actionWithSession = withSession(action, {
-    transactionID: config.transactionID,
+    'enable2FA#transactionID': config.transactionID,
   });
 
   const ProfileVerify2FAStub = createRoutesStub([

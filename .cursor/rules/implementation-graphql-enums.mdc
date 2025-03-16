@@ -1,6 +1,6 @@
 ---
 description: Standards for implementing GraphQL enums and their database mappings
-globs: "**/schema/**/*.ts"
+globs: **/service-api/src/schema/**/*.ts
 alwaysApply: false
 ---
 

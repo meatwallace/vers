@@ -4,6 +4,14 @@ type AuthPayload {
   session: Session!
 }
 
+input ChangeUserPasswordInput {
+  currentPassword: String!
+  newPassword: String!
+  transactionToken: String
+}
+
+union ChangeUserPasswordPayload = MutationErrorPayload | MutationSuccess
+
 """
 A date string, such as 2007-12-03, compliant with the `full-date` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.
 """
@@ -72,6 +80,7 @@ input LoginWithPasswordInput {
 union LoginWithPasswordPayload = AuthPayload | MutationErrorPayload | TwoFactorRequiredPayload
 
 type Mutation {
+  changeUserPassword(input: ChangeUserPasswordInput!): ChangeUserPasswordPayload!
   deleteSession(input: DeleteSessionInput!): DeleteSessionPayload!
   finishDisable2FA(input: FinishDisable2FAInput!): FinishDisable2FAPayload!
   finishEmailSignup(input: FinishEmailSignupInput!): FinishEmailSignupPayload!
@@ -80,6 +89,7 @@ type Mutation {
   finishPasswordReset(input: FinishPasswordResetInput!): FinishPasswordResetPayload!
   loginWithPassword(input: LoginWithPasswordInput!): LoginWithPasswordPayload!
   refreshAccessToken(input: RefreshAccessTokenInput!): RefreshAccessTokenPayload!
+  startChangeUserPassword(input: StartChangeUserPasswordInput!): StartChangeUserPasswordPayload!
   startDisable2FA(input: StartDisable2FAInput!): StartDisable2FAPayload!
   startEmailSignup(input: StartEmailSignupInput!): StartEmailSignupPayload!
   startEnable2FA(input: StartEnable2FAInput!): StartEnable2FAPayload!
@@ -118,6 +128,12 @@ type Session {
   id: ID!
   user: User!
 }
+
+input StartChangeUserPasswordInput {
+  placeholder: String
+}
+
+union StartChangeUserPasswordPayload = MutationErrorPayload | TwoFactorRequiredPayload
 
 input StartDisable2FAInput {
   placeholder: String
