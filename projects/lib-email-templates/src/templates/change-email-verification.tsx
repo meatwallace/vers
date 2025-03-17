@@ -11,24 +11,23 @@ export function ChangeEmailVerificationEmail(props: Props): ReactElement {
   return (
     <E.Container>
       <E.Heading as="h1">
-        <E.Text>Verify Your New Email Address</E.Text>
+        <E.Text>Verify your new email address</E.Text>
       </E.Heading>
       <E.Text>
         You&apos;ve requested to change your email address to{' '}
-        <strong>{props.newEmail}</strong>. Please verify this email address to
+        <strong>{props.newEmail}</strong>. Please click the link below to
         complete the change.
       </E.Text>
+      <E.Button href={props.verificationURL}>Verify email address</E.Button>
       <E.Text>
-        Your verification code is: <strong>{props.verificationCode}</strong>
+        Or enter the following verification code:{' '}
+        <strong>{props.verificationCode}</strong>
       </E.Text>
-      <E.Text>Or click the link below to verify your email address:</E.Text>
-      <E.Button href={props.verificationURL}>Verify Email Address</E.Button>
-      <E.Hr />
       <E.Text>
-        If you did not request this change, please ignore this email or contact
-        support if you have concerns.
+        If you did not request this change, your account has been compromised.
+        Please reset your password immediately{' '}
+        <E.Link href="https://versidle.com/forgot-password">here</E.Link>.
       </E.Text>
-      <E.Text>This link will expire in 15 minutes.</E.Text>
     </E.Container>
   );
 }

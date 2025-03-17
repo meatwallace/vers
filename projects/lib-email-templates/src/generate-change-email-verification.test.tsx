@@ -11,7 +11,7 @@ test('it generates a verification email with the provided configuration', async 
   const { html, plainText } =
     await generateChangeEmailVerificationEmail(config);
 
-  expect(html).toContain('Verify Your New Email Address');
+  expect(html).toContain('Verify your new email address');
   expect(html).toContain(config.newEmail);
   expect(html).toContain(config.verificationCode);
   expect(html).toContain(config.verificationURL);

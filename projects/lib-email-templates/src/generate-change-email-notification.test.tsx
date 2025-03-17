@@ -4,7 +4,7 @@ import { generateChangeEmailNotificationEmail } from './generate-change-email-no
 test('it generates a notification email with the correct content', async () => {
   const { html, plainText } = await generateChangeEmailNotificationEmail();
 
-  expect(html).toContain('Email Address Changed');
+  expect(html).toContain('Your email address has been changed');
 
-  expect(plainText).toContain('EMAIL ADDRESS CHANGED');
+  expect(plainText).toContain('YOUR EMAIL ADDRESS HAS BEEN CHANGED');
 });

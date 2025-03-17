@@ -9,14 +9,15 @@ export function WelcomeEmail(props: Props) {
   return (
     <E.Container>
       <E.Heading as="h1">
-        <E.Text>Welcome to vers.</E.Text>
+        <E.Text>Welcome to vers</E.Text>
       </E.Heading>
       <E.Text>
-        Here&apos;s your verification code:{' '}
-        <strong>{props.verificationCode}</strong>
+        Please verify your vers account to get started. Just click on the link
+        to get started:
       </E.Text>
-      <E.Text>Or click the link to get started:</E.Text>
-      <E.Link href={props.verificationURL}>{props.verificationURL}</E.Link>
+      <E.Link href={props.verificationURL}>Verify your account</E.Link>
+      <E.Text>Or enter the following verification code:</E.Text>
+      <strong>{props.verificationCode}</strong>
     </E.Container>
   );
 }

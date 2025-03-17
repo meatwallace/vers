@@ -44,7 +44,7 @@ test('it changes password when user has no 2FA enabled and sends a confirmation 
   const emails = sentEmails.get('user@test.com');
 
   expect(emails?.length).toBe(1);
-  expect(emails?.[0].html).toContain('Password Changed');
+  expect(emails?.[0].html).toContain('Your password has been changed');
 });
 
 test('it changes password when user has 2FA enabled and provides valid transaction token', async () => {
