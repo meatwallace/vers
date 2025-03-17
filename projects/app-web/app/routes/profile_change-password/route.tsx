@@ -8,9 +8,9 @@ import { FormErrorList } from '~/components/form-error-list.tsx';
 import { RouteErrorBoundary } from '~/components/route-error-boundary.tsx';
 import { StatusButton } from '~/components/status-button.tsx';
 import { ChangeUserPasswordMutation } from '~/data/mutations/change-user-password.ts';
-import { StartChangeUserPasswordMutation } from '~/data/mutations/start-change-user-password.ts';
+import { StartStepUpAuthMutation } from '~/data/mutations/start-step-up-auth.ts';
 import { GetCurrentUserQuery } from '~/data/queries/get-current-user';
-import { VerificationType } from '~/gql/graphql.ts';
+import { StepUpAction, VerificationType } from '~/gql/graphql.ts';
 import { useIsFormPending } from '~/hooks/use-is-form-pending.ts';
 import { verifySessionStorage } from '~/session/verify-session-storage.server.ts';
 import { Routes } from '~/types.ts';
@@ -67,8 +67,10 @@ export const loader = withErrorHandling(async (args: Route.LoaderArgs) => {
 
   // if our user has 2FA enabled, we need to start the step up auth process
   // and store a pending transaction ID in the session
-  const result = await client.mutation(StartChangeUserPasswordMutation, {
-    input: {},
+  const result = await client.mutation(StartStepUpAuthMutation, {
+    input: {
+      action: StepUpAction.ChangePassword,
+    },
   });
 
   if (result.error) {
@@ -77,15 +79,15 @@ export const loader = withErrorHandling(async (args: Route.LoaderArgs) => {
     throw result.error;
   }
 
-  if (isMutationError(result.data?.startChangeUserPassword)) {
-    throw new Error(result.data.startChangeUserPassword.error.message);
+  if (isMutationError(result.data?.startStepUpAuth)) {
+    throw new Error(result.data.startStepUpAuth.error.message);
   }
 
   invariant(result.data, 'if no error, there must be data');
 
   verifySession.set(
     'changePassword#transactionID',
-    result.data.startChangeUserPassword.transactionID,
+    result.data.startStepUpAuth.transactionID,
   );
 
   const setCookieHeader =

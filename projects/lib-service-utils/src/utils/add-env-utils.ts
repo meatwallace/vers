@@ -1,6 +1,5 @@
 interface Env {
-  E2E?: boolean;
-  NODE_ENV: 'development' | 'production' | 'test';
+  NODE_ENV: 'development' | 'e2e' | 'production' | 'test';
 }
 
 /**
@@ -21,7 +20,7 @@ interface Env {
 export const addEnvUtils = <T extends Env>(env: T) => ({
   ...env,
   isDevelopment: env.NODE_ENV === 'development',
-  isE2E: !!env.E2E,
+  isE2E: env.NODE_ENV === 'e2e',
   isProduction: env.NODE_ENV === 'production',
   isTest: env.NODE_ENV === 'test',
 });

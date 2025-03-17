@@ -98,8 +98,6 @@ type Mutation {
   loginWithPassword(input: LoginWithPasswordInput!): LoginWithPasswordPayload!
   refreshAccessToken(input: RefreshAccessTokenInput!): RefreshAccessTokenPayload!
   startChangeUserEmail(input: StartChangeUserEmailInput!): StartChangeUserEmailPayload!
-  startChangeUserPassword(input: StartChangeUserPasswordInput!): StartChangeUserPasswordPayload!
-  startDisable2FA(input: StartDisable2FAInput!): StartDisable2FAPayload!
   startEmailSignup(input: StartEmailSignupInput!): StartEmailSignupPayload!
   startEnable2FA(input: StartEnable2FAInput!): StartEnable2FAPayload!
   startPasswordReset(input: StartPasswordResetInput!): StartPasswordResetPayload!
@@ -145,18 +143,6 @@ input StartChangeUserEmailInput {
 }
 
 union StartChangeUserEmailPayload = MutationErrorPayload | TwoFactorRequiredPayload
-
-input StartChangeUserPasswordInput {
-  placeholder: String
-}
-
-union StartChangeUserPasswordPayload = MutationErrorPayload | TwoFactorRequiredPayload
-
-input StartDisable2FAInput {
-  placeholder: String
-}
-
-union StartDisable2FAPayload = MutationErrorPayload | TwoFactorRequiredPayload
 
 input StartEmailSignupInput {
   email: String!

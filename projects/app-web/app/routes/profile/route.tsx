@@ -6,10 +6,10 @@ import { z } from 'zod';
 import { Link } from '~/components/link.tsx';
 import { RouteErrorBoundary } from '~/components/route-error-boundary.tsx';
 import { StatusButton } from '~/components/status-button.tsx';
-import { StartDisable2FAMutation } from '~/data/mutations/start-disable-2fa';
 import { StartEnable2FAMutation } from '~/data/mutations/start-enable-2fa';
+import { StartStepUpAuthMutation } from '~/data/mutations/start-step-up-auth';
 import { GetCurrentUserQuery } from '~/data/queries/get-current-user';
-import { VerificationType } from '~/gql/graphql.ts';
+import { StepUpAction, VerificationType } from '~/gql/graphql.ts';
 import { useIsFormPending } from '~/hooks/use-is-form-pending.ts';
 import { verifySessionStorage } from '~/session/verify-session-storage.server.ts';
 import { Routes } from '~/types';
@@ -125,7 +125,11 @@ async function handleDisable2FA(
     return data({ error: submission.error?.message }, { status: 400 });
   }
 
-  const result = await client.mutation(StartDisable2FAMutation, { input: {} });
+  const result = await client.mutation(StartStepUpAuthMutation, {
+    input: {
+      action: StepUpAction.Disable_2Fa,
+    },
+  });
 
   if (result.error) {
     handleGQLError(result.error);
@@ -135,9 +139,9 @@ async function handleDisable2FA(
 
   invariant(result.data, 'if no error, there must be data');
 
-  if (isMutationError(result.data.startDisable2FA)) {
+  if (isMutationError(result.data.startStepUpAuth)) {
     return data(
-      { error: result.data.startDisable2FA.error.message },
+      { error: result.data.startStepUpAuth.error.message },
       { status: 400 },
     );
   }
@@ -148,7 +152,7 @@ async function handleDisable2FA(
 
   verifySession.set(
     'disable2FA#transactionID',
-    result.data.startDisable2FA.transactionID,
+    result.data.startStepUpAuth.transactionID,
   );
 
   const searchParams = new URLSearchParams({
