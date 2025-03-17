@@ -8,9 +8,9 @@ test('it generates a password changed email with the provided configuration', as
 
   const { html, plainText } = await generatePasswordChangedEmail(config);
 
-  expect(html).include('Password Changed');
+  expect(html).include('Your password has been changed');
   expect(html).include('test@example.com');
 
-  expect(plainText).include('PASSWORD CHANGED');
+  expect(plainText).include('YOUR PASSWORD HAS BEEN CHANGED');
   expect(plainText).include('test@example.com');
 });

@@ -8,9 +8,9 @@ test('it generates a reset password email with the provided configuration', asyn
 
   const { html, plainText } = await generateResetPasswordEmail(config);
 
-  expect(html).include('Password Reset');
+  expect(html).include('Forgot your password?');
   expect(html).include('https://versidle.com/reset?token=123456');
 
-  expect(plainText).include('PASSWORD RESET');
+  expect(plainText).include('FORGOT YOUR PASSWORD?');
   expect(plainText).include('https://versidle.com/reset?token=123456');
 });

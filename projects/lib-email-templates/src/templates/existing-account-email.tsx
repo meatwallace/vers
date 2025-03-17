@@ -9,7 +9,7 @@ export function ExistingAccountEmail(props: Props): ReactElement {
   return (
     <E.Container>
       <E.Heading as="h1">
-        <E.Text>You Already Have an Account</E.Text>
+        <E.Text>You already have an account</E.Text>
       </E.Heading>
       <E.Text>
         We noticed you tried to sign up with {props.email}, but you already have
@@ -19,18 +19,9 @@ export function ExistingAccountEmail(props: Props): ReactElement {
         If you&apos;ve forgotten your password, you can reset it using our
         password reset form.
       </E.Text>
-      <E.Button
-        href="https://versidle.com/forgot-password"
-        style={{
-          backgroundColor: '#000',
-          borderRadius: '4px',
-          color: '#fff',
-          padding: '12px 20px',
-          textDecoration: 'none',
-        }}
-      >
+      <E.Link href="https://versidle.com/forgot-password">
         Reset Password
-      </E.Button>
+      </E.Link>
     </E.Container>
   );
 }

@@ -11,16 +11,16 @@ test('it renders a verification email with provided configuration', () => {
 
   render(<ChangeEmailVerificationEmail {...props} />);
 
-  const heading = screen.getByText('Verify Your New Email Address');
+  const heading = screen.getByText('Verify your new email address');
   const emailText = screen.getByText(/new-email@example.com/);
   const codeText = screen.getByText(/123456/);
-  const verifyButton = screen.getByRole('link', {
-    name: 'Verify Email Address',
+  const verifyLink = screen.getByRole('link', {
+    name: 'Verify email address',
   });
 
   expect(heading).toBeInTheDocument();
   expect(emailText).toBeInTheDocument();
   expect(codeText).toBeInTheDocument();
-  expect(verifyButton).toBeInTheDocument();
-  expect(verifyButton).toHaveAttribute('href', props.verificationURL);
+  expect(verifyLink).toBeInTheDocument();
+  expect(verifyLink).toHaveAttribute('href', props.verificationURL);
 });

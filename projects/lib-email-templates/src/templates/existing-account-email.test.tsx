@@ -6,15 +6,15 @@ test('it renders the existing account email with all required elements', () => {
   render(<ExistingAccountEmail email={'test@example.com'} />);
 
   const heading = screen.getByRole('heading', {
-    name: /you already have an account/i,
+    name: 'You already have an account',
   });
-  const emailText = screen.getByText(/test@example.com/i);
-  const resetButton = screen.getByRole('link', { name: /reset password/i });
+  const emailText = screen.getByText(/test@example\.com/i);
+  const resetLink = screen.getByRole('link', { name: /reset password/i });
 
   expect(heading).toBeInTheDocument();
   expect(emailText).toBeInTheDocument();
-  expect(resetButton).toBeInTheDocument();
-  expect(resetButton).toHaveAttribute(
+  expect(resetLink).toBeInTheDocument();
+  expect(resetLink).toHaveAttribute(
     'href',
     'https://versidle.com/forgot-password',
   );

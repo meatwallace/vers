@@ -8,7 +8,7 @@ test('it generates an existing account email with the provided configuration', a
 
   const { html, plainText } = await generateExistingAccountEmail(config);
 
-  expect(html).include('You Already Have an Account');
+  expect(html).include('You already have an account');
   expect(html).include('test@example.com');
   expect(html).include('https://versidle.com/forgot-password');
 
