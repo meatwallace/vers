@@ -22,7 +22,6 @@ export { resolve as verifyOTP } from './mutations/verify-otp';
 // 2FA management
 export { resolve as finishDisable2FA } from './mutations/finish-disable-2fa';
 export { resolve as finishEnable2FA } from './mutations/finish-enable-2fa';
-export { resolve as startDisable2FA } from './mutations/start-disable-2fa';
 export { resolve as startEnable2FA } from './mutations/start-enable-2fa';
 export { resolve as getEnable2FAVerification } from './queries/get-enable-2fa-verification';
 
@@ -34,7 +33,6 @@ export { resolve as getSessions } from './queries/get-sessions';
 export { resolve as changeUserPassword } from './mutations/change-user-password';
 export { resolve as finishChangeUserEmail } from './mutations/finish-change-user-email';
 export { resolve as startChangeUserEmail } from './mutations/start-change-user-email';
-export { resolve as startChangeUserPassword } from './mutations/start-change-user-password';
 export { resolve as getCurrentUser } from './queries/get-current-user';
 
 // types

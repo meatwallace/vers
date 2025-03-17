@@ -76,7 +76,7 @@ test('it redirects to login if the user is not authenticated', async () => {
   expect(loginRoute).toBeInTheDocument();
 });
 
-test.only('it redirects to profile page if the user has 2FA enabled', async () => {
+test('it redirects to profile page if the user has 2FA enabled', async () => {
   db.verification.create({
     target: 'test@example.com',
     type: '2fa',

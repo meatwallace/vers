@@ -11,8 +11,6 @@ import { GetEnable2FAVerification } from './get-enable-2fa-verification';
 import { LoginWithPassword } from './login-with-password';
 import { RefreshAccessToken } from './refresh-access-token';
 import { StartChangeUserEmail } from './start-change-user-email';
-import { StartChangeUserPassword } from './start-change-user-password';
-import { StartDisable2FA } from './start-disable-2fa';
 import { StartEmailSignup } from './start-email-signup';
 import { StartEnable2FA } from './start-enable-2fa';
 import { StartPasswordReset } from './start-password-reset';
@@ -35,7 +33,6 @@ export const handlers = [
   FinishDisable2FA,
   FinishEnable2FA,
   GetEnable2FAVerification,
-  StartDisable2FA,
   StartEnable2FA,
 
   // sessions
@@ -44,7 +41,6 @@ export const handlers = [
   // users
   GetCurrentUser,
   ChangeUserPassword,
-  StartChangeUserPassword,
   StartChangeUserEmail,
   FinishChangeUserEmail,
 ];

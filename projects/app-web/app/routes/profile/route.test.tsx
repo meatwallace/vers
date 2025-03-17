@@ -193,7 +193,7 @@ test('it shows a generic error if the enable 2FA mutation fails', async () => {
 
 test('it shows a generic error if the disable 2FA mutation fails', async () => {
   server.use(
-    graphql.mutation('StartDisable2FA', () => {
+    graphql.mutation('StartStepUpAuth', () => {
       throw new GraphQLError('Something went wrong');
     }),
   );

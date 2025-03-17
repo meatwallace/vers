@@ -3,7 +3,6 @@ import { z } from 'zod';
 
 export const envSchema = z
   .object({
-    E2E: z.enum(['true', 'false']).transform(Boolean).optional(),
     LOGGING: LoggingSchema,
     NODE_ENV: NodeEnvSchema,
     SENTRY_DSN: z.string().url().optional(),
