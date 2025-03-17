@@ -44,7 +44,7 @@ export default defineConfig({
     trace: 'on-first-retry',
   },
   webServer: {
-    command: 'yarn dev:app-web',
+    command: 'E2E=true yarn dev:app-web',
     cwd: workspaceRoot,
     reuseExistingServer: !process.env.CI,
     stderr: 'pipe',

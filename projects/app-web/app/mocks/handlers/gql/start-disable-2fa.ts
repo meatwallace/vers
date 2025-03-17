@@ -1,8 +1,7 @@
 import { graphql, HttpResponse } from 'msw';
-import {
+import type {
   StartDisable2FaInput,
   StartDisable2FaPayload,
-  VerificationType,
 } from '~/gql/graphql';
 import { db } from '../../db';
 import { TWO_FACTOR_NOT_ENABLED_ERROR, UNKNOWN_ERROR } from '../../errors';
@@ -48,7 +47,7 @@ export const StartDisable2FA = graphql.mutation<
   const is2FAEnabled = db.verification.findFirst({
     where: {
       target: { equals: user.email },
-      type: { equals: VerificationType.TwoFactorAuth },
+      type: { equals: '2fa' },
     },
   });
 
@@ -61,26 +60,6 @@ export const StartDisable2FA = graphql.mutation<
       },
     });
   }
-
-  const existingVerification = db.verification.findFirst({
-    where: {
-      target: { equals: user.email },
-      type: { equals: VerificationType.TwoFactorAuthDisable },
-    },
-  });
-
-  if (existingVerification) {
-    db.verification.delete({
-      where: {
-        id: { equals: existingVerification.id },
-      },
-    });
-  }
-
-  db.verification.create({
-    target: user.email,
-    type: VerificationType.TwoFactorAuthDisable,
-  });
 
   return HttpResponse.json({
     data: {

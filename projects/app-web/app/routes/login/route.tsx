@@ -172,7 +172,7 @@ export function Login(props: Route.ComponentProps) {
     <main>
       <div>
         <h1>Welcome back</h1>
-        <p>Please enter your details to sign in</p>
+        <p>Please enter your details to login</p>
       </div>
 
       <Form method="POST" {...getFormProps(form)}>
@@ -216,7 +216,7 @@ export function Login(props: Route.ComponentProps) {
           status={submitButtonStatus}
           type="submit"
         >
-          Sign in
+          Login
         </StatusButton>
         <div>
           <span>Don&apos;t have an account?</span>

@@ -1,5 +1,4 @@
 import { createId } from '@paralleldrive/cuid2';
-import { VerificationType } from '~/gql/graphql';
 import { db } from '~/mocks/db';
 import { createJWT } from './create-jwt';
 
@@ -44,7 +43,7 @@ export async function createAuthedUser(
   if (userParts.is2FAEnabled) {
     db.verification.create({
       target: user.email,
-      type: VerificationType.TwoFactorAuth,
+      type: '2fa',
     });
   }
 

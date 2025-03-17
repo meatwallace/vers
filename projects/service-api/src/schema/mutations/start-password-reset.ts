@@ -79,17 +79,9 @@ export async function startPasswordReset(
 
       resetURL = new URL(`${env.APP_WEB_URL}/verify-otp`);
 
-      const transactionID = createPendingTransaction({
-        action: VerificationType.RESET_PASSWORD,
-        ipAddress: ctx.ipAddress,
-        sessionID: null,
-        target: args.input.email,
-      });
-
       resetURL.searchParams.set('type', VerificationType.RESET_PASSWORD);
       resetURL.searchParams.set('target', args.input.email);
       resetURL.searchParams.set('redirect', redirectPath);
-      resetURL.searchParams.set('transactionID', transactionID);
     } else {
       // if we don't have 2FA enabled the user can reset their password directly
       resetURL = new URL(`${env.APP_WEB_URL}/reset-password`);

@@ -16,10 +16,11 @@ export default [
   layout('layouts/authed-layout.tsx', [
     route(Routes.Dashboard, 'routes/dashboard/route.tsx'),
     route(Routes.Profile, 'routes/profile/route.tsx'),
-    route(Routes.ProfileVerify2FA, 'routes/profile_verify-2fa/route.tsx'),
+    route(Routes.ProfileChangeEmail, 'routes/profile_change-email/route.tsx'),
     route(
       Routes.ProfileChangePassword,
       'routes/profile_change-password/route.tsx',
     ),
+    route(Routes.ProfileVerify2FA, 'routes/profile_verify-2fa/route.tsx'),
   ]),
 ] satisfies RouteConfig;

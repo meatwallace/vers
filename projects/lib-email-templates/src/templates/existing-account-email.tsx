@@ -8,21 +8,17 @@ interface Props {
 export function ExistingAccountEmail(props: Props): ReactElement {
   return (
     <E.Container>
-      <h1>
+      <E.Heading as="h1">
         <E.Text>You Already Have an Account</E.Text>
-      </h1>
-      <p>
-        <E.Text>
-          We noticed you tried to sign up with {props.email}, but you already
-          have an account with us.
-        </E.Text>
-      </p>
-      <p>
-        <E.Text>
-          If you&apos;ve forgotten your password, you can reset it using our
-          password reset form.
-        </E.Text>
-      </p>
+      </E.Heading>
+      <E.Text>
+        We noticed you tried to sign up with {props.email}, but you already have
+        an account with us.
+      </E.Text>
+      <E.Text>
+        If you&apos;ve forgotten your password, you can reset it using our
+        password reset form.
+      </E.Text>
       <E.Button
         href="https://versidle.com/forgot-password"
         style={{

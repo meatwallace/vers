@@ -18,7 +18,7 @@ export function Header(props: Props) {
       <Link to={Routes.Profile}>{props.user.name ?? props.user.username}</Link>
 
       <Form action={Routes.Logout} method="post">
-        <Button>Log out</Button>
+        <Button>Logout</Button>
       </Form>
     </header>
   );

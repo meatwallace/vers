@@ -46,8 +46,8 @@ function setupTest(config: TestConfig) {
   const user = userEvent.setup();
 
   const sessionData = {
-    'changeUserPassword#transactionID': config.transactionID,
-    'changeUserPassword#transactionToken': config.transactionToken,
+    'changePassword#transactionID': config.transactionID,
+    'changePassword#transactionToken': config.transactionToken,
   };
 
   let wrappedAction = withSession(action, sessionData);
@@ -152,7 +152,7 @@ test('it redirects to verify 2FA as needed when no transaction token is in the s
 
   const verifySession = await verifySessionStorage.getSession(setCookieHeader);
 
-  const transactionID = verifySession.get('changeUserPassword#transactionID');
+  const transactionID = verifySession.get('changePassword#transactionID');
 
   expect(transactionID).toStrictEqual(expect.any(String));
 });
@@ -266,10 +266,8 @@ test('it handles a successful password change with 2FA enabled and a transaction
 
   const verifySession = await verifySessionStorage.getSession(setCookieHeader);
 
-  expect(
-    verifySession.get('changeUserPassword#transactionToken'),
-  ).toBeUndefined();
-  expect(verifySession.get('changeUserPassword#transactionID')).toBeUndefined();
+  expect(verifySession.get('changePassword#transactionToken')).toBeUndefined();
+  expect(verifySession.get('changePassword#transactionID')).toBeUndefined();
 });
 
 test('it shows an error when the password change fails', async () => {

@@ -40,6 +40,14 @@ function setupTest(config: TestConfig) {
       Component: () => 'LOGIN_ROUTE',
       path: Routes.Login,
     },
+    {
+      Component: () => 'CHANGE_EMAIL_ROUTE',
+      path: Routes.ProfileChangeEmail,
+    },
+    {
+      Component: () => 'CHANGE_PASSWORD_ROUTE',
+      path: Routes.ProfileChangePassword,
+    },
   ]);
 
   render(<ProfileStub />);
@@ -79,6 +87,44 @@ test('it renders the profile page with user information when authenticated', asy
   expect(email).toBeInTheDocument();
 });
 
+test('it takes the user to the change email route when they click the change email link', async () => {
+  const { user } = setupTest({
+    isAuthed: true,
+    user: {
+      email: 'test@example.com',
+      id: 'user_id',
+      is2FAEnabled: false,
+    },
+  });
+
+  const changeEmailLink = await screen.findByText('Change Email');
+
+  await user.click(changeEmailLink);
+
+  const changeEmailRoute = await screen.findByText('CHANGE_EMAIL_ROUTE');
+
+  expect(changeEmailRoute).toBeInTheDocument();
+});
+
+test('it takes the user to the change password route when they click the change password link', async () => {
+  const { user } = setupTest({
+    isAuthed: true,
+    user: {
+      email: 'test@example.com',
+      id: 'user_id',
+      is2FAEnabled: false,
+    },
+  });
+
+  const changePasswordLink = await screen.findByText('Change Password');
+
+  await user.click(changePasswordLink);
+
+  const changePasswordRoute = await screen.findByText('CHANGE_PASSWORD_ROUTE');
+
+  expect(changePasswordRoute).toBeInTheDocument();
+});
+
 test('it shows an enable 2FA button when the user has not enabled 2FA', async () => {
   setupTest({
     isAuthed: true,
@@ -86,7 +132,6 @@ test('it shows an enable 2FA button when the user has not enabled 2FA', async ()
       email: 'test@example.com',
       id: 'user_id',
       is2FAEnabled: false,
-      name: 'Test User',
     },
   });
 
@@ -104,7 +149,6 @@ test('it displays a 2FA status enabled message when the user has enabled 2FA', a
       email: 'test@example.com',
       id: 'user_id',
       is2FAEnabled: true,
-      name: 'Test User',
     },
   });
 
@@ -133,7 +177,6 @@ test('it shows a generic error if the enable 2FA mutation fails', async () => {
       email: 'test@example.com',
       id: 'user_id',
       is2FAEnabled: false,
-      name: 'Test User',
     },
   });
 
@@ -161,7 +204,6 @@ test('it shows a generic error if the disable 2FA mutation fails', async () => {
       email: 'test@example.com',
       id: 'user_id',
       is2FAEnabled: true,
-      name: 'Test User',
     },
   });
 

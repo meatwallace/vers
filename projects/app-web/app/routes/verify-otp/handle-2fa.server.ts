@@ -50,14 +50,19 @@ export async function handle2FA(ctx: HandleVerificationContext) {
 
   const redirectTo = ctx.submission.value.redirect ?? Routes.Dashboard;
 
-  return redirect(redirectTo, {
-    headers: {
-      'set-cookie': [
-        await verifySessionStorage.commitSession(verifySession),
-        await authSessionStorage.commitSession(authSession, {
-          expires: new Date(result.data.finishLoginWith2FA.session.expiresAt),
-        }),
-      ].join(', '),
-    },
-  });
+  const headers = new Headers();
+
+  headers.append(
+    'set-cookie',
+    await verifySessionStorage.commitSession(verifySession),
+  );
+
+  headers.append(
+    'set-cookie',
+    await authSessionStorage.commitSession(authSession, {
+      expires: new Date(result.data.finishLoginWith2FA.session.expiresAt),
+    }),
+  );
+
+  return redirect(redirectTo, { headers });
 }

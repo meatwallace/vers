@@ -16,6 +16,7 @@ export { resolve as loginWithPassword } from './mutations/login-with-password';
 export { resolve as refreshAccessToken } from './mutations/refresh-access-token';
 export { resolve as startEmailSignup } from './mutations/start-email-sign-up';
 export { resolve as startPasswordReset } from './mutations/start-password-reset';
+export { resolve as startStepUpAuth } from './mutations/start-step-up-auth';
 export { resolve as verifyOTP } from './mutations/verify-otp';
 
 // 2FA management
@@ -31,6 +32,8 @@ export { resolve as getSessions } from './queries/get-sessions';
 
 // user
 export { resolve as changeUserPassword } from './mutations/change-user-password';
+export { resolve as finishChangeUserEmail } from './mutations/finish-change-user-email';
+export { resolve as startChangeUserEmail } from './mutations/start-change-user-email';
 export { resolve as startChangeUserPassword } from './mutations/start-change-user-password';
 export { resolve as getCurrentUser } from './queries/get-current-user';
 

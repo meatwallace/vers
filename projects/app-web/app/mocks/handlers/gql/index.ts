@@ -1,5 +1,6 @@
 import { ChangeUserPassword } from './change-user-password';
 import { DeleteSession } from './delete-session';
+import { FinishChangeUserEmail } from './finish-change-user-email';
 import { FinishDisable2FA } from './finish-disable-2fa';
 import { FinishEmailSignup } from './finish-email-signup';
 import { FinishEnable2FA } from './finish-enable-2fa';
@@ -9,11 +10,13 @@ import { GetCurrentUser } from './get-current-user';
 import { GetEnable2FAVerification } from './get-enable-2fa-verification';
 import { LoginWithPassword } from './login-with-password';
 import { RefreshAccessToken } from './refresh-access-token';
+import { StartChangeUserEmail } from './start-change-user-email';
 import { StartChangeUserPassword } from './start-change-user-password';
 import { StartDisable2FA } from './start-disable-2fa';
 import { StartEmailSignup } from './start-email-signup';
 import { StartEnable2FA } from './start-enable-2fa';
 import { StartPasswordReset } from './start-password-reset';
+import { StartStepUpAuth } from './start-step-up-auth';
 import { VerifyOTP } from './verify-otp';
 
 export const handlers = [
@@ -26,6 +29,7 @@ export const handlers = [
   StartEmailSignup,
   StartPasswordReset,
   VerifyOTP,
+  StartStepUpAuth,
 
   // 2fa management
   FinishDisable2FA,
@@ -41,4 +45,6 @@ export const handlers = [
   GetCurrentUser,
   ChangeUserPassword,
   StartChangeUserPassword,
+  StartChangeUserEmail,
+  FinishChangeUserEmail,
 ];

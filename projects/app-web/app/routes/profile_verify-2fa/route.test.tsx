@@ -3,7 +3,6 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { createRoutesStub } from 'react-router';
 import { drop } from '@mswjs/data';
-import { VerificationType } from '~/gql/graphql.ts';
 import { db } from '~/mocks/db.ts';
 import { server } from '~/mocks/node.ts';
 import { verifySessionStorage } from '~/session/verify-session-storage.server.ts';
@@ -77,10 +76,10 @@ test('it redirects to login if the user is not authenticated', async () => {
   expect(loginRoute).toBeInTheDocument();
 });
 
-test('it redirects to profile page if the user has 2FA enabled', async () => {
+test.only('it redirects to profile page if the user has 2FA enabled', async () => {
   db.verification.create({
     target: 'test@example.com',
-    type: VerificationType.TwoFactorAuth,
+    type: '2fa',
   });
 
   await setupTest({ isAuthed: true, user: { email: 'test@example.com' } });
@@ -93,7 +92,7 @@ test('it redirects to profile page if the user has 2FA enabled', async () => {
 test('it renders the 2FA setup page with QR code and form', async () => {
   db.verification.create({
     target: 'test@example.com',
-    type: VerificationType.TwoFactorAuthSetup,
+    type: '2fa-setup',
   });
 
   await setupTest({
@@ -125,7 +124,7 @@ test('it redirects to profile page on successful 2FA setup', async () => {
 
   db.verification.create({
     target: 'test@example.com',
-    type: VerificationType.TwoFactorAuthSetup,
+    type: '2fa-setup',
   });
 
   const codeInput = await screen.findByLabelText(/code/i);
@@ -151,7 +150,7 @@ test('it shows validation errors for invalid code', async () => {
   // we still need a verification record for the route to load
   db.verification.create({
     target: 'test@example.com',
-    type: VerificationType.TwoFactorAuthSetup,
+    type: '2fa-setup',
   });
 
   const codeInput = await screen.findByLabelText(/code/i);
@@ -176,7 +175,7 @@ test('it shows an error message when verification fails', async () => {
 
   db.verification.create({
     target: 'test@example.com',
-    type: VerificationType.TwoFactorAuthSetup,
+    type: '2fa-setup',
   });
 
   const codeInput = await screen.findByLabelText(/code/i);

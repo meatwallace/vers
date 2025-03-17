@@ -1,11 +1,8 @@
 import { graphql, HttpResponse } from 'msw';
-import {
-  VerificationType,
-  VerifyOtpInput,
-  VerifyOtpPayload,
-} from '~/gql/graphql';
+import type { VerifyOtpInput, VerifyOtpPayload } from '~/gql/graphql';
 import { db } from '../../db';
 import { INVALID_OTP_ERROR } from '../../errors';
+import { resolveVerificationType } from './utils/resolve-verification-type';
 
 interface VerifyOTPResponse {
   verifyOTP: VerifyOtpPayload;
@@ -22,7 +19,7 @@ export const VerifyOTP = graphql.mutation<
   const verification = db.verification.findFirst({
     where: {
       target: { equals: variables.input.target },
-      type: { equals: variables.input.type },
+      type: { equals: resolveVerificationType(variables.input.type) },
     },
   });
 
@@ -47,8 +44,7 @@ export const VerifyOTP = graphql.mutation<
   }
 
   const is2FA =
-    verification.type === VerificationType.TwoFactorAuth ||
-    verification.type === VerificationType.TwoFactorAuthSetup;
+    verification.type === '2fa' || verification.type === '2fa-setup';
 
   if (!is2FA) {
     db.verification.delete({

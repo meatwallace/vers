@@ -5,9 +5,6 @@ export const envSchema = z
   .object({
     LOGGING: LoggingSchema,
     NODE_ENV: NodeEnvSchema,
-
-    // TEST_USER_EMAIL: z.string(),
-    // TEST_USER_PASSWORD: z.string(),
   })
   .transform(addEnvUtils);
 

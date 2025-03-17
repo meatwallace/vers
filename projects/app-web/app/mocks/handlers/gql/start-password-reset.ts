@@ -1,8 +1,7 @@
 import { graphql, HttpResponse } from 'msw';
-import {
+import type {
   StartPasswordResetInput,
   StartPasswordResetPayload,
-  VerificationType,
 } from '~/gql/graphql';
 import { db } from '../../db';
 
@@ -34,12 +33,6 @@ export const StartPasswordReset = graphql.mutation<
       },
     });
   }
-
-  // Create a verification record
-  db.verification.create({
-    target: variables.input.email,
-    type: VerificationType.ResetPassword,
-  });
 
   return HttpResponse.json({
     data: {

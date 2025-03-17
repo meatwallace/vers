@@ -1,4 +1,4 @@
-import { User, VerificationType } from '~/gql/graphql';
+import { User } from '~/gql/graphql';
 import { db } from '../../../db';
 
 interface DBUser {
@@ -19,7 +19,7 @@ export function addUserResolvedFields(user: DBUser): User {
   const twoFactorAuthEnabled = db.verification.findFirst({
     where: {
       target: { equals: user.email },
-      type: { equals: VerificationType.TwoFactorAuth },
+      type: { equals: '2fa' },
     },
   });
 

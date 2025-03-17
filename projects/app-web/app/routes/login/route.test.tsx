@@ -41,7 +41,7 @@ function setupTest(config: TestConfig) {
       path: Routes.Dashboard,
     },
     {
-      Component: () => 'SIGN_UP_ROUTE',
+      Component: () => 'SIGNUP_ROUTE',
       path: Routes.Signup,
     },
     {
@@ -66,7 +66,7 @@ test('it renders the login form', async () => {
 
   const emailInput = await screen.findByLabelText('Email');
   const passwordInput = screen.getByLabelText('Password');
-  const submitButton = screen.getByRole('button', { name: 'Sign in' });
+  const submitButton = screen.getByRole('button', { name: 'Login' });
   const rememberMeCheckbox = screen.getByRole('checkbox', {
     name: 'Remember me',
   });
@@ -81,7 +81,7 @@ test('it shows validation errors for an invalid email', async () => {
   const { user } = setupTest({ isAuthed: false });
 
   const emailInput = await screen.findByLabelText('Email');
-  const submitButton = screen.getByRole('button', { name: 'Sign in' });
+  const submitButton = screen.getByRole('button', { name: 'Login' });
 
   await user.type(emailInput, 'invalid-email');
   await user.click(submitButton);
@@ -95,7 +95,7 @@ test('it shows validation errors for a short password', async () => {
   const { user } = setupTest({ isAuthed: false });
 
   const passwordInput = await screen.findByLabelText('Password');
-  const submitButton = screen.getByRole('button', { name: 'Sign in' });
+  const submitButton = screen.getByRole('button', { name: 'Login' });
 
   await user.type(passwordInput, 'short');
   await user.click(submitButton);
@@ -112,7 +112,7 @@ test('it navigates to signup page when clicking the signup link', async () => {
 
   await user.click(signupLink);
 
-  const signupRoute = await screen.findByText('SIGN_UP_ROUTE');
+  const signupRoute = await screen.findByText('SIGNUP_ROUTE');
 
   expect(signupRoute).toBeInTheDocument();
 });
@@ -127,7 +127,7 @@ test('it redirects to dashboard on successful login', async () => {
 
   const emailInput = await screen.findByLabelText('Email');
   const passwordInput = screen.getByLabelText('Password');
-  const submitButton = screen.getByRole('button', { name: 'Sign in' });
+  const submitButton = screen.getByRole('button', { name: 'Login' });
 
   await user.type(emailInput, 'test@example.com');
   await user.type(passwordInput, 'password123');
@@ -151,7 +151,7 @@ test('it redirects to the specified route when provided', async () => {
 
   const emailInput = await screen.findByLabelText('Email');
   const passwordInput = screen.getByLabelText('Password');
-  const submitButton = screen.getByRole('button', { name: 'Sign in' });
+  const submitButton = screen.getByRole('button', { name: 'Login' });
 
   await user.type(emailInput, 'test@example.com');
   await user.type(passwordInput, 'password123');
@@ -167,7 +167,7 @@ test('it shows error message for invalid credentials', async () => {
 
   const emailInput = await screen.findByLabelText('Email');
   const passwordInput = screen.getByLabelText('Password');
-  const submitButton = screen.getByRole('button', { name: 'Sign in' });
+  const submitButton = screen.getByRole('button', { name: 'Login' });
 
   await user.type(emailInput, 'nonexistent@example.com');
   await user.type(passwordInput, 'password123');
@@ -189,7 +189,7 @@ test('it shows a generic error if the mutation fails', async () => {
 
   const emailInput = await screen.findByLabelText('Email');
   const passwordInput = screen.getByLabelText('Password');
-  const submitButton = screen.getByRole('button', { name: 'Sign in' });
+  const submitButton = screen.getByRole('button', { name: 'Login' });
 
   await user.type(emailInput, 'test@example.com');
   await user.type(passwordInput, 'password123');

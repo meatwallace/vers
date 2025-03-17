@@ -1,16 +1,22 @@
 import { graphql, HttpResponse } from 'msw';
 import type {
-  StartChangeUserPasswordMutation,
-  StartChangeUserPasswordMutationVariables,
+  StartChangeUserPasswordInput,
+  StartChangeUserPasswordPayload,
 } from '~/gql/graphql';
-import { VerificationType } from '~/gql/graphql';
 import { db } from '../../db';
 import { TWO_FACTOR_NOT_ENABLED_ERROR, UNKNOWN_ERROR } from '../../errors';
 import { decodeMockJWT } from '../../utils/decode-mock-jwt';
 
+interface StartChangeUserPasswordVariables {
+  input: StartChangeUserPasswordInput;
+}
+
+interface StartChangeUserPasswordResponse {
+  startChangeUserPassword: StartChangeUserPasswordPayload;
+}
 export const StartChangeUserPassword = graphql.mutation<
-  StartChangeUserPasswordMutation,
-  StartChangeUserPasswordMutationVariables
+  StartChangeUserPasswordResponse,
+  StartChangeUserPasswordVariables
 >('StartChangeUserPassword', ({ request }) => {
   const authHeader = request.headers.get('authorization');
 
@@ -40,7 +46,7 @@ export const StartChangeUserPassword = graphql.mutation<
   const verification = db.verification.findFirst({
     where: {
       target: { equals: user.email },
-      type: { equals: VerificationType.TwoFactorAuth },
+      type: { equals: '2fa' },
     },
   });
 

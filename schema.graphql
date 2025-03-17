@@ -28,6 +28,13 @@ input DeleteSessionInput {
 
 union DeleteSessionPayload = MutationErrorPayload | MutationSuccess
 
+input FinishChangeUserEmailInput {
+  email: String!
+  transactionToken: String!
+}
+
+union FinishChangeUserEmailPayload = MutationErrorPayload | MutationSuccess
+
 input FinishDisable2FAInput {
   transactionToken: String!
 }
@@ -82,6 +89,7 @@ union LoginWithPasswordPayload = AuthPayload | MutationErrorPayload | TwoFactorR
 type Mutation {
   changeUserPassword(input: ChangeUserPasswordInput!): ChangeUserPasswordPayload!
   deleteSession(input: DeleteSessionInput!): DeleteSessionPayload!
+  finishChangeUserEmail(input: FinishChangeUserEmailInput!): FinishChangeUserEmailPayload!
   finishDisable2FA(input: FinishDisable2FAInput!): FinishDisable2FAPayload!
   finishEmailSignup(input: FinishEmailSignupInput!): FinishEmailSignupPayload!
   finishEnable2FA(input: FinishEnable2FAInput!): FinishEnable2FAPayload!
@@ -89,11 +97,13 @@ type Mutation {
   finishPasswordReset(input: FinishPasswordResetInput!): FinishPasswordResetPayload!
   loginWithPassword(input: LoginWithPasswordInput!): LoginWithPasswordPayload!
   refreshAccessToken(input: RefreshAccessTokenInput!): RefreshAccessTokenPayload!
+  startChangeUserEmail(input: StartChangeUserEmailInput!): StartChangeUserEmailPayload!
   startChangeUserPassword(input: StartChangeUserPasswordInput!): StartChangeUserPasswordPayload!
   startDisable2FA(input: StartDisable2FAInput!): StartDisable2FAPayload!
   startEmailSignup(input: StartEmailSignupInput!): StartEmailSignupPayload!
   startEnable2FA(input: StartEnable2FAInput!): StartEnable2FAPayload!
   startPasswordReset(input: StartPasswordResetInput!): StartPasswordResetPayload!
+  startStepUpAuth(input: StartStepUpAuthInput!): StartStepUpAuthPayload!
   verifyOTP(input: VerifyOTPInput!): VerifyOTPPayload!
 }
 
@@ -129,6 +139,13 @@ type Session {
   user: User!
 }
 
+input StartChangeUserEmailInput {
+  email: String!
+  transactionToken: String
+}
+
+union StartChangeUserEmailPayload = MutationErrorPayload | TwoFactorRequiredPayload
+
 input StartChangeUserPasswordInput {
   placeholder: String
 }
@@ -158,6 +175,18 @@ input StartPasswordResetInput {
 }
 
 union StartPasswordResetPayload = MutationErrorPayload | MutationSuccess | TwoFactorRequiredPayload
+
+input StartStepUpAuthInput {
+  action: StepUpAction!
+}
+
+union StartStepUpAuthPayload = MutationErrorPayload | TwoFactorRequiredPayload
+
+enum StepUpAction {
+  CHANGE_EMAIL
+  CHANGE_PASSWORD
+  DISABLE_2FA
+}
 
 type TwoFactorRequiredPayload {
   sessionID: String
