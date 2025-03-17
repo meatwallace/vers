@@ -1,5 +1,5 @@
 import { graphql, HttpResponse } from 'msw';
-import {
+import type {
   FinishLoginWith2FaInput,
   FinishLoginWith2FaPayload,
 } from '~/gql/graphql';
@@ -7,6 +7,7 @@ import { db } from '../../db';
 import { UNKNOWN_ERROR } from '../../errors';
 import { encodeMockJWT } from '../../utils/encode-mock-jwt';
 import { addUserResolvedFields } from './utils/add-user-resolved-fields';
+import { isValidTransactionToken } from './utils/is-valid-transaction-token';
 
 interface FinishLoginWith2FAVariables {
   input: FinishLoginWith2FaInput;
@@ -42,7 +43,7 @@ export const FinishLoginWith2FA = graphql.mutation<
     });
   }
 
-  if (transactionToken !== 'valid_transaction_token') {
+  if (!isValidTransactionToken(transactionToken)) {
     return HttpResponse.json({
       data: {
         finishLoginWith2FA: {

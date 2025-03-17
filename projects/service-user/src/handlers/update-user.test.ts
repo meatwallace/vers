@@ -28,6 +28,7 @@ test('it updates the provided user', async () => {
   const { caller } = setupTest({ db });
 
   const update = {
+    email: 'updated@test.com',
     name: 'Updated Name',
     username: 'updated_username',
   };
@@ -45,6 +46,7 @@ test('it updates the provided user', async () => {
 
   expect(updatedUser).toStrictEqual({
     ...user,
+    email: 'updated@test.com',
     name: 'Updated Name',
     updatedAt: expect.any(Date),
     username: 'updated_username',

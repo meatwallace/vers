@@ -65,7 +65,7 @@ const transactionIDKeys: Record<VerificationType, SessionKey> = {
   [VerificationType.ChangeEmail]: 'changeEmail#transactionID',
   [VerificationType.ChangeEmailConfirmation]:
     'changeEmailConfirm#transactionID',
-  [VerificationType.ChangePassword]: 'changeUserPassword#transactionID',
+  [VerificationType.ChangePassword]: 'changePassword#transactionID',
   [VerificationType.Onboarding]: 'onboarding#transactionID',
   [VerificationType.ResetPassword]: 'resetPassword#transactionID',
   [VerificationType.TwoFactorAuth]: 'login2FA#transactionID',

@@ -4,6 +4,7 @@ import {
   FinishPasswordResetPayload,
 } from '~/gql/graphql';
 import { db } from '../../db';
+import { isValidTransactionToken } from './utils/is-valid-transaction-token';
 
 interface FinishPasswordResetVariables {
   input: FinishPasswordResetInput;
@@ -41,11 +42,11 @@ export const FinishPasswordReset = graphql.mutation<
     },
   });
 
-  // use a hardcoded value for 'valid' transaction tokens for 2fa
-  const isTransactionTokenValid =
-    variables.input.transactionToken === 'valid_transaction_token';
+  const isTransactionTokenValid = isValidTransactionToken(
+    variables.input.transactionToken,
+  );
 
-  // return a success response if we have 2fa but our transaction token isn't valid
+  // return a success response if we have 2FA but our transaction token isn't valid
   if (twoFactorVerification && !isTransactionTokenValid) {
     return HttpResponse.json({
       data: {

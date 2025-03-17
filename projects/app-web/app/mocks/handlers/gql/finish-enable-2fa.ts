@@ -1,12 +1,12 @@
 import { graphql, HttpResponse } from 'msw';
-import {
+import type {
   FinishEnable2FaInput,
   FinishEnable2FaPayload,
-  VerificationType,
 } from '~/gql/graphql';
 import { db } from '../../db';
 import { UNKNOWN_ERROR } from '../../errors';
 import { decodeMockJWT } from '../../utils/decode-mock-jwt';
+import { isValidTransactionToken } from './utils/is-valid-transaction-token';
 
 interface FinishEnable2FAVariables {
   input: FinishEnable2FaInput;
@@ -45,7 +45,7 @@ export const FinishEnable2FA = graphql.mutation<
     });
   }
 
-  if (variables.input.transactionToken !== 'valid_transaction_token') {
+  if (!isValidTransactionToken(variables.input.transactionToken)) {
     return HttpResponse.json({
       data: {
         finishEnable2FA: {
@@ -58,7 +58,7 @@ export const FinishEnable2FA = graphql.mutation<
   const twoFactorVerification = db.verification.findFirst({
     where: {
       target: { equals: user.email },
-      type: { equals: VerificationType.TwoFactorAuth },
+      type: { equals: '2fa' },
     },
   });
 
@@ -74,11 +74,11 @@ export const FinishEnable2FA = graphql.mutation<
 
   db.verification.update({
     data: {
-      type: VerificationType.TwoFactorAuth,
+      type: '2fa',
     },
     where: {
       target: { equals: user.email },
-      type: { equals: VerificationType.TwoFactorAuthSetup },
+      type: { equals: '2fa-setup' },
     },
   });
 

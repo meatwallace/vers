@@ -26,7 +26,7 @@ function setupTest(config: TestConfig) {
     },
     {
       action: () => null,
-      Component: () => 'LOG_IN_ROUTE',
+      Component: () => 'LOGIN_ROUTE',
       path: Routes.Login,
     },
     {
@@ -55,11 +55,11 @@ test('it renders a sign up button that navigates to the signup route when clicke
 test('it renders a log in button that navigates to the log in route when clicked', async () => {
   const { user } = setupTest({ isAuthed: false });
 
-  const logInButton = await screen.findByRole('link', { name: 'Log in' });
+  const logInButton = await screen.findByRole('link', { name: 'Login' });
 
   await waitFor(() => user.click(logInButton));
 
-  const loggedOutMessage = await screen.findByText('LOG_IN_ROUTE');
+  const loggedOutMessage = await screen.findByText('LOGIN_ROUTE');
 
   expect(loggedOutMessage).toBeInTheDocument();
 });

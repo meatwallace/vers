@@ -31,7 +31,7 @@ export function Index() {
         <section>
           <Link to={Routes.Signup}>Signup</Link>
           <span>Already have an account?</span>
-          <Link to={Routes.Login}>Log in</Link>
+          <Link to={Routes.Login}>Login</Link>
         </section>
       </main>
     </>

@@ -1,8 +1,7 @@
 import { graphql, HttpResponse } from 'msw';
-import {
+import type {
   StartEmailSignupInput,
   StartEmailSignupPayload,
-  VerificationType,
 } from '~/gql/graphql';
 import { db } from '../../db';
 
@@ -35,7 +34,7 @@ export const StartEmailSignup = graphql.mutation<
 
   db.verification.create({
     target: variables.input.email,
-    type: VerificationType.Onboarding,
+    type: 'onboarding',
   });
 
   return HttpResponse.json({

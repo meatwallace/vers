@@ -41,9 +41,7 @@ export const loader = withErrorHandling(async (args: Route.LoaderArgs) => {
     request.headers.get('cookie'),
   );
 
-  const transactionToken = verifySession.get(
-    'changeUserPassword#transactionToken',
-  );
+  const transactionToken = verifySession.get('changePassword#transactionToken');
 
   // if we have a transaction token, presumably we've already 2FA'd so we're good to go
   if (transactionToken) {
@@ -86,7 +84,7 @@ export const loader = withErrorHandling(async (args: Route.LoaderArgs) => {
   invariant(result.data, 'if no error, there must be data');
 
   verifySession.set(
-    'changeUserPassword#transactionID',
+    'changePassword#transactionID',
     result.data.startChangeUserPassword.transactionID,
   );
 
@@ -136,9 +134,7 @@ export const action = withErrorHandling(async (args: Route.ActionArgs) => {
     request.headers.get('Cookie'),
   );
 
-  const transactionToken = verifySession.get(
-    'changeUserPassword#transactionToken',
-  );
+  const transactionToken = verifySession.get('changePassword#transactionToken');
 
   const result = await client.mutation(ChangeUserPasswordMutation, {
     input: {
@@ -167,8 +163,8 @@ export const action = withErrorHandling(async (args: Route.ActionArgs) => {
   }
 
   // clear any session data that might be set that we no longer need
-  verifySession.unset('changeUserPassword#transactionToken');
-  verifySession.unset('changeUserPassword#transactionID');
+  verifySession.unset('changePassword#transactionToken');
+  verifySession.unset('changePassword#transactionID');
 
   const setCookieHeader =
     await verifySessionStorage.commitSession(verifySession);

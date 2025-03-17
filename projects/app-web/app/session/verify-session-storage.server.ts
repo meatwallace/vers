@@ -31,8 +31,8 @@ export type SessionKey =
   | 'changeEmailConfirm#transactionToken'
 
   // change password
-  | 'changeUserPassword#transactionID'
-  | 'changeUserPassword#transactionToken'
+  | 'changePassword#transactionID'
+  | 'changePassword#transactionToken'
 
   // reset password
   | 'resetPassword#transactionID'

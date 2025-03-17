@@ -17,6 +17,10 @@ if (env.isProduction && env.SENTRY_DSN) {
   void import('./utils/init-sentry.ts').then(({ initSentry }) => initSentry());
 }
 
+if (env.isE2E) {
+  void import('../app/mocks/e2e-migration.ts');
+}
+
 const app = new Hono();
 
 export default await createHonoServer({

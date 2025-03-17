@@ -67,7 +67,6 @@ export async function startEmailSignup(
     verificationURL.searchParams.set('type', VerificationType.ONBOARDING);
     verificationURL.searchParams.set('target', args.input.email);
     verificationURL.searchParams.set('code', verification.otp);
-    verificationURL.searchParams.set('transactionID', transactionID);
 
     const email = await generateWelcomeEmail({
       verificationCode: verification.otp,

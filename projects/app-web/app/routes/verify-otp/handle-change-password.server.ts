@@ -13,11 +13,8 @@ export async function handleChangePassword(ctx: HandleVerificationContext) {
   const verifySession = await verifySessionStorage.getSession();
 
   // clean up the pending transaction ID & capture our transaction token
-  verifySession.unset('changeUserPassword#transactionID');
-  verifySession.set(
-    'changeUserPassword#transactionToken',
-    ctx.transactionToken,
-  );
+  verifySession.unset('changePassword#transactionID');
+  verifySession.set('changePassword#transactionToken', ctx.transactionToken);
 
   return redirect(Routes.ProfileChangePassword, {
     headers: {

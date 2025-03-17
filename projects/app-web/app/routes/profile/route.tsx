@@ -3,6 +3,7 @@ import type { Client } from '@urql/core';
 import { parseWithZod } from '@conform-to/zod';
 import invariant from 'tiny-invariant';
 import { z } from 'zod';
+import { Link } from '~/components/link.tsx';
 import { RouteErrorBoundary } from '~/components/route-error-boundary.tsx';
 import { StatusButton } from '~/components/status-button.tsx';
 import { StartDisable2FAMutation } from '~/data/mutations/start-disable-2fa';
@@ -182,10 +183,12 @@ export function Profile(props: Route.ComponentProps) {
             <p>{user.name}</p>
             <p>Email</p>
             <p>{user.email}</p>
+            <Link to={Routes.ProfileChangeEmail}>Change Email</Link>
           </div>
         </section>
         <section>
           <h2>Security Settings</h2>
+          <Link to={Routes.ProfileChangePassword}>Change Password</Link>
           <div>
             <h3>Two-Factor Authentication</h3>
 
@@ -212,6 +215,7 @@ export function Profile(props: Route.ComponentProps) {
 
             {!user.is2FAEnabled && (
               <>
+                <p>Two-factor authentication is not enabled.</p>
                 <p>
                   Two factor authentication adds an extra layer of security to
                   your account. You will need to enter a code from an

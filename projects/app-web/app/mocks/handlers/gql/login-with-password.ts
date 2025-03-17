@@ -63,6 +63,24 @@ export const LoginWithPassword = graphql.mutation<
     sub: user.id,
   });
 
+  const is2FAEnabled = db.verification.findFirst({
+    where: {
+      target: { equals: email },
+      type: { equals: '2fa' },
+    },
+  });
+
+  if (is2FAEnabled) {
+    return HttpResponse.json({
+      data: {
+        loginWithPassword: {
+          sessionID: session.id,
+          transactionID: 'transaction_id',
+        },
+      },
+    });
+  }
+
   return HttpResponse.json({
     data: {
       loginWithPassword: {

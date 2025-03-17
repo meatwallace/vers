@@ -1,8 +1,7 @@
 import { graphql, HttpResponse } from 'msw';
-import {
+import type {
   GetEnable2FaVerificationQueryVariables,
   TwoFactorVerification,
-  VerificationType,
 } from '~/gql/graphql';
 import { db } from '../../db';
 import { decodeMockJWT } from '../../utils/decode-mock-jwt';
@@ -41,7 +40,7 @@ export const GetEnable2FAVerification = graphql.query<
   const verification = db.verification.findFirst({
     where: {
       target: { equals: user.email },
-      type: { equals: VerificationType.TwoFactorAuthSetup },
+      type: { equals: '2fa-setup' },
     },
   });
 

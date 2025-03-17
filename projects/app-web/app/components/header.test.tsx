@@ -44,10 +44,10 @@ test("it displays the user's `username` when `name` is not provided", () => {
   expect(screen.getByText('test_user')).toBeInTheDocument();
 });
 
-test('it renders a log out button that redirects to the log out route when pressed', async () => {
+test('it renders a log out button that redirects to the logout route when pressed', async () => {
   const { user } = setupTest({ username: 'test_user' });
 
-  const HeaderButton = await screen.findByRole('button', { name: 'Log out' });
+  const HeaderButton = await screen.findByRole('button', { name: 'Logout' });
 
   await waitFor(() => user.click(HeaderButton));
 

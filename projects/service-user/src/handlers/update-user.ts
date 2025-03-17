@@ -8,6 +8,7 @@ import type { Context } from '../types';
 import { t } from '../t';
 
 export const UpdateUserInputSchema = z.object({
+  email: z.string().optional(),
   id: z.string(),
   name: z.string().optional(),
   username: z.string().optional(),
