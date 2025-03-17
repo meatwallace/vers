@@ -1,5 +1,7 @@
 import { db } from './db';
 
+console.log('--- setting up initial E2E data ---');
+
 // basic user for login flow
 db.user.create({
   email: 'e2e-user@test.com',

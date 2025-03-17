@@ -220,6 +220,7 @@ export default tseslint.config(
     languageOptions: {
       globals: {
         exports: true,
+        module: true,
         process: true,
         require: true,
       },
@@ -240,6 +241,7 @@ export default tseslint.config(
       '**/mockServiceWorker.js',
       '**/projects/app-web/app/gql/**',
       '**/.react-router/**',
+      '**/styled-system/**',
     ],
   },
 );

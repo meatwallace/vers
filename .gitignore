@@ -62,3 +62,7 @@ projects/**/.env*.local
 # cursor context files
 memory.md
 todo.md
+
+## Panda
+styled-system
+styled-system-studio

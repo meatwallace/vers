@@ -8,10 +8,13 @@ import {
 } from 'react-router';
 import { HoneypotProvider } from 'remix-utils/honeypot/react';
 import type { Route } from './+types/root.ts';
+import stylesheet from './app.css?url';
 import { honeypot } from './honeypot.server.ts';
+import { useNonce } from './utils/nonce-provider.ts';
 
 export const links: Route.LinksFunction = () => {
   return [
+    { href: stylesheet, rel: 'stylesheet' },
     // {
     //   rel: 'icon',
     //   href: '/favicon.ico',
@@ -43,6 +46,8 @@ export async function loader() {
 }
 
 export function App() {
+  const nonce = useNonce();
+
   return (
     <html lang="en">
       <head>
@@ -50,9 +55,11 @@ export function App() {
         <Links />
       </head>
       <body>
-        <Outlet />
-        <ScrollRestoration />
-        <Scripts />
+        <div id="root">
+          <Outlet />
+        </div>
+        <ScrollRestoration nonce={nonce} />
+        <Scripts nonce={nonce} />
       </body>
     </html>
   );

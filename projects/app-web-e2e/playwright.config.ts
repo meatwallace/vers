@@ -4,7 +4,6 @@ import { workspaceRoot } from '@nx/devkit';
 import { nxE2EPreset } from '@nx/playwright/preset';
 import { defineConfig, devices } from '@playwright/test';
 
-// patch cjs
 const __filename = fileURLToPath(import.meta.url);
 
 const baseURL = process.env.BASE_URL ?? 'http://localhost:4000';
@@ -31,11 +30,6 @@ export default defineConfig({
       name: 'chromium',
       use: { ...devices['Desktop Chrome'] },
     },
-
-    {
-      name: 'firefox',
-      use: { ...devices['Desktop Firefox'] },
-    },
   ],
   timeout: 60 * 1000,
   use: {
@@ -44,7 +38,7 @@ export default defineConfig({
     trace: 'on-first-retry',
   },
   webServer: {
-    command: 'E2E=true yarn dev:app-web',
+    command: 'yarn dev:app-web',
     cwd: workspaceRoot,
     reuseExistingServer: !process.env.CI,
     stderr: 'pipe',

@@ -24,6 +24,8 @@
   "files": [],
   "include": [
     ".react-router/types/**/*",
+    "app/styled-system/**/*",
+    "panda.config.ts",
     "react-router.config.ts",
     "vite.config.ts",
     "vitest.config.ts",

@@ -49,6 +49,9 @@ jobs:
       - name: Generate Types
         run: yarn nx run app-web:typegen
 
+      - name: Generate Styles
+        run: yarn codegen:styles
+
       - name: Check Formatting
         run: yarn format --check
 
