@@ -2,6 +2,7 @@ import { serve } from '@hono/node-server';
 import { sentry } from '@hono/sentry';
 import { trpcServer } from '@hono/trpc-server';
 import { createLoggerMiddleware } from '@vers/service-utils';
+import { requestId } from 'hono/request-id';
 import { app } from './app';
 import { db } from './db';
 import { env } from './env';
@@ -9,6 +10,7 @@ import { logger } from './logger';
 import { router } from './router';
 
 app.use('*', sentry({ dsn: env.SENTRY_DSN }));
+app.use('*', requestId());
 app.use('*', createLoggerMiddleware(logger));
 
 app.use('/trpc/*', trpcServer({ createContext: () => ({ db }), router }));
