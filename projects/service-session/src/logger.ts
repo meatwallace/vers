@@ -3,6 +3,6 @@ import { env } from './env';
 
 export const logger = createLogger({
   level: env.LOGGING,
-  pretty: env.isDevelopment,
+  pretty: true,
   sentryDSN: env.SENTRY_DSN,
 });
