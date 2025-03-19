@@ -57,7 +57,7 @@ test('it redirects to the login route when not authenticated', async () => {
 test('it renders the dashboard when authenticated', async () => {
   setupTest({ isAuthed: true, user: { id: 'user_id', name: 'Test User' } });
 
-  const dashboardHeader = await screen.findByText('Dashboard');
+  const dashboardHeader = await screen.findByText('Under Construction');
 
   expect(dashboardHeader).toBeInTheDocument();
 });

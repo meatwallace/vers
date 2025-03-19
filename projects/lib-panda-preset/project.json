@@ -1,0 +1,21 @@
+{
+  "name": "lib-panda-preset",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "projects/lib-panda-preset/src",
+  "projectType": "library",
+  "targets": {
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          {
+            "command": "tsc -p tsconfig.json --noEmit",
+            "forwardAllArgs": false
+          }
+        ],
+        "cwd": "projects/lib-panda-preset"
+      }
+    }
+  },
+  "tags": []
+}

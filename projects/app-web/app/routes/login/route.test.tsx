@@ -100,7 +100,7 @@ test('it shows validation errors for a short password', async () => {
   await user.type(passwordInput, 'short');
   await user.click(submitButton);
 
-  const error = await screen.findByText('Password is too short');
+  const error = await screen.findByText('Password must be 8+ characters');
 
   expect(error).toBeInTheDocument();
 });

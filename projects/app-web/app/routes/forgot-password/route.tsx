@@ -1,13 +1,20 @@
-import { data, Form, Link, redirect } from 'react-router';
+import { data, Form, redirect, Link as RRLink } from 'react-router';
 import { getFormProps, getInputProps, useForm } from '@conform-to/react';
 import { getZodConstraint, parseWithZod } from '@conform-to/zod';
+import {
+  Brand,
+  Field,
+  Heading,
+  Link,
+  StatusButton,
+  Text,
+} from '@vers/design-system';
+import { css } from '@vers/styled-system/css';
 import { HoneypotInputs } from 'remix-utils/honeypot/react';
 import invariant from 'tiny-invariant';
 import { z } from 'zod';
-import { Field } from '~/components/field';
 import { FormErrorList } from '~/components/form-error-list.tsx';
 import { RouteErrorBoundary } from '~/components/route-error-boundary.tsx';
-import { StatusButton } from '~/components/status-button.tsx';
 import { StartPasswordResetMutation } from '~/data/mutations/start-password-reset';
 import { useIsFormPending } from '~/hooks/use-is-form-pending';
 import { verifySessionStorage } from '~/session/verify-session-storage.server.ts';
@@ -29,7 +36,7 @@ const ForgotPasswordFormSchema = z.object({
 export const meta: Route.MetaFunction = () => [
   {
     description: '',
-    title: 'Vers | Forgot Password',
+    title: 'vers | Forgot Password',
   },
 ];
 
@@ -108,6 +115,16 @@ export const action = withErrorHandling(async (args: Route.ActionArgs) => {
   return redirect(Routes.ResetPasswordStarted);
 });
 
+const pageInfo = css({
+  marginBottom: '8',
+  textAlign: 'center',
+});
+
+const formStyles = css({
+  marginBottom: '6',
+  width: '96',
+});
+
 export function ForgotPassword(props: Route.ComponentProps) {
   const isFormPending = useIsFormPending();
 
@@ -126,36 +143,43 @@ export function ForgotPassword(props: Route.ComponentProps) {
     : StatusButton.Status.Idle;
 
   return (
-    <main>
-      <div>
-        <h1>Forgot Password</h1>
-        <p>No worries, we&apos;ll send you reset instructions.</p>
-      </div>
+    <>
+      <section className={pageInfo}>
+        <RRLink to={Routes.Index}>
+          <Brand size="xl" />
+        </RRLink>
+        <Heading level={2}>Forgot your password?</Heading>
+        <Text>
+          No worries, we&apos;ll send you reset instructions to your email
+          address.
+        </Text>
+      </section>
 
-      <Form method="POST" {...getFormProps(form)}>
+      <Form method="POST" {...getFormProps(form)} className={formStyles}>
         <HoneypotInputs />
         <Field
           errors={fields.email.errors ?? []}
           inputProps={{
             ...getInputProps(fields.email, { type: 'email' }),
             autoComplete: 'email',
+            placeholder: 'your.email@example.com',
           }}
-          labelProps={{ children: 'Email', htmlFor: fields.email.id }}
+          labelProps={{ children: 'Email' }}
         />
         <FormErrorList errors={form.errors ?? []} id={form.errorId} />
         <StatusButton
           disabled={isFormPending}
           status={submitButtonStatus}
           type="submit"
+          variant="primary"
+          fullWidth
         >
-          Recover password
+          Reset Password
         </StatusButton>
-        <div>
-          <span>Remember your password?</span>
-          <Link to={Routes.Login}>Login</Link>
-        </div>
       </Form>
-    </main>
+      <Text>Remember your password?</Text>
+      <Link to={Routes.Login}>Login</Link>
+    </>
   );
 }
 

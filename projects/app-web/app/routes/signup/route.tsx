@@ -1,13 +1,20 @@
-import { data, Form, redirect } from 'react-router';
+import { data, Form, redirect, Link as RRLink } from 'react-router';
 import { getFormProps, getInputProps, useForm } from '@conform-to/react';
 import { getZodConstraint, parseWithZod } from '@conform-to/zod';
+import {
+  Brand,
+  Field,
+  Heading,
+  Link,
+  StatusButton,
+  Text,
+} from '@vers/design-system';
+import { css } from '@vers/styled-system/css';
 import { HoneypotInputs } from 'remix-utils/honeypot/react';
 import invariant from 'tiny-invariant';
 import { z } from 'zod';
-import { Field } from '~/components/field';
 import { FormErrorList } from '~/components/form-error-list.tsx';
 import { RouteErrorBoundary } from '~/components/route-error-boundary.tsx';
-import { StatusButton } from '~/components/status-button.tsx';
 import { StartEmailSignupMutation } from '~/data/mutations/start-email-signup.ts';
 import { VerificationType } from '~/gql/graphql.ts';
 import { useIsFormPending } from '~/hooks/use-is-form-pending.ts';
@@ -31,7 +38,7 @@ const SignupFormSchema = z.object({
 export const meta: Route.MetaFunction = () => [
   {
     description: '',
-    title: 'Vers | Signup',
+    title: 'vers | Signup',
   },
 ];
 
@@ -109,6 +116,16 @@ export const action = withErrorHandling(async (args: Route.ActionArgs) => {
   });
 });
 
+const pageInfo = css({
+  marginBottom: '8',
+  textAlign: 'center',
+});
+
+const formStyles = css({
+  marginBottom: '6',
+  width: '96',
+});
+
 export function Signup(props: Route.ComponentProps) {
   const isFormPending = useIsFormPending();
 
@@ -127,8 +144,16 @@ export function Signup(props: Route.ComponentProps) {
     : StatusButton.Status.Idle;
 
   return (
-    <main>
-      <Form method="POST" {...getFormProps(form)}>
+    <>
+      <section className={pageInfo}>
+        <RRLink to={Routes.Index}>
+          <Brand />
+        </RRLink>
+        <Heading level={2}>Create an account</Heading>
+        <Text>Please enter your details to create an account</Text>
+      </section>
+
+      <Form method="POST" {...getFormProps(form)} className={formStyles}>
         <HoneypotInputs />
         <Field
           errors={fields.email.errors ?? []}
@@ -136,19 +161,24 @@ export function Signup(props: Route.ComponentProps) {
             ...getInputProps(fields.email, { type: 'email' }),
             autoComplete: 'email',
             autoFocus: true,
+            placeholder: 'your.email@example.com',
           }}
-          labelProps={{ children: 'Email', htmlFor: fields.email.id }}
+          labelProps={{ children: 'Email' }}
         />
         <FormErrorList errors={form.errors ?? []} id={form.errorId} />
         <StatusButton
           disabled={isFormPending}
           status={submitButtonStatus}
           type="submit"
+          variant="primary"
+          fullWidth
         >
           Signup
         </StatusButton>
       </Form>
-    </main>
+      <Text>Already have an account?</Text>
+      <Link to={Routes.Login}>Login</Link>
+    </>
   );
 }
 

@@ -10,11 +10,13 @@ import { HoneypotProvider } from 'remix-utils/honeypot/react';
 import type { Route } from './+types/root.ts';
 import stylesheet from './app.css?url';
 import { honeypot } from './honeypot.server.ts';
+import pandaStylesheet from './styled-system/styles.css?url';
 import { useNonce } from './utils/nonce-provider.ts';
 
 export const links: Route.LinksFunction = () => {
   return [
     { href: stylesheet, rel: 'stylesheet' },
+    { href: pandaStylesheet, rel: 'stylesheet' },
     // {
     //   rel: 'icon',
     //   href: '/favicon.ico',

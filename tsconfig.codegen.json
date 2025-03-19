@@ -4,13 +4,17 @@
     "baseUrl": ".",
     "paths": {
       "~/*": ["./projects/service-api/src/*"],
+      "@vers/design-system": ["projects/lib-design-system/src"],
+      "@vers/styled-system/*": ["projects/lib-styled-system/styled-system/*"],
+      "@vers/panda-preset": ["projects/lib-panda-preset/src"],
       "@vers/email-templates": ["projects/lib-email-templates/src/index.ts"],
       "@vers/postgres-schema": ["projects/lib-postgres-schema/src/index.ts"],
       "@vers/service-test-utils": [
         "projects/lib-service-test-utils/src/index.ts"
       ],
       "@vers/service-types": ["projects/lib-service-types/src/index.ts"],
-      "@vers/service-utils": ["projects/lib-service-utils/src/index.ts"]
+      "@vers/service-utils": ["projects/lib-service-utils/src/index.ts"],
+      "@vers/utils": ["projects/lib-utils/src/index.ts"]
     }
   }
 }

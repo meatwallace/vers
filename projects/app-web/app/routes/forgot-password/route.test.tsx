@@ -54,11 +54,11 @@ afterEach(() => {
 test('it renders the forgot password form with accessible elements', async () => {
   setupTest();
 
-  const emailInput = await screen.findByRole('textbox', { name: /email/i });
+  const emailInput = await screen.findByRole('textbox', { name: 'Email' });
   const submitButton = screen.getByRole('button', {
-    name: /recover password/i,
+    name: 'Reset Password',
   });
-  const loginLink = screen.getByRole('link', { name: /login/i });
+  const loginLink = screen.getByRole('link', { name: 'Login' });
 
   expect(emailInput).toBeInTheDocument();
   expect(submitButton).toBeInTheDocument();
@@ -68,15 +68,15 @@ test('it renders the forgot password form with accessible elements', async () =>
 test('it shows validation errors for invalid email', async () => {
   const { user } = setupTest();
 
-  const emailInput = await screen.findByRole('textbox', { name: /email/i });
+  const emailInput = await screen.findByRole('textbox', { name: 'Email' });
   const submitButton = screen.getByRole('button', {
-    name: /recover password/i,
+    name: 'Reset Password',
   });
 
   await user.type(emailInput, 'invalid-email');
   await user.click(submitButton);
 
-  const errorText = await screen.findByText(/email is invalid/i);
+  const errorText = await screen.findByText('Email is invalid');
 
   expect(errorText).toBeInTheDocument();
 });
@@ -84,9 +84,9 @@ test('it shows validation errors for invalid email', async () => {
 test('it redirects to the reset password started route after submitting a valid email', async () => {
   const { user } = setupTest();
 
-  const emailInput = await screen.findByRole('textbox', { name: /email/i });
+  const emailInput = await screen.findByRole('textbox', { name: 'Email' });
   const submitButton = screen.getByRole('button', {
-    name: /recover password/i,
+    name: 'Reset Password',
   });
 
   await user.type(emailInput, 'test@example.com');
@@ -108,9 +108,10 @@ test('it shows a generic error if the mutation fails', async () => {
 
   const { user } = setupTest();
 
-  const emailInput = await screen.findByRole('textbox', { name: /email/i });
+  const emailInput = await screen.findByRole('textbox', { name: 'Email' });
+
   const submitButton = screen.getByRole('button', {
-    name: /recover password/i,
+    name: 'Reset Password',
   });
 
   await user.type(emailInput, 'test@example.com');

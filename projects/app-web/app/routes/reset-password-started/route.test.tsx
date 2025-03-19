@@ -45,9 +45,9 @@ test('it redirects to the dashboard if the user is authenticated', async () => {
 test('it renders the reset password started page with a link to request another reset email', async () => {
   setupTest();
 
-  const title = await screen.findByText('Check Your Email');
+  const title = await screen.findByText('Check your email');
   const resetLink = screen.getByRole('link', {
-    name: /try requesting another one/i,
+    name: 'try requesting another one',
   });
 
   expect(title).toBeInTheDocument();

@@ -10,6 +10,7 @@ export const verificationTypeEnum = pgEnum('verification_type', [
 export const verifications = pgTable('verifications', {
   // the algorithm used to generate the otp
   algorithm: text('algorithm').notNull(),
+
   // the valid characters for the otp
   charSet: text('char_set').notNull(),
 

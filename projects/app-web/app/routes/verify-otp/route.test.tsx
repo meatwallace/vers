@@ -106,7 +106,7 @@ test('it renders the verify OTP form with accessible elements', async () => {
     initialPath: '/verify-otp?type=TWO_FACTOR_AUTH&target=test@example.com',
   });
 
-  const codeInput = await screen.findByRole('textbox', { name: /code/i });
+  const codeInput = await screen.findByTestId('otp-input');
   const submitButton = screen.getByRole('button', { name: /verify/i });
 
   expect(codeInput).toBeInTheDocument();
@@ -118,7 +118,7 @@ test('it shows validation errors for invalid code', async () => {
     initialPath: '/verify-otp?type=TWO_FACTOR_AUTH&target=test@example.com',
   });
 
-  const codeInput = await screen.findByRole('textbox', { name: /code/i });
+  const codeInput = await screen.findByTestId('otp-input');
   const submitButton = screen.getByRole('button', { name: /verify/i });
 
   await user.type(codeInput, '12345'); // Too short
@@ -143,7 +143,7 @@ test('it handles resetting password and redirects to the reset password route on
     type: '2fa',
   });
 
-  const codeInput = await screen.findByRole('textbox', { name: /code/i });
+  const codeInput = await screen.findByTestId('otp-input');
   const submitButton = screen.getByRole('button', { name: /verify/i });
 
   await user.type(codeInput, '999999');
@@ -174,7 +174,7 @@ test('it handles onboarding and redirects to the onboarding route on success', a
     type: 'onboarding',
   });
 
-  const codeInput = await screen.findByRole('textbox', { name: /code/i });
+  const codeInput = await screen.findByTestId('otp-input');
   const submitButton = screen.getByRole('button', { name: /verify/i });
 
   await user.type(codeInput, '999999');
@@ -207,7 +207,7 @@ test('it handles 2FA setup and throws an error', async () => {
     type: '2fa-setup',
   });
 
-  const codeInput = await screen.findByRole('textbox', { name: /code/i });
+  const codeInput = await screen.findByTestId('otp-input');
   const submitButton = screen.getByRole('button', { name: /verify/i });
 
   await user.type(codeInput, '999999');
@@ -236,7 +236,7 @@ test('it handles 2FA disabling and redirects to the profile route on success', a
     type: '2fa',
   });
 
-  const codeInput = await screen.findByRole('textbox', { name: /code/i });
+  const codeInput = await screen.findByTestId('otp-input');
   const submitButton = screen.getByRole('button', { name: /verify/i });
 
   await user.type(codeInput, '999999');
@@ -287,7 +287,7 @@ test('it handles 2FA login and redirects to the dashboard on success', async () 
     type: '2fa',
   });
 
-  const codeInput = await screen.findByRole('textbox', { name: /code/i });
+  const codeInput = await screen.findByTestId('otp-input');
   const submitButton = screen.getByRole('button', { name: /verify/i });
 
   await user.type(codeInput, '999999');
@@ -317,7 +317,7 @@ test('it handles changing email and redirects to the change email route on succe
     type: '2fa',
   });
 
-  const codeInput = await screen.findByRole('textbox', { name: /code/i });
+  const codeInput = await screen.findByTestId('otp-input');
   const submitButton = screen.getByRole('button', { name: /verify/i });
 
   await user.type(codeInput, '999999');
@@ -352,7 +352,7 @@ test('it handles change password verification and redirects to the change passwo
     type: '2fa',
   });
 
-  const codeInput = await screen.findByRole('textbox', { name: /code/i });
+  const codeInput = await screen.findByTestId('otp-input');
   const submitButton = screen.getByRole('button', { name: /verify/i });
 
   await user.type(codeInput, '999999');
@@ -385,7 +385,7 @@ test('it shows error for invalid verification code', async () => {
     type: '2fa',
   });
 
-  const codeInput = await screen.findByRole('textbox', { name: /code/i });
+  const codeInput = await screen.findByTestId('otp-input');
   const submitButton = screen.getByRole('button', { name: /verify/i });
 
   await user.type(codeInput, '654321'); // Wrong code
@@ -410,7 +410,7 @@ test('it shows a generic error if the mutation fails', async () => {
     },
   });
 
-  const codeInput = await screen.findByRole('textbox', { name: /code/i });
+  const codeInput = await screen.findByTestId('otp-input');
   const submitButton = screen.getByRole('button', { name: /verify/i });
 
   await user.type(codeInput, '999999');

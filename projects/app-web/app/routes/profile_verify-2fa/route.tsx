@@ -1,13 +1,19 @@
 import { data, Form, redirect } from 'react-router';
 import { getFormProps, getInputProps, useForm } from '@conform-to/react';
 import { getZodConstraint, parseWithZod } from '@conform-to/zod';
+import {
+  Heading,
+  OTPField,
+  SingleLineCode,
+  StatusButton,
+  Text,
+} from '@vers/design-system';
+import { css } from '@vers/styled-system/css';
 import QRCode from 'qrcode';
 import invariant from 'tiny-invariant';
 import { z } from 'zod';
-import { OTPField } from '~/components/field/otp-field';
 import { FormErrorList } from '~/components/form-error-list.tsx';
 import { RouteErrorBoundary } from '~/components/route-error-boundary.tsx';
-import { StatusButton } from '~/components/status-button';
 import { FinishEnable2FAMutation } from '~/data/mutations/finish-enable-2fa';
 import { VerifyOTPMutation } from '~/data/mutations/verify-otp';
 import { GetCurrentUserQuery } from '~/data/queries/get-current-user.ts';
@@ -31,7 +37,7 @@ const VerifyOTPFormSchema = z.object({
 export const meta: Route.MetaFunction = () => [
   {
     description: '',
-    title: 'Vers | Verify 2FA',
+    title: 'vers | Verify 2FA',
   },
 ];
 
@@ -179,6 +185,34 @@ export const action = withErrorHandling(async (args: Route.ActionArgs) => {
   });
 });
 
+const section = css({
+  alignItems: 'center',
+  display: 'flex',
+  flexDirection: 'column',
+  marginBottom: '6',
+});
+
+const formStyles = css({
+  display: 'flex',
+  flexDirection: 'column',
+});
+
+const qrCode = css({
+  borderRadius: 'md',
+  marginBottom: '4',
+  marginTop: '2',
+});
+
+const otpCode = css({
+  marginBottom: '2',
+  marginTop: '2',
+  maxWidth: '72',
+});
+
+const otpField = css({
+  marginTop: '2',
+});
+
 export function ProfileVerify2FARoute(props: Route.ComponentProps) {
   const isFormPending = useIsFormPending();
 
@@ -200,54 +234,56 @@ export function ProfileVerify2FARoute(props: Route.ComponentProps) {
 
   return (
     <>
-      <main>
-        <section>
-          <h1>Set Up 2FA</h1>
-
-          <div>
-            <p>Scan this QR code with your authenticator app.</p>
-            <p>
-              Once you&apos;ve added the account, enter the code from your
-              authenticator app below. Once you enable 2FA, you will need to
-              enter a code from your authenticator app every time you log in or
-              perform important actions. Do not lose access to your
-              authenticator app, or you will lose access to your account.
-            </p>
-          </div>
-
-          <div>
-            <img alt="QR code for 2FA" src={props.loaderData.qrCode} />
-          </div>
-
-          <div>
-            <p>
-              If you cannot scan the QR code, you can manually add this account
-              to your authenticator app using this code:
-            </p>
-            <code>{props.loaderData.otpURI}</code>
-          </div>
-
-          <Form method="POST" {...getFormProps(form)}>
-            <OTPField
-              errors={fields.code.errors ?? []}
-              inputProps={{
-                ...getInputProps(fields.code, { type: 'text' }),
-                autoComplete: 'one-time-code',
-                autoFocus: true,
-              }}
-              labelProps={{
-                children: 'Code',
-                htmlFor: fields.code.id,
-              }}
-            />
-            <input {...getInputProps(fields.target, { type: 'hidden' })} />
-            <FormErrorList errors={form.errors ?? []} id={form.errorId} />
-            <StatusButton status={submitButtonStatus} type="submit">
-              Submit
-            </StatusButton>
-          </Form>
-        </section>
-      </main>
+      <Heading level={2}>Setup 2FA</Heading>
+      <section className={section}>
+        <Text bold>Scan this QR code with your authenticator app.</Text>
+        <Text>
+          Once you enable 2FA, you will need to enter a code from your
+          authenticator app every time you log in or perform important actions.
+          Do not lose access to your authenticator app, or you will lose access
+          to your account.
+        </Text>
+        <img
+          alt="QR code for 2FA"
+          className={qrCode}
+          src={props.loaderData.qrCode}
+        />
+      </section>
+      <section className={section}>
+        <Text>
+          If you cannot scan the QR code, you can manually add this account to
+          your authenticator app using this code:
+        </Text>
+        <SingleLineCode className={otpCode}>
+          {props.loaderData.otpURI}
+        </SingleLineCode>
+      </section>
+      <section className={section}>
+        <Text>
+          Once you have added the account to your authenticator app, enter the
+          code from your authenticator app below.
+        </Text>
+        <Form method="POST" {...getFormProps(form)} className={formStyles}>
+          <OTPField
+            className={otpField}
+            errors={fields.code.errors ?? []}
+            inputProps={{
+              ...getInputProps(fields.code, { type: 'text' }),
+              autoComplete: 'one-time-code',
+              autoFocus: true,
+            }}
+          />
+          <input {...getInputProps(fields.target, { type: 'hidden' })} />
+          <FormErrorList errors={form.errors ?? []} id={form.errorId} />
+          <StatusButton
+            status={submitButtonStatus}
+            type="submit"
+            variant="primary"
+          >
+            Submit
+          </StatusButton>
+        </Form>
+      </section>
     </>
   );
 }

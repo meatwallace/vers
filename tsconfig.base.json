@@ -14,7 +14,7 @@
     "module": "ESNext",
     "lib": ["ESNext"],
     "jsx": "react-jsx",
-    "allowJs": false,
+    "allowJs": true,
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
@@ -22,20 +22,23 @@
     "allowImportingTsExtensions": true,
     "noEmit": true,
     "paths": {
+      "@vers/design-system": ["projects/lib-design-system/src"],
+      "@vers/styled-system/*": ["projects/lib-styled-system/styled-system/*"],
+      "@vers/panda-preset": ["projects/lib-panda-preset/src"],
       "@vers/email-templates": ["projects/lib-email-templates/src/index.ts"],
       "@vers/postgres-schema": ["projects/lib-postgres-schema/src/index.ts"],
+      "@vers/service-email": ["projects/service-email/src/index.ts"],
+      "@vers/service-session": ["projects/service-session/src/index.ts"],
       "@vers/service-test-utils": [
         "projects/lib-service-test-utils/src/index.ts"
       ],
       "@vers/service-types": ["projects/lib-service-types/src/index.ts"],
-      "@vers/service-utils": ["projects/lib-service-utils/src/index.ts"],
-      "@vers/utils": ["projects/lib-utils/src/index.ts"],
-      "@vers/service-email": ["projects/service-email/src/index.ts"],
       "@vers/service-user": ["projects/service-user/src/index.ts"],
-      "@vers/service-session": ["projects/service-session/src/index.ts"],
+      "@vers/service-utils": ["projects/lib-service-utils/src/index.ts"],
       "@vers/service-verification": [
         "projects/service-verification/src/index.ts"
-      ]
+      ],
+      "@vers/utils": ["projects/lib-utils/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"],

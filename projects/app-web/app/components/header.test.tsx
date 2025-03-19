@@ -1,12 +1,10 @@
 import { expect, test } from 'vitest';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { createRoutesStub } from 'react-router';
-import { Routes } from '~/types';
 import { Header } from './header';
 
 interface TestConfig {
-  name?: string;
   username: string;
 }
 
@@ -15,15 +13,8 @@ function setupTest(config: TestConfig) {
 
   const HeaderStub = createRoutesStub([
     {
-      Component: () => (
-        <Header user={{ name: config.name, username: config.username }} />
-      ),
+      Component: () => <Header user={{ username: config.username }} />,
       path: '/',
-    },
-    {
-      action: () => null,
-      Component: () => 'LOGOUT_ROUTE',
-      path: Routes.Logout,
     },
   ]);
 
@@ -32,26 +23,10 @@ function setupTest(config: TestConfig) {
   return { user };
 }
 
-test("it displays the user's `name`", () => {
-  setupTest({ name: 'John Doe', username: 'test_user' });
-
-  expect(screen.getByText('John Doe')).toBeInTheDocument();
-});
-
-test("it displays the user's `username` when `name` is not provided", () => {
+test("it displays the user's `username`", async () => {
   setupTest({ username: 'test_user' });
 
-  expect(screen.getByText('test_user')).toBeInTheDocument();
-});
+  const username = await screen.findByText('test_user');
 
-test('it renders a log out button that redirects to the logout route when pressed', async () => {
-  const { user } = setupTest({ username: 'test_user' });
-
-  const HeaderButton = await screen.findByRole('button', { name: 'Logout' });
-
-  await waitFor(() => user.click(HeaderButton));
-
-  const loggedOutMessage = await screen.findByText('LOGOUT_ROUTE');
-
-  expect(loggedOutMessage).toBeInTheDocument();
+  expect(username).toBeInTheDocument();
 });

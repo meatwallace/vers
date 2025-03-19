@@ -13,6 +13,9 @@
     "baseUrl": ".",
     "paths": {
       "~/*": ["./app/*"],
+      "@vers/design-system": ["../lib-design-system/src"],
+      "@vers/styled-system/*": ["../lib-styled-system/styled-system/*"],
+      "@vers/panda-preset": ["../lib-panda-preset/src"],
       "@vers/email-templates": ["../lib-email-templates/src/index.ts"],
       "@vers/postgres-schema": ["../lib-postgres-schema/src/index.ts"],
       "@vers/service-test-utils": ["../lib-service-test-utils/src/index.ts"],
@@ -24,7 +27,6 @@
   "files": [],
   "include": [
     ".react-router/types/**/*",
-    "app/styled-system/**/*",
     "panda.config.ts",
     "react-router.config.ts",
     "vite.config.ts",

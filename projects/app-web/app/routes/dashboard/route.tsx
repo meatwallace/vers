@@ -1,3 +1,4 @@
+import { Heading } from '@vers/design-system';
 import { RouteErrorBoundary } from '~/components/route-error-boundary.tsx';
 import { requireAuth } from '~/utils/require-auth.server.ts';
 import { withErrorHandling } from '~/utils/with-error-handling.ts';
@@ -6,7 +7,7 @@ import type { Route } from './+types/route.ts';
 export const meta: Route.MetaFunction = () => [
   {
     description: '',
-    title: 'Vers | Dashboard',
+    title: 'vers | Dashboard',
   },
 ];
 
@@ -22,9 +23,7 @@ export const loader = withErrorHandling(async (args: Route.LoaderArgs) => {
 export function Dashboard(props: Route.ComponentProps) {
   return (
     <>
-      <main>
-        <h1>Dashboard</h1>
-      </main>
+      <Heading level={1}>Under Construction</Heading>
     </>
   );
 }

@@ -13,5 +13,5 @@ test('it logs in a user and displays their dashboard', async ({ page }) => {
   await page.getByRole('button', { exact: true, name: 'Login' }).click();
 
   await expect(page).toHaveURL(/localhost:4000\/dashboard/);
-  await expect(page.getByText('E2E User')).toBeVisible();
+  await expect(page.getByText('e2e_user')).toBeVisible();
 });

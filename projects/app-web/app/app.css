@@ -1,6 +1,17 @@
 @layer reset, base, tokens, recipes, utilities;
 
-/* required for base-ui popovers to work */
 #root {
+  /* required for base-ui popovers to work */
   isolation: isolate;
+  background-color: #111112;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  color: #d4d4d4;
 }

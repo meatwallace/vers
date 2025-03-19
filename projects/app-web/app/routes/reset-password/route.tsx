@@ -1,12 +1,19 @@
-import { data, Form, Link, redirect } from 'react-router';
+import { data, Form, redirect, Link as RRLink } from 'react-router';
 import { getFormProps, getInputProps, useForm } from '@conform-to/react';
 import { getZodConstraint, parseWithZod } from '@conform-to/zod';
+import {
+  Brand,
+  Field,
+  Heading,
+  Link,
+  StatusButton,
+  Text,
+} from '@vers/design-system';
+import { css } from '@vers/styled-system/css';
 import { HoneypotInputs } from 'remix-utils/honeypot/react';
 import { z } from 'zod';
-import { Field } from '~/components/field';
 import { FormErrorList } from '~/components/form-error-list.tsx';
 import { RouteErrorBoundary } from '~/components/route-error-boundary.tsx';
-import { StatusButton } from '~/components/status-button.tsx';
 import { FinishPasswordResetMutation } from '~/data/mutations/finish-password-reset';
 import { useIsFormPending } from '~/hooks/use-is-form-pending';
 import { verifySessionStorage } from '~/session/verify-session-storage.server.ts';
@@ -30,7 +37,7 @@ const ResetPasswordFormSchema = z.intersection(
 export const meta: Route.MetaFunction = () => [
   {
     description: '',
-    title: 'Vers | Reset Password',
+    title: 'vers | Reset Password',
   },
 ];
 
@@ -124,6 +131,18 @@ export const action = withErrorHandling(async (args: Route.ActionArgs) => {
   });
 });
 
+const pageInfo = css({
+  marginBottom: '8',
+  textAlign: 'center',
+});
+
+const formStyles = css({
+  display: 'flex',
+  flexDirection: 'column',
+  marginBottom: '6',
+  width: '96',
+});
+
 export function ResetPassword(props: Route.ComponentProps) {
   const isFormPending = useIsFormPending();
 
@@ -145,13 +164,15 @@ export function ResetPassword(props: Route.ComponentProps) {
     : StatusButton.Status.Idle;
 
   return (
-    <main>
-      <div>
-        <h1>Reset Password</h1>
-        <p>Please enter your new password</p>
-      </div>
-
-      <Form method="POST" {...getFormProps(form)}>
+    <>
+      <section className={pageInfo}>
+        <RRLink to={Routes.Index}>
+          <Brand size="xl" />
+        </RRLink>
+        <Heading level={2}>Reset your password</Heading>
+        <Text>Please enter your new password</Text>
+      </section>
+      <Form method="POST" {...getFormProps(form)} className={formStyles}>
         <HoneypotInputs />
         <input {...getInputProps(fields.email, { type: 'hidden' })} />
         <Field
@@ -159,37 +180,33 @@ export function ResetPassword(props: Route.ComponentProps) {
           inputProps={{
             ...getInputProps(fields.password, { type: 'password' }),
             autoComplete: 'new-password',
+            placeholder: '********',
           }}
-          labelProps={{
-            children: 'New Password',
-            htmlFor: fields.password.id,
-          }}
+          labelProps={{ children: 'New Password' }}
         />
         <Field
           errors={fields.confirmPassword.errors ?? []}
           inputProps={{
             ...getInputProps(fields.confirmPassword, { type: 'password' }),
             autoComplete: 'new-password',
+            placeholder: '********',
           }}
-          labelProps={{
-            children: 'Confirm Password',
-            htmlFor: fields.confirmPassword.id,
-          }}
+          labelProps={{ children: 'Confirm Password' }}
         />
         <FormErrorList errors={form.errors ?? []} id={form.errorId} />
         <StatusButton
           disabled={isFormPending}
           status={submitButtonStatus}
           type="submit"
+          variant="primary"
+          fullWidth
         >
           Reset Password
         </StatusButton>
-        <div>
-          <span>Remember your password?</span>
-          <Link to={Routes.Login}>Login</Link>
-        </div>
       </Form>
-    </main>
+      <Text>Remember your password?</Text>
+      <Link to={Routes.Login}>Login</Link>
+    </>
   );
 }
 

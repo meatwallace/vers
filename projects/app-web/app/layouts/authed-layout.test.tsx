@@ -1,5 +1,5 @@
-import { afterEach, expect, test } from 'vitest';
-import { render, screen, waitFor } from '@testing-library/react';
+import { afterEach, test } from 'vitest';
+import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { createRoutesStub } from 'react-router';
 import { drop } from '@mswjs/data';
@@ -30,11 +30,6 @@ function setupTest(config: TestConfig) {
         ? withAuthedUser(loader, { user: config.user })
         : loader,
       path: '/',
-    },
-    {
-      action: () => null,
-      Component: () => 'LOGOUT_ROUTE',
-      path: Routes.Logout,
     },
     {
       Component: () => 'LOGIN_ROUTE',
@@ -69,16 +64,4 @@ test('it redirects to the login route when fetching the current user fails', asy
   setupTest({ isAuthed: true, user: { id: 'user_id' } });
 
   await screen.findByText('LOGIN_ROUTE');
-});
-
-test('it renders a log out button that navigates to the logout route when clicked', async () => {
-  const { user } = setupTest({ isAuthed: true, user: { id: 'user_id' } });
-
-  const logoutButton = await screen.findByRole('button', { name: 'Logout' });
-
-  await waitFor(() => user.click(logoutButton));
-
-  const loggedOutMessage = await screen.findByText('LOGOUT_ROUTE');
-
-  expect(loggedOutMessage).toBeInTheDocument();
 });

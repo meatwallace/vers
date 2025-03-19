@@ -39,6 +39,13 @@
         "commands": ["yarn react-router typegen"],
         "cwd": "projects/app-web"
       }
+    },
+    "codegen": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": ["yarn panda cssgen"],
+        "cwd": "projects/app-web"
+      }
     }
   }
 }

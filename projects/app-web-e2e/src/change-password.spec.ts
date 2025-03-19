@@ -14,7 +14,7 @@ test('it changes password for a user without 2FA', async ({ page }) => {
 
   await expect(page).toHaveURL(/localhost:4000\/dashboard/);
 
-  await page.getByRole('link', { name: 'E2E Change Password User' }).click();
+  await page.getByRole('link', { name: 'e2e_change_password_user' }).click();
 
   await expect(page).toHaveURL(/localhost:4000\/profile/);
 

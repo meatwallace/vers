@@ -1,12 +1,12 @@
 import { data, Form, redirect } from 'react-router';
 import { getFormProps, getInputProps, useForm } from '@conform-to/react';
 import { getZodConstraint, parseWithZod } from '@conform-to/zod';
+import { Field, Heading, StatusButton, Text } from '@vers/design-system';
+import { css } from '@vers/styled-system/css';
 import invariant from 'tiny-invariant';
 import { z } from 'zod';
-import { Field } from '~/components/field';
 import { FormErrorList } from '~/components/form-error-list.tsx';
 import { RouteErrorBoundary } from '~/components/route-error-boundary.tsx';
-import { StatusButton } from '~/components/status-button.tsx';
 import { StartChangeUserEmailMutation } from '~/data/mutations/start-change-user-email.ts';
 import { StartStepUpAuthMutation } from '~/data/mutations/start-step-up-auth.ts';
 import { GetCurrentUserQuery } from '~/data/queries/get-current-user';
@@ -26,7 +26,7 @@ import { QueryParam } from '../verify-otp/types.ts';
 export const meta: Route.MetaFunction = () => [
   {
     description: 'Change your account email address',
-    title: 'Vers | Change Email',
+    title: 'vers | Change Email',
   },
 ];
 
@@ -52,6 +52,7 @@ export const loader = withErrorHandling(async (args: Route.LoaderArgs) => {
 
   if (userResult.error) {
     handleGQLError(userResult.error);
+
     throw userResult.error;
   }
 
@@ -106,6 +107,13 @@ const ChangeUserEmailFormSchema = z.object({
   email: UserEmailSchema,
 });
 
+const formStyles = css({
+  display: 'flex',
+  flexDirection: 'column',
+  marginBottom: '6',
+  width: '96',
+});
+
 export const action = withErrorHandling(async (args: Route.ActionArgs) => {
   const { request } = args;
 
@@ -148,6 +156,7 @@ export const action = withErrorHandling(async (args: Route.ActionArgs) => {
     return data({ result: formResult }, { status: 400 });
   }
 
+  console.log(result.data?.startChangeUserEmail);
   if (isMutationError(result.data?.startChangeUserEmail)) {
     const formResult = submission.reply({
       formErrors: [result.data.startChangeUserEmail.error.message],
@@ -195,39 +204,34 @@ export function ProfileChangeUserEmail(props: Route.ComponentProps) {
     : StatusButton.Status.Idle;
 
   return (
-    <main>
-      <section>
-        <h1>Change Email Address</h1>
-        <p>
-          Enter your new email address below. A verification link will be sent
-          to the new email address to confirm the change.
-        </p>
-        <Form method="POST" {...getFormProps(form)}>
-          <Field
-            errors={fields.email.errors ?? []}
-            inputProps={{
-              ...getInputProps(fields.email, { type: 'email' }),
-              autoComplete: 'email',
-              placeholder: 'your-new-email@example.com',
-            }}
-            labelProps={{
-              children: 'New Email Address',
-              htmlFor: fields.email.id,
-            }}
-          />
-
-          <FormErrorList errors={form.errors ?? []} id={form.errorId} />
-
-          <StatusButton
-            disabled={isFormPending}
-            status={submitButtonStatus}
-            type="submit"
-          >
-            Change Email
-          </StatusButton>
-        </Form>
-      </section>
-    </main>
+    <>
+      <Heading level={2}>Change your email address</Heading>
+      <Text align="center">
+        Enter your new email address below. A verification link will be sent to
+        the new email address to confirm the change.
+      </Text>
+      <Form method="POST" {...getFormProps(form)} className={formStyles}>
+        <Field
+          errors={fields.email.errors ?? []}
+          inputProps={{
+            ...getInputProps(fields.email, { type: 'email' }),
+            autoComplete: 'email',
+            placeholder: 'your.new.email@example.com',
+          }}
+          labelProps={{ children: 'New Email Address' }}
+        />
+        <FormErrorList errors={form.errors ?? []} id={form.errorId} />
+        <StatusButton
+          disabled={isFormPending}
+          status={submitButtonStatus}
+          type="submit"
+          variant="primary"
+          fullWidth
+        >
+          Change Email
+        </StatusButton>
+      </Form>
+    </>
   );
 }
 
