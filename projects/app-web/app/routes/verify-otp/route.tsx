@@ -1,15 +1,27 @@
-import { data, Form, redirect, useSearchParams } from 'react-router';
+import {
+  data,
+  Form,
+  redirect,
+  Link as RRLink,
+  useSearchParams,
+} from 'react-router';
 import { getFormProps, getInputProps, useForm } from '@conform-to/react';
 import { getZodConstraint, parseWithZod } from '@conform-to/zod';
 import { captureException } from '@sentry/react';
+import {
+  Brand,
+  Heading,
+  OTPField,
+  StatusButton,
+  Text,
+} from '@vers/design-system';
+import { css } from '@vers/styled-system/css';
 import { HoneypotInputs } from 'remix-utils/honeypot/react';
 import invariant from 'tiny-invariant';
 import { z } from 'zod';
 import type { SessionKey } from '~/session/verify-session-storage.server.ts';
-import { OTPField } from '~/components/field/index.ts';
 import { FormErrorList } from '~/components/form-error-list.tsx';
 import { RouteErrorBoundary } from '~/components/route-error-boundary.tsx';
-import { StatusButton } from '~/components/status-button.tsx';
 import { VerifyOTPMutation } from '~/data/mutations/verify-otp.ts';
 import { VerificationType } from '~/gql/graphql.ts';
 import { useIsFormPending } from '~/hooks/use-is-form-pending.ts';
@@ -37,7 +49,7 @@ export const VerifyOTPFormSchema = z.object({
 export const meta: Route.MetaFunction = () => [
   {
     description: '',
-    title: 'Vers | Verify OTP',
+    title: 'vers | Verify OTP',
   },
 ];
 
@@ -153,6 +165,52 @@ export const action = withErrorHandling(async (args: Route.ActionArgs) => {
   });
 });
 
+const HEADING_BY_TYPE: Record<VerificationType, string> = {
+  [VerificationType.ChangeEmail]: 'Two-factor authentication',
+  [VerificationType.ChangeEmailConfirmation]: 'Check your email',
+  [VerificationType.ChangePassword]: 'Two-factor authentication',
+  [VerificationType.Onboarding]: 'Check your email',
+  [VerificationType.ResetPassword]: 'Check your email',
+  [VerificationType.TwoFactorAuth]: 'Two-factor authentication',
+  [VerificationType.TwoFactorAuthDisable]: 'Two-factor authentication',
+  [VerificationType.TwoFactorAuthSetup]: 'Two-factor authentication',
+};
+
+const INSTRUCTION_BY_TYPE: Record<VerificationType, string> = {
+  [VerificationType.ChangeEmail]:
+    'To start changing your email address, please enter your six digit code from your authenticator app',
+  [VerificationType.ChangeEmailConfirmation]:
+    'To confirm your new email address, please enter the six character code we’ve sent to your email',
+  [VerificationType.ChangePassword]:
+    'To start changing your password, please enter your six digit code from your authenticator app',
+  [VerificationType.Onboarding]:
+    'To complete your account creation, please enter the six character code we’ve sent to your email',
+  [VerificationType.ResetPassword]:
+    'To reset your password, please enter the six character code we’ve sent to your email',
+  [VerificationType.TwoFactorAuth]:
+    'To log in, please enter the six digit code from your authenticator app',
+  [VerificationType.TwoFactorAuthDisable]:
+    'To disable two-factor authentication, please enter your six digit code from your authenticator app',
+  [VerificationType.TwoFactorAuthSetup]:
+    'To enable two-factor authentication, please enter your six digit code from your authenticator app',
+};
+
+const pageInfo = css({
+  marginBottom: '8',
+  textAlign: 'center',
+});
+
+const formStyles = css({
+  display: 'flex',
+  flexDirection: 'column',
+  marginBottom: '6',
+  width: '96',
+});
+
+const otpField = css({
+  marginBottom: '6',
+});
+
 export function VerifyOTPRoute(props: Route.ComponentProps) {
   const [searchParams] = useSearchParams();
   const isFormPending = useIsFormPending();
@@ -182,20 +240,31 @@ export function VerifyOTPRoute(props: Route.ComponentProps) {
     ? StatusButton.Status.Pending
     : StatusButton.Status.Idle;
 
+  // if a user gets here without a type, there's an issue, but rather than throwing
+  // an error, just show them a (useless) generic verification form
+  const headingText = type ? HEADING_BY_TYPE[type] : 'Verify your code';
+  const instructionText = type
+    ? INSTRUCTION_BY_TYPE[type]
+    : 'Please enter your verification code';
+
   return (
-    <main>
-      <Form method="POST" {...getFormProps(form)}>
+    <>
+      <section className={pageInfo}>
+        <RRLink to={Routes.Index}>
+          <Brand size="xl" />
+        </RRLink>
+        <Heading level={2}>{headingText}</Heading>
+        <Text>{instructionText}</Text>
+      </section>
+      <Form method="POST" {...getFormProps(form)} className={formStyles}>
         <HoneypotInputs />
         <OTPField
+          className={otpField}
           errors={fields[QueryParam.Code].errors ?? []}
           inputProps={{
             ...getInputProps(fields[QueryParam.Code], { type: 'text' }),
             autoComplete: 'one-time-code',
             autoFocus: true,
-          }}
-          labelProps={{
-            children: 'Code',
-            htmlFor: fields[QueryParam.Code].id,
           }}
         />
         <input
@@ -211,12 +280,14 @@ export function VerifyOTPRoute(props: Route.ComponentProps) {
           disabled={isFormPending}
           status={submitButtonStatus}
           type="submit"
+          variant="primary"
+          fullWidth
         >
           Verify
         </StatusButton>
         <FormErrorList errors={form.errors ?? []} id={form.errorId} />
       </Form>
-    </main>
+    </>
   );
 }
 

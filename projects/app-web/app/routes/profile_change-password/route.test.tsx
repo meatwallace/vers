@@ -119,12 +119,12 @@ test('it renders the change password form when authenticated without 2FA', async
     },
   });
 
-  await screen.findByRole('heading', { name: /change password/i });
+  await screen.findByRole('heading', { name: 'Change your password' });
 
-  const currentPasswordInput = screen.getByLabelText(/current password/i);
-  const newPasswordInput = screen.getByLabelText(/^new password$/i);
-  const confirmPasswordInput = screen.getByLabelText(/confirm new password/i);
-  const submitButton = screen.getByRole('button', { name: /change password/i });
+  const currentPasswordInput = screen.getByLabelText('Current Password');
+  const newPasswordInput = screen.getByLabelText('New Password');
+  const confirmPasswordInput = screen.getByLabelText('Confirm New Password');
+  const submitButton = screen.getByRole('button', { name: 'Change Password' });
 
   expect(currentPasswordInput).toBeInTheDocument();
   expect(newPasswordInput).toBeInTheDocument();
@@ -168,12 +168,12 @@ test('it renders the form when 2FA is enabled and a transaction token is in the 
     },
   });
 
-  await screen.findByRole('heading', { name: /change password/i });
+  await screen.findByRole('heading', { name: 'Change your password' });
 
-  const currentPasswordInput = screen.getByLabelText(/current password/i);
-  const newPasswordInput = screen.getByLabelText(/^new password$/i);
-  const confirmPasswordInput = screen.getByLabelText(/confirm new password/i);
-  const submitButton = screen.getByRole('button', { name: /change password/i });
+  const currentPasswordInput = screen.getByLabelText('Current Password');
+  const newPasswordInput = screen.getByLabelText('New Password');
+  const confirmPasswordInput = screen.getByLabelText('Confirm New Password');
+  const submitButton = screen.getByRole('button', { name: 'Change Password' });
 
   expect(currentPasswordInput).toBeInTheDocument();
   expect(newPasswordInput).toBeInTheDocument();
@@ -191,19 +191,19 @@ test('it shows validation errors for invalid form submission', async () => {
     },
   });
 
-  await screen.findByRole('heading', { name: /change password/i });
+  await screen.findByRole('heading', { name: 'Change your password' });
 
-  const currentPasswordInput = screen.getByLabelText(/current password/i);
-  const newPasswordInput = screen.getByLabelText(/^new password$/i);
-  const confirmPasswordInput = screen.getByLabelText(/confirm new password/i);
-  const submitButton = screen.getByRole('button', { name: /change password/i });
+  const currentPasswordInput = screen.getByLabelText('Current Password');
+  const newPasswordInput = screen.getByLabelText('New Password');
+  const confirmPasswordInput = screen.getByLabelText('Confirm New Password');
+  const submitButton = screen.getByRole('button', { name: 'Change Password' });
 
   await user.type(currentPasswordInput, 'current');
   await user.type(newPasswordInput, 'new');
   await user.type(confirmPasswordInput, 'different');
   await user.click(submitButton);
 
-  const errorMessage = await screen.findByText(/the passwords must match/i);
+  const errorMessage = await screen.findByText('The passwords must match');
 
   expect(errorMessage).toBeInTheDocument();
 });
@@ -219,12 +219,12 @@ test('it handles a successful password change without 2FA', async () => {
     },
   });
 
-  await screen.findByRole('heading', { name: /change password/i });
+  await screen.findByRole('heading', { name: 'Change your password' });
 
-  const currentPasswordInput = screen.getByLabelText(/current password/i);
-  const newPasswordInput = screen.getByLabelText(/^new password$/i);
-  const confirmPasswordInput = screen.getByLabelText(/confirm new password/i);
-  const submitButton = screen.getByRole('button', { name: /change password/i });
+  const currentPasswordInput = screen.getByLabelText('Current Password');
+  const newPasswordInput = screen.getByLabelText('New Password');
+  const confirmPasswordInput = screen.getByLabelText('Confirm New Password');
+  const submitButton = screen.getByRole('button', { name: 'Change Password' });
 
   await user.type(currentPasswordInput, 'current_password');
   await user.type(newPasswordInput, 'new_password');
@@ -248,12 +248,12 @@ test('it handles a successful password change with 2FA enabled and a transaction
     },
   });
 
-  await screen.findByRole('heading', { name: /change password/i });
+  await screen.findByRole('heading', { name: 'Change your password' });
 
-  const currentPasswordInput = screen.getByLabelText(/current password/i);
-  const newPasswordInput = screen.getByLabelText(/^new password$/i);
-  const confirmPasswordInput = screen.getByLabelText(/confirm new password/i);
-  const submitButton = screen.getByRole('button', { name: /change password/i });
+  const currentPasswordInput = screen.getByLabelText('Current Password');
+  const newPasswordInput = screen.getByLabelText('New Password');
+  const confirmPasswordInput = screen.getByLabelText('Confirm New Password');
+  const submitButton = screen.getByRole('button', { name: 'Change Password' });
 
   await user.type(currentPasswordInput, 'current_password');
   await user.type(newPasswordInput, 'new_password');
@@ -286,19 +286,19 @@ test('it shows an error when the password change fails', async () => {
     },
   });
 
-  await screen.findByRole('heading', { name: /change password/i });
+  await screen.findByRole('heading', { name: 'Change your password' });
 
-  const currentPasswordInput = screen.getByLabelText(/current password/i);
-  const newPasswordInput = screen.getByLabelText(/^new password$/i);
-  const confirmPasswordInput = screen.getByLabelText(/confirm new password/i);
-  const submitButton = screen.getByRole('button', { name: /change password/i });
+  const currentPasswordInput = screen.getByLabelText('Current Password');
+  const newPasswordInput = screen.getByLabelText('New Password');
+  const confirmPasswordInput = screen.getByLabelText('Confirm New Password');
+  const submitButton = screen.getByRole('button', { name: 'Change Password' });
 
   await user.type(currentPasswordInput, 'wrong_password');
   await user.type(newPasswordInput, 'new_password');
   await user.type(confirmPasswordInput, 'new_password');
   await user.click(submitButton);
 
-  const errorMessage = await screen.findByText(/something went wrong/i);
+  const errorMessage = await screen.findByText('Something went wrong');
 
   expect(errorMessage).toBeInTheDocument();
 });

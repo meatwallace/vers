@@ -104,8 +104,8 @@ test('it renders the 2FA setup page with QR code and form', async () => {
 
   const qrCode = await screen.findByAltText('QR code for 2FA');
   const otpURI = screen.getByText(/otpauth:\/\/totp\/vers:test@example.com/);
-  const codeInput = screen.getByLabelText(/code/i);
-  const submitButton = screen.getByRole('button', { name: /submit/i });
+  const codeInput = screen.getByTestId('otp-input');
+  const submitButton = screen.getByRole('button', { name: 'Submit' });
 
   expect(qrCode).toBeInTheDocument();
   expect(otpURI).toBeInTheDocument();
@@ -127,8 +127,8 @@ test('it redirects to profile page on successful 2FA setup', async () => {
     type: '2fa-setup',
   });
 
-  const codeInput = await screen.findByLabelText(/code/i);
-  const submitButton = screen.getByRole('button', { name: /submit/i });
+  const codeInput = await screen.findByTestId('otp-input');
+  const submitButton = screen.getByRole('button', { name: 'Submit' });
 
   await user.type(codeInput, '999999');
   await user.click(submitButton);
@@ -153,13 +153,13 @@ test('it shows validation errors for invalid code', async () => {
     type: '2fa-setup',
   });
 
-  const codeInput = await screen.findByLabelText(/code/i);
-  const submitButton = screen.getByRole('button', { name: /submit/i });
+  const codeInput = await screen.findByTestId('otp-input');
+  const submitButton = screen.getByRole('button', { name: 'Submit' });
 
   await user.type(codeInput, '12345');
   await user.click(submitButton);
 
-  const errorMessage = await screen.findByText(/invalid code/i);
+  const errorMessage = await screen.findByText('Invalid code');
 
   expect(errorMessage).toBeInTheDocument();
 });
@@ -178,13 +178,13 @@ test('it shows an error message when verification fails', async () => {
     type: '2fa-setup',
   });
 
-  const codeInput = await screen.findByLabelText(/code/i);
-  const submitButton = screen.getByRole('button', { name: /submit/i });
+  const codeInput = await screen.findByTestId('otp-input');
+  const submitButton = screen.getByRole('button', { name: 'Submit' });
 
   await user.type(codeInput, '123456');
   await user.click(submitButton);
 
-  const errorMessage = await screen.findByText(/invalid verification code/i);
+  const errorMessage = await screen.findByText('Invalid verification code');
 
   expect(errorMessage).toBeInTheDocument();
 });

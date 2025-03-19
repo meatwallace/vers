@@ -1,7 +1,7 @@
-import { Form, Link } from 'react-router';
+import { Link as RRLink } from 'react-router';
+import { Brand, Link } from '@vers/design-system';
+import { css } from '@vers/styled-system/css';
 import { Routes } from '~/types.ts';
-import { Brand } from './brand';
-import { Button } from './button';
 
 interface Props {
   user: {
@@ -10,16 +10,54 @@ interface Props {
   };
 }
 
+const header = css({
+  backgroundColor: 'neutral.950',
+  display: 'flex',
+});
+
+const leftContainer = css({
+  display: 'flex',
+  flexBasis: '0',
+  flexGrow: '0.3',
+  marginLeft: '8',
+});
+
+const centerContainer = css({
+  alignItems: 'center',
+  display: 'flex',
+  flexGrow: '1',
+  justifyContent: 'center',
+});
+
+const rightContainer = css({
+  alignItems: 'center',
+  display: 'flex',
+  flexBasis: '0',
+  flexGrow: '0.3',
+  justifyContent: 'flex-end',
+  marginRight: '8',
+});
+
+const brand = css({
+  fontSize: 'md',
+});
+
 export function Header(props: Props) {
   return (
-    <header>
-      <Brand />
+    <>
+      <header className={header}>
+        <section className={leftContainer}>{/* menu here */}</section>
 
-      <Link to={Routes.Profile}>{props.user.name ?? props.user.username}</Link>
+        <section className={centerContainer}>
+          <RRLink to={Routes.Dashboard}>
+            <Brand className={brand} size="lg" />
+          </RRLink>
+        </section>
 
-      <Form action={Routes.Logout} method="post">
-        <Button>Logout</Button>
-      </Form>
-    </header>
+        <section className={rightContainer}>
+          <Link to={Routes.Profile}>{props.user.username}</Link>
+        </section>
+      </header>
+    </>
   );
 }

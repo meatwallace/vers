@@ -14,12 +14,12 @@ test('it changes email for a user with 2FA', async ({ page }) => {
 
   await expect(page).toHaveURL(/localhost:4000\/verify-otp/);
 
-  await page.getByLabel('Code').fill('999999');
+  await page.getByTestId('otp-input').fill('999999');
   await page.getByRole('button', { exact: true, name: 'Verify' }).click();
 
   await expect(page).toHaveURL(/localhost:4000\/dashboard/);
 
-  await page.getByRole('link', { name: 'E2E Change Email 2FA User' }).click();
+  await page.getByRole('link', { name: 'e2e_change_email_2fa_user' }).click();
 
   await expect(page).toHaveURL(/localhost:4000\/profile/);
 
@@ -27,7 +27,7 @@ test('it changes email for a user with 2FA', async ({ page }) => {
 
   await expect(page).toHaveURL(/localhost:4000\/verify-otp/);
 
-  await page.getByLabel('Code').fill('999999');
+  await page.getByTestId('otp-input').fill('999999');
   await page.getByRole('button', { exact: true, name: 'Verify' }).click();
 
   await expect(page).toHaveURL(/localhost:4000\/profile\/change-email/);
@@ -39,7 +39,7 @@ test('it changes email for a user with 2FA', async ({ page }) => {
 
   await expect(page).toHaveURL(/localhost:4000\/verify-otp/);
 
-  await page.getByLabel('Code').fill('999999');
+  await page.getByTestId('otp-input').fill('999999');
   await page.getByRole('button', { exact: true, name: 'Verify' }).click();
 
   await expect(page).toHaveURL(/localhost:4000\/profile$/);

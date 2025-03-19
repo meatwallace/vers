@@ -1,0 +1,28 @@
+{
+  "name": "lib-design-system",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "projects/lib-design-system/src",
+  "projectType": "library",
+  "targets": {
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          {
+            "command": "tsc -p tsconfig.json --noEmit",
+            "forwardAllArgs": false
+          }
+        ],
+        "cwd": "projects/lib-design-system"
+      }
+    },
+    "codegen": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": ["yarn panda cssgen"],
+        "cwd": "projects/lib-design-system"
+      }
+    }
+  },
+  "tags": []
+}

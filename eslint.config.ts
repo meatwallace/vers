@@ -119,6 +119,7 @@ export default tseslint.config(
             ['parent-type', 'sibling-type', 'index-type'],
             ['parent', 'sibling', 'index'],
             'object',
+            'side-effect',
             'unknown',
           ],
           internalPattern: ['^~/.+'],

@@ -16,9 +16,9 @@ test('it logs in a user with 2FA and displays their dashboard', async ({
 
   await expect(page).toHaveURL(/localhost:4000\/verify-otp/);
 
-  await page.getByLabel('Code').fill('999999');
+  await page.getByTestId('otp-input').fill('999999');
   await page.getByRole('button', { exact: true, name: 'Verify' }).click();
 
   await expect(page).toHaveURL(/localhost:4000\/dashboard/);
-  await expect(page.getByText('E2E 2FA User')).toBeVisible();
+  await expect(page.getByText('e2e_2fa_user')).toBeVisible();
 });

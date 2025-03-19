@@ -122,7 +122,7 @@ test('it renders the onboarding form', async () => {
   });
 
   const submitButton = screen.getByRole('button', {
-    name: 'Create an account',
+    name: 'Create an Account',
   });
 
   expect(usernameInput).toBeInTheDocument();
@@ -137,7 +137,9 @@ test('it renders the onboarding form', async () => {
 test('it shows validation errors for missing required fields', async () => {
   const { user } = setupTest({ isAuthed: false, isOnboarding: true });
 
-  const createAccountButton = await screen.findByText('Create an account');
+  const createAccountButton = await screen.findByRole('button', {
+    name: 'Create an Account',
+  });
 
   await user.click(createAccountButton);
 
@@ -159,13 +161,15 @@ test('it shows validation error for mismatched passwords', async () => {
 
   const passwordInput = await screen.findByLabelText('Password');
   const confirmPasswordInput = screen.getByLabelText('Confirm Password');
-  const createAccountButton = screen.getByText('Create an account');
+  const createAccountButton = screen.getByRole('button', {
+    name: 'Create an Account',
+  });
 
   await user.type(passwordInput, 'password123');
   await user.type(confirmPasswordInput, 'password456');
   await user.click(createAccountButton);
 
-  const passwordError = await screen.findByText(/passwords must match/i);
+  const passwordError = await screen.findByText('The passwords must match');
 
   expect(passwordError).toBeInTheDocument();
 });
@@ -177,7 +181,9 @@ test('it redirects to dashboard on successful account creation', async () => {
   const nameInput = screen.getByLabelText('Name');
   const passwordInput = screen.getByLabelText('Password');
   const confirmPasswordInput = screen.getByLabelText('Confirm Password');
-  const createAccountButton = screen.getByText('Create an account');
+  const createAccountButton = screen.getByRole('button', {
+    name: 'Create an Account',
+  });
   const agreeToTermsCheckbox = screen.getByRole('checkbox', {
     name: 'Agree to terms',
   });

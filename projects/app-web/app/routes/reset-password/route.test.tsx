@@ -75,10 +75,10 @@ test('it renders the reset password form with accessible elements', async () => 
     initialPath: '/?email=test@example.com&token=test_reset_token',
   });
 
-  const newPasswordInput = await screen.findByLabelText(/new password/i);
-  const confirmPasswordInput = screen.getByLabelText(/confirm password/i);
-  const submitButton = screen.getByRole('button', { name: /reset password/i });
-  const loginLink = screen.getByRole('link', { name: /login/i });
+  const newPasswordInput = await screen.findByLabelText('New Password');
+  const confirmPasswordInput = screen.getByLabelText('Confirm Password');
+  const submitButton = screen.getByRole('button', { name: 'Reset Password' });
+  const loginLink = screen.getByRole('link', { name: 'Login' });
 
   expect(newPasswordInput).toBeInTheDocument();
   expect(confirmPasswordInput).toBeInTheDocument();
@@ -91,15 +91,15 @@ test('it shows validation errors for mismatched passwords', async () => {
     initialPath: '/?email=test@example.com&token=test_reset_token',
   });
 
-  const newPasswordInput = await screen.findByLabelText(/new password/i);
-  const confirmPasswordInput = screen.getByLabelText(/confirm password/i);
-  const submitButton = screen.getByRole('button', { name: /reset password/i });
+  const newPasswordInput = await screen.findByLabelText('New Password');
+  const confirmPasswordInput = screen.getByLabelText('Confirm Password');
+  const submitButton = screen.getByRole('button', { name: 'Reset Password' });
 
   await user.type(newPasswordInput, 'password123');
   await user.type(confirmPasswordInput, 'password456');
   await user.click(submitButton);
 
-  const errorText = await screen.findByText(/passwords must match/i);
+  const errorText = await screen.findByText('The passwords must match');
 
   expect(errorText).toBeInTheDocument();
 });
@@ -109,15 +109,17 @@ test('it shows validation errors for invalid password', async () => {
     initialPath: '/?email=test@example.com&token=test_reset_token',
   });
 
-  const newPasswordInput = await screen.findByLabelText(/new password/i);
-  const confirmPasswordInput = screen.getByLabelText(/confirm password/i);
-  const submitButton = screen.getByRole('button', { name: /reset password/i });
+  const newPasswordInput = await screen.findByLabelText('New Password');
+  const confirmPasswordInput = screen.getByLabelText('Confirm Password');
+  const submitButton = screen.getByRole('button', { name: 'Reset Password' });
 
   await user.type(newPasswordInput, 'weak');
   await user.type(confirmPasswordInput, 'weak');
   await user.click(submitButton);
 
-  const errorText = await screen.findAllByText(/password is too short/i);
+  const errorText = await screen.findAllByText(
+    'Password must be 8+ characters',
+  );
 
   expect(errorText).toHaveLength(2);
 });
@@ -132,9 +134,9 @@ test('it redirects to login on successful password reset', async () => {
     password: 'oldpassword123',
   });
 
-  const newPasswordInput = await screen.findByLabelText(/new password/i);
-  const confirmPasswordInput = screen.getByLabelText(/confirm password/i);
-  const submitButton = screen.getByRole('button', { name: /reset password/i });
+  const newPasswordInput = await screen.findByLabelText('New Password');
+  const confirmPasswordInput = screen.getByLabelText('Confirm Password');
+  const submitButton = screen.getByRole('button', { name: 'Reset Password' });
 
   await user.type(newPasswordInput, 'newpassword123');
   await user.type(confirmPasswordInput, 'newpassword123');
@@ -177,9 +179,9 @@ test('it passes the transaction token if 2FA was required for the reset', async 
     type: VerificationType.TwoFactorAuth,
   });
 
-  const newPasswordInput = await screen.findByLabelText(/new password/i);
-  const confirmPasswordInput = screen.getByLabelText(/confirm password/i);
-  const submitButton = screen.getByRole('button', { name: /reset password/i });
+  const newPasswordInput = await screen.findByLabelText('New Password');
+  const confirmPasswordInput = screen.getByLabelText('Confirm Password');
+  const submitButton = screen.getByRole('button', { name: 'Reset Password' });
 
   await user.type(newPasswordInput, 'newpassword123');
   await user.type(confirmPasswordInput, 'newpassword123');
@@ -209,9 +211,9 @@ test('it shows a generic error if the mutation fails', async () => {
     initialPath: '/?email=test@example.com&token=test_reset_token',
   });
 
-  const newPasswordInput = await screen.findByLabelText(/new password/i);
-  const confirmPasswordInput = screen.getByLabelText(/confirm password/i);
-  const submitButton = screen.getByRole('button', { name: /reset password/i });
+  const newPasswordInput = await screen.findByLabelText('New Password');
+  const confirmPasswordInput = screen.getByLabelText('Confirm Password');
+  const submitButton = screen.getByRole('button', { name: 'Reset Password' });
 
   await user.type(newPasswordInput, 'newpassword123');
   await user.type(confirmPasswordInput, 'newpassword123');

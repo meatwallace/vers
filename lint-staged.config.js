@@ -4,6 +4,7 @@ export default {
     'git add .',
   ],
   'projects/**/*.{ts,tsx}': [
+    'yarn codegen:styles',
     (files) => `yarn nx affected --target=typecheck --files=${files.join(',')}`,
     `yarn nx affected --target=test`,
   ],

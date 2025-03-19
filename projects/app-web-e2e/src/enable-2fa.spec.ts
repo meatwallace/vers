@@ -13,7 +13,7 @@ test('it enables 2FA for a user', async ({ page }) => {
 
   await expect(page).toHaveURL(/localhost:4000\/dashboard/);
 
-  await page.getByRole('link', { name: 'E2E Enable 2FA User' }).click();
+  await page.getByRole('link', { name: 'e2e_enable_2fa_user' }).click();
 
   await expect(page).toHaveURL(/localhost:4000\/profile/);
 
@@ -21,7 +21,7 @@ test('it enables 2FA for a user', async ({ page }) => {
 
   await expect(page).toHaveURL(/localhost:4000\/profile\/2fa/);
 
-  await page.getByLabel('Code').fill('999999');
+  await page.getByTestId('otp-input').fill('999999');
   await page.getByRole('button', { exact: true, name: 'Submit' }).click();
 
   await expect(page).toHaveURL(/localhost:4000\/profile/);

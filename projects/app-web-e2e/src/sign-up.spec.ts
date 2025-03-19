@@ -13,7 +13,7 @@ test('it signs the user up and displays their dashboard', async ({ page }) => {
 
   await expect(page).toHaveURL(/localhost:4000\/verify-otp/);
 
-  await page.getByLabel('Code').fill('999999');
+  await page.getByTestId('otp-input').fill('999999');
   await page.getByRole('button', { exact: true, name: 'Verify' }).click();
 
   await expect(page).toHaveURL(/localhost:4000\/onboarding/);
@@ -27,5 +27,5 @@ test('it signs the user up and displays their dashboard', async ({ page }) => {
 
   await expect(page).toHaveURL(/localhost:4000\/dashboard/);
 
-  await expect(page.getByText('John Smith')).toBeVisible();
+  await expect(page.getByText('john_smith')).toBeVisible();
 });

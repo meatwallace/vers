@@ -1,11 +1,12 @@
-import { data, redirect, useFetcher } from 'react-router';
+import { data, Form, redirect, useFetcher } from 'react-router';
 import type { Client } from '@urql/core';
+import type { Styles } from '@vers/styled-system/css';
 import { parseWithZod } from '@conform-to/zod';
+import { Button, Heading, Link, StatusButton, Text } from '@vers/design-system';
+import { css } from '@vers/styled-system/css';
 import invariant from 'tiny-invariant';
 import { z } from 'zod';
-import { Link } from '~/components/link.tsx';
 import { RouteErrorBoundary } from '~/components/route-error-boundary.tsx';
-import { StatusButton } from '~/components/status-button.tsx';
 import { StartEnable2FAMutation } from '~/data/mutations/start-enable-2fa';
 import { StartStepUpAuthMutation } from '~/data/mutations/start-step-up-auth';
 import { GetCurrentUserQuery } from '~/data/queries/get-current-user';
@@ -28,7 +29,7 @@ const TwoFactorDisableFormSchema = z.object({
 export const meta: Route.MetaFunction = () => [
   {
     description: 'Manage your profile and security settings',
-    title: 'Vers | Profile',
+    title: 'vers | Profile',
   },
 ];
 
@@ -167,6 +168,36 @@ async function handleDisable2FA(
   });
 }
 
+const profileSection = css({
+  alignSelf: 'flex-start',
+  borderBottomWidth: '1',
+  borderColor: 'neutral.800',
+  display: 'flex',
+  flexDirection: 'column',
+  marginBottom: '3',
+  paddingBottom: '3',
+  width: 'full',
+});
+
+const profileInfoRow = css({
+  marginBottom: '2',
+});
+
+const profileInfoLabel: Styles = {
+  color: 'neutral.500',
+  fontWeight: 'bold',
+  marginBottom: '1',
+};
+
+const profileInfoValue: Styles = {
+  marginBottom: '1',
+};
+
+const twoFactorDescription: Styles = {
+  color: 'neutral.500',
+  marginBottom: '4',
+};
+
 export function Profile(props: Route.ComponentProps) {
   const twoFactorFetcher = useFetcher<{ error: string }>();
   const isFormPending = useIsFormPending();
@@ -179,73 +210,83 @@ export function Profile(props: Route.ComponentProps) {
 
   return (
     <>
-      <main>
-        <section>
-          <h1>Profile</h1>
-          <div>
-            <p>Name</p>
-            <p>{user.name}</p>
-            <p>Email</p>
-            <p>{user.email}</p>
-            <Link to={Routes.ProfileChangeEmail}>Change Email</Link>
-          </div>
-        </section>
-        <section>
-          <h2>Security Settings</h2>
-          <Link to={Routes.ProfileChangePassword}>Change Password</Link>
-          <div>
-            <h3>Two-Factor Authentication</h3>
+      <Heading level={2}>Account Management</Heading>
+      <section className={profileSection}>
+        <Heading level={3}>User Information</Heading>
+        <div className={profileInfoRow}>
+          <Text css={profileInfoLabel}>Username</Text>
+          <Text css={profileInfoValue}>{user.username}</Text>
+        </div>
+        <div className={profileInfoRow}>
+          <Text css={profileInfoLabel}>Name</Text>
+          <Text css={profileInfoValue}>{user.name}</Text>
+        </div>
+        <div className={profileInfoRow}>
+          <Text css={profileInfoLabel}>Email</Text>
+          <Text css={profileInfoValue}>{user.email}</Text>
+          <Link to={Routes.ProfileChangeEmail}>Change Email</Link>
+        </div>
+      </section>
+      <section className={profileSection}>
+        <Heading level={3}>Secure Actions</Heading>
+        <Link to={Routes.ProfileChangePassword}>Change Password</Link>
+        <Form action={Routes.Logout} method="post">
+          <Button variant="link">Logout</Button>
+        </Form>
+      </section>
+      <section className={profileSection}>
+        <Heading level={3}>Two-Factor Authentication</Heading>
 
-            {user.is2FAEnabled && (
-              <>
-                <p>You have enabled two-factor authentication.</p>
-                <twoFactorFetcher.Form method="post">
-                  <input name="target" type="hidden" value={user.email} />
-                  <StatusButton
-                    disabled={isFormPending}
-                    name="intent"
-                    status={submitButtonStatus}
-                    type="submit"
-                    value={ActionIntent.Disable2FA}
-                  >
-                    Disable 2FA
-                  </StatusButton>
-                </twoFactorFetcher.Form>
-                {twoFactorFetcher.data?.error && (
-                  <p>{twoFactorFetcher.data.error}</p>
-                )}
-              </>
+        {user.is2FAEnabled && (
+          <>
+            <Text>You have enabled two-factor authentication.</Text>
+            <twoFactorFetcher.Form method="post">
+              <input name="target" type="hidden" value={user.email} />
+              <StatusButton
+                disabled={isFormPending}
+                name="intent"
+                status={submitButtonStatus}
+                type="submit"
+                value={ActionIntent.Disable2FA}
+              >
+                Disable 2FA
+              </StatusButton>
+            </twoFactorFetcher.Form>
+            {twoFactorFetcher.data?.error && (
+              <p>{twoFactorFetcher.data.error}</p>
             )}
+          </>
+        )}
 
-            {!user.is2FAEnabled && (
-              <>
-                <p>Two-factor authentication is not enabled.</p>
-                <p>
-                  Two factor authentication adds an extra layer of security to
-                  your account. You will need to enter a code from an
-                  authenticator app like{' '}
-                  <a href="https://1password.com">1Password</a> to log in.
-                </p>
-                <twoFactorFetcher.Form method="post">
-                  <input name="target" type="hidden" value={user.email} />
-                  <StatusButton
-                    disabled={isFormPending}
-                    name="intent"
-                    status={submitButtonStatus}
-                    type="submit"
-                    value={ActionIntent.Enable2FA}
-                  >
-                    Enable 2FA
-                  </StatusButton>
-                </twoFactorFetcher.Form>
-                {twoFactorFetcher.data?.error && (
-                  <p>{twoFactorFetcher.data.error}</p>
-                )}
-              </>
+        {!user.is2FAEnabled && (
+          <>
+            <Text>
+              Two-factor authentication is <strong>not enabled</strong>.
+            </Text>
+            <Text css={twoFactorDescription}>
+              Two factor authentication adds an extra layer of security to your
+              account. You will need to enter a code from an authenticator app
+              like <Link to="https://1password.com">1Password</Link> to log in.
+            </Text>
+            <twoFactorFetcher.Form method="post">
+              <input name="target" type="hidden" value={user.email} />
+              <StatusButton
+                disabled={isFormPending}
+                name="intent"
+                status={submitButtonStatus}
+                type="submit"
+                value={ActionIntent.Enable2FA}
+                variant="primary"
+              >
+                Enable 2FA
+              </StatusButton>
+            </twoFactorFetcher.Form>
+            {twoFactorFetcher.data?.error && (
+              <p>{twoFactorFetcher.data.error}</p>
             )}
-          </div>
-        </section>
-      </main>
+          </>
+        )}
+      </section>
     </>
   );
 }

@@ -1,0 +1,22 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "lib": ["ESNext"],
+    "baseUrl": ".",
+    "paths": {
+      "~/*": ["./src/*"],
+      "@vers/design-system": ["../lib-design-system/src"],
+      "@vers/styled-system/*": ["../lib-styled-system/styled-system/*"],
+      "@vers/panda-preset": ["../lib-panda-preset/src"],
+      "@vers/email-templates": ["../lib-email-templates/src/index.ts"],
+      "@vers/postgres-schema": ["../lib-postgres-schema/src/index.ts"],
+      "@vers/service-test-utils": ["../lib-service-test-utils/src/index.ts"],
+      "@vers/service-types": ["../lib-service-types/src/index.ts"],
+      "@vers/service-utils": ["../lib-service-utils/src/index.ts"],
+      "@vers/utils": ["../lib-utils/src/index.ts"]
+    }
+  },
+  "files": [],
+  "include": ["src/**/*.ts"],
+  "exclude": []
+}

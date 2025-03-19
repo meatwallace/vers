@@ -41,6 +41,11 @@ function setupTest(config: TestConfig) {
       path: Routes.Login,
     },
     {
+      action: () => null,
+      Component: () => 'LOGOUT_ROUTE',
+      path: Routes.Logout,
+    },
+    {
       Component: () => 'CHANGE_EMAIL_ROUTE',
       path: Routes.ProfileChangeEmail,
     },
@@ -216,4 +221,23 @@ test('it shows a generic error if the disable 2FA mutation fails', async () => {
   const error = await screen.findByText('Something went wrong');
 
   expect(error).toBeInTheDocument();
+});
+
+test('it renders a log out button that redirects to the logout route when pressed', async () => {
+  const { user } = setupTest({
+    isAuthed: true,
+    user: {
+      email: 'test@example.com',
+      id: 'user_id',
+      is2FAEnabled: false,
+    },
+  });
+
+  const logoutButton = await screen.findByRole('button', { name: 'Logout' });
+
+  await user.click(logoutButton);
+
+  const loggedOutMessage = await screen.findByText('LOGOUT_ROUTE');
+
+  expect(loggedOutMessage).toBeInTheDocument();
 });

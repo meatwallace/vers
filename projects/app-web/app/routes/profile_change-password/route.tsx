@@ -1,12 +1,12 @@
 import { data, Form, redirect } from 'react-router';
 import { getFormProps, getInputProps, useForm } from '@conform-to/react';
 import { getZodConstraint, parseWithZod } from '@conform-to/zod';
+import { Field, Heading, StatusButton, Text } from '@vers/design-system';
+import { css } from '@vers/styled-system/css';
 import invariant from 'tiny-invariant';
 import { z } from 'zod';
-import { Field } from '~/components/field';
 import { FormErrorList } from '~/components/form-error-list.tsx';
 import { RouteErrorBoundary } from '~/components/route-error-boundary.tsx';
-import { StatusButton } from '~/components/status-button.tsx';
 import { ChangeUserPasswordMutation } from '~/data/mutations/change-user-password.ts';
 import { StartStepUpAuthMutation } from '~/data/mutations/start-step-up-auth.ts';
 import { GetCurrentUserQuery } from '~/data/queries/get-current-user';
@@ -26,7 +26,7 @@ import { QueryParam } from '../verify-otp/types.ts';
 export const meta: Route.MetaFunction = () => [
   {
     description: 'Change your account password',
-    title: 'Vers | Change Password',
+    title: 'vers | Change Password',
   },
 ];
 
@@ -176,6 +176,13 @@ export const action = withErrorHandling(async (args: Route.ActionArgs) => {
   });
 });
 
+const formStyles = css({
+  display: 'flex',
+  flexDirection: 'column',
+  marginBottom: '6',
+  width: '96',
+});
+
 export function ProfileChangeUserPassword(props: Route.ComponentProps) {
   const isFormPending = useIsFormPending();
 
@@ -194,58 +201,53 @@ export function ProfileChangeUserPassword(props: Route.ComponentProps) {
     : StatusButton.Status.Idle;
 
   return (
-    <main>
-      <section>
-        <h1>Change Password</h1>
-        <Form method="POST" {...getFormProps(form)}>
-          <Field
-            errors={fields.currentPassword.errors ?? []}
-            inputProps={{
-              ...getInputProps(fields.currentPassword, { type: 'password' }),
-              autoComplete: 'current-password',
-            }}
-            labelProps={{
-              children: 'Current Password',
-              htmlFor: fields.currentPassword.id,
-            }}
-          />
-
-          <Field
-            errors={fields.password.errors ?? []}
-            inputProps={{
-              ...getInputProps(fields.password, { type: 'password' }),
-              autoComplete: 'new-password',
-            }}
-            labelProps={{
-              children: 'New Password',
-              htmlFor: fields.password.id,
-            }}
-          />
-
-          <Field
-            errors={fields.confirmPassword.errors ?? []}
-            inputProps={{
-              ...getInputProps(fields.confirmPassword, { type: 'password' }),
-              autoComplete: 'new-password',
-            }}
-            labelProps={{
-              children: 'Confirm New Password',
-              htmlFor: fields.confirmPassword.id,
-            }}
-          />
-
-          <FormErrorList errors={form.errors ?? []} id={form.errorId} />
-
-          <StatusButton
-            disabled={isFormPending}
-            status={submitButtonStatus}
-            type="submit"
-          >
-            Change Password
-          </StatusButton>
-        </Form>
-      </section>
-    </main>
+    <>
+      <Heading level={2}>Change your password</Heading>
+      <Text align="center">
+        To change your password, please enter your current password and then
+        enter your new password twice.
+      </Text>
+      <Form method="POST" {...getFormProps(form)} className={formStyles}>
+        <Field
+          errors={fields.currentPassword.errors ?? []}
+          inputProps={{
+            ...getInputProps(fields.currentPassword, { type: 'password' }),
+            autoComplete: 'current-password',
+            autoFocus: true,
+            placeholder: '********',
+          }}
+          labelProps={{ children: 'Current Password' }}
+        />
+        <Field
+          errors={fields.password.errors ?? []}
+          inputProps={{
+            ...getInputProps(fields.password, { type: 'password' }),
+            autoComplete: 'new-password',
+            placeholder: '********',
+          }}
+          labelProps={{ children: 'New Password' }}
+        />
+        <Field
+          errors={fields.confirmPassword.errors ?? []}
+          inputProps={{
+            ...getInputProps(fields.confirmPassword, { type: 'password' }),
+            autoComplete: 'new-password',
+            placeholder: '********',
+          }}
+          labelProps={{ children: 'Confirm New Password' }}
+        />
+        <FormErrorList errors={form.errors ?? []} id={form.errorId} />
+        <StatusButton
+          disabled={isFormPending}
+          status={submitButtonStatus}
+          type="submit"
+          variant="primary"
+          fullWidth
+        >
+          Change Password
+        </StatusButton>
+      </Form>
+    </>
   );
 }
 

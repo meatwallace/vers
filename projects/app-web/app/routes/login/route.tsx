@@ -1,14 +1,28 @@
-import { data, Form, Link, redirect, useSearchParams } from 'react-router';
+import {
+  data,
+  Form,
+  redirect,
+  Link as RRLink,
+  useSearchParams,
+} from 'react-router';
 import { getFormProps, getInputProps, useForm } from '@conform-to/react';
 import { getZodConstraint, parseWithZod } from '@conform-to/zod';
+import {
+  Brand,
+  CheckboxField,
+  Field,
+  Heading,
+  Link,
+  StatusButton,
+  Text,
+} from '@vers/design-system';
+import { css } from '@vers/styled-system/css';
 import { HoneypotInputs } from 'remix-utils/honeypot/react';
 import { safeRedirect } from 'remix-utils/safe-redirect';
 import invariant from 'tiny-invariant';
 import { z } from 'zod';
-import { Field } from '~/components/field';
 import { FormErrorList } from '~/components/form-error-list.tsx';
 import { RouteErrorBoundary } from '~/components/route-error-boundary.tsx';
-import { StatusButton } from '~/components/status-button.tsx';
 import { LoginWithPasswordMutation } from '~/data/mutations/login-with-password';
 import { VerificationType } from '~/gql/graphql.ts';
 import { useIsFormPending } from '~/hooks/use-is-form-pending';
@@ -24,6 +38,7 @@ import { is2FARequiredPayload } from '~/utils/is-2fa-required-payload.ts';
 import { isMutationError } from '~/utils/is-mutation-error';
 import { requireAnonymous } from '~/utils/require-anonymous.server.ts';
 import { withErrorHandling } from '~/utils/with-error-handling.ts';
+import { FormBooleanSchema } from '~/validation/form-boolean-schema.ts';
 import { PasswordSchema } from '~/validation/password-schema.ts';
 import { UserEmailSchema } from '~/validation/user-email-schema.ts';
 import type { Route } from './+types/route.ts';
@@ -33,13 +48,13 @@ const LoginFormSchema = z.object({
   email: UserEmailSchema,
   password: PasswordSchema,
   redirect: z.string().optional(),
-  rememberMe: z.boolean().default(false),
+  rememberMe: FormBooleanSchema.default('off'),
 });
 
 export const meta: Route.MetaFunction = () => [
   {
     description: '',
-    title: 'Vers | Login',
+    title: 'vers | Login',
   },
 ];
 
@@ -147,6 +162,22 @@ export const action = withErrorHandling(async (args: Route.ActionArgs) => {
   });
 });
 
+const pageInfo = css({
+  marginBottom: '8',
+  textAlign: 'center',
+});
+
+const formStyles = css({
+  display: 'flex',
+  flexDirection: 'column',
+  marginBottom: '6',
+  width: '96',
+});
+
+const forgotPasswordLink = css({
+  alignSelf: 'flex-end',
+});
+
 export function Login(props: Route.ComponentProps) {
   const [searchParams] = useSearchParams();
   const isFormPending = useIsFormPending();
@@ -169,61 +200,57 @@ export function Login(props: Route.ComponentProps) {
     : StatusButton.Status.Idle;
 
   return (
-    <main>
-      <div>
-        <h1>Welcome back</h1>
-        <p>Please enter your details to login</p>
-      </div>
-
-      <Form method="POST" {...getFormProps(form)}>
+    <>
+      <section className={pageInfo}>
+        <RRLink to={Routes.Index}>
+          <Brand size="xl" />
+        </RRLink>
+        <Heading level={2}>Welcome back</Heading>
+        <Text>Please enter your details to login</Text>
+      </section>
+      <Form method="POST" {...getFormProps(form)} className={formStyles}>
         <HoneypotInputs />
         <Field
           errors={fields.email.errors ?? []}
           inputProps={{
             ...getInputProps(fields.email, { type: 'email' }),
             autoComplete: 'email',
+            placeholder: 'your.email@example.com',
           }}
-          labelProps={{ children: 'Email', htmlFor: fields.email.id }}
+          labelProps={{ children: 'Email' }}
         />
         <Field
           errors={fields.password.errors ?? []}
           inputProps={{
             ...getInputProps(fields.password, { type: 'password' }),
             autoComplete: 'current-password',
+            placeholder: '********',
           }}
-          labelProps={{
-            children: 'Password',
-            htmlFor: fields.password.id,
-          }}
+          labelProps={{ children: 'Password' }}
         />
         <input {...getInputProps(fields.redirect, { type: 'hidden' })} />
-        <div>
-          <Field
-            errors={fields.rememberMe.errors ?? []}
-            inputProps={{
-              ...getInputProps(fields.rememberMe, { type: 'checkbox' }),
-            }}
-            labelProps={{
-              children: 'Remember me',
-              htmlFor: fields.rememberMe.id,
-            }}
-          />
-          <Link to={Routes.ForgotPassword}>Forgot password?</Link>
-        </div>
+        <CheckboxField
+          checkboxProps={getInputProps(fields.rememberMe, { type: 'checkbox' })}
+          errors={fields.rememberMe.errors ?? []}
+          labelProps={{ children: 'Remember me' }}
+        />
         <FormErrorList errors={form.errors ?? []} id={form.errorId} />
         <StatusButton
           disabled={isFormPending}
           status={submitButtonStatus}
           type="submit"
+          variant="primary"
+          fullWidth
         >
           Login
         </StatusButton>
-        <div>
-          <span>Don&apos;t have an account?</span>
-          <Link to={Routes.Signup}>Signup</Link>
-        </div>
+        <Link className={forgotPasswordLink} to={Routes.ForgotPassword}>
+          Forgot your password?
+        </Link>
       </Form>
-    </main>
+      <Text>Don&apos;t have an account?</Text>
+      <Link to={Routes.Signup}>Signup</Link>
+    </>
   );
 }
 

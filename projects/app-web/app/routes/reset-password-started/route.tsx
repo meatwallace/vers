@@ -1,5 +1,6 @@
-import { Card } from '~/components/card.tsx';
-import { Link } from '~/components/link.tsx';
+import { Link as RRLink } from 'react-router';
+import { Brand, Heading, Link, Text } from '@vers/design-system';
+import { css } from '@vers/styled-system/css';
 import { RouteErrorBoundary } from '~/components/route-error-boundary.tsx';
 import { Routes } from '~/types.ts';
 import { requireAnonymous } from '~/utils/require-anonymous.server.ts';
@@ -9,7 +10,7 @@ import type { Route } from './+types/route.ts';
 export const meta: Route.MetaFunction = () => [
   {
     description: '',
-    title: 'Vers | Reset Password',
+    title: 'vers | Reset Password',
   },
 ];
 
@@ -19,30 +20,29 @@ export const loader = withErrorHandling(async (args: Route.LoaderArgs) => {
   await requireAnonymous(request);
 });
 
+const pageInfo = css({
+  marginBottom: '8',
+  textAlign: 'center',
+});
+
 export function ResetPasswordStarted() {
   return (
-    <Card>
-      <Card.Header>
-        <Card.Title>Check Your Email</Card.Title>
-      </Card.Header>
-
-      <Card.Body>
-        <p className="mb-4">
+    <>
+      <section className={pageInfo}>
+        <RRLink to={Routes.Index}>
+          <Brand size="xl" />
+        </RRLink>
+        <Heading level={2}>Check your email</Heading>
+        <Text>
           If an account exists with that email address, we&apos;ve sent you
           instructions on how to reset your password.
-        </p>
-
-        <p className="mb-4">
-          The email contains a verification code that you&apos;ll need to enter
-          to continue with the password reset process.
-        </p>
-
-        <p className="text-sm text-muted-foreground">
-          Can&apos;t find the email? Check your spam folder or{' '}
-          <Link to={Routes.ForgotPassword}>try requesting another one</Link>.
-        </p>
-      </Card.Body>
-    </Card>
+        </Text>
+      </section>
+      <Text>
+        Can&apos;t find the email? Check your spam folder or{' '}
+        <Link to={Routes.ForgotPassword}>try requesting another one</Link>.
+      </Text>
+    </>
   );
 }
 

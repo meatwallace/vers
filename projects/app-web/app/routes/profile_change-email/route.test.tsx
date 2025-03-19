@@ -118,10 +118,10 @@ test('it renders the change email form when authenticated without 2FA', async ()
     },
   });
 
-  await screen.findByRole('heading', { name: /change email address/i });
+  await screen.findByRole('heading', { name: 'Change your email address' });
 
-  const emailInput = screen.getByLabelText(/new email address/i);
-  const submitButton = screen.getByRole('button', { name: /change email/i });
+  const emailInput = screen.getByLabelText('New Email Address');
+  const submitButton = screen.getByRole('button', { name: 'Change Email' });
 
   expect(emailInput).toBeInTheDocument();
   expect(submitButton).toBeInTheDocument();
@@ -163,10 +163,10 @@ test('it renders the form when 2FA is enabled and a transaction token is in the 
     },
   });
 
-  await screen.findByRole('heading', { name: /change email address/i });
+  await screen.findByRole('heading', { name: 'Change your email address' });
 
-  const emailInput = screen.getByLabelText(/new email address/i);
-  const submitButton = screen.getByRole('button', { name: /change email/i });
+  const emailInput = screen.getByLabelText('New Email Address');
+  const submitButton = screen.getByRole('button', { name: 'Change Email' });
 
   expect(emailInput).toBeInTheDocument();
   expect(submitButton).toBeInTheDocument();
@@ -183,15 +183,15 @@ test('it shows validation errors for invalid form submission', async () => {
     },
   });
 
-  await screen.findByRole('heading', { name: /change email address/i });
+  await screen.findByRole('heading', { name: 'Change your email address' });
 
-  const emailInput = screen.getByLabelText(/new email address/i);
-  const submitButton = screen.getByRole('button', { name: /change email/i });
+  const emailInput = screen.getByLabelText('New Email Address');
+  const submitButton = screen.getByRole('button', { name: 'Change Email' });
 
   await user.type(emailInput, 'invalid-email');
   await user.click(submitButton);
 
-  const errorMessage = await screen.findByText(/email is invalid/i);
+  const errorMessage = await screen.findByText('Email is invalid');
 
   expect(errorMessage).toBeInTheDocument();
 });
@@ -207,10 +207,10 @@ test('it handles a successful email change submission', async () => {
     },
   });
 
-  await screen.findByRole('heading', { name: /change email address/i });
+  await screen.findByRole('heading', { name: 'Change your email address' });
 
-  const emailInput = screen.getByLabelText(/new email address/i);
-  const submitButton = screen.getByRole('button', { name: /change email/i });
+  const emailInput = screen.getByLabelText('New Email Address');
+  const submitButton = screen.getByRole('button', { name: 'Change Email' });
 
   await user.type(emailInput, 'new-email@example.com');
   await user.click(submitButton);
@@ -250,15 +250,15 @@ test('it shows an error when the email change fails', async () => {
     },
   });
 
-  await screen.findByRole('heading', { name: /change email address/i });
+  await screen.findByRole('heading', { name: 'Change your email address' });
 
-  const emailInput = screen.getByLabelText(/new email address/i);
-  const submitButton = screen.getByRole('button', { name: /change email/i });
+  const emailInput = screen.getByLabelText('New Email Address');
+  const submitButton = screen.getByRole('button', { name: 'Change Email' });
 
   await user.type(emailInput, 'existing-email@example.com');
   await user.click(submitButton);
 
-  const errorMessage = await screen.findByText(/something went wrong/i);
+  const errorMessage = await screen.findByText('Something went wrong');
 
   expect(errorMessage).toBeInTheDocument();
 });
@@ -290,15 +290,15 @@ test('it shows a specific error when the mutation returns an error payload', asy
     },
   });
 
-  await screen.findByRole('heading', { name: /change email address/i });
+  await screen.findByRole('heading', { name: 'Change your email address' });
 
-  const emailInput = screen.getByLabelText(/new email address/i);
-  const submitButton = screen.getByRole('button', { name: /change email/i });
+  const emailInput = screen.getByLabelText('New Email Address');
+  const submitButton = screen.getByRole('button', { name: 'Change Email' });
 
   await user.type(emailInput, 'existing-email@example.com');
   await user.click(submitButton);
 
-  const errorMessage = await screen.findByText(/email already in use/i);
+  const errorMessage = await screen.findByText('Email already in use');
 
   expect(errorMessage).toBeInTheDocument();
 });
