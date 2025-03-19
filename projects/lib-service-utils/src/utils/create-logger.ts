@@ -16,6 +16,14 @@ export function createLogger(options: CreateLoggerOptions): Logger {
     target: 'pino-sentry-transport',
   };
 
+  const defaultTransport: pino.TransportTargetOptions = {
+    options: {
+      // this writes to STDOUT
+      destination: 1,
+    },
+    target: 'pino/file',
+  };
+
   const prettyTransport: pino.TransportTargetOptions = {
     options: {
       colorize: true,
@@ -28,6 +36,8 @@ export function createLogger(options: CreateLoggerOptions): Logger {
 
   if (options.pretty) {
     targets.push(prettyTransport);
+  } else {
+    targets.push(defaultTransport);
   }
 
   if (options.sentryDSN) {
