@@ -65,6 +65,8 @@ jobs:
 
       - name: Build
         run: yarn nx affected -t build
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
 
       - name: Install E2E browsers
         run: yarn playwright install --with-deps
