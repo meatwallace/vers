@@ -64,9 +64,8 @@ jobs:
           yarn nx affected -t test
 
       - name: Build
+        if: ${{ github.ref_name != 'main' }}
         run: yarn nx affected -t build
-        env:
-          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
 
       - name: Install E2E browsers
         run: yarn playwright install --with-deps
@@ -99,47 +98,54 @@ jobs:
         if: ${{ github.ref_name == 'main' && contains(steps.record-affected-projects.outputs.affected-projects, 'db-postgres') }}
         run: yarn deploy:db-postgres --configuration=production
         env:
-          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
           COMMIT_SHA: ${{ github.sha }}
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
 
       - name: Deploy API Service
         if: ${{ github.ref_name == 'main' && contains(steps.record-affected-projects.outputs.affected-projects, 'service-api') }}
         run: yarn deploy:service-api --configuration=production
         env:
-          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
           COMMIT_SHA: ${{ github.sha }}
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
 
       - name: Deploy Email Service
         if: ${{ github.ref_name == 'main' && contains(steps.record-affected-projects.outputs.affected-projects, 'service-email') }}
         run: yarn deploy:service-email --configuration=production
         env:
-          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
           COMMIT_SHA: ${{ github.sha }}
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
 
       - name: Deploy Session Service
         if: ${{ github.ref_name == 'main' && contains(steps.record-affected-projects.outputs.affected-projects, 'service-session') }}
         run: yarn deploy:service-session --configuration=production
         env:
-          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
           COMMIT_SHA: ${{ github.sha }}
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
 
       - name: Deploy User Service
         if: ${{ github.ref_name == 'main' && contains(steps.record-affected-projects.outputs.affected-projects, 'service-user') }}
         run: yarn deploy:service-user --configuration=production
         env:
-          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
           COMMIT_SHA: ${{ github.sha }}
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
 
       - name: Deploy Verification Service
         if: ${{ github.ref_name == 'main' && contains(steps.record-affected-projects.outputs.affected-projects, 'service-verification') }}
         run: yarn deploy:service-verification --configuration=production
         env:
-          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
           COMMIT_SHA: ${{ github.sha }}
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
 
       - name: Deploy Web App
         if: ${{ github.ref_name == 'main' && contains(steps.record-affected-projects.outputs.affected-projects, 'app-web') }}
         run: yarn deploy:app-web --configuration=production
         env:
-          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
           COMMIT_SHA: ${{ github.sha }}
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}

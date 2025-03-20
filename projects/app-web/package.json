@@ -49,7 +49,7 @@
   "devDependencies": {
     "@graphql-typed-document-node/core": "3.2.0",
     "@mswjs/data": "0.16.2",
-    "@nx/vite": "20.5.0",
+    "@nx/vite": "20.6.2",
     "@pandacss/dev": "0.53.1",
     "@paralleldrive/cuid2": "2.2.2",
     "@react-router/dev": "7.3.0",
