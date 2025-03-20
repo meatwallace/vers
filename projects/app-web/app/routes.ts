@@ -28,4 +28,6 @@ export default [
     ),
     route(Routes.ProfileVerify2FA, 'routes/profile_verify-2fa/route.tsx'),
   ]),
+
+  route('*', 'routes/splat/route.tsx'),
 ] satisfies RouteConfig;
