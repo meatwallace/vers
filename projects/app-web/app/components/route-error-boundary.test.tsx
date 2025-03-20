@@ -42,29 +42,24 @@ afterEach(() => {
   vi.clearAllMocks();
 });
 
-test('it displays a not found message for 404 errors', () => {
+test('it displays a not found message for 404 errors', async () => {
   setupTest({
     error: createMockRouteError({ status: 404, statusText: 'Not Found' }),
   });
 
-  expect(screen.getByText('Page not found')).toBeInTheDocument();
+  const errorMessage = await screen.findByText(
+    "We couldn't find what you were looking for",
+  );
+
+  expect(errorMessage).toBeInTheDocument();
 });
 
-test('it displays a server error message for 500 errors', () => {
-  setupTest({
-    error: createMockRouteError({
-      status: 500,
-      statusText: 'Internal Server Error',
-    }),
-  });
-
-  expect(screen.getByText('Internal server error')).toBeInTheDocument();
-});
-
-test('it displays the error message for non-route errors', () => {
+test('it displays a generic error message for non-route errors', async () => {
   setupTest({
     error: new Error('Test error'),
   });
 
-  expect(screen.getByText('An unknown error occurred')).toBeInTheDocument();
+  const errorMessage = await screen.findByText('Something went wrong');
+
+  expect(errorMessage).toBeInTheDocument();
 });

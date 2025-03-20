@@ -1,4 +1,5 @@
 export enum Routes {
+  Contact = '/contact',
   Dashboard = '/dashboard',
   ForgotPassword = '/forgot-password',
   Index = '/',
