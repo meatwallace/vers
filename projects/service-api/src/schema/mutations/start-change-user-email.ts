@@ -2,12 +2,13 @@ import { generateChangeEmailVerificationEmail } from '@vers/email-templates';
 import type { AuthedContext } from '~/types';
 import { env } from '~/env';
 import { logger } from '~/logger';
+import { SecureAction } from '~/types';
 import { createPendingTransaction } from '~/utils/create-pending-transaction';
 import { verifyTransactionToken } from '~/utils/verify-transaction-token';
 import { builder } from '../builder';
 import { UNKNOWN_ERROR } from '../errors';
 import { MutationErrorPayload } from '../types/mutation-error-payload';
-import { TwoFactorRequiredPayload } from '../types/two-factor-required-payload';
+import { VerificationRequiredPayload } from '../types/verification-required-payload';
 import { VerificationType } from '../types/verification-type';
 import { createPayloadResolver } from '../utils/create-payload-resolver';
 import { requireAuth } from '../utils/require-auth';
@@ -29,7 +30,7 @@ interface Args {
  *       success
  *     }
  *
- *     ... on TwoFactorRequiredPayload {
+ *     ... on VerificationRequiredPayload {
  *       transactionID
  *     }
  *
@@ -58,7 +59,7 @@ export async function startChangeUserEmail(
     if (isTwoFactorEnabled) {
       const isValidTransaction = await verifyTransactionToken(
         {
-          action: VerificationType.CHANGE_EMAIL,
+          action: SecureAction.ChangeEmail,
           target: ctx.user.email,
           token: args.input.transactionToken,
         },
@@ -110,16 +111,13 @@ export async function startChangeUserEmail(
     });
 
     const transactionID = createPendingTransaction({
-      action: VerificationType.CHANGE_EMAIL_CONFIRMATION,
+      action: SecureAction.ChangeEmailConfirmation,
       ipAddress: ctx.ipAddress,
       sessionID: ctx.session.id,
       target: args.input.email,
     });
 
-    return {
-      sessionID: null,
-      transactionID,
-    };
+    return { transactionID };
   } catch (error) {
     if (error instanceof Error) {
       logger.error(error);
@@ -142,8 +140,8 @@ const StartChangeUserEmailInput = builder.inputType(
 const StartChangeUserEmailPayload = builder.unionType(
   'StartChangeUserEmailPayload',
   {
-    resolveType: createPayloadResolver(TwoFactorRequiredPayload),
-    types: [TwoFactorRequiredPayload, MutationErrorPayload],
+    resolveType: createPayloadResolver(VerificationRequiredPayload),
+    types: [VerificationRequiredPayload, MutationErrorPayload],
   },
 );
 

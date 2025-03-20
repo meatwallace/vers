@@ -5,9 +5,9 @@ import { db } from '~/mocks/db';
 import { trpc } from '~/mocks/handlers/trpc/service-user/trpc';
 import { server } from '~/mocks/node';
 import { createMockGQLContext } from '~/test-utils/create-mock-gql-context';
+import { SecureAction } from '~/types';
 import { createPendingTransaction } from '~/utils/create-pending-transaction';
 import { createTransactionToken } from '~/utils/create-transaction-token';
-import { VerificationType } from '../types/verification-type';
 import { resolve } from './finish-password-reset';
 
 afterEach(() => {
@@ -127,7 +127,7 @@ test('it updates the password when 2fa is required and the transaction token is 
   const ctx = createMockGQLContext({});
 
   const transactionID = createPendingTransaction({
-    action: VerificationType.RESET_PASSWORD,
+    action: SecureAction.ResetPassword,
     ipAddress: ctx.ipAddress,
     sessionID: null,
     target: user.email,
@@ -135,7 +135,7 @@ test('it updates the password when 2fa is required and the transaction token is 
 
   const transactionToken = await createTransactionToken(
     {
-      action: VerificationType.RESET_PASSWORD,
+      action: SecureAction.ResetPassword,
       ipAddress: ctx.ipAddress,
       sessionID: null,
       target: user.email,

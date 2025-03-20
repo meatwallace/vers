@@ -3,7 +3,7 @@ import { graphql } from '~/gql';
 export const StartEmailSignupMutation = graphql(/* GraphQL */ `
   mutation StartEmailSignup($input: StartEmailSignupInput!) {
     startEmailSignup(input: $input) {
-      ... on TwoFactorRequiredPayload {
+      ... on VerificationRequiredPayload {
         transactionID
       }
 

@@ -1,9 +1,9 @@
 import { createId } from '@paralleldrive/cuid2';
-import { VerificationType } from '~/schema/types/verification-type';
+import { SecureAction } from '~/types';
 import { pendingTransactionCache } from './pending-transaction-cache';
 
 interface Data {
-  action: VerificationType;
+  action: SecureAction;
   ipAddress: string;
   sessionID: null | string;
   target: string;

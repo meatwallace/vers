@@ -2,10 +2,9 @@ import { afterEach, expect, test } from 'vitest';
 import { drop } from '@mswjs/data';
 import { db } from '~/mocks/db';
 import { createMockGQLContext } from '~/test-utils/create-mock-gql-context';
+import { SecureAction } from '~/types';
 import { createPendingTransaction } from '~/utils/create-pending-transaction';
 import { createTransactionToken } from '~/utils/create-transaction-token';
-import { VerificationType } from '../types/verification-type';
-import { resolveVerificationType } from '../utils/resolve-verification-type';
 import { resolve } from './finish-disable-2fa';
 
 afterEach(() => {
@@ -29,7 +28,7 @@ test('it successfully disables 2FA with a valid transaction token', async () => 
   const ctx = createMockGQLContext({ session, user });
 
   const transactionID = createPendingTransaction({
-    action: VerificationType.TWO_FACTOR_AUTH_DISABLE,
+    action: SecureAction.TwoFactorAuthDisable,
     ipAddress: ctx.ipAddress,
     sessionID: session.id,
     target: user.email,
@@ -37,7 +36,7 @@ test('it successfully disables 2FA with a valid transaction token', async () => 
 
   const transactionToken = await createTransactionToken(
     {
-      action: VerificationType.TWO_FACTOR_AUTH_DISABLE,
+      action: SecureAction.TwoFactorAuthDisable,
       ipAddress: ctx.ipAddress,
       sessionID: session.id,
       target: user.email,
@@ -78,7 +77,7 @@ test('it returns an error with an invalid transaction token', async () => {
     period: 30,
     secret: 'ABCDEFGHIJKLMNOP',
     target: user.email,
-    type: resolveVerificationType(VerificationType.TWO_FACTOR_AUTH),
+    type: '2fa',
   });
 
   const ctx = createMockGQLContext({ user });

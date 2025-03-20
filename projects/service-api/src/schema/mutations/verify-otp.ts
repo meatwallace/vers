@@ -1,5 +1,6 @@
 import type { Context } from '~/types';
 import { logger } from '~/logger';
+import { SecureAction } from '~/types';
 import { createTransactionToken } from '~/utils/create-transaction-token';
 import { trackTransactionAttempt } from '~/utils/track-transaction-attempt';
 import { builder } from '../builder';
@@ -36,7 +37,7 @@ export async function verifyOTP(
 
     const transactionToken = await createTransactionToken(
       {
-        action: args.input.type,
+        action: VERIFICATION_TYPE_TO_SECURE_ACTION[args.input.type],
         ipAddress: ctx.ipAddress,
         sessionID: args.input.sessionID ?? null,
         target: verification.target,
@@ -54,6 +55,21 @@ export async function verifyOTP(
     return { error: UNKNOWN_ERROR };
   }
 }
+
+const VERIFICATION_TYPE_TO_SECURE_ACTION: Record<
+  VerificationType,
+  SecureAction
+> = {
+  [VerificationType.CHANGE_EMAIL]: SecureAction.ChangeEmail,
+  [VerificationType.CHANGE_EMAIL_CONFIRMATION]:
+    SecureAction.ChangeEmailConfirmation,
+  [VerificationType.CHANGE_PASSWORD]: SecureAction.ChangePassword,
+  [VerificationType.ONBOARDING]: SecureAction.Onboarding,
+  [VerificationType.RESET_PASSWORD]: SecureAction.ResetPassword,
+  [VerificationType.TWO_FACTOR_AUTH]: SecureAction.TwoFactorAuth,
+  [VerificationType.TWO_FACTOR_AUTH_DISABLE]: SecureAction.TwoFactorAuthDisable,
+  [VerificationType.TWO_FACTOR_AUTH_SETUP]: SecureAction.TwoFactorAuthSetup,
+};
 
 const VerifyOTPInput = builder.inputType('VerifyOTPInput', {
   fields: (t) => ({

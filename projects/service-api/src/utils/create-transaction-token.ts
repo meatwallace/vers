@@ -1,12 +1,12 @@
 import { createId } from '@paralleldrive/cuid2';
 import * as jose from 'jose';
 import type { Context } from '~/types';
-import { VerificationType } from '~/schema/types/verification-type';
+import { SecureAction } from '~/types';
 import { env } from '../env';
 import { pendingTransactionCache } from './pending-transaction-cache';
 
 interface Data {
-  action: VerificationType;
+  action: SecureAction;
   ipAddress: string;
   sessionID: null | string;
   target: string;
@@ -14,8 +14,8 @@ interface Data {
 }
 
 /**
- * Creates a short lived transaction token that is used to bind a successful
- * OTP verification to a specific secure action.
+ * Creates a short lived, single use transaction token that is
+ * used to bind authorization to a specific secure action.
  *
  * @param data - The data to create the token with.
  * @param ctx - The context of the request.
@@ -72,7 +72,7 @@ export async function createTransactionToken(
 
   const privateKey = await jose.importPKCS8(env.JWT_SIGNING_PRIVKEY, 'RS256');
 
-  const expirationTime = VERIFICATION_TYPE_EXPIRATION_TIME[data.action];
+  const expirationTime = SECURE_ACTION_EXPIRATION_TIME[data.action];
 
   const jwt = await new jose.SignJWT(payload)
     .setProtectedHeader({ alg: 'RS256' })
@@ -84,31 +84,31 @@ export async function createTransactionToken(
     .sign(privateKey);
 
   // we can safely remove our pending transaction now that we've created a token
-
   pendingTransactionCache.delete(data.transactionID);
 
   return jwt;
 }
 
 /**
- * The expiration time for each verification type.
+ * The expiration time for each secure action.
  *
  * Duration is decided by evaluating expected between time between token
  * generation -> action completion & security requirements.
  */
-const VERIFICATION_TYPE_EXPIRATION_TIME: Record<VerificationType, string> = {
-  [VerificationType.CHANGE_EMAIL]: '5 minutes',
-  [VerificationType.CHANGE_EMAIL_CONFIRMATION]: '20 minutes',
-
-  [VerificationType.CHANGE_PASSWORD]: '5 minutes',
+const SECURE_ACTION_EXPIRATION_TIME: Record<SecureAction, string> = {
   // low risk operations i.e. email verification
-  [VerificationType.ONBOARDING]: '20 minutes',
+  [SecureAction.ChangeEmailConfirmation]: '20 minutes',
+  [SecureAction.Onboarding]: '20 minutes',
+
   // med risk operations i.e. password resets/changes
-  [VerificationType.RESET_PASSWORD]: '5 minutes',
+  [SecureAction.ChangeEmail]: '5 minutes',
+  [SecureAction.ChangePassword]: '5 minutes',
+  [SecureAction.ResetPassword]: '5 minutes',
 
   // high risk operations / operations that are expected to be completed immediately
   // i.e. 2FA login & initial setup
-  [VerificationType.TWO_FACTOR_AUTH]: '2 minutes',
-  [VerificationType.TWO_FACTOR_AUTH_DISABLE]: '2 minutes',
-  [VerificationType.TWO_FACTOR_AUTH_SETUP]: '2 minutes',
+  [SecureAction.ForceLogout]: '2 minute',
+  [SecureAction.TwoFactorAuth]: '2 minutes',
+  [SecureAction.TwoFactorAuthDisable]: '2 minutes',
+  [SecureAction.TwoFactorAuthSetup]: '2 minutes',
 };

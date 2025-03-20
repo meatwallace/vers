@@ -2,9 +2,9 @@ import { afterEach, expect, test } from 'vitest';
 import { db } from '~/mocks/db';
 import { sentEmails } from '~/mocks/handlers/trpc/service-email/send-email';
 import { createMockGQLContext } from '~/test-utils/create-mock-gql-context';
+import { SecureAction } from '~/types';
 import { createPendingTransaction } from '~/utils/create-pending-transaction';
 import { createTransactionToken } from '~/utils/create-transaction-token';
-import { VerificationType } from '../types/verification-type';
 import { resolve } from './finish-change-user-email';
 
 afterEach(() => {
@@ -23,7 +23,7 @@ test('it verifies the transaction token and sends a notification email', async (
   const ctx = createMockGQLContext({ session, user });
 
   const transactionID = createPendingTransaction({
-    action: VerificationType.CHANGE_EMAIL_CONFIRMATION,
+    action: SecureAction.ChangeEmailConfirmation,
     ipAddress: ctx.ipAddress,
     sessionID: session.id,
     target: 'new@test.com',
@@ -31,7 +31,7 @@ test('it verifies the transaction token and sends a notification email', async (
 
   const transactionToken = await createTransactionToken(
     {
-      action: VerificationType.CHANGE_EMAIL_CONFIRMATION,
+      action: SecureAction.ChangeEmailConfirmation,
       ipAddress: ctx.ipAddress,
       sessionID: session.id,
       target: 'new@test.com',

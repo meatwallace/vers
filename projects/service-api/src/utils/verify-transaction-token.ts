@@ -1,13 +1,12 @@
 import * as jose from 'jose';
 import { z } from 'zod';
-import type { Context } from '~/types';
 import { env } from '~/env';
 import { logger } from '~/logger';
-import { VerificationType } from '~/schema/types/verification-type';
+import { type Context, SecureAction } from '~/types';
 import { transactionJTIBlocklist } from './transaction-jti-blocklist';
 
 const JWTPayloadSchema = z.object({
-  action: z.nativeEnum(VerificationType),
+  action: z.nativeEnum(SecureAction),
   amr: z.array(z.string()),
   auth_time: z.number(),
   ip_address: z.string(),
@@ -19,16 +18,17 @@ const JWTPayloadSchema = z.object({
 });
 
 const SESSION_REQUIRED_ACTIONS = new Set([
-  VerificationType.CHANGE_EMAIL,
-  VerificationType.CHANGE_EMAIL_CONFIRMATION,
-  VerificationType.CHANGE_PASSWORD,
-  VerificationType.TWO_FACTOR_AUTH,
-  VerificationType.TWO_FACTOR_AUTH_DISABLE,
-  VerificationType.TWO_FACTOR_AUTH_SETUP,
+  SecureAction.ChangeEmail,
+  SecureAction.ChangeEmailConfirmation,
+  SecureAction.ChangePassword,
+  SecureAction.ForceLogout,
+  SecureAction.TwoFactorAuth,
+  SecureAction.TwoFactorAuthDisable,
+  SecureAction.TwoFactorAuthSetup,
 ]);
 
 interface VerifyTransactionTokenData {
-  action: VerificationType;
+  action: SecureAction;
   target: string;
   token: null | string | undefined;
 }
@@ -38,7 +38,7 @@ interface VerifyTransactionTokenData {
  *
  * @param data - The data to verify.
  * @param ctx - The context of the request.
- * @returns True if the token is valid or not provided, false otherwise.
+ * @returns true if the token is valid or not provided, false otherwise.
  */
 export async function verifyTransactionToken(
   data: VerifyTransactionTokenData,

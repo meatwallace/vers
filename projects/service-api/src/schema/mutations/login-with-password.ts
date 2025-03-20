@@ -1,13 +1,12 @@
 import type { Context } from '~/types';
 import { logger } from '~/logger';
+import { SecureAction } from '~/types';
 import { createPendingTransaction } from '~/utils/create-pending-transaction';
 import { builder } from '../builder';
 import { INVALID_CREDENTIALS_ERROR, UNKNOWN_ERROR } from '../errors';
 import { AuthPayload } from '../types/auth-payload';
 import { MutationErrorPayload } from '../types/mutation-error-payload';
-import { TwoFactorRequiredPayload } from '../types/two-factor-required-payload';
-import { VerificationType } from '../types/verification-type';
-import { createPayloadResolver } from '../utils/create-payload-resolver';
+import { TwoFactorLoginPayload } from '../types/two-factor-login-payload';
 
 interface Args {
   input: typeof LoginWithPasswordInput.$inferInput;
@@ -57,7 +56,7 @@ export async function loginWithPassword(
     // If 2FA is enabled, return the two factor required payload
     if (verification) {
       const transactionID = createPendingTransaction({
-        action: VerificationType.TWO_FACTOR_AUTH,
+        action: SecureAction.TwoFactorAuth,
         ipAddress: ctx.ipAddress,
         sessionID: authPayload.session.id,
         target: user.email,
@@ -84,9 +83,21 @@ const LoginWithPasswordInput = builder.inputType('LoginWithPasswordInput', {
   }),
 });
 
+function resolveType(value: object) {
+  if ('error' in value) {
+    return MutationErrorPayload;
+  }
+
+  if ('transactionID' in value) {
+    return TwoFactorLoginPayload;
+  }
+
+  return AuthPayload;
+}
+
 const LoginWithPasswordPayload = builder.unionType('LoginWithPasswordPayload', {
-  resolveType: createPayloadResolver(AuthPayload),
-  types: [AuthPayload, TwoFactorRequiredPayload, MutationErrorPayload],
+  resolveType,
+  types: [AuthPayload, TwoFactorLoginPayload, MutationErrorPayload],
 });
 
 export const resolve = loginWithPassword;

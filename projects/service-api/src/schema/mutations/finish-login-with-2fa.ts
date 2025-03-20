@@ -1,11 +1,11 @@
 import type { Context } from '~/types';
 import { logger } from '~/logger';
+import { SecureAction } from '~/types';
 import { verifyTransactionToken } from '~/utils/verify-transaction-token';
 import { builder } from '../builder';
 import { UNKNOWN_ERROR } from '../errors';
 import { AuthPayload } from '../types/auth-payload';
 import { MutationErrorPayload } from '../types/mutation-error-payload';
-import { VerificationType } from '../types/verification-type';
 import { createPayloadResolver } from '../utils/create-payload-resolver';
 
 interface Args {
@@ -37,7 +37,7 @@ export async function finishLoginWith2FA(
 
     const payload = await verifyTransactionToken(
       {
-        action: VerificationType.TWO_FACTOR_AUTH,
+        action: SecureAction.TwoFactorAuth,
         target: args.input.target,
         token: args.input.transactionToken,
       },

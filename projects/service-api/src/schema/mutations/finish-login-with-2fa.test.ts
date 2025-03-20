@@ -3,9 +3,9 @@ import { drop } from '@mswjs/data';
 import invariant from 'tiny-invariant';
 import { db } from '~/mocks/db';
 import { createMockGQLContext } from '~/test-utils/create-mock-gql-context';
+import { SecureAction } from '~/types';
 import { createPendingTransaction } from '~/utils/create-pending-transaction';
 import { createTransactionToken } from '~/utils/create-transaction-token';
-import { VerificationType } from '../types/verification-type';
 import { resolve } from './finish-login-with-2fa';
 
 afterEach(() => {
@@ -25,7 +25,7 @@ test('it returns an auth payload when the transaction token is valid', async () 
   const ctx = createMockGQLContext({ session });
 
   const transactionID = createPendingTransaction({
-    action: VerificationType.TWO_FACTOR_AUTH,
+    action: SecureAction.TwoFactorAuth,
     ipAddress: ctx.ipAddress,
     sessionID: session.id,
     target: 'user@test.com',
@@ -38,7 +38,7 @@ test('it returns an auth payload when the transaction token is valid', async () 
 
   const transactionToken = await createTransactionToken(
     {
-      action: VerificationType.TWO_FACTOR_AUTH,
+      action: SecureAction.TwoFactorAuth,
       ipAddress: ctx.ipAddress,
       sessionID: session.id,
       target: verification.target,
@@ -90,7 +90,7 @@ test('it returns an error when 2FA is not enabled', async () => {
   });
 
   const transactionID = createPendingTransaction({
-    action: VerificationType.TWO_FACTOR_AUTH,
+    action: SecureAction.TwoFactorAuth,
     ipAddress: ctx.ipAddress,
     sessionID: session.id,
     target: 'user@test.com',
@@ -98,7 +98,7 @@ test('it returns an error when 2FA is not enabled', async () => {
 
   const transactionToken = await createTransactionToken(
     {
-      action: VerificationType.TWO_FACTOR_AUTH,
+      action: SecureAction.TwoFactorAuth,
       ipAddress: ctx.ipAddress,
       sessionID: session.id,
       target: 'user@test.com',

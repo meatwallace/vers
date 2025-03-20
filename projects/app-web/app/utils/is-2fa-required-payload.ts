@@ -1,7 +1,7 @@
-import { TwoFactorRequiredPayload } from '~/gql/graphql';
+import { TwoFactorLoginPayload } from '~/gql/graphql';
 
 export function is2FARequiredPayload(
-  payload: object | TwoFactorRequiredPayload,
-): payload is TwoFactorRequiredPayload {
+  payload: object | TwoFactorLoginPayload,
+): payload is TwoFactorLoginPayload {
   return 'transactionID' in payload;
 }

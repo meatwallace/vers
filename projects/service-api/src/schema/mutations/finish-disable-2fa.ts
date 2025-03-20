@@ -1,11 +1,11 @@
 import { logger } from '~/logger';
 import { AuthedContext } from '~/types';
+import { SecureAction } from '~/types';
 import { verifyTransactionToken } from '~/utils/verify-transaction-token';
 import { builder } from '../builder';
 import { TWO_FACTOR_NOT_ENABLED_ERROR, UNKNOWN_ERROR } from '../errors';
 import { MutationErrorPayload } from '../types/mutation-error-payload';
 import { MutationSuccess } from '../types/mutation-success';
-import { VerificationType } from '../types/verification-type';
 import { createPayloadResolver } from '../utils/create-payload-resolver';
 import { requireAuth } from '../utils/require-auth';
 
@@ -45,7 +45,7 @@ export async function finishDisable2FA(
   try {
     const isValidTransaction = await verifyTransactionToken(
       {
-        action: VerificationType.TWO_FACTOR_AUTH_DISABLE,
+        action: SecureAction.TwoFactorAuthDisable,
         target: ctx.user.email,
         token: args.input.transactionToken,
       },

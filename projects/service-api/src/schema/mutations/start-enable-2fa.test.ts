@@ -3,8 +3,8 @@ import { drop } from '@mswjs/data';
 import invariant from 'tiny-invariant';
 import { db } from '~/mocks/db';
 import { createMockGQLContext } from '~/test-utils/create-mock-gql-context';
+import { SecureAction } from '~/types';
 import { pendingTransactionCache } from '~/utils/pending-transaction-cache';
-import { VerificationType } from '../types/verification-type';
 import { resolve } from './start-enable-2fa';
 
 afterEach(() => {
@@ -21,7 +21,6 @@ test('it creates a verification record for 2FA setup with a pending transaction'
   const result = await resolve({}, {}, ctx);
 
   expect(result).toStrictEqual({
-    sessionID: null,
     transactionID: expect.any(String),
   });
 
@@ -52,7 +51,7 @@ test('it creates a verification record for 2FA setup with a pending transaction'
   const pendingTransaction = pendingTransactionCache.get(result.transactionID);
 
   expect(pendingTransaction).toStrictEqual({
-    action: VerificationType.TWO_FACTOR_AUTH_SETUP,
+    action: SecureAction.TwoFactorAuthSetup,
     attempts: 0,
     ipAddress: ctx.ipAddress,
     sessionID: ctx.session?.id,
@@ -97,7 +96,6 @@ test('it replaces an existing 2FA setup verification record', async () => {
   const result = await resolve({}, {}, ctx);
 
   expect(result).toStrictEqual({
-    sessionID: null,
     transactionID: expect.any(String),
   });
 

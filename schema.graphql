@@ -84,7 +84,7 @@ input LoginWithPasswordInput {
   rememberMe: Boolean!
 }
 
-union LoginWithPasswordPayload = AuthPayload | MutationErrorPayload | TwoFactorRequiredPayload
+union LoginWithPasswordPayload = AuthPayload | MutationErrorPayload | TwoFactorLoginPayload
 
 type Mutation {
   changeUserPassword(input: ChangeUserPasswordInput!): ChangeUserPasswordPayload!
@@ -142,31 +142,31 @@ input StartChangeUserEmailInput {
   transactionToken: String
 }
 
-union StartChangeUserEmailPayload = MutationErrorPayload | TwoFactorRequiredPayload
+union StartChangeUserEmailPayload = MutationErrorPayload | VerificationRequiredPayload
 
 input StartEmailSignupInput {
   email: String!
 }
 
-union StartEmailSignupPayload = MutationErrorPayload | TwoFactorRequiredPayload
+union StartEmailSignupPayload = MutationErrorPayload | VerificationRequiredPayload
 
 input StartEnable2FAInput {
   placeholder: String
 }
 
-union StartEnable2FAPayload = MutationErrorPayload | TwoFactorRequiredPayload
+union StartEnable2FAPayload = MutationErrorPayload | VerificationRequiredPayload
 
 input StartPasswordResetInput {
   email: String!
 }
 
-union StartPasswordResetPayload = MutationErrorPayload | MutationSuccess | TwoFactorRequiredPayload
+union StartPasswordResetPayload = MutationErrorPayload | MutationSuccess | VerificationRequiredPayload
 
 input StartStepUpAuthInput {
   action: StepUpAction!
 }
 
-union StartStepUpAuthPayload = MutationErrorPayload | TwoFactorRequiredPayload
+union StartStepUpAuthPayload = MutationErrorPayload | VerificationRequiredPayload
 
 enum StepUpAction {
   CHANGE_EMAIL
@@ -174,8 +174,8 @@ enum StepUpAction {
   DISABLE_2FA
 }
 
-type TwoFactorRequiredPayload {
-  sessionID: String
+type TwoFactorLoginPayload {
+  sessionID: String!
   transactionID: String!
 }
 
@@ -195,6 +195,10 @@ type User {
   name: String!
   updatedAt: DateTime!
   username: String!
+}
+
+type VerificationRequiredPayload {
+  transactionID: String!
 }
 
 enum VerificationType {

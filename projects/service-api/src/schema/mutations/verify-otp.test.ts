@@ -4,6 +4,7 @@ import { drop } from '@mswjs/data';
 import invariant from 'tiny-invariant';
 import { db } from '~/mocks/db';
 import { createMockGQLContext } from '~/test-utils/create-mock-gql-context';
+import { SecureAction } from '~/types';
 import { createPendingTransaction } from '~/utils/create-pending-transaction';
 import { verifyTransactionToken } from '~/utils/verify-transaction-token';
 import { VerificationType } from '../types/verification-type';
@@ -17,7 +18,7 @@ test('it verifies a valid onboarding otp and returns a valid transaction token',
   const ctx = createMockGQLContext({});
 
   const transactionID = createPendingTransaction({
-    action: VerificationType.ONBOARDING,
+    action: SecureAction.Onboarding,
     ipAddress: ctx.ipAddress,
     sessionID: null,
     target: 'test@example.com',
@@ -54,7 +55,7 @@ test('it verifies a valid onboarding otp and returns a valid transaction token',
 
   const isValid = await verifyTransactionToken(
     {
-      action: VerificationType.ONBOARDING,
+      action: SecureAction.Onboarding,
       target: 'test@example.com',
       token: result.transactionToken,
     },
@@ -62,7 +63,7 @@ test('it verifies a valid onboarding otp and returns a valid transaction token',
   );
 
   expect(isValid).toStrictEqual({
-    action: VerificationType.ONBOARDING,
+    action: SecureAction.Onboarding,
     amr: ['otp'],
     auth_time: expect.any(Number),
     ip_address: ctx.ipAddress,
@@ -80,7 +81,7 @@ test('it verifies a valid change email otp and returns a valid transaction token
   const ctx = createMockGQLContext({ session });
 
   const transactionID = createPendingTransaction({
-    action: VerificationType.CHANGE_EMAIL,
+    action: SecureAction.ChangeEmail,
     ipAddress: ctx.ipAddress,
     sessionID: session.id,
     target: 'test@example.com',
@@ -117,7 +118,7 @@ test('it verifies a valid change email otp and returns a valid transaction token
 
   const isValid = await verifyTransactionToken(
     {
-      action: VerificationType.CHANGE_EMAIL,
+      action: SecureAction.ChangeEmail,
       target: 'test@example.com',
       token: result.transactionToken,
     },
@@ -125,7 +126,7 @@ test('it verifies a valid change email otp and returns a valid transaction token
   );
 
   expect(isValid).toStrictEqual({
-    action: VerificationType.CHANGE_EMAIL,
+    action: SecureAction.ChangeEmail,
     amr: ['otp'],
     auth_time: expect.any(Number),
     ip_address: ctx.ipAddress,
@@ -143,7 +144,7 @@ test('it verifies a valid change password otp and returns a valid transaction to
   const ctx = createMockGQLContext({ session });
 
   const transactionID = createPendingTransaction({
-    action: VerificationType.CHANGE_PASSWORD,
+    action: SecureAction.ChangePassword,
     ipAddress: ctx.ipAddress,
     sessionID: session.id,
     target: 'test@example.com',
@@ -180,7 +181,7 @@ test('it verifies a valid change password otp and returns a valid transaction to
 
   const isValid = await verifyTransactionToken(
     {
-      action: VerificationType.CHANGE_PASSWORD,
+      action: SecureAction.ChangePassword,
       target: 'test@example.com',
       token: result.transactionToken,
     },
@@ -188,7 +189,7 @@ test('it verifies a valid change password otp and returns a valid transaction to
   );
 
   expect(isValid).toStrictEqual({
-    action: VerificationType.CHANGE_PASSWORD,
+    action: SecureAction.ChangePassword,
     amr: ['otp'],
     auth_time: expect.any(Number),
     ip_address: ctx.ipAddress,
@@ -204,7 +205,7 @@ test('it verifies a valid reset password otp and returns a valid transaction tok
   const ctx = createMockGQLContext({});
 
   const transactionID = createPendingTransaction({
-    action: VerificationType.RESET_PASSWORD,
+    action: SecureAction.ResetPassword,
     ipAddress: ctx.ipAddress,
     sessionID: null,
     target: 'test@example.com',
@@ -240,7 +241,7 @@ test('it verifies a valid reset password otp and returns a valid transaction tok
 
   const isValid = await verifyTransactionToken(
     {
-      action: VerificationType.RESET_PASSWORD,
+      action: SecureAction.ResetPassword,
       target: 'test@example.com',
       token: result.transactionToken,
     },
@@ -248,7 +249,7 @@ test('it verifies a valid reset password otp and returns a valid transaction tok
   );
 
   expect(isValid).toStrictEqual({
-    action: VerificationType.RESET_PASSWORD,
+    action: SecureAction.ResetPassword,
     amr: ['otp'],
     auth_time: expect.any(Number),
     ip_address: ctx.ipAddress,
@@ -267,7 +268,7 @@ test('it verifies a valid change email confirmation otp and returns a valid tran
   const ctx = createMockGQLContext({ session });
 
   const transactionID = createPendingTransaction({
-    action: VerificationType.CHANGE_EMAIL_CONFIRMATION,
+    action: SecureAction.ChangeEmailConfirmation,
     ipAddress: ctx.ipAddress,
     sessionID: session.id,
     target: 'test@example.com',
@@ -304,7 +305,7 @@ test('it verifies a valid change email confirmation otp and returns a valid tran
 
   const isValid = await verifyTransactionToken(
     {
-      action: VerificationType.CHANGE_EMAIL_CONFIRMATION,
+      action: SecureAction.ChangeEmailConfirmation,
       target: 'test@example.com',
       token: result.transactionToken,
     },
@@ -312,7 +313,7 @@ test('it verifies a valid change email confirmation otp and returns a valid tran
   );
 
   expect(isValid).toStrictEqual({
-    action: VerificationType.CHANGE_EMAIL_CONFIRMATION,
+    action: SecureAction.ChangeEmailConfirmation,
     amr: ['otp'],
     auth_time: expect.any(Number),
     ip_address: ctx.ipAddress,
@@ -332,7 +333,7 @@ test('it throws an error if session validation fails', async () => {
   });
 
   const transactionID = createPendingTransaction({
-    action: VerificationType.TWO_FACTOR_AUTH,
+    action: SecureAction.TwoFactorAuth,
     ipAddress: ctx.ipAddress,
     sessionID: session.id,
     target: 'test@example.com',
@@ -373,7 +374,7 @@ test('it returns an error for an invalid OTP', async () => {
   const ctx = createMockGQLContext({});
 
   const transactionID = createPendingTransaction({
-    action: VerificationType.ONBOARDING,
+    action: SecureAction.Onboarding,
     ipAddress: ctx.ipAddress,
     sessionID: null,
     target: 'test@example.com',
@@ -413,7 +414,7 @@ test('it returns an error if verification does not exist', async () => {
   const ctx = createMockGQLContext({});
 
   const transactionID = createPendingTransaction({
-    action: VerificationType.ONBOARDING,
+    action: SecureAction.Onboarding,
     ipAddress: ctx.ipAddress,
     sessionID: null,
     target: 'nonexistent@example.com',
