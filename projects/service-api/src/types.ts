@@ -46,3 +46,15 @@ export interface Services {
 export type StandardMutationPayload<T> =
   | T
   | typeof MutationErrorPayload.$inferType;
+
+export enum SecureAction {
+  ChangeEmail = 'ChangeEmail',
+  ChangeEmailConfirmation = 'ChangeEmailConfirmation',
+  ChangePassword = 'ChangePassword',
+  ForceLogout = 'ForceLogout',
+  Onboarding = 'Onboarding',
+  ResetPassword = 'ResetPassword',
+  TwoFactorAuth = 'TwoFactorAuth',
+  TwoFactorAuthDisable = 'TwoFactorAuthDisable',
+  TwoFactorAuthSetup = 'TwoFactorAuthSetup',
+}

@@ -3,9 +3,9 @@ import { drop } from '@mswjs/data';
 import invariant from 'tiny-invariant';
 import { db } from '~/mocks/db';
 import { createMockGQLContext } from '~/test-utils/create-mock-gql-context';
+import { SecureAction } from '~/types';
 import { createPendingTransaction } from '~/utils/create-pending-transaction';
 import { createTransactionToken } from '~/utils/create-transaction-token';
-import { VerificationType } from '../types/verification-type';
 import { resolve } from './finish-enable-2fa';
 
 afterEach(() => {
@@ -27,7 +27,7 @@ test('it successfully completes 2FA setup', async () => {
   invariant(ctx.session, 'session is required');
 
   const transactionID = createPendingTransaction({
-    action: VerificationType.TWO_FACTOR_AUTH_SETUP,
+    action: SecureAction.TwoFactorAuthSetup,
     ipAddress: ctx.ipAddress,
     sessionID: ctx.session.id,
     target: user.email,
@@ -35,7 +35,7 @@ test('it successfully completes 2FA setup', async () => {
 
   const transactionToken = await createTransactionToken(
     {
-      action: VerificationType.TWO_FACTOR_AUTH_SETUP,
+      action: SecureAction.TwoFactorAuthSetup,
       ipAddress: ctx.ipAddress,
       sessionID: ctx.session.id,
       target: user.email,
@@ -113,7 +113,7 @@ test('it returns an error if there is no 2FA verification record', async () => {
   invariant(ctx.session, 'session is required');
 
   const transactionID = createPendingTransaction({
-    action: VerificationType.TWO_FACTOR_AUTH_SETUP,
+    action: SecureAction.TwoFactorAuthSetup,
     ipAddress: ctx.ipAddress,
     sessionID: ctx.session.id,
     target: user.email,
@@ -121,7 +121,7 @@ test('it returns an error if there is no 2FA verification record', async () => {
 
   const transactionToken = await createTransactionToken(
     {
-      action: VerificationType.TWO_FACTOR_AUTH_SETUP,
+      action: SecureAction.TwoFactorAuthSetup,
       ipAddress: ctx.ipAddress,
       sessionID: ctx.session.id,
       target: user.email,

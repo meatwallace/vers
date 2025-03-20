@@ -1,12 +1,12 @@
 import type { AuthedContext } from '~/types';
 import { logger } from '~/logger';
+import { SecureAction } from '~/types';
 import { createPendingTransaction } from '~/utils/create-pending-transaction';
 import { builder } from '../builder';
 import { TWO_FACTOR_NOT_ENABLED_ERROR, UNKNOWN_ERROR } from '../errors';
 import { MutationErrorPayload } from '../types/mutation-error-payload';
 import { StepUpAction } from '../types/step-up-action';
-import { TwoFactorRequiredPayload } from '../types/two-factor-required-payload';
-import { VerificationType } from '../types/verification-type';
+import { VerificationRequiredPayload } from '../types/verification-required-payload';
 import { createPayloadResolver } from '../utils/create-payload-resolver';
 import { requireAuth } from '../utils/require-auth';
 
@@ -26,7 +26,7 @@ interface Args {
  * ```gql
  * mutation StartStepUpAuth($input: StartStepUpAuthInput!) {
  *   startStepUpAuth(input: $input) {
- *     ... on TwoFactorRequiredPayload {
+ *     ... on VerificationRequiredPayload {
  *       transactionID
  *     }
  *
@@ -58,13 +58,13 @@ export async function startStepUpAuth(
     }
 
     const transactionID = createPendingTransaction({
-      action: resolveVerificationType(args.input.action),
+      action: STEP_UP_ACTION_TO_SECURE_ACTION[args.input.action],
       ipAddress: ctx.ipAddress,
       sessionID: ctx.session.id,
       target: ctx.user.email,
     });
 
-    return { sessionID: null, transactionID };
+    return { transactionID };
   } catch (error) {
     if (error instanceof Error) {
       logger.error(error);
@@ -74,19 +74,11 @@ export async function startStepUpAuth(
   }
 }
 
-/**
- * Resolves a StepUpAction to a VerificationType for the purposes of
- * creating a pending transaction.
- */
-function resolveVerificationType(action: StepUpAction): VerificationType {
-  const mapping: Record<StepUpAction, VerificationType> = {
-    [StepUpAction.CHANGE_EMAIL]: VerificationType.CHANGE_EMAIL,
-    [StepUpAction.CHANGE_PASSWORD]: VerificationType.CHANGE_PASSWORD,
-    [StepUpAction.DISABLE_2FA]: VerificationType.TWO_FACTOR_AUTH_DISABLE,
-  };
-
-  return mapping[action];
-}
+const STEP_UP_ACTION_TO_SECURE_ACTION: Record<StepUpAction, SecureAction> = {
+  [StepUpAction.CHANGE_EMAIL]: SecureAction.ChangeEmail,
+  [StepUpAction.CHANGE_PASSWORD]: SecureAction.ChangePassword,
+  [StepUpAction.DISABLE_2FA]: SecureAction.TwoFactorAuthDisable,
+};
 
 const StartStepUpAuthInput = builder.inputType('StartStepUpAuthInput', {
   fields: (t) => ({
@@ -95,8 +87,8 @@ const StartStepUpAuthInput = builder.inputType('StartStepUpAuthInput', {
 });
 
 const StartStepUpAuthPayload = builder.unionType('StartStepUpAuthPayload', {
-  resolveType: createPayloadResolver(TwoFactorRequiredPayload),
-  types: [TwoFactorRequiredPayload, MutationErrorPayload],
+  resolveType: createPayloadResolver(VerificationRequiredPayload),
+  types: [VerificationRequiredPayload, MutationErrorPayload],
 });
 
 export const resolve = requireAuth(startStepUpAuth);

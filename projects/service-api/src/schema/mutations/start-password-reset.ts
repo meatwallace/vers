@@ -2,12 +2,13 @@ import { generateResetPasswordEmail } from '@vers/email-templates';
 import type { Context } from '~/types.ts';
 import { env } from '~/env.ts';
 import { logger } from '~/logger.ts';
+import { SecureAction } from '~/types.ts';
 import { createPendingTransaction } from '~/utils/create-pending-transaction.ts';
 import { builder } from '../builder.ts';
 import { UNKNOWN_ERROR } from '../errors.ts';
 import { MutationErrorPayload } from '../types/mutation-error-payload.ts';
 import { MutationSuccess } from '../types/mutation-success.ts';
-import { TwoFactorRequiredPayload } from '../types/two-factor-required-payload.ts';
+import { VerificationRequiredPayload } from '../types/verification-required-payload.ts';
 import { VerificationType } from '../types/verification-type.ts';
 import { createPayloadResolver } from '../utils/create-payload-resolver.ts';
 
@@ -26,7 +27,7 @@ interface Args {
  *       success
  *     }
  *
- *     ... on TwoFactorRequiredPayload {
+ *     ... on VerificationRequiredPayload {
  *       transactionID
  *     }
  *
@@ -102,14 +103,14 @@ export async function startPasswordReset(
     });
 
     const transactionID = createPendingTransaction({
-      action: VerificationType.RESET_PASSWORD,
+      action: SecureAction.ResetPassword,
       ipAddress: ctx.ipAddress,
       sessionID: null,
       target: args.input.email,
     });
 
     if (twoFactorVerification) {
-      return { sessionID: null, transactionID };
+      return { transactionID };
     }
 
     return { success: true };
@@ -132,7 +133,7 @@ const StartPasswordResetPayload = builder.unionType(
   'StartPasswordResetPayload',
   {
     resolveType: createPayloadResolver(MutationSuccess),
-    types: [MutationSuccess, TwoFactorRequiredPayload, MutationErrorPayload],
+    types: [MutationSuccess, VerificationRequiredPayload, MutationErrorPayload],
   },
 );
 

@@ -3,9 +3,9 @@ import { drop } from '@mswjs/data';
 import { db } from '~/mocks/db';
 import { sentEmails } from '~/mocks/handlers/trpc/service-email/send-email';
 import { createMockGQLContext } from '~/test-utils/create-mock-gql-context';
+import { SecureAction } from '~/types';
 import { createPendingTransaction } from '~/utils/create-pending-transaction';
 import { createTransactionToken } from '~/utils/create-transaction-token';
-import { VerificationType } from '../types/verification-type';
 import { resolve } from './start-change-user-email';
 
 afterEach(() => {
@@ -34,7 +34,6 @@ test('it creates a verification record and sends an email to the new address', a
   const result = await resolve({}, args, ctx);
 
   expect(result).toStrictEqual({
-    sessionID: null,
     transactionID: expect.any(String),
   });
 
@@ -71,7 +70,7 @@ test('it follows the usual flow and validates the transaction token when the use
   const ctx = createMockGQLContext({ session, user });
 
   const transactionID = createPendingTransaction({
-    action: VerificationType.CHANGE_EMAIL,
+    action: SecureAction.ChangeEmail,
     ipAddress: ctx.ipAddress,
     sessionID: session.id,
     target: user.email,
@@ -79,7 +78,7 @@ test('it follows the usual flow and validates the transaction token when the use
 
   const transactionToken = await createTransactionToken(
     {
-      action: VerificationType.CHANGE_EMAIL,
+      action: SecureAction.ChangeEmail,
       ipAddress: ctx.ipAddress,
       sessionID: session.id,
       target: user.email,
@@ -98,7 +97,6 @@ test('it follows the usual flow and validates the transaction token when the use
   const result = await resolve({}, args, ctx);
 
   expect(result).toStrictEqual({
-    sessionID: null,
     transactionID: expect.any(String),
   });
 
@@ -177,7 +175,7 @@ test('it returns an error when the new email is already in use', async () => {
   const ctx = createMockGQLContext({ session, user });
 
   const transactionID = createPendingTransaction({
-    action: VerificationType.CHANGE_EMAIL,
+    action: SecureAction.ChangeEmail,
     ipAddress: ctx.ipAddress,
     sessionID: session.id,
     target: user.email,
@@ -185,7 +183,7 @@ test('it returns an error when the new email is already in use', async () => {
 
   const transactionToken = await createTransactionToken(
     {
-      action: VerificationType.CHANGE_EMAIL,
+      action: SecureAction.ChangeEmail,
       ipAddress: ctx.ipAddress,
       sessionID: session.id,
       target: user.email,

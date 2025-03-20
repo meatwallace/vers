@@ -1,12 +1,12 @@
 import { generateChangeEmailNotificationEmail } from '@vers/email-templates';
 import type { AuthedContext } from '~/types';
 import { logger } from '~/logger';
+import { SecureAction } from '~/types';
 import { verifyTransactionToken } from '~/utils/verify-transaction-token';
 import { builder } from '../builder';
 import { UNKNOWN_ERROR } from '../errors';
 import { MutationErrorPayload } from '../types/mutation-error-payload';
 import { MutationSuccess } from '../types/mutation-success';
-import { VerificationType } from '../types/verification-type';
 import { createPayloadResolver } from '../utils/create-payload-resolver';
 import { requireAuth } from '../utils/require-auth';
 
@@ -44,7 +44,7 @@ export async function finishChangeUserEmail(
   try {
     const isValidTransaction = await verifyTransactionToken(
       {
-        action: VerificationType.CHANGE_EMAIL_CONFIRMATION,
+        action: SecureAction.ChangeEmailConfirmation,
         target: args.input.email,
         token: args.input.transactionToken,
       },

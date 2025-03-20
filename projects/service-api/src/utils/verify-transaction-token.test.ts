@@ -1,8 +1,8 @@
 import { afterEach, expect, test, vi } from 'vitest';
 import { drop } from '@mswjs/data';
 import { db } from '~/mocks/db';
-import { VerificationType } from '~/schema/types/verification-type';
 import { createMockGQLContext } from '~/test-utils/create-mock-gql-context';
+import { SecureAction } from '~/types';
 import { createPendingTransaction } from './create-pending-transaction';
 import { createTransactionToken } from './create-transaction-token';
 import { verifyTransactionToken } from './verify-transaction-token';
@@ -17,7 +17,7 @@ test('it returns true when no token is provided', async () => {
   const ctx = createMockGQLContext({});
 
   const data = {
-    action: VerificationType.ONBOARDING,
+    action: SecureAction.Onboarding,
     target: 'user_123',
     token: null,
   };
@@ -29,14 +29,14 @@ test('it returns true when no token is provided', async () => {
 
 test('it validates a token with matching action, target, and IP', async () => {
   const transactionID = createPendingTransaction({
-    action: VerificationType.ONBOARDING,
+    action: SecureAction.Onboarding,
     ipAddress: '127.0.0.1',
     sessionID: null,
     target: 'user_123',
   });
 
   const tokenParts = {
-    action: VerificationType.ONBOARDING,
+    action: SecureAction.Onboarding,
     ipAddress: '127.0.0.1',
     sessionID: null,
     target: 'user_123',
@@ -48,7 +48,7 @@ test('it validates a token with matching action, target, and IP', async () => {
 
   const result = await verifyTransactionToken(
     {
-      action: VerificationType.ONBOARDING,
+      action: SecureAction.Onboarding,
       target: 'user_123',
       token,
     },
@@ -56,7 +56,7 @@ test('it validates a token with matching action, target, and IP', async () => {
   );
 
   expect(result).toStrictEqual({
-    action: 'ONBOARDING',
+    action: 'Onboarding',
     amr: ['otp'],
     auth_time: expect.any(Number),
     ip_address: '127.0.0.1',
@@ -70,14 +70,14 @@ test('it validates a token with matching action, target, and IP', async () => {
 
 test('it returns null when action does not match', async () => {
   const transactionID = createPendingTransaction({
-    action: VerificationType.ONBOARDING,
+    action: SecureAction.Onboarding,
     ipAddress: '127.0.0.1',
     sessionID: null,
     target: 'user_123',
   });
 
   const data = {
-    action: VerificationType.ONBOARDING,
+    action: SecureAction.Onboarding,
     ipAddress: '127.0.0.1',
     sessionID: null,
     target: 'user_123',
@@ -89,7 +89,7 @@ test('it returns null when action does not match', async () => {
 
   const result = await verifyTransactionToken(
     {
-      action: VerificationType.CHANGE_EMAIL,
+      action: SecureAction.ChangeEmail,
       target: 'user_123',
       token,
     },
@@ -101,14 +101,14 @@ test('it returns null when action does not match', async () => {
 
 test('it returns null when IP address does not match', async () => {
   const transactionID = createPendingTransaction({
-    action: VerificationType.ONBOARDING,
+    action: SecureAction.Onboarding,
     ipAddress: '127.0.0.1',
     sessionID: null,
     target: 'user_123',
   });
 
   const data = {
-    action: VerificationType.ONBOARDING,
+    action: SecureAction.Onboarding,
     ipAddress: '127.0.0.1',
     sessionID: null,
     target: 'user_123',
@@ -120,7 +120,7 @@ test('it returns null when IP address does not match', async () => {
 
   const result = await verifyTransactionToken(
     {
-      action: VerificationType.ONBOARDING,
+      action: SecureAction.Onboarding,
       target: 'user_123',
       token,
     },
@@ -132,14 +132,14 @@ test('it returns null when IP address does not match', async () => {
 
 test('it returns null when token is reused', async () => {
   const transactionID = createPendingTransaction({
-    action: VerificationType.ONBOARDING,
+    action: SecureAction.Onboarding,
     ipAddress: '127.0.0.1',
     sessionID: null,
     target: 'user_123',
   });
 
   const data = {
-    action: VerificationType.ONBOARDING,
+    action: SecureAction.Onboarding,
     ipAddress: '127.0.0.1',
     sessionID: null,
     target: 'user_123',
@@ -152,7 +152,7 @@ test('it returns null when token is reused', async () => {
   // First use should succeed
   const firstResult = await verifyTransactionToken(
     {
-      action: VerificationType.ONBOARDING,
+      action: SecureAction.Onboarding,
       target: 'user_123',
       token,
     },
@@ -160,7 +160,7 @@ test('it returns null when token is reused', async () => {
   );
 
   expect(firstResult).toStrictEqual({
-    action: 'ONBOARDING',
+    action: 'Onboarding',
     amr: ['otp'],
     auth_time: expect.any(Number),
     ip_address: '127.0.0.1',
@@ -174,7 +174,7 @@ test('it returns null when token is reused', async () => {
   // Second use should fail
   const secondResult = await verifyTransactionToken(
     {
-      action: VerificationType.ONBOARDING,
+      action: SecureAction.Onboarding,
       target: 'user_123',
       token,
     },
@@ -190,14 +190,14 @@ test('it validates session for actions that require it', async () => {
   });
 
   const transactionID = createPendingTransaction({
-    action: VerificationType.CHANGE_EMAIL,
+    action: SecureAction.ChangeEmail,
     ipAddress: session.ipAddress,
     sessionID: session.id,
     target: 'user_123',
   });
 
   const data = {
-    action: VerificationType.CHANGE_EMAIL,
+    action: SecureAction.ChangeEmail,
     ipAddress: '127.0.0.1',
     sessionID: session.id,
     target: 'user_123',
@@ -210,7 +210,7 @@ test('it validates session for actions that require it', async () => {
 
   const result = await verifyTransactionToken(
     {
-      action: VerificationType.CHANGE_EMAIL,
+      action: SecureAction.ChangeEmail,
       target: 'user_123',
       token,
     },
@@ -218,7 +218,7 @@ test('it validates session for actions that require it', async () => {
   );
 
   expect(result).toStrictEqual({
-    action: 'CHANGE_EMAIL',
+    action: 'ChangeEmail',
     amr: ['otp'],
     auth_time: expect.any(Number),
     ip_address: '127.0.0.1',
@@ -238,14 +238,14 @@ test('it returns null when session is required but not found', async () => {
   });
 
   const transactionID = createPendingTransaction({
-    action: VerificationType.CHANGE_EMAIL,
+    action: SecureAction.ChangeEmail,
     ipAddress: '127.0.0.1',
     sessionID: session.id,
     target: 'user_123',
   });
 
   const data = {
-    action: VerificationType.CHANGE_EMAIL,
+    action: SecureAction.ChangeEmail,
     ipAddress: '127.0.0.1',
     sessionID: session.id,
     target: 'user_123',
@@ -264,7 +264,7 @@ test('it returns null when session is required but not found', async () => {
 
   const result = await verifyTransactionToken(
     {
-      action: VerificationType.CHANGE_EMAIL,
+      action: SecureAction.ChangeEmail,
       target: 'user_123',
       token,
     },
@@ -281,7 +281,7 @@ test('it returns null when session ID does not match', async () => {
   });
 
   const transactionID = createPendingTransaction({
-    action: VerificationType.CHANGE_EMAIL,
+    action: SecureAction.ChangeEmail,
     ipAddress: '127.0.0.1',
     sessionID: pendingTransactionSession.id,
     target: 'user_123',
@@ -303,7 +303,7 @@ test('it returns null when session ID does not match', async () => {
   });
 
   const data = {
-    action: VerificationType.CHANGE_EMAIL,
+    action: SecureAction.ChangeEmail,
     ipAddress: '127.0.0.1',
     sessionID: pendingTransactionSession.id,
     target: 'user_123',
@@ -314,7 +314,7 @@ test('it returns null when session ID does not match', async () => {
 
   const result = await verifyTransactionToken(
     {
-      action: VerificationType.CHANGE_EMAIL,
+      action: SecureAction.ChangeEmail,
       target: 'user_123',
       token,
     },
@@ -328,14 +328,14 @@ test('it returns null when token is expired', async () => {
   vi.useFakeTimers();
 
   const transactionID = createPendingTransaction({
-    action: VerificationType.TWO_FACTOR_AUTH,
+    action: SecureAction.TwoFactorAuth,
     ipAddress: '127.0.0.1',
     sessionID: null,
     target: 'user_123',
   });
 
   const data = {
-    action: VerificationType.TWO_FACTOR_AUTH,
+    action: SecureAction.TwoFactorAuth,
     ipAddress: '127.0.0.1',
     sessionID: null,
     target: 'user_123',
@@ -352,7 +352,7 @@ test('it returns null when token is expired', async () => {
 
   const result = await verifyTransactionToken(
     {
-      action: VerificationType.TWO_FACTOR_AUTH,
+      action: SecureAction.TwoFactorAuth,
       target: 'user_123',
       token,
     },

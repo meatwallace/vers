@@ -5,11 +5,12 @@ import {
 import type { Context } from '~/types';
 import { env } from '~/env';
 import { logger } from '~/logger';
+import { SecureAction } from '~/types';
 import { createPendingTransaction } from '~/utils/create-pending-transaction';
 import { builder } from '../builder';
 import { UNKNOWN_ERROR } from '../errors';
 import { MutationErrorPayload } from '../types/mutation-error-payload';
-import { TwoFactorRequiredPayload } from '../types/two-factor-required-payload';
+import { VerificationRequiredPayload } from '../types/verification-required-payload';
 import { VerificationType } from '../types/verification-type';
 import { createPayloadResolver } from '../utils/create-payload-resolver';
 
@@ -24,7 +25,7 @@ export async function startEmailSignup(
 ): Promise<typeof StartEmailSignupPayload.$inferType> {
   try {
     const transactionID = createPendingTransaction({
-      action: VerificationType.ONBOARDING,
+      action: SecureAction.Onboarding,
       ipAddress: ctx.ipAddress,
       sessionID: null,
       target: args.input.email,
@@ -48,10 +49,7 @@ export async function startEmailSignup(
         ...email,
       });
 
-      return {
-        sessionID: null,
-        transactionID,
-      };
+      return { transactionID };
     }
 
     const verification =
@@ -79,10 +77,7 @@ export async function startEmailSignup(
       ...email,
     });
 
-    return {
-      sessionID: null,
-      transactionID,
-    };
+    return { transactionID };
   } catch (error: unknown) {
     if (error instanceof Error) {
       logger.error(error);
@@ -99,8 +94,8 @@ const StartEmailSignupInput = builder.inputType('StartEmailSignupInput', {
 });
 
 const StartEmailSignupPayload = builder.unionType('StartEmailSignupPayload', {
-  resolveType: createPayloadResolver(TwoFactorRequiredPayload),
-  types: [TwoFactorRequiredPayload, MutationErrorPayload],
+  resolveType: createPayloadResolver(VerificationRequiredPayload),
+  types: [VerificationRequiredPayload, MutationErrorPayload],
 });
 
 export const resolve = startEmailSignup;

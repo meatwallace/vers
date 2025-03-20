@@ -81,7 +81,6 @@ export const StartEnable2FA = graphql.mutation<
   return HttpResponse.json({
     data: {
       startEnable2FA: {
-        sessionID: null,
         transactionID: 'valid-transaction-id',
       },
     },

@@ -1,8 +1,8 @@
 import TTLCache from '@isaacs/ttlcache';
-import { VerificationType } from '~/schema/types/verification-type';
+import { SecureAction } from '~/types';
 
 interface TransactionData {
-  action: VerificationType;
+  action: SecureAction;
   attempts: number;
   ipAddress: string;
   sessionID: null | string;
@@ -12,14 +12,8 @@ interface TransactionData {
 /**
  * 5 minute in memory cache to allowlist transaction IDs. This:
  *
- * * binds transaction IDs to their assosciated data to prevent cross-transaction attacks
- * * prevents reply attacks by tracking the verification attempts for a specific transaction ID
- *
- * The cache is of the format:
- *
- * {
- *   [transactionID]: TransactionData,
- * }
+ * - binds transaction IDs to their associated data to prevent cross-transaction attacks
+ * - prevents replay attacks by tracking verification attempts for a specific transaction ID
  */
 export const pendingTransactionCache = new TTLCache<string, TransactionData>({
   ttl: 5 * 60 * 1000,

@@ -7,7 +7,7 @@ export const StartPasswordResetMutation = graphql(/* GraphQL */ `
         success
       }
 
-      ... on TwoFactorRequiredPayload {
+      ... on VerificationRequiredPayload {
         transactionID
       }
 

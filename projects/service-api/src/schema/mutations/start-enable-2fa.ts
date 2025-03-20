@@ -1,11 +1,11 @@
 import type { AuthedContext } from '~/types';
 import { logger } from '~/logger';
+import { SecureAction } from '~/types';
 import { createPendingTransaction } from '~/utils/create-pending-transaction';
 import { builder } from '../builder';
 import { TWO_FACTOR_ALREADY_ENABLED_ERROR, UNKNOWN_ERROR } from '../errors';
 import { MutationErrorPayload } from '../types/mutation-error-payload';
-import { TwoFactorRequiredPayload } from '../types/two-factor-required-payload';
-import { VerificationType } from '../types/verification-type';
+import { VerificationRequiredPayload } from '../types/verification-required-payload';
 import { createPayloadResolver } from '../utils/create-payload-resolver';
 import { requireAuth } from '../utils/require-auth';
 
@@ -16,7 +16,7 @@ import { requireAuth } from '../utils/require-auth';
  * ```gql
  * mutation StartEnable2FA($input: StartEnable2FAInput!) {
  *   startEnable2FA(input: $input) {
- *     ... on TwoFactorRequiredPayload {
+ *     ... on VerificationRequiredPayload {
  *       transactionID
  *     }
  *
@@ -66,13 +66,13 @@ export async function startEnable2FA(
     });
 
     const transactionID = createPendingTransaction({
-      action: VerificationType.TWO_FACTOR_AUTH_SETUP,
+      action: SecureAction.TwoFactorAuthSetup,
       ipAddress: ctx.ipAddress,
       sessionID: ctx.session.id,
       target: ctx.user.email,
     });
 
-    return { sessionID: null, transactionID };
+    return { transactionID };
   } catch (error) {
     if (error instanceof Error) {
       logger.error(error);
@@ -89,8 +89,8 @@ const StartEnable2FAInput = builder.inputType('StartEnable2FAInput', {
 });
 
 const StartEnable2FAPayload = builder.unionType('StartEnable2FAPayload', {
-  resolveType: createPayloadResolver(TwoFactorRequiredPayload),
-  types: [TwoFactorRequiredPayload, MutationErrorPayload],
+  resolveType: createPayloadResolver(VerificationRequiredPayload),
+  types: [VerificationRequiredPayload, MutationErrorPayload],
 });
 
 export const resolve = requireAuth(startEnable2FA);

@@ -1,18 +1,18 @@
 import { MutationErrorPayload } from '../types/mutation-error-payload';
-import { TwoFactorRequiredPayload } from '../types/two-factor-required-payload';
+import { VerificationRequiredPayload } from '../types/verification-required-payload';
 
 export function createPayloadResolver<T>(
   type: T,
 ): (
   value: object,
-) => T | typeof MutationErrorPayload | typeof TwoFactorRequiredPayload {
+) => T | typeof MutationErrorPayload | typeof VerificationRequiredPayload {
   return (value) => {
     if ('error' in value) {
       return MutationErrorPayload;
     }
 
     if ('transactionID' in value) {
-      return TwoFactorRequiredPayload;
+      return VerificationRequiredPayload;
     }
 
     return type;

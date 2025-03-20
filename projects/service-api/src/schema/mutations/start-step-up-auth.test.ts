@@ -3,9 +3,9 @@ import { drop } from '@mswjs/data';
 import invariant from 'tiny-invariant';
 import { db } from '~/mocks/db';
 import { createMockGQLContext } from '~/test-utils/create-mock-gql-context';
+import { SecureAction } from '~/types';
 import { pendingTransactionCache } from '~/utils/pending-transaction-cache';
 import { StepUpAction } from '../types/step-up-action';
-import { VerificationType } from '../types/verification-type';
 import { resolve } from './start-step-up-auth';
 
 afterEach(() => {
@@ -42,7 +42,6 @@ test('it creates a pending transaction for CHANGE_EMAIL when user has 2FA enable
   const result = await resolve({}, args, ctx);
 
   expect(result).toStrictEqual({
-    sessionID: null,
     transactionID: expect.any(String),
   });
 
@@ -51,7 +50,7 @@ test('it creates a pending transaction for CHANGE_EMAIL when user has 2FA enable
   const pendingTransaction = pendingTransactionCache.get(result.transactionID);
 
   expect(pendingTransaction).toStrictEqual({
-    action: VerificationType.CHANGE_EMAIL,
+    action: SecureAction.ChangeEmail,
     attempts: 0,
     ipAddress: ctx.ipAddress,
     sessionID: ctx.session?.id,
@@ -87,7 +86,6 @@ test('it creates a pending transaction for CHANGE_PASSWORD when user has 2FA ena
   const result = await resolve({}, args, ctx);
 
   expect(result).toStrictEqual({
-    sessionID: null,
     transactionID: expect.any(String),
   });
 
@@ -96,7 +94,7 @@ test('it creates a pending transaction for CHANGE_PASSWORD when user has 2FA ena
   const pendingTransaction = pendingTransactionCache.get(result.transactionID);
 
   expect(pendingTransaction).toStrictEqual({
-    action: VerificationType.CHANGE_PASSWORD,
+    action: SecureAction.ChangePassword,
     attempts: 0,
     ipAddress: ctx.ipAddress,
     sessionID: ctx.session?.id,
@@ -129,7 +127,6 @@ test('it creates a pending transaction for DISABLE_2FA when user has 2FA enabled
   const result = await resolve({}, args, ctx);
 
   expect(result).toStrictEqual({
-    sessionID: null,
     transactionID: expect.any(String),
   });
 
@@ -138,7 +135,7 @@ test('it creates a pending transaction for DISABLE_2FA when user has 2FA enabled
   const pendingTransaction = pendingTransactionCache.get(result.transactionID);
 
   expect(pendingTransaction).toStrictEqual({
-    action: VerificationType.TWO_FACTOR_AUTH_DISABLE,
+    action: SecureAction.TwoFactorAuthDisable,
     attempts: 0,
     ipAddress: ctx.ipAddress,
     sessionID: ctx.session?.id,

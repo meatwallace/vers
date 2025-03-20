@@ -12,7 +12,7 @@ export const LoginWithPasswordMutation = graphql(/* GraphQL */ `
         }
       }
 
-      ... on TwoFactorRequiredPayload {
+      ... on TwoFactorLoginPayload {
         transactionID
         sessionID
       }

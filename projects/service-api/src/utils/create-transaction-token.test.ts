@@ -3,8 +3,8 @@ import { drop } from '@mswjs/data';
 import * as jose from 'jose';
 import invariant from 'tiny-invariant';
 import { db } from '~/mocks/db';
-import { VerificationType } from '~/schema/types/verification-type';
 import { createMockGQLContext } from '~/test-utils/create-mock-gql-context';
+import { SecureAction } from '~/types';
 import { env } from '../env';
 import { createPendingTransaction } from './create-pending-transaction';
 import { createTransactionToken } from './create-transaction-token';
@@ -16,14 +16,14 @@ afterEach(() => {
 
 test('it creates a valid transaction token with required data', async () => {
   const transactionID = createPendingTransaction({
-    action: VerificationType.TWO_FACTOR_AUTH,
+    action: SecureAction.TwoFactorAuth,
     ipAddress: '127.0.0.1',
     sessionID: null,
     target: 'user_123',
   });
 
   const data = {
-    action: VerificationType.TWO_FACTOR_AUTH,
+    action: SecureAction.TwoFactorAuth,
     ipAddress: '127.0.0.1',
     sessionID: null,
     target: 'user_123',
@@ -75,14 +75,14 @@ test('it creates a valid transaction token with session data', async () => {
   });
 
   const transactionID = createPendingTransaction({
-    action: VerificationType.TWO_FACTOR_AUTH,
+    action: SecureAction.TwoFactorAuth,
     ipAddress: '127.0.0.1',
     sessionID: session.id,
     target: 'user_123',
   });
 
   const data = {
-    action: VerificationType.TWO_FACTOR_AUTH,
+    action: SecureAction.TwoFactorAuth,
     ipAddress: '127.0.0.1',
     sessionID: session.id,
     target: 'user_123',
@@ -128,7 +128,7 @@ test('it creates a valid transaction token with session data', async () => {
 
 test('it throws an error when a pending transaction is not found', async () => {
   const data = {
-    action: VerificationType.TWO_FACTOR_AUTH,
+    action: SecureAction.TwoFactorAuth,
     ipAddress: '127.0.0.1',
     sessionID: null,
     target: 'user_123',
@@ -144,14 +144,14 @@ test('it throws an error when a pending transaction is not found', async () => {
 
 test('it throws an error when session is not found', async () => {
   const transactionID = createPendingTransaction({
-    action: VerificationType.TWO_FACTOR_AUTH,
+    action: SecureAction.TwoFactorAuth,
     ipAddress: '127.0.0.1',
     sessionID: null,
     target: 'user_123',
   });
 
   const data = {
-    action: VerificationType.TWO_FACTOR_AUTH,
+    action: SecureAction.TwoFactorAuth,
     ipAddress: '127.0.0.1',
     sessionID: 'non_existent_session',
     target: 'user_123',
@@ -166,14 +166,15 @@ test('it throws an error when session is not found', async () => {
 });
 
 test.each([
-  [VerificationType.TWO_FACTOR_AUTH, 2],
-  [VerificationType.TWO_FACTOR_AUTH_SETUP, 2],
-  [VerificationType.TWO_FACTOR_AUTH_DISABLE, 2],
-  [VerificationType.ONBOARDING, 20],
-  [VerificationType.CHANGE_EMAIL_CONFIRMATION, 20],
-  [VerificationType.RESET_PASSWORD, 5],
-  [VerificationType.CHANGE_EMAIL, 5],
-  [VerificationType.CHANGE_PASSWORD, 5],
+  [SecureAction.TwoFactorAuth, 2],
+  [SecureAction.TwoFactorAuthSetup, 2],
+  [SecureAction.TwoFactorAuthDisable, 2],
+  [SecureAction.Onboarding, 20],
+  [SecureAction.ChangeEmailConfirmation, 20],
+  [SecureAction.ResetPassword, 5],
+  [SecureAction.ChangeEmail, 5],
+  [SecureAction.ChangePassword, 5],
+  [SecureAction.ForceLogout, 2],
 ])(
   'it generates a %s transaction that expires after %d minutes',
   async (action, minutes) => {
@@ -225,14 +226,14 @@ test.each([
 
 test('it deletes the pending transaction data from the pending transaction cache', async () => {
   const transactionID = createPendingTransaction({
-    action: VerificationType.TWO_FACTOR_AUTH,
+    action: SecureAction.TwoFactorAuth,
     ipAddress: '127.0.0.1',
     sessionID: null,
     target: 'user_123',
   });
 
   const data = {
-    action: VerificationType.TWO_FACTOR_AUTH,
+    action: SecureAction.TwoFactorAuth,
     ipAddress: '127.0.0.1',
     sessionID: null,
     target: 'user_123',

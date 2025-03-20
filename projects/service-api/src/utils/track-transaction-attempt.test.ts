@@ -1,5 +1,5 @@
 import { expect, test } from 'vitest';
-import { VerificationType } from '~/schema/types/verification-type';
+import { SecureAction } from '~/types';
 import { pendingTransactionCache } from './pending-transaction-cache';
 import { trackTransactionAttempt } from './track-transaction-attempt';
 
@@ -13,7 +13,7 @@ test('it increments the attempt count for a pending transaction', () => {
   const transactionID = 'test_transaction';
 
   const initialTransaction = {
-    action: VerificationType.CHANGE_PASSWORD,
+    action: SecureAction.ChangePassword,
     attempts: 0,
     ipAddress: '127.0.0.1',
     sessionID: null,
@@ -43,7 +43,7 @@ test('it deletes the transaction when max attempts are reached', () => {
   const transactionID = 'test_transaction';
 
   const initialTransaction = {
-    action: VerificationType.CHANGE_PASSWORD,
+    action: SecureAction.ChangePassword,
     attempts: 4, // One less than MAX_TRANSACTION_ATTEMPTS
     ipAddress: '127.0.0.1',
     sessionID: null,
@@ -63,7 +63,7 @@ test('it increments attempts up to max attempts', () => {
   const transactionID = 'test_transaction';
 
   const initialTransaction = {
-    action: VerificationType.CHANGE_PASSWORD,
+    action: SecureAction.ChangePassword,
     attempts: 0,
     ipAddress: '127.0.0.1',
     sessionID: null,

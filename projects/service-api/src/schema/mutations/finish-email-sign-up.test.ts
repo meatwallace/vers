@@ -2,9 +2,9 @@ import { afterEach, expect, test } from 'vitest';
 import { drop } from '@mswjs/data';
 import { db } from '~/mocks/db';
 import { createMockGQLContext } from '~/test-utils/create-mock-gql-context';
+import { SecureAction } from '~/types';
 import { createPendingTransaction } from '~/utils/create-pending-transaction';
 import { createTransactionToken } from '~/utils/create-transaction-token';
-import { VerificationType } from '../types/verification-type';
 import { resolve } from './finish-email-sign-up';
 
 afterEach(() => {
@@ -15,7 +15,7 @@ test('it completes the email signup process when transaction token is valid', as
   const ctx = createMockGQLContext({});
 
   const transactionID = createPendingTransaction({
-    action: VerificationType.ONBOARDING,
+    action: SecureAction.Onboarding,
     ipAddress: ctx.ipAddress,
     sessionID: null,
     target: 'user@test.com',
@@ -23,7 +23,7 @@ test('it completes the email signup process when transaction token is valid', as
 
   const transactionToken = await createTransactionToken(
     {
-      action: VerificationType.ONBOARDING,
+      action: SecureAction.Onboarding,
       ipAddress: ctx.ipAddress,
       sessionID: null,
       target: 'user@test.com',
@@ -109,7 +109,7 @@ test('it returns an ambiguous error if the user already exists', async () => {
   const ctx = createMockGQLContext({});
 
   const transactionID = createPendingTransaction({
-    action: VerificationType.ONBOARDING,
+    action: SecureAction.Onboarding,
     ipAddress: ctx.ipAddress,
     sessionID: null,
     target: 'user@test.com',
@@ -123,7 +123,7 @@ test('it returns an ambiguous error if the user already exists', async () => {
 
   const transactionToken = await createTransactionToken(
     {
-      action: VerificationType.ONBOARDING,
+      action: SecureAction.Onboarding,
       ipAddress: ctx.ipAddress,
       sessionID: null,
       target: 'user@test.com',

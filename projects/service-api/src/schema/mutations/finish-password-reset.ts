@@ -1,11 +1,11 @@
 import { generatePasswordChangedEmail } from '@vers/email-templates';
 import type { Context } from '~/types';
 import { logger } from '~/logger';
+import { SecureAction } from '~/types';
 import { verifyTransactionToken } from '~/utils/verify-transaction-token';
 import { builder } from '../builder';
 import { MutationErrorPayload } from '../types/mutation-error-payload';
 import { MutationSuccess } from '../types/mutation-success';
-import { VerificationType } from '../types/verification-type';
 import { createPayloadResolver } from '../utils/create-payload-resolver';
 
 interface Args {
@@ -60,7 +60,7 @@ export async function finishPasswordReset(
 
     const isValidTransaction = await verifyTransactionToken(
       {
-        action: VerificationType.RESET_PASSWORD,
+        action: SecureAction.ResetPassword,
         target: args.input.email,
         token: args.input.transactionToken,
       },

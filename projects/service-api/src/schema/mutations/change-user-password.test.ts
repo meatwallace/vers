@@ -4,9 +4,9 @@ import invariant from 'tiny-invariant';
 import { db } from '~/mocks/db';
 import { sentEmails } from '~/mocks/handlers/trpc/service-email/send-email';
 import { createMockGQLContext } from '~/test-utils/create-mock-gql-context';
+import { SecureAction } from '~/types';
 import { createPendingTransaction } from '~/utils/create-pending-transaction';
 import { createTransactionToken } from '~/utils/create-transaction-token';
-import { VerificationType } from '../types/verification-type';
 import { resolve } from './change-user-password';
 
 afterEach(() => {
@@ -65,7 +65,7 @@ test('it changes password when user has 2FA enabled and provides valid transacti
   const ctx = createMockGQLContext({ session, user });
 
   const transactionID = createPendingTransaction({
-    action: VerificationType.CHANGE_PASSWORD,
+    action: SecureAction.ChangePassword,
     ipAddress: ctx.ipAddress,
     sessionID: session.id,
     target: user.email,
@@ -73,7 +73,7 @@ test('it changes password when user has 2FA enabled and provides valid transacti
 
   const transactionToken = await createTransactionToken(
     {
-      action: VerificationType.CHANGE_PASSWORD,
+      action: SecureAction.ChangePassword,
       ipAddress: ctx.ipAddress,
       sessionID: session.id,
       target: user.email,
