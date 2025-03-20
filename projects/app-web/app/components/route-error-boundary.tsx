@@ -1,15 +1,13 @@
 import { useEffect } from 'react';
 import { isRouteErrorResponse, useRouteError } from 'react-router';
 import { captureException } from '@sentry/react';
+import { Brand, Heading, Link, Text } from '@vers/design-system';
+import { css } from '@vers/styled-system/css';
+import { Routes } from '~/types';
 import { getErrorMessage } from '~/utils/get-error-message';
 
 export function RouteErrorBoundary() {
   const error = useRouteError();
-
-  if (typeof document !== 'undefined') {
-    console.error(error);
-  }
-
   const isRouteError = isRouteErrorResponse(error);
 
   useEffect(() => {
@@ -18,34 +16,58 @@ export function RouteErrorBoundary() {
     }
   }, [error, isRouteError]);
 
-  // TODO(#30): nicer catch-all error page
   if (isRouteError && error.status === 404) {
     return (
-      <div>
-        <h1>404</h1>
-        <p>Page not found</p>
-      </div>
-    );
-  }
-
-  if (isRouteError && error.status === 500) {
-    return (
-      <div>
-        <h1>500</h1>
-        <p>Internal server error</p>
-      </div>
+      <ErrorBoundaryContainer>
+        <Heading level={2}>
+          We couldn&apos;t find what you were looking for
+        </Heading>
+        <Text>
+          The page you are looking for does not exist. It might have been moved
+          or deleted.
+        </Text>
+      </ErrorBoundaryContainer>
     );
   }
 
   const errorMessage =
-    process.env.NODE_ENV === 'development'
-      ? getErrorMessage(error)
-      : 'An unknown error occurred';
+    process.env.NODE_ENV === 'development' ? (
+      <Text>
+        Sorry, an unknown error occurred. Please try again later. If the problem
+        persists, please <Link to={Routes.Contact}>contact support</Link>.
+      </Text>
+    ) : (
+      <Text>{getErrorMessage(error)}</Text>
+    );
 
   return (
-    <div>
-      <h1>Error</h1>
-      <p>{errorMessage}</p>
+    <ErrorBoundaryContainer>
+      <Heading level={2}>Something went wrong</Heading>
+      <Text>{errorMessage}</Text>
+    </ErrorBoundaryContainer>
+  );
+}
+
+interface Props {
+  children: React.ReactNode;
+}
+
+const container = css({
+  alignItems: 'center',
+  display: 'flex',
+  flexDirection: 'column',
+  justifyContent: 'center',
+  marginX: '8',
+  paddingTop: '16',
+  textAlign: 'center',
+});
+
+function ErrorBoundaryContainer(props: Props) {
+  return (
+    <div className={container}>
+      <Brand size="xl" />
+      {props.children}
+      <Link to={Routes.Index}>Go back to the home page</Link>
     </div>
   );
 }

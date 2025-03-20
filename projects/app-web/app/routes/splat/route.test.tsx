@@ -16,7 +16,9 @@ test('it renders the error boundary with a page not found message', async () => 
 
   render(<SplatStub />);
 
-  const errorMessage = await screen.findByText('Page not found');
+  const errorMessage = await screen.findByText(
+    "We couldn't find what you were looking for",
+  );
 
   expect(errorMessage).toBeInTheDocument();
 });
