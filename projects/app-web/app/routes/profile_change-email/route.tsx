@@ -151,7 +151,6 @@ export const action = withErrorHandling(async (args: Route.ActionArgs) => {
     return data({ result: formResult }, { status: 400 });
   }
 
-  console.log(result.data?.startChangeUserEmail);
   if (isMutationError(result.data?.startChangeUserEmail)) {
     const formResult = submission.reply({
       formErrors: [result.data.startChangeUserEmail.error.message],
