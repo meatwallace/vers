@@ -23,12 +23,11 @@ test('it updates the provided user', async () => {
 
   const { db } = handle;
 
-  const user = await createTestUser({ db });
+  const user = await createTestUser(db);
 
   const { caller } = setupTest({ db });
 
   const update = {
-    email: 'updated@test.com',
     name: 'Updated Name',
     username: 'updated_username',
   };
@@ -38,15 +37,14 @@ test('it updates the provided user', async () => {
     ...update,
   });
 
+  expect(result).toStrictEqual({ updatedID: user.id });
+
   const updatedUser = await db.query.users.findFirst({
     where: eq(schema.users.id, user.id),
   });
 
-  expect(result).toStrictEqual({ updatedID: user.id });
-
   expect(updatedUser).toStrictEqual({
     ...user,
-    email: 'updated@test.com',
     name: 'Updated Name',
     updatedAt: expect.any(Date),
     username: 'updated_username',
@@ -62,7 +60,7 @@ test('it allows partial updating', async () => {
 
   const { db } = handle;
 
-  const user = await createTestUser({ db });
+  const user = await createTestUser(db);
 
   const { caller } = setupTest({ db });
 

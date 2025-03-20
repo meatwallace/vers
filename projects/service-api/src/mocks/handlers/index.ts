@@ -9,6 +9,7 @@ import { createPasswordResetToken } from './trpc/service-user/create-password-re
 import { createUser } from './trpc/service-user/create-user';
 import { getUser } from './trpc/service-user/get-user';
 import { resetPassword } from './trpc/service-user/reset-password';
+import { updateEmail } from './trpc/service-user/update-email';
 import { updateUser } from './trpc/service-user/update-user';
 import { verifyPassword } from './trpc/service-user/verify-password';
 import { createVerification } from './trpc/service-verification/create-verification';
@@ -37,6 +38,7 @@ export const handlers = [
   getUser,
   verifyPassword,
   updateUser,
+  updateEmail,
 
   // service-verification
   createVerification,

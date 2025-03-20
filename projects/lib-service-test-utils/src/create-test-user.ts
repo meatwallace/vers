@@ -2,24 +2,22 @@ import * as schema from '@vers/postgres-schema';
 import { hashPassword } from '@vers/service-utils';
 import { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
 
-interface TestUserConfig {
-  db: PostgresJsDatabase<typeof schema>;
-  user?: Partial<Omit<typeof schema.users.$inferSelect, 'passwordHash'>> & {
+type TestUserData = Partial<
+  Omit<typeof schema.users.$inferSelect, 'passwordHash'> & {
     password?: null | string;
-  };
-}
+  }
+>;
 
 export async function createTestUser(
-  config: TestUserConfig,
+  db: PostgresJsDatabase<typeof schema>,
+  data: TestUserData = {},
 ): Promise<typeof schema.users.$inferSelect> {
   const now = new Date();
 
-  const { password, ...rest } = config.user ?? {};
-
   let passwordHash = null;
 
-  if (password !== null) {
-    passwordHash = await hashPassword(password ?? 'password123');
+  if (data.password !== null) {
+    passwordHash = await hashPassword(data.password ?? 'password123');
   }
 
   const user = {
@@ -32,10 +30,10 @@ export async function createTestUser(
     passwordResetTokenExpiresAt: null,
     updatedAt: now,
     username: 'test_user',
-    ...rest,
-  };
+    ...data,
+  } satisfies typeof schema.users.$inferInsert;
 
-  await config.db.insert(schema.users).values(user);
+  await db.insert(schema.users).values(user);
 
   return user;
 }

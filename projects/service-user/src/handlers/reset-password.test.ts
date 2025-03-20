@@ -24,12 +24,9 @@ test('it updates the password and clears the reset token for an existing user', 
 
   const { db } = handle;
 
-  const user = await createTestUser({
-    db,
-    user: {
-      passwordResetToken: 'test_reset_token',
-      passwordResetTokenExpiresAt: new Date(Date.now() + 1000 * 60 * 10),
-    },
+  const user = await createTestUser(db, {
+    passwordResetToken: 'test_reset_token',
+    passwordResetTokenExpiresAt: new Date(Date.now() + 1000 * 60 * 10),
   });
 
   const { caller } = setupTest({ db });
@@ -83,12 +80,9 @@ test('it throws an error if the reset token is invalid', async () => {
 
   const { db } = handle;
 
-  const user = await createTestUser({
-    db,
-    user: {
-      passwordResetToken: 'test_reset_token',
-      passwordResetTokenExpiresAt: new Date(Date.now() + 1000 * 60 * 10),
-    },
+  const user = await createTestUser(db, {
+    passwordResetToken: 'test_reset_token',
+    passwordResetTokenExpiresAt: new Date(Date.now() + 1000 * 60 * 10),
   });
 
   const { caller } = setupTest({ db });
@@ -110,12 +104,9 @@ test('it throws an error if the reset token has expired', async () => {
 
   const { db } = handle;
 
-  const user = await createTestUser({
-    db,
-    user: {
-      passwordResetToken: 'test_reset_token',
-      passwordResetTokenExpiresAt: new Date(Date.now() - 1000 * 60 * 10),
-    },
+  const user = await createTestUser(db, {
+    passwordResetToken: 'test_reset_token',
+    passwordResetTokenExpiresAt: new Date(Date.now() - 1000 * 60 * 10),
   });
 
   const { caller } = setupTest({ db });

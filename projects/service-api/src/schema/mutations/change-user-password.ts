@@ -81,8 +81,8 @@ export async function changeUserPassword(
     }
 
     await ctx.services.user.changePassword.mutate({
+      id: ctx.user.id,
       password: args.input.newPassword,
-      userID: ctx.user.id,
     });
 
     const email = await generatePasswordChangedEmail({

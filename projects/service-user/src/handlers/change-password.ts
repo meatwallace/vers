@@ -9,8 +9,8 @@ import type { Context } from '../types';
 import { t } from '../t';
 
 export const ChangePasswordInputSchema = z.object({
+  id: z.string(),
   password: z.string(),
-  userID: z.string(),
 });
 
 export async function changePassword(
@@ -18,10 +18,10 @@ export async function changePassword(
   ctx: Context,
 ): Promise<ChangePasswordPayload> {
   try {
-    const { password, userID } = input;
+    const { id, password } = input;
 
     const user = await ctx.db.query.users.findFirst({
-      where: eq(schema.users.id, userID),
+      where: eq(schema.users.id, id),
     });
 
     if (!user) {
@@ -39,7 +39,7 @@ export async function changePassword(
         passwordHash,
         updatedAt: new Date(),
       })
-      .where(eq(schema.users.id, userID))
+      .where(eq(schema.users.id, id))
       .returning({
         updatedID: schema.users.id,
       });

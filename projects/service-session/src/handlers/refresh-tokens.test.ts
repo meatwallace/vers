@@ -20,7 +20,7 @@ interface TestConfig {
 async function setupTest(config: TestConfig) {
   const caller = createCaller({ db: config.db });
 
-  const user = await createTestUser({ db: config.db });
+  const user = await createTestUser(config.db);
 
   return { caller, user };
 }

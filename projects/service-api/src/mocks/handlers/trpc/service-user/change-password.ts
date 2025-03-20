@@ -7,7 +7,7 @@ export const changeUserPassword = trpc.changePassword.mutation(({ input }) => {
   try {
     const user = db.user.findFirst({
       where: {
-        id: { equals: input.userID },
+        id: { equals: input.id },
       },
     });
 

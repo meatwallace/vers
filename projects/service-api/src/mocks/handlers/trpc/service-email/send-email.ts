@@ -1,13 +1,23 @@
 import { vi } from 'vitest';
-import { SendEmailArgs } from '@vers/service-types';
 import { trpc } from './trpc';
 
-export const sentEmails = new Map<string, Array<SendEmailArgs>>();
+interface SendEmailInput {
+  html: string;
+  plainText: string;
+  subject: string;
+  to: string;
+}
 
-export const sendEmailHandler = vi.fn(({ input }: { input: SendEmailArgs }) => {
-  const emails = sentEmails.get(input.to) ?? [];
+interface SendEmailProcedureArgs {
+  input: SendEmailInput;
+}
 
-  sentEmails.set(input.to, [...emails, input]);
+export const sentEmails = new Map<string, Array<SendEmailInput>>();
+
+export const sendEmailHandler = vi.fn((args: SendEmailProcedureArgs) => {
+  const emails = sentEmails.get(args.input.to) ?? [];
+
+  sentEmails.set(args.input.to, [...emails, args.input]);
 
   return {};
 });
