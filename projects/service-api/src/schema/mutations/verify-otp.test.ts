@@ -261,12 +261,15 @@ test('it verifies a valid reset password otp and returns a valid transaction tok
 });
 
 test('it verifies a valid change email confirmation otp and returns a valid transaction token', async () => {
-  const ctx = createMockGQLContext({});
+  const user = db.user.create();
+  const session = db.session.create({ userID: user.id });
+
+  const ctx = createMockGQLContext({ session });
 
   const transactionID = createPendingTransaction({
     action: VerificationType.CHANGE_EMAIL_CONFIRMATION,
     ipAddress: ctx.ipAddress,
-    sessionID: null,
+    sessionID: session.id,
     target: 'test@example.com',
   });
 
@@ -284,6 +287,7 @@ test('it verifies a valid change email confirmation otp and returns a valid tran
   const args = {
     input: {
       code: otp,
+      sessionID: session.id,
       target: 'test@example.com',
       transactionID,
       type: VerificationType.CHANGE_EMAIL_CONFIRMATION,
@@ -314,7 +318,7 @@ test('it verifies a valid change email confirmation otp and returns a valid tran
     ip_address: ctx.ipAddress,
     jti: expect.any(String),
     mfa_verified: true,
-    session_id: null,
+    session_id: session.id,
     sub: 'test@example.com',
     transaction_id: transactionID,
   });

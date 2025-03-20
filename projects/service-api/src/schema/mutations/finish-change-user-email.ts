@@ -57,7 +57,7 @@ export async function finishChangeUserEmail(
 
     const prevEmail = ctx.user.email;
 
-    await ctx.services.user.updateUser.mutate({
+    await ctx.services.user.updateEmail.mutate({
       email: args.input.email,
       id: ctx.user.id,
     });

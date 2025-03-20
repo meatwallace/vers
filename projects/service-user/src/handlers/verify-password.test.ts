@@ -24,7 +24,7 @@ test('it verifies a correct password', async () => {
 
   const { caller } = setupTest({ db });
 
-  const user = await createTestUser({ db, user: { password: 'password123' } });
+  const user = await createTestUser(db, { password: 'password123' });
 
   const result = await caller.verifyPassword({
     email: user.email,
@@ -41,7 +41,7 @@ test('it returns a failure payload when the password is incorrect', async () => 
 
   const { caller } = setupTest({ db });
 
-  const user = await createTestUser({ db, user: { password: 'password123' } });
+  const user = await createTestUser(db, { password: 'password123' });
 
   const result = await caller.verifyPassword({
     email: user.email,
@@ -76,7 +76,7 @@ test('it rejects a user without a password set', async () => {
 
   const { caller } = setupTest({ db });
 
-  const user = await createTestUser({ db, user: { password: null } });
+  const user = await createTestUser(db, { password: null });
 
   await expect(
     caller.verifyPassword({

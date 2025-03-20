@@ -22,7 +22,7 @@ test('it gets a user by ID', async () => {
 
   const { db } = handle;
 
-  const user = await createTestUser({ db });
+  const user = await createTestUser(db);
 
   const { caller } = setupTest({ db });
 
@@ -38,7 +38,7 @@ test('it gets a user by email', async () => {
 
   const { db } = handle;
 
-  const user = await createTestUser({ db });
+  const user = await createTestUser(db);
 
   const { caller } = setupTest({ db });
 

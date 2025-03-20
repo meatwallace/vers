@@ -7,7 +7,7 @@ test('it creates a test user with the expected data', async () => {
 
   const { db } = handle;
 
-  const user = await createTestUser({ db });
+  const user = await createTestUser(db);
 
   expect(user).toStrictEqual({
     createdAt: expect.any(Date),
@@ -27,7 +27,7 @@ test('it creates a passwordless user when password is null', async () => {
 
   const { db } = handle;
 
-  const user = await createTestUser({ db, user: { password: null } });
+  const user = await createTestUser(db, { password: null });
 
   expect(user.passwordHash).toBeNull();
 });
@@ -37,13 +37,10 @@ test('it allows overriding the default user data', async () => {
 
   const { db } = handle;
 
-  const user = await createTestUser({
-    db,
-    user: {
-      email: 'test@test.com',
-      name: 'Test User',
-      username: 'test_user',
-    },
+  const user = await createTestUser(db, {
+    email: 'test@test.com',
+    name: 'Test User',
+    username: 'test_user',
   });
 
   expect(user.email).toBe('test@test.com');

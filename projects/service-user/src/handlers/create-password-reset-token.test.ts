@@ -23,7 +23,7 @@ test('it creates a password reset token for an existing user', async () => {
 
   const { db } = handle;
 
-  const user = await createTestUser({ db });
+  const user = await createTestUser(db);
 
   const { caller } = setupTest({ db });
 
@@ -52,7 +52,7 @@ test('it updates the user record with the new reset token', async () => {
 
   const { db } = handle;
 
-  const user = await createTestUser({ db });
+  const user = await createTestUser(db);
 
   const { caller } = setupTest({ db });
 
@@ -95,7 +95,7 @@ test('it throws an error if the user has no password', async () => {
 
   const { db } = handle;
 
-  const user = await createTestUser({ db, user: { password: null } });
+  const user = await createTestUser(db, { password: null });
 
   const { caller } = setupTest({ db });
 

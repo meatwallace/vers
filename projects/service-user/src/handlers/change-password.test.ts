@@ -23,12 +23,13 @@ test('it changes the user password', async () => {
 
   const { db } = handle;
 
-  const user = await createTestUser({ db });
+  const user = await createTestUser(db);
+
   const { caller } = setupTest({ db });
 
   const result = await caller.changePassword({
+    id: user.id,
     password: 'newpassword123',
-    userID: user.id,
   });
 
   expect(result).toStrictEqual({ updatedID: user.id });
@@ -49,8 +50,8 @@ test('it throws an error if the user does not exist', async () => {
 
   await expect(
     caller.changePassword({
+      id: 'non-existent-id',
       password: 'newpassword123',
-      userID: 'non-existent-id',
     }),
   ).rejects.toThrow('No user with that ID');
 });
