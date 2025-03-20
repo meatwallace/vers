@@ -20,9 +20,11 @@ const JWTPayloadSchema = z.object({
 
 const SESSION_REQUIRED_ACTIONS = new Set([
   VerificationType.CHANGE_EMAIL,
+  VerificationType.CHANGE_EMAIL_CONFIRMATION,
   VerificationType.CHANGE_PASSWORD,
   VerificationType.TWO_FACTOR_AUTH,
   VerificationType.TWO_FACTOR_AUTH_DISABLE,
+  VerificationType.TWO_FACTOR_AUTH_SETUP,
 ]);
 
 interface VerifyTransactionTokenData {
