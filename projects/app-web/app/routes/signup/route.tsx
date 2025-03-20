@@ -22,7 +22,6 @@ import { verifySessionStorage } from '~/session/verify-session-storage.server.ts
 import { Routes } from '~/types.ts';
 import { checkHoneypot } from '~/utils/check-honeypot.server.ts';
 import { createGQLClient } from '~/utils/create-gql-client.server.ts';
-import { getDomainURL } from '~/utils/get-domain-url.ts';
 import { handleGQLError } from '~/utils/handle-gql-error.ts';
 import { isMutationError } from '~/utils/is-mutation-error.ts';
 import { requireAnonymous } from '~/utils/require-anonymous.server.ts';
@@ -104,14 +103,14 @@ export const action = withErrorHandling(async (args: Route.ActionArgs) => {
     result.data.startEmailSignup.transactionID,
   );
 
-  const verifyURL = new URL(`${getDomainURL(request)}${Routes.VerifyOTP}`);
+  const searchParams = new URLSearchParams({
+    [QueryParam.Target]: submission.value.email,
+    [QueryParam.Type]: VerificationType.Onboarding,
+  });
 
-  verifyURL.searchParams.set(QueryParam.Type, VerificationType.Onboarding);
-  verifyURL.searchParams.set(QueryParam.Target, submission.value.email);
-
-  return redirect(verifyURL.toString(), {
+  return redirect(`${Routes.VerifyOTP}?${searchParams.toString()}`, {
     headers: {
-      'Set-Cookie': await verifySessionStorage.commitSession(verifySession),
+      'set-cookie': await verifySessionStorage.commitSession(verifySession),
     },
   });
 });
