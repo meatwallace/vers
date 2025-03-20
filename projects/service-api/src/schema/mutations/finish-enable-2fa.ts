@@ -75,7 +75,7 @@ export async function finishEnable2FA(
     return { success: true };
   } catch (error) {
     if (error instanceof Error) {
-      logger.error(error.message);
+      logger.error(error);
     }
 
     return { error: UNKNOWN_ERROR };

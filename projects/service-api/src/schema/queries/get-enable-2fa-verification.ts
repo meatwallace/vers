@@ -37,7 +37,7 @@ export async function getEnable2FAVerification(
     return { otpURI };
   } catch (error) {
     if (error instanceof Error) {
-      logger.error(error.message);
+      logger.error(error);
     }
 
     throw new GraphQLError('An unknown error occurred', {

@@ -74,7 +74,7 @@ export async function finishLoginWith2FA(
     return authPayload;
   } catch (error: unknown) {
     if (error instanceof Error) {
-      logger.error(error.message);
+      logger.error(error);
     }
 
     return { error: UNKNOWN_ERROR };

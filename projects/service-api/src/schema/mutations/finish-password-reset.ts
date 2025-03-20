@@ -91,7 +91,7 @@ export async function finishPasswordReset(
     return { success: true };
   } catch (error: unknown) {
     if (error instanceof Error) {
-      logger.error(error.message);
+      logger.error(error);
     }
 
     return { success: true };

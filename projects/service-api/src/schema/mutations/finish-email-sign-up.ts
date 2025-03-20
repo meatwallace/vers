@@ -55,7 +55,7 @@ export async function finishEmailSignup(
     return authPayload;
   } catch (error: unknown) {
     if (error instanceof Error) {
-      logger.error(error.message);
+      logger.error(error);
     }
 
     return { error: UNKNOWN_ERROR };

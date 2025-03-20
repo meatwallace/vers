@@ -75,7 +75,7 @@ export async function startEnable2FA(
     return { sessionID: null, transactionID };
   } catch (error) {
     if (error instanceof Error) {
-      logger.error(error.message);
+      logger.error(error);
     }
 
     return { error: UNKNOWN_ERROR };

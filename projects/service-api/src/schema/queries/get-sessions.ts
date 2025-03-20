@@ -27,7 +27,7 @@ export async function getSessions(
     return sessions;
   } catch (error: unknown) {
     if (error instanceof Error) {
-      logger.error(error.message);
+      logger.error(error);
     }
 
     throw new GraphQLError('An unknown error occurred', {

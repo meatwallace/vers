@@ -122,7 +122,7 @@ export async function startChangeUserEmail(
     };
   } catch (error) {
     if (error instanceof Error) {
-      logger.error(error.message);
+      logger.error(error);
     }
 
     return { error: UNKNOWN_ERROR };
