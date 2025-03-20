@@ -10,9 +10,16 @@ WORKDIR /app
 # Set production environment
 ENV NODE_ENV="production"
 
-# use a build arg to specify our vite build mode
+# Use a build arg to specify our vite build mode
 ARG BUILD_MODE=production
 ENV BUILD_MODE $BUILD_MODE
+
+# Use a build arg to specify our sentry auth token
+ARG SENTRY_AUTH_TOKEN
+ENV SENTRY_AUTH_TOKEN $SENTRY_AUTH_TOKEN
+
+# Set up certificates so sentry can make a deployment
+RUN apt-get update && apt-get install -y ca-certificates
 
 # Copy application code
 COPY --link . .
@@ -26,7 +33,7 @@ RUN \
   yarn install
 
 # Final stage for app image
-FROM gcr.io/distroless/nodejs${NODE_VERSION}
+FROM node:${NODE_VERSION}-alpine
 
 LABEL fly_launch_runtime="Node.js"
 

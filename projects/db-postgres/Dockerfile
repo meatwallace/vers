@@ -26,7 +26,7 @@ RUN \
   yarn install
 
 # Final stage for app image
-FROM gcr.io/distroless/nodejs${NODE_VERSION}
+FROM node:${NODE_VERSION}-alpine
 
 LABEL fly_launch_runtime="Node.js"
 
