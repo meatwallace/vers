@@ -28,6 +28,21 @@
         "esbuildConfig": "projects/service-api/esbuild.config.cjs"
       }
     },
+    "serve": {
+      "executor": "@nx/js:node",
+      "defaultConfiguration": "development",
+      "options": {
+        "buildTarget": "service-api:build"
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "service-api:build:development"
+        },
+        "production": {
+          "buildTarget": "service-api:build:production"
+        }
+      }
+    },
     "typecheck": {
       "executor": "nx:run-commands",
       "options": {
@@ -44,7 +59,7 @@
       "executor": "nx:run-commands",
       "options": {
         "commands": [
-          "flyctl deploy --local-only --dockerfile projects/service-api/Dockerfile --config projects/service-api/fly.toml"
+          "flyctl deploy --local-only --dockerfile projects/service-api/Dockerfile --config projects/service-api/fly.toml --build-arg SENTRY_AUTH_TOKEN=$SENTRY_AUTH_TOKEN"
         ]
       }
     }
