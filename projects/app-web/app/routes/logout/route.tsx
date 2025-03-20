@@ -8,8 +8,8 @@ export function loader() {
   return redirect(Routes.Index);
 }
 
-export async function action({ request }: Route.ActionArgs) {
-  return logout(request);
+export async function action(args: Route.ActionArgs) {
+  return logout(args.request);
 }
 
 export function ErrorBoundary() {

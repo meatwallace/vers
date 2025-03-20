@@ -7,6 +7,7 @@ import { GraphQLError } from 'graphql';
 import { graphql } from 'msw';
 import { db } from '~/mocks/db.ts';
 import { server } from '~/mocks/node.ts';
+import { withAppLoadContext } from '~/test-utils/with-app-load-context.ts';
 import { withRouteProps } from '~/test-utils/with-route-props.tsx';
 import { Routes } from '~/types.ts';
 import { action, ForgotPassword, loader } from './route.tsx';
@@ -14,11 +15,14 @@ import { action, ForgotPassword, loader } from './route.tsx';
 function setupTest() {
   const user = userEvent.setup();
 
+  const _action = withAppLoadContext(action);
+  const _loader = withAppLoadContext(loader);
+
   const ForgotPasswordStub = createRoutesStub([
     {
-      action,
+      action: _action,
       Component: withRouteProps(ForgotPassword),
-      loader,
+      loader: _loader,
       path: '/',
     },
     {

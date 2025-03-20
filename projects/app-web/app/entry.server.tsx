@@ -6,6 +6,7 @@ import type {
   LoaderFunctionArgs,
 } from 'react-router';
 import { ServerRouter } from 'react-router';
+import type { Client } from '@urql/core';
 import { PassThrough } from 'node:stream';
 import { styleText } from 'node:util';
 import { createReadableStreamFromReadable } from '@react-router/node';
@@ -30,7 +31,12 @@ if (!import.meta.env.PROD) {
 
 declare module 'react-router' {
   interface AppLoadContext {
+    client: Client;
     cspNonce: string;
+  }
+
+  interface unstable_RouterContext {
+    client: Client;
   }
 }
 

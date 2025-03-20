@@ -113,7 +113,7 @@ test('it attaches the unverified session ID to the request if the session ID is 
   });
 });
 
-test('it refreshes the access token when receiving a 401 error', async () => {
+test('it refreshes the access token when receiving a 401 error and redirects to the correct path', async () => {
   // create a valid user and session so we can refresh our token
   const user = db.user.create();
 
@@ -141,7 +141,8 @@ test('it refreshes the access token when receiving a 401 error', async () => {
 
   const cookieHeader = await authSessionStorage.commitSession(authSession);
 
-  const request = new Request('http://localhost:3000/dashboard');
+  // ensure we include the .data suffix so we can test that it gets removed
+  const request = new Request('http://localhost:3000/dashboard.data');
 
   // attach our initial auth session to the request
   request.headers.set('cookie', cookieHeader);
@@ -160,7 +161,7 @@ test('it refreshes the access token when receiving a 401 error', async () => {
   expect(result.error).toMatchObject({
     networkError: new Response(null, {
       headers: {
-        Location: 'http://localhost:3000/dashboard',
+        Location: '/dashboard',
       },
       status: 302,
     }),

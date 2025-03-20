@@ -54,6 +54,8 @@ export async function createGQLClient(request: Request): Promise<Client> {
         return isURQLFetchError(error) && error.response.status === 401;
       },
       refreshAuth: async () => {
+        authSession.unset('accessToken');
+
         const refreshToken = authSession.get('refreshToken');
 
         if (!refreshToken) {
@@ -72,8 +74,13 @@ export async function createGQLClient(request: Request): Promise<Client> {
         const setCookieHeader =
           await authSessionStorage.commitSession(authSession);
 
-        // redirect to the same URL with the refreshed session
-        throw redirect(request.url, {
+        // because we're using the request from our app's entry point, it hasn't been
+        // processed by react-router yet, so we need to manually remove .data from
+        // the path
+        const redirectPath = new URL(request.url).pathname.replace('.data', '');
+
+        // redirect to where we are with the refreshed session
+        throw redirect(redirectPath, {
           headers: {
             'set-cookie': setCookieHeader,
           },

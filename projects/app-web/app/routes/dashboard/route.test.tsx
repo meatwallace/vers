@@ -4,6 +4,8 @@ import userEvent from '@testing-library/user-event';
 import { createRoutesStub } from 'react-router';
 import { drop } from '@mswjs/data';
 import { db } from '~/mocks/db.ts';
+import { composeDataFnWrappers } from '~/test-utils/compose-data-fn-wrappers.ts';
+import { withAppLoadContext } from '~/test-utils/with-app-load-context.ts';
 import { withAuthedUser } from '~/test-utils/with-authed-user.ts';
 import { withRouteProps } from '~/test-utils/with-route-props.tsx';
 import { Routes } from '~/types.ts';
@@ -20,12 +22,16 @@ interface TestConfig {
 function setupTest(config: TestConfig) {
   const user = userEvent.setup();
 
+  const _loader = composeDataFnWrappers(
+    loader,
+    withAppLoadContext,
+    config.isAuthed && ((_) => withAuthedUser(_, { user: config.user })),
+  );
+
   const DashboardStub = createRoutesStub([
     {
       Component: withRouteProps(Dashboard),
-      loader: config.isAuthed
-        ? withAuthedUser(loader, { user: config.user })
-        : loader,
+      loader: _loader,
       path: '/',
     },
     {

@@ -29,7 +29,6 @@ import { authSessionStorage } from '~/session/auth-session-storage.server.ts';
 import { verifySessionStorage } from '~/session/verify-session-storage.server.ts';
 import { Routes } from '~/types.ts';
 import { checkHoneypot } from '~/utils/check-honeypot.server.ts';
-import { createGQLClient } from '~/utils/create-gql-client.server.ts';
 import { handleGQLError } from '~/utils/handle-gql-error.ts';
 import { isMutationError } from '~/utils/is-mutation-error.ts';
 import { withErrorHandling } from '~/utils/with-error-handling.ts';
@@ -55,9 +54,7 @@ export const meta: Route.MetaFunction = () => [
 
 // eslint-disable-next-line @typescript-eslint/require-await
 export const loader = withErrorHandling(async (args: Route.LoaderArgs) => {
-  const { request } = args;
-
-  const url = new URL(request.url);
+  const url = new URL(args.request.url);
 
   const typeParam = url.searchParams.get(QueryParam.Type);
   const typeParsedWithZod = VerificationTypeSchema.safeParse(typeParam);
@@ -86,10 +83,7 @@ const transactionIDKeys: Record<VerificationType, SessionKey> = {
 } as const;
 
 export const action = withErrorHandling(async (args: Route.ActionArgs) => {
-  const { request } = args;
-
-  const client = await createGQLClient(request);
-  const formData = await request.formData();
+  const formData = await args.request.formData();
 
   await checkHoneypot(formData);
 
@@ -103,11 +97,11 @@ export const action = withErrorHandling(async (args: Route.ActionArgs) => {
   }
 
   const verifySession = await verifySessionStorage.getSession(
-    request.headers.get('cookie'),
+    args.request.headers.get('cookie'),
   );
 
   const authSession = await authSessionStorage.getSession(
-    request.headers.get('cookie'),
+    args.request.headers.get('cookie'),
   );
 
   const transactionID = verifySession.get(
@@ -126,7 +120,7 @@ export const action = withErrorHandling(async (args: Route.ActionArgs) => {
     return data({ result }, { status: 400 });
   }
 
-  const result = await client.mutation(VerifyOTPMutation, {
+  const result = await args.context.client.mutation(VerifyOTPMutation, {
     input: {
       code: submission.value.code,
       sessionID,
@@ -158,8 +152,8 @@ export const action = withErrorHandling(async (args: Route.ActionArgs) => {
 
   return await handleVerification(submission.value.type, {
     body: formData,
-    client,
-    request,
+    client: args.context.client,
+    request: args.request,
     submission,
     transactionToken: result.data.verifyOTP.transactionToken,
   });
@@ -180,13 +174,13 @@ const INSTRUCTION_BY_TYPE: Record<VerificationType, string> = {
   [VerificationType.ChangeEmail]:
     'To start changing your email address, please enter your six digit code from your authenticator app',
   [VerificationType.ChangeEmailConfirmation]:
-    'To confirm your new email address, please enter the six character code we’ve sent to your email',
+    "To confirm your new email address, please enter the six character code we've sent to your email",
   [VerificationType.ChangePassword]:
     'To start changing your password, please enter your six digit code from your authenticator app',
   [VerificationType.Onboarding]:
-    'To complete your account creation, please enter the six character code we’ve sent to your email',
+    "To complete your account creation, please enter the six character code we've sent to your email",
   [VerificationType.ResetPassword]:
-    'To reset your password, please enter the six character code we’ve sent to your email',
+    "To reset your password, please enter the six character code we've sent to your email",
   [VerificationType.TwoFactorAuth]:
     'To log in, please enter the six digit code from your authenticator app',
   [VerificationType.TwoFactorAuthDisable]:

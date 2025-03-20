@@ -3,6 +3,7 @@ import { remoteAddressMiddleware } from '@vers/service-utils';
 import { compress } from 'hono/compress';
 import { poweredBy } from 'hono/powered-by';
 import { Hono } from 'hono/quick';
+import { createGQLClient } from '~/utils/create-gql-client.server.ts';
 import { env } from './env.ts';
 import { logger as appLogger } from './logger.ts';
 import { enforceHTTPS } from './middleware/enforce-https.ts';
@@ -49,8 +50,16 @@ export default await createHonoServer({
     });
   },
   defaultLogger: false,
-  getLoadContext: (ctx, { build }) => ({
-    cspNonce: ctx.get('cspNonce'),
-    serverBuild: build,
-  }),
+  getLoadContext: async (ctx, { build }) => {
+    // instantiate our GQL client as part of our load context so
+    // we only have a single instance. prevents issues with refreshing
+    // tokens for multiple inflight requests, etc.
+    const client = await createGQLClient(ctx.req.raw);
+
+    return {
+      client,
+      cspNonce: ctx.get('cspNonce'),
+      serverBuild: build,
+    };
+  },
 });

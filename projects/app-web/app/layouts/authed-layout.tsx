@@ -3,7 +3,6 @@ import { css } from '@vers/styled-system/css';
 import invariant from 'tiny-invariant';
 import { Header } from '~/components/header';
 import { GetCurrentUserQuery } from '~/data/queries/get-current-user';
-import { createGQLClient } from '~/utils/create-gql-client.server';
 import { getLoginPathWithRedirect } from '~/utils/get-login-path-with-redirect.server';
 import { handleGQLError } from '~/utils/handle-gql-error';
 import { logout } from '~/utils/logout.server';
@@ -14,9 +13,7 @@ import type { Route } from './+types/authed-layout';
 export const loader = withErrorHandling(async (args: Route.LoaderArgs) => {
   await requireAuth(args.request);
 
-  const client = await createGQLClient(args.request);
-
-  const result = await client.query(GetCurrentUserQuery, {});
+  const result = await args.context.client.query(GetCurrentUserQuery, {});
 
   if (result.error) {
     handleGQLError(result.error);

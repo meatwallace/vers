@@ -22,7 +22,6 @@ import { storeAuthPayload } from '~/session/store-auth-payload.ts';
 import { verifySessionStorage } from '~/session/verify-session-storage.server.ts';
 import { Routes } from '~/types.ts';
 import { checkHoneypot } from '~/utils/check-honeypot.server.ts';
-import { createGQLClient } from '~/utils/create-gql-client.server.ts';
 import { handleGQLError } from '~/utils/handle-gql-error.ts';
 import { isMutationError } from '~/utils/is-mutation-error';
 import { withErrorHandling } from '~/utils/with-error-handling.ts';
@@ -56,20 +55,17 @@ export const meta: Route.MetaFunction = () => [
 ];
 
 export const loader = withErrorHandling(async (args: Route.LoaderArgs) => {
-  const { request } = args;
-
-  const { email } = await requireOnboardingSession(request);
+  const { email } = await requireOnboardingSession(args.request);
 
   return { email };
 });
 
 export const action = withErrorHandling(async (args: Route.ActionArgs) => {
-  const { request } = args;
+  const { email, transactionToken } = await requireOnboardingSession(
+    args.request,
+  );
 
-  const { email, transactionToken } = await requireOnboardingSession(request);
-
-  const client = await createGQLClient(request);
-  const formData = await request.formData();
+  const formData = await args.request.formData();
 
   await checkHoneypot(formData);
 
@@ -82,7 +78,7 @@ export const action = withErrorHandling(async (args: Route.ActionArgs) => {
     return data({ result }, { status });
   }
 
-  const result = await client.mutation(FinishEmailSignupMutation, {
+  const result = await args.context.client.mutation(FinishEmailSignupMutation, {
     input: {
       email,
       name: submission.value.name,
@@ -114,7 +110,7 @@ export const action = withErrorHandling(async (args: Route.ActionArgs) => {
   }
 
   const authSession = await authSessionStorage.getSession(
-    request.headers.get('cookie'),
+    args.request.headers.get('cookie'),
   );
 
   storeAuthPayload(authSession, result.data.finishEmailSignup);

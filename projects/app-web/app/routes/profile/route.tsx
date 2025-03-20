@@ -1,5 +1,4 @@
 import { data, Form, redirect, useFetcher } from 'react-router';
-import type { Client } from '@urql/core';
 import type { Styles } from '@vers/styled-system/css';
 import { parseWithZod } from '@conform-to/zod';
 import { Button, Heading, Link, StatusButton, Text } from '@vers/design-system';
@@ -14,7 +13,6 @@ import { StepUpAction, VerificationType } from '~/gql/graphql.ts';
 import { useIsFormPending } from '~/hooks/use-is-form-pending.ts';
 import { verifySessionStorage } from '~/session/verify-session-storage.server.ts';
 import { Routes } from '~/types';
-import { createGQLClient } from '~/utils/create-gql-client.server.ts';
 import { handleGQLError } from '~/utils/handle-gql-error.ts';
 import { isMutationError } from '~/utils/is-mutation-error.ts';
 import { requireAuth } from '~/utils/require-auth.server.ts';
@@ -34,13 +32,9 @@ export const meta: Route.MetaFunction = () => [
 ];
 
 export const loader = withErrorHandling(async (args: Route.LoaderArgs) => {
-  const { request } = args;
+  await requireAuth(args.request);
 
-  await requireAuth(request);
-
-  const client = await createGQLClient(request);
-
-  const result = await client.query(GetCurrentUserQuery, {});
+  const result = await args.context.client.query(GetCurrentUserQuery, {});
 
   if (result.error) {
     handleGQLError(result.error);
@@ -59,28 +53,27 @@ enum ActionIntent {
 }
 
 export const action = withErrorHandling(async (args: Route.ActionArgs) => {
-  const { request } = args;
+  await requireAuth(args.request);
 
-  await requireAuth(request);
-
-  const client = await createGQLClient(request);
-  const formData = await request.formData();
+  const formData = await args.request.formData();
 
   const intent = formData.get('intent');
 
   if (intent === ActionIntent.Enable2FA) {
-    return handleEnable2FA(client, request);
+    return handleEnable2FA(args);
   }
 
   if (intent === ActionIntent.Disable2FA) {
-    return handleDisable2FA(client, request, formData);
+    return handleDisable2FA(args, formData);
   }
 
   return null;
 });
 
-async function handleEnable2FA(client: Client, request: Request) {
-  const result = await client.mutation(StartEnable2FAMutation, { input: {} });
+async function handleEnable2FA(args: Route.ActionArgs) {
+  const result = await args.context.client.mutation(StartEnable2FAMutation, {
+    input: {},
+  });
 
   if (result.error) {
     handleGQLError(result.error);
@@ -98,7 +91,7 @@ async function handleEnable2FA(client: Client, request: Request) {
   }
 
   const verifySession = await verifySessionStorage.getSession(
-    request.headers.get('cookie'),
+    args.request.headers.get('cookie'),
   );
 
   verifySession.set(
@@ -113,11 +106,7 @@ async function handleEnable2FA(client: Client, request: Request) {
   });
 }
 
-async function handleDisable2FA(
-  client: Client,
-  request: Request,
-  formData: FormData,
-) {
+async function handleDisable2FA(args: Route.ActionArgs, formData: FormData) {
   const submission = parseWithZod(formData, {
     schema: TwoFactorDisableFormSchema,
   });
@@ -126,7 +115,7 @@ async function handleDisable2FA(
     return data({ error: submission.error?.message }, { status: 400 });
   }
 
-  const result = await client.mutation(StartStepUpAuthMutation, {
+  const result = await args.context.client.mutation(StartStepUpAuthMutation, {
     input: {
       action: StepUpAction.Disable_2Fa,
     },
@@ -148,7 +137,7 @@ async function handleDisable2FA(
   }
 
   const verifySession = await verifySessionStorage.getSession(
-    request.headers.get('cookie'),
+    args.request.headers.get('cookie'),
   );
 
   verifySession.set(

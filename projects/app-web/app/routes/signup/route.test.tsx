@@ -8,6 +8,8 @@ import { graphql } from 'msw';
 import { db } from '~/mocks/db.ts';
 import { server } from '~/mocks/node.ts';
 import { verifySessionStorage } from '~/session/verify-session-storage.server.ts';
+import { composeDataFnWrappers } from '~/test-utils/compose-data-fn-wrappers.ts';
+import { withAppLoadContext } from '~/test-utils/with-app-load-context.ts';
 import { withAuthedUser } from '~/test-utils/with-authed-user.ts';
 import { withRouteProps } from '~/test-utils/with-route-props.tsx';
 import { Routes } from '~/types.ts';
@@ -36,11 +38,23 @@ interface TestConfig {
 function setupTest(config: TestConfig) {
   const user = userEvent.setup();
 
+  const _loader = composeDataFnWrappers(
+    loader,
+    withAppLoadContext,
+    config.isAuthed && withAuthedUser,
+  );
+
+  const _action = composeDataFnWrappers(
+    action,
+    withAppLoadContext,
+    config.isAuthed && withAuthedUser,
+  );
+
   const SignupStub = createRoutesStub([
     {
-      action: config.isAuthed ? withAuthedUser(action) : action,
+      action: _action,
       Component: withRouteProps(Signup),
-      loader: config.isAuthed ? withAuthedUser(loader) : loader,
+      loader: _loader,
       path: '/',
     },
     {

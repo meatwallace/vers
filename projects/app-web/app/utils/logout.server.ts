@@ -7,7 +7,7 @@ import { Routes } from '~/types';
 import { combineHeaders } from './combine-headers.server.ts';
 import { createGQLClient } from './create-gql-client.server.ts';
 
-interface Context {
+interface LogoutOptions {
   redirectTo?: string;
   responseInit?: ResponseInit;
 }
@@ -21,7 +21,7 @@ interface Context {
  */
 export async function logout(
   request: Request,
-  ctx: Context = {},
+  options: LogoutOptions = {},
 ): Promise<never> {
   const client = await createGQLClient(request);
 
@@ -44,11 +44,11 @@ export async function logout(
     }
   }
 
-  throw redirect(safeRedirect(ctx.redirectTo ?? Routes.Index), {
-    ...ctx.responseInit,
+  throw redirect(safeRedirect(options.redirectTo ?? Routes.Index), {
+    ...options.responseInit,
     headers: combineHeaders(
       { 'set-cookie': await authSessionStorage.destroySession(authSession) },
-      ctx.responseInit?.headers,
+      options.responseInit?.headers,
     ),
   });
 }

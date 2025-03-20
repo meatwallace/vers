@@ -6,6 +6,8 @@ import { drop } from '@mswjs/data';
 import { graphql } from 'msw';
 import { db } from '~/mocks/db.ts';
 import { server } from '~/mocks/node.ts';
+import { composeDataFnWrappers } from '~/test-utils/compose-data-fn-wrappers.ts';
+import { withAppLoadContext } from '~/test-utils/with-app-load-context.ts';
 import { withAuthedUser } from '~/test-utils/with-authed-user.ts';
 import { Routes } from '~/types.ts';
 import { action, loader } from './route.tsx';
@@ -18,6 +20,10 @@ interface TestConfig {
 function setupTest(config: TestConfig) {
   const user = userEvent.setup();
 
+  const _action = composeDataFnWrappers(action, withAppLoadContext, (_) =>
+    withAuthedUser(_, { sessionID: config.sessionID }),
+  );
+
   const LogoutStub = createRoutesStub([
     {
       Component: () => (
@@ -28,7 +34,7 @@ function setupTest(config: TestConfig) {
       path: Routes.Dashboard,
     },
     {
-      action: withAuthedUser(action, { sessionID: config.sessionID }),
+      action: _action,
       Component: () => 'LOGOUT_ROUTE',
       loader,
       path: Routes.Logout,

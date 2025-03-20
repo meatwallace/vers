@@ -31,7 +31,6 @@ import { storeAuthPayload } from '~/session/store-auth-payload.ts';
 import { verifySessionStorage } from '~/session/verify-session-storage.server.ts';
 import { Routes } from '~/types.ts';
 import { checkHoneypot } from '~/utils/check-honeypot.server.ts';
-import { createGQLClient } from '~/utils/create-gql-client.server.ts';
 import { getDomainURL } from '~/utils/get-domain-url.ts';
 import { handleGQLError } from '~/utils/handle-gql-error.ts';
 import { is2FARequiredPayload } from '~/utils/is-2fa-required-payload.ts';
@@ -59,18 +58,13 @@ export const meta: Route.MetaFunction = () => [
 ];
 
 export const loader = withErrorHandling(async (args: Route.LoaderArgs) => {
-  const { request } = args;
-
-  await requireAnonymous(request);
+  await requireAnonymous(args.request);
 });
 
 export const action = withErrorHandling(async (args: Route.ActionArgs) => {
-  const { request } = args;
+  await requireAnonymous(args.request);
 
-  await requireAnonymous(request);
-
-  const client = await createGQLClient(request);
-  const formData = await request.formData();
+  const formData = await args.request.formData();
 
   await checkHoneypot(formData);
 
@@ -83,7 +77,7 @@ export const action = withErrorHandling(async (args: Route.ActionArgs) => {
     return data({ result }, { status });
   }
 
-  const result = await client.mutation(LoginWithPasswordMutation, {
+  const result = await args.context.client.mutation(LoginWithPasswordMutation, {
     input: {
       email: submission.value.email,
       password: submission.value.password,
@@ -112,7 +106,9 @@ export const action = withErrorHandling(async (args: Route.ActionArgs) => {
   }
 
   if (is2FARequiredPayload(result.data.loginWithPassword)) {
-    const verifyURL = new URL(`${getDomainURL(request)}${Routes.VerifyOTP}`);
+    const verifyURL = new URL(
+      `${getDomainURL(args.request)}${Routes.VerifyOTP}`,
+    );
 
     verifyURL.searchParams.set(QueryParam.Target, submission.value.email);
     verifyURL.searchParams.set(QueryParam.Type, VerificationType.TwoFactorAuth);
@@ -127,7 +123,7 @@ export const action = withErrorHandling(async (args: Route.ActionArgs) => {
     invariant(result.data.loginWithPassword.sessionID, 'sessionID is required');
 
     const verifySession = await verifySessionStorage.getSession(
-      request.headers.get('cookie'),
+      args.request.headers.get('cookie'),
     );
 
     verifySession.set(
@@ -148,7 +144,7 @@ export const action = withErrorHandling(async (args: Route.ActionArgs) => {
   }
 
   const authSession = await authSessionStorage.getSession(
-    request.headers.get('cookie'),
+    args.request.headers.get('cookie'),
   );
 
   storeAuthPayload(authSession, result.data.loginWithPassword);

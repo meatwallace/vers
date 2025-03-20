@@ -7,6 +7,8 @@ import { GraphQLError } from 'graphql';
 import { graphql } from 'msw';
 import { db } from '~/mocks/db.ts';
 import { server } from '~/mocks/node.ts';
+import { composeDataFnWrappers } from '~/test-utils/compose-data-fn-wrappers.ts';
+import { withAppLoadContext } from '~/test-utils/with-app-load-context.ts';
 import { withAuthedUser } from '~/test-utils/with-authed-user.ts';
 import { withRouteProps } from '~/test-utils/with-route-props.tsx';
 import { Routes } from '~/types.ts';
@@ -25,15 +27,23 @@ function setupTest(config: TestConfig) {
   const initialPath = config.initialPath ?? '/';
   const user = userEvent.setup();
 
+  const _action = composeDataFnWrappers(
+    action,
+    withAppLoadContext,
+    config.isAuthed && ((_) => withAuthedUser(_, { user: config.user })),
+  );
+
+  const _loader = composeDataFnWrappers(
+    loader,
+    withAppLoadContext,
+    config.isAuthed && ((_) => withAuthedUser(_, { user: config.user })),
+  );
+
   const LoginStub = createRoutesStub([
     {
-      action: config.isAuthed
-        ? withAuthedUser(action, { user: config.user })
-        : action,
+      action: _action,
       Component: withRouteProps(Login),
-      loader: config.isAuthed
-        ? withAuthedUser(loader, { user: config.user })
-        : loader,
+      loader: _loader,
       path: '/',
     },
     {

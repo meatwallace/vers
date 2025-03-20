@@ -21,7 +21,6 @@ import { useIsFormPending } from '~/hooks/use-is-form-pending.ts';
 import { verifySessionStorage } from '~/session/verify-session-storage.server.ts';
 import { Routes } from '~/types.ts';
 import { checkHoneypot } from '~/utils/check-honeypot.server.ts';
-import { createGQLClient } from '~/utils/create-gql-client.server.ts';
 import { handleGQLError } from '~/utils/handle-gql-error.ts';
 import { isMutationError } from '~/utils/is-mutation-error.ts';
 import { requireAnonymous } from '~/utils/require-anonymous.server.ts';
@@ -42,20 +41,15 @@ export const meta: Route.MetaFunction = () => [
 ];
 
 export const loader = withErrorHandling(async (args: Route.LoaderArgs) => {
-  const { request } = args;
+  await requireAnonymous(args.request);
 
-  await requireAnonymous(request);
-
-  return null;
+  return {};
 });
 
 export const action = withErrorHandling(async (args: Route.ActionArgs) => {
-  const { request } = args;
+  await requireAnonymous(args.request);
 
-  await requireAnonymous(request);
-
-  const client = await createGQLClient(request);
-  const formData = await request.formData();
+  const formData = await args.request.formData();
 
   await checkHoneypot(formData);
 
@@ -68,7 +62,7 @@ export const action = withErrorHandling(async (args: Route.ActionArgs) => {
     return data({ result }, { status });
   }
 
-  const result = await client.mutation(StartEmailSignupMutation, {
+  const result = await args.context.client.mutation(StartEmailSignupMutation, {
     input: {
       email: submission.value.email,
     },
@@ -84,7 +78,7 @@ export const action = withErrorHandling(async (args: Route.ActionArgs) => {
     return data({ result: formResult }, { status: 500 });
   }
 
-  invariant(result.data, 'if no error, there must be data');
+  invariant(result.data, 'if no error, there should be data');
 
   if (isMutationError(result.data.startEmailSignup)) {
     const formResult = submission.reply({
@@ -95,7 +89,7 @@ export const action = withErrorHandling(async (args: Route.ActionArgs) => {
   }
 
   const verifySession = await verifySessionStorage.getSession(
-    request.headers.get('cookie'),
+    args.request.headers.get('cookie'),
   );
 
   verifySession.set(

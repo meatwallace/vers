@@ -23,7 +23,6 @@ import { useIsFormPending } from '~/hooks/use-is-form-pending.ts';
 import { verifySessionStorage } from '~/session/verify-session-storage.server.ts';
 import { Routes } from '~/types';
 import { captureGQLExceptions } from '~/utils/capture-gql-exceptions.server.ts';
-import { createGQLClient } from '~/utils/create-gql-client.server.ts';
 import { isMutationError } from '~/utils/is-mutation-error.ts';
 import { requireAuth } from '~/utils/require-auth.server.ts';
 import { withErrorHandling } from '~/utils/with-error-handling.ts';
@@ -42,13 +41,12 @@ export const meta: Route.MetaFunction = () => [
 ];
 
 export const loader = withErrorHandling(async (args: Route.LoaderArgs) => {
-  const { request } = args;
+  await requireAuth(args.request);
 
-  await requireAuth(request);
-
-  const client = await createGQLClient(request);
-
-  const currentUserResult = await client.query(GetCurrentUserQuery, {});
+  const currentUserResult = await args.context.client.query(
+    GetCurrentUserQuery,
+    {},
+  );
 
   if (currentUserResult.error) {
     throw currentUserResult.error;
@@ -61,7 +59,7 @@ export const loader = withErrorHandling(async (args: Route.LoaderArgs) => {
     return redirect(Routes.Profile);
   }
 
-  const twoFactorVerifyResult = await client.query(
+  const twoFactorVerifyResult = await args.context.client.query(
     GetEnable2FAVerificationQuery,
     {},
   );
@@ -84,12 +82,9 @@ export const loader = withErrorHandling(async (args: Route.LoaderArgs) => {
 });
 
 export const action = withErrorHandling(async (args: Route.ActionArgs) => {
-  const { request } = args;
+  const { sessionID } = await requireAuth(args.request);
 
-  const { sessionID } = await requireAuth(request);
-
-  const client = await createGQLClient(request);
-  const formData = await request.formData();
+  const formData = await args.request.formData();
 
   const submission = parseWithZod(formData, { schema: VerifyOTPFormSchema });
 
@@ -101,7 +96,7 @@ export const action = withErrorHandling(async (args: Route.ActionArgs) => {
   }
 
   const verifySession = await verifySessionStorage.getSession(
-    request.headers.get('cookie'),
+    args.request.headers.get('cookie'),
   );
 
   const transactionID = verifySession.get('enable2FA#transactionID');
@@ -115,15 +110,18 @@ export const action = withErrorHandling(async (args: Route.ActionArgs) => {
     return data({ result }, { status: 500 });
   }
 
-  const verifyOTPResult = await client.mutation(VerifyOTPMutation, {
-    input: {
-      code: submission.value.code,
-      sessionID,
-      target: submission.value.target,
-      transactionID,
-      type: VerificationType.TwoFactorAuthSetup,
+  const verifyOTPResult = await args.context.client.mutation(
+    VerifyOTPMutation,
+    {
+      input: {
+        code: submission.value.code,
+        sessionID,
+        target: submission.value.target,
+        transactionID,
+        type: VerificationType.TwoFactorAuthSetup,
+      },
     },
-  });
+  );
 
   if (verifyOTPResult.error) {
     captureGQLExceptions(verifyOTPResult.error);
@@ -145,11 +143,14 @@ export const action = withErrorHandling(async (args: Route.ActionArgs) => {
     return data({ result }, { status: 400 });
   }
 
-  const finishEnable2FAResult = await client.mutation(FinishEnable2FAMutation, {
-    input: {
-      transactionToken: verifyOTPResult.data.verifyOTP.transactionToken,
+  const finishEnable2FAResult = await args.context.client.mutation(
+    FinishEnable2FAMutation,
+    {
+      input: {
+        transactionToken: verifyOTPResult.data.verifyOTP.transactionToken,
+      },
     },
-  });
+  );
 
   if (finishEnable2FAResult.error) {
     captureGQLExceptions(finishEnable2FAResult.error);

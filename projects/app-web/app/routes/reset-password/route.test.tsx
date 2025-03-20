@@ -9,6 +9,7 @@ import { VerificationType } from '~/gql/graphql.ts';
 import { db } from '~/mocks/db.ts';
 import { server } from '~/mocks/node.ts';
 import { verifySessionStorage } from '~/session/verify-session-storage.server.ts';
+import { withAppLoadContext } from '~/test-utils/with-app-load-context.ts';
 import { withRouteProps } from '~/test-utils/with-route-props.tsx';
 import { Routes } from '~/types.ts';
 import type { Route } from './+types/route.ts';
@@ -33,17 +34,20 @@ async function setupTest(config: TestConfig) {
 
   const cookie = await verifySessionStorage.commitSession(verifySession);
 
+  const _loader = withAppLoadContext(loader);
+  const _action = withAppLoadContext(action);
+
   // wrap our loader that sets our cookie in the request
   const loaderWithCookie = async ({ request, ...rest }: Route.LoaderArgs) => {
     request.headers.set('cookie', cookie);
 
-    return loader({ ...rest, params: {}, request });
+    return _loader({ ...rest, params: {}, request });
   };
 
   const actionWithCookie = async ({ request, ...rest }: Route.ActionArgs) => {
     request.headers.set('cookie', cookie);
 
-    return action({ ...rest, request });
+    return _action({ ...rest, request });
   };
 
   const ResetPasswordStub = createRoutesStub([

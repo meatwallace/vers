@@ -10,6 +10,8 @@ import { VerificationType } from '~/gql/graphql.ts';
 import { db } from '~/mocks/db.ts';
 import { server } from '~/mocks/node.ts';
 import { verifySessionStorage } from '~/session/verify-session-storage.server.ts';
+import { composeDataFnWrappers } from '~/test-utils/compose-data-fn-wrappers.ts';
+import { withAppLoadContext } from '~/test-utils/with-app-load-context.ts';
 import { withAuthedUser } from '~/test-utils/with-authed-user.ts';
 import { withRouteProps } from '~/test-utils/with-route-props.tsx';
 import { withSession } from '~/test-utils/with-session.ts';
@@ -44,15 +46,16 @@ vi.stubGlobal(
 function setupTest(config: TestConfig) {
   const user = userEvent.setup();
 
-  let wrappedAction = withSession(action, config.sessionData ?? {});
-
-  if (config.isAuthed) {
-    wrappedAction = withAuthedUser(wrappedAction, { user: config.user });
-  }
+  const _action = composeDataFnWrappers(
+    action,
+    withAppLoadContext,
+    (_) => withSession(_, config.sessionData ?? {}),
+    config.isAuthed && ((_) => withAuthedUser(_, { user: config.user })),
+  );
 
   const VerifyOTPStub = createRoutesStub([
     {
-      action: wrappedAction,
+      action: _action,
       Component: withRouteProps(VerifyOTPRoute),
       ErrorBoundary: () => 'ERROR_BOUNDARY',
       loader,

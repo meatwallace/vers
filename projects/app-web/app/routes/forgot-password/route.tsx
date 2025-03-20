@@ -20,7 +20,6 @@ import { useIsFormPending } from '~/hooks/use-is-form-pending';
 import { verifySessionStorage } from '~/session/verify-session-storage.server.ts';
 import { Routes } from '~/types.ts';
 import { checkHoneypot } from '~/utils/check-honeypot.server.ts';
-import { createGQLClient } from '~/utils/create-gql-client.server.ts';
 import { handleGQLError } from '~/utils/handle-gql-error.ts';
 import { is2FARequiredPayload } from '~/utils/is-2fa-required-payload.ts';
 import { isMutationError } from '~/utils/is-mutation-error.ts';
@@ -41,20 +40,15 @@ export const meta: Route.MetaFunction = () => [
 ];
 
 export const loader = withErrorHandling(async (args: Route.LoaderArgs) => {
-  const { request } = args;
-
-  await requireAnonymous(request);
+  await requireAnonymous(args.request);
 
   return null;
 });
 
 export const action = withErrorHandling(async (args: Route.ActionArgs) => {
-  const { request } = args;
+  await requireAnonymous(args.request);
 
-  await requireAnonymous(request);
-
-  const client = await createGQLClient(request);
-  const formData = await request.formData();
+  const formData = await args.request.formData();
 
   await checkHoneypot(formData);
 
@@ -69,11 +63,14 @@ export const action = withErrorHandling(async (args: Route.ActionArgs) => {
     return data({ result }, { status });
   }
 
-  const result = await client.mutation(StartPasswordResetMutation, {
-    input: {
-      email: submission.value.email,
+  const result = await args.context.client.mutation(
+    StartPasswordResetMutation,
+    {
+      input: {
+        email: submission.value.email,
+      },
     },
-  });
+  );
 
   if (result.error) {
     handleGQLError(result.error);
@@ -97,7 +94,7 @@ export const action = withErrorHandling(async (args: Route.ActionArgs) => {
 
   if (is2FARequiredPayload(result.data.startPasswordReset)) {
     const verifySession = await verifySessionStorage.getSession(
-      request.headers.get('cookie'),
+      args.request.headers.get('cookie'),
     );
 
     verifySession.set(

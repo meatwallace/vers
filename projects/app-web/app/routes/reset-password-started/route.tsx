@@ -15,9 +15,7 @@ export const meta: Route.MetaFunction = () => [
 ];
 
 export const loader = withErrorHandling(async (args: Route.LoaderArgs) => {
-  const { request } = args;
-
-  await requireAnonymous(request);
+  await requireAnonymous(args.request);
 });
 
 const pageInfo = css({

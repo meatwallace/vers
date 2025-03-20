@@ -2,6 +2,8 @@ import { expect, test } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { createRoutesStub } from 'react-router';
+import { composeDataFnWrappers } from '~/test-utils/compose-data-fn-wrappers.ts';
+import { withAppLoadContext } from '~/test-utils/with-app-load-context.ts';
 import { withAuthedUser } from '~/test-utils/with-authed-user.ts';
 import { Routes } from '~/types.ts';
 import { Index, loader } from './route.tsx';
@@ -13,10 +15,16 @@ interface TestConfig {
 function setupTest(config: TestConfig) {
   const user = userEvent.setup();
 
+  const _loader = composeDataFnWrappers(
+    loader,
+    withAppLoadContext,
+    config.isAuthed && withAuthedUser,
+  );
+
   const IndexStub = createRoutesStub([
     {
       Component: Index,
-      loader: config.isAuthed ? withAuthedUser(loader) : loader,
+      loader: _loader,
       path: '/',
     },
     {

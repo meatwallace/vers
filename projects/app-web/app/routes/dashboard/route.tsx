@@ -12,9 +12,7 @@ export const meta: Route.MetaFunction = () => [
 ];
 
 export const loader = withErrorHandling(async (args: Route.LoaderArgs) => {
-  const { request } = args;
-
-  await requireAuth(request);
+  await requireAuth(args.request);
 
   return {};
 });

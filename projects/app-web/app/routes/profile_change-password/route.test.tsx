@@ -8,6 +8,8 @@ import { graphql } from 'msw';
 import { db } from '~/mocks/db.ts';
 import { server } from '~/mocks/node.ts';
 import { verifySessionStorage } from '~/session/verify-session-storage.server.ts';
+import { composeDataFnWrappers } from '~/test-utils/compose-data-fn-wrappers.ts';
+import { withAppLoadContext } from '~/test-utils/with-app-load-context.ts';
 import { withAuthedUser } from '~/test-utils/with-authed-user.ts';
 import { withRouteProps } from '~/test-utils/with-route-props.tsx';
 import { withSession } from '~/test-utils/with-session.ts';
@@ -50,19 +52,25 @@ function setupTest(config: TestConfig) {
     'changePassword#transactionToken': config.transactionToken,
   };
 
-  let wrappedAction = withSession(action, sessionData);
-  let wrappedLoader = withSession(loader, sessionData);
+  const _loader = composeDataFnWrappers(
+    loader,
+    withAppLoadContext,
+    (_) => withSession(_, sessionData),
+    config.isAuthed && ((_) => withAuthedUser(_, { user: config.user })),
+  );
 
-  if (config.isAuthed) {
-    wrappedAction = withAuthedUser(wrappedAction, { user: config.user });
-    wrappedLoader = withAuthedUser(wrappedLoader, { user: config.user });
-  }
+  const _action = composeDataFnWrappers(
+    action,
+    withAppLoadContext,
+    (_) => withSession(_, sessionData),
+    config.isAuthed && ((_) => withAuthedUser(_, { user: config.user })),
+  );
 
   const ProfileChangeUserPasswordStub = createRoutesStub([
     {
-      action: wrappedAction,
+      action: _action,
       Component: withRouteProps(ProfileChangeUserPassword),
-      loader: wrappedLoader,
+      loader: _loader,
       path: '/',
     },
     {

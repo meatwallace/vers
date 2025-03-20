@@ -14,7 +14,6 @@ import { StepUpAction, VerificationType } from '~/gql/graphql.ts';
 import { useIsFormPending } from '~/hooks/use-is-form-pending.ts';
 import { verifySessionStorage } from '~/session/verify-session-storage.server.ts';
 import { Routes } from '~/types.ts';
-import { createGQLClient } from '~/utils/create-gql-client.server.ts';
 import { handleGQLError } from '~/utils/handle-gql-error.ts';
 import { isMutationError } from '~/utils/is-mutation-error.ts';
 import { requireAuth } from '~/utils/require-auth.server.ts';
@@ -31,14 +30,10 @@ export const meta: Route.MetaFunction = () => [
 ];
 
 export const loader = withErrorHandling(async (args: Route.LoaderArgs) => {
-  const { request } = args;
-
-  await requireAuth(request);
-
-  const client = await createGQLClient(request);
+  await requireAuth(args.request);
 
   const verifySession = await verifySessionStorage.getSession(
-    request.headers.get('cookie'),
+    args.request.headers.get('cookie'),
   );
 
   const transactionToken = verifySession.get('changeEmail#transactionToken');
@@ -48,7 +43,7 @@ export const loader = withErrorHandling(async (args: Route.LoaderArgs) => {
     return {};
   }
 
-  const userResult = await client.query(GetCurrentUserQuery, {});
+  const userResult = await args.context.client.query(GetCurrentUserQuery, {});
 
   if (userResult.error) {
     handleGQLError(userResult.error);
@@ -67,7 +62,7 @@ export const loader = withErrorHandling(async (args: Route.LoaderArgs) => {
 
   // if our user has 2FA enabled, we need to start the step up auth process
   // and store a pending transaction ID in the session
-  const result = await client.mutation(StartStepUpAuthMutation, {
+  const result = await args.context.client.mutation(StartStepUpAuthMutation, {
     input: {
       action: StepUpAction.ChangeEmail,
     },
@@ -115,12 +110,9 @@ const formStyles = css({
 });
 
 export const action = withErrorHandling(async (args: Route.ActionArgs) => {
-  const { request } = args;
+  await requireAuth(args.request);
 
-  await requireAuth(request);
-
-  const client = await createGQLClient(request);
-  const formData = await request.formData();
+  const formData = await args.request.formData();
 
   const submission = parseWithZod(formData, {
     schema: ChangeUserEmailFormSchema,
@@ -134,17 +126,20 @@ export const action = withErrorHandling(async (args: Route.ActionArgs) => {
   }
 
   const verifySession = await verifySessionStorage.getSession(
-    request.headers.get('Cookie'),
+    args.request.headers.get('Cookie'),
   );
 
   const transactionToken = verifySession.get('changeEmail#transactionToken');
 
-  const result = await client.mutation(StartChangeUserEmailMutation, {
-    input: {
-      email: submission.value.email,
-      transactionToken: transactionToken,
+  const result = await args.context.client.mutation(
+    StartChangeUserEmailMutation,
+    {
+      input: {
+        email: submission.value.email,
+        transactionToken: transactionToken,
+      },
     },
-  });
+  );
 
   if (result.error) {
     handleGQLError(result.error);

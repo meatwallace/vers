@@ -4,6 +4,8 @@ import userEvent from '@testing-library/user-event';
 import { createRoutesStub } from 'react-router';
 import { drop } from '@mswjs/data';
 import { db } from '~/mocks/db.ts';
+import { composeDataFnWrappers } from '~/test-utils/compose-data-fn-wrappers.ts';
+import { withAppLoadContext } from '~/test-utils/with-app-load-context.ts';
 import { withAuthedUser } from '~/test-utils/with-authed-user.ts';
 import { withRouteProps } from '~/test-utils/with-route-props.tsx';
 import { withSession } from '~/test-utils/with-session.ts';
@@ -20,14 +22,6 @@ interface TestConfig {
 function setupTest(config: TestConfig) {
   const user = userEvent.setup();
 
-  let _loader = loader;
-  let _action = action;
-
-  if (config.isAuthed) {
-    _loader = withAuthedUser(_loader);
-    _action = withAuthedUser(_action);
-  }
-
   const email =
     typeof config.email === 'string' ? config.email : 'user@test.com';
 
@@ -36,17 +30,29 @@ function setupTest(config: TestConfig) {
       ? config.transactionToken
       : '1234567890';
 
-  if (config.isOnboarding) {
-    _loader = withSession(_loader, {
-      'onboarding#email': email,
-      'onboarding#transactionToken': transactionToken,
-    });
+  const _loader = composeDataFnWrappers(
+    loader,
+    withAppLoadContext,
+    config.isAuthed && withAuthedUser,
+    config.isOnboarding &&
+      ((_) =>
+        withSession(_, {
+          'onboarding#email': email,
+          'onboarding#transactionToken': transactionToken,
+        })),
+  );
 
-    _action = withSession(_action, {
-      'onboarding#email': email,
-      'onboarding#transactionToken': transactionToken,
-    });
-  }
+  const _action = composeDataFnWrappers(
+    action,
+    withAppLoadContext,
+    config.isAuthed && withAuthedUser,
+    config.isOnboarding &&
+      ((_) =>
+        withSession(_, {
+          'onboarding#email': email,
+          'onboarding#transactionToken': transactionToken,
+        })),
+  );
 
   const OnboardingStub = createRoutesStub([
     {

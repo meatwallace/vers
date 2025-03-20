@@ -19,7 +19,6 @@ import { useIsFormPending } from '~/hooks/use-is-form-pending';
 import { verifySessionStorage } from '~/session/verify-session-storage.server.ts';
 import { Routes } from '~/types.ts';
 import { checkHoneypot } from '~/utils/check-honeypot.server.ts';
-import { createGQLClient } from '~/utils/create-gql-client.server.ts';
 import { handleGQLError } from '~/utils/handle-gql-error.ts';
 import { isMutationError } from '~/utils/is-mutation-error';
 import { requireAnonymous } from '~/utils/require-anonymous.server.ts';
@@ -42,11 +41,9 @@ export const meta: Route.MetaFunction = () => [
 ];
 
 export const loader = withErrorHandling(async (args: Route.LoaderArgs) => {
-  const { request } = args;
+  await requireAnonymous(args.request);
 
-  await requireAnonymous(request);
-
-  const url = new URL(request.url);
+  const url = new URL(args.request.url);
   const resetToken = url.searchParams.get('token');
   const email = url.searchParams.get('email');
 
@@ -58,11 +55,9 @@ export const loader = withErrorHandling(async (args: Route.LoaderArgs) => {
 });
 
 export const action = withErrorHandling(async (args: Route.ActionArgs) => {
-  const { request } = args;
+  await requireAnonymous(args.request);
 
-  await requireAnonymous(request);
-
-  const url = new URL(request.url);
+  const url = new URL(args.request.url);
   const resetToken = url.searchParams.get('token');
   const email = url.searchParams.get('email');
 
@@ -70,8 +65,7 @@ export const action = withErrorHandling(async (args: Route.ActionArgs) => {
     return redirect(Routes.Login);
   }
 
-  const client = await createGQLClient(request);
-  const formData = await request.formData();
+  const formData = await args.request.formData();
 
   await checkHoneypot(formData);
 
@@ -87,20 +81,23 @@ export const action = withErrorHandling(async (args: Route.ActionArgs) => {
   }
 
   const verifySession = await verifySessionStorage.getSession(
-    request.headers.get('cookie'),
+    args.request.headers.get('cookie'),
   );
 
   // attach our transaction token incase 2FA was required for this reset
   const transactionToken = verifySession.get('resetPassword#transactionToken');
 
-  const result = await client.mutation(FinishPasswordResetMutation, {
-    input: {
-      email,
-      password: submission.value.password,
-      resetToken,
-      transactionToken,
+  const result = await args.context.client.mutation(
+    FinishPasswordResetMutation,
+    {
+      input: {
+        email,
+        password: submission.value.password,
+        resetToken,
+        transactionToken,
+      },
     },
-  });
+  );
 
   if (result.error) {
     handleGQLError(result.error);

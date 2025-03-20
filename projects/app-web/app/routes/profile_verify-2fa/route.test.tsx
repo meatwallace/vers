@@ -6,6 +6,8 @@ import { drop } from '@mswjs/data';
 import { db } from '~/mocks/db.ts';
 import { server } from '~/mocks/node.ts';
 import { verifySessionStorage } from '~/session/verify-session-storage.server.ts';
+import { composeDataFnWrappers } from '~/test-utils/compose-data-fn-wrappers.ts';
+import { withAppLoadContext } from '~/test-utils/with-app-load-context.ts';
 import { withAuthedUser } from '~/test-utils/with-authed-user.ts';
 import { withRouteProps } from '~/test-utils/with-route-props.tsx';
 import { withSession } from '~/test-utils/with-session.ts';
@@ -25,26 +27,30 @@ interface TestConfig {
 async function setupTest(config: TestConfig = {}) {
   const user = userEvent.setup();
 
-  // Set up session with transaction ID if provided
   const verifySession = await verifySessionStorage.getSession();
 
   if (config.transactionID) {
     verifySession.set('enable2FA#transactionID', config.transactionID);
   }
 
-  const actionWithSession = withSession(action, {
-    'enable2FA#transactionID': config.transactionID,
-  });
+  const _loader = composeDataFnWrappers(
+    loader,
+    withAppLoadContext,
+    config.isAuthed && ((_) => withAuthedUser(_, { user: config.user })),
+  );
+
+  const _action = composeDataFnWrappers(
+    action,
+    withAppLoadContext,
+    config.isAuthed && ((_) => withAuthedUser(_, { user: config.user })),
+    (_) => withSession(_, { 'enable2FA#transactionID': config.transactionID }),
+  );
 
   const ProfileVerify2FAStub = createRoutesStub([
     {
-      action: config.isAuthed
-        ? withAuthedUser(actionWithSession, { user: config.user })
-        : actionWithSession,
+      action: _action,
       Component: withRouteProps(ProfileVerify2FARoute),
-      loader: config.isAuthed
-        ? withAuthedUser(loader, { user: config.user })
-        : loader,
+      loader: _loader,
       path: '/',
     },
     {
