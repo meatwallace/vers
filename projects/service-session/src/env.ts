@@ -8,10 +8,10 @@ export const envSchema = z
     HOSTNAME: z.string(),
     JWT_SIGNING_PRIVKEY: z
       .string()
-      .transform((val) => val.replace(String.raw`\n`, '\n')),
+      .transform((value) => value.replaceAll(String.raw`\n`, '\n')),
     JWT_SIGNING_PUBKEY: z
       .string()
-      .transform((val) => val.replace(String.raw`\n`, '\n')),
+      .transform((value) => value.replaceAll(String.raw`\n`, '\n')),
     LOGGING: LoggingSchema,
     NODE_ENV: NodeEnvSchema,
     PORT: z.string().transform(Number),
