@@ -19,11 +19,14 @@ yarn test:<project>
 # run graphql types codegen
 yarn codegen:graphql
 
-# spin up full backend in daemon mode
-yarn stack:start
+# run panda css codegen
+yarn codegen:styles
+
+# spin up full backend via docker compose
+yarn stack start
 
 # rebuild full backend
-yarn stack:build
+yarn stack build
 
 # generate and run our postgres migrations
 yarn pg:migrations-generate
@@ -39,10 +42,10 @@ yarn playwright install
 yarn e2e
 
 # stop full backend
-yarn stack:stop
+yarn stack stop
 
 # stop specific service
-yarn stack:stop:<service>
+yarn stack stop:<service>
 ```
 
 ## generating keys for JWT signing & verification
@@ -69,6 +72,9 @@ fly pg attach vers-pg --database-name=vers
 
 # create secrets if needed
 fly secrets set SESSION_SECRET=$(openssl rand -hex 32) HONEYPOT_SECRET=$(openssl rand -hex 32)
+
+# setting jwt signing secrets
+fly secrets set --app=vers-service-api JWT_SIGNING_PRIVKEY=- < privkey.pem
 ```
 
 ## development with cursor
