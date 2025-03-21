@@ -138,6 +138,7 @@ test('it removes all previous sessions when a user is logged in', async () => {
   });
 
   expect(sessions).toHaveLength(1);
+  expect(sessions[0].id).toBe(session.id);
 });
 
 test('it returns an error if the transaction token is invalid', async () => {
