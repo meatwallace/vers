@@ -10,6 +10,7 @@ import { Routes } from '~/types.ts';
 import { logout } from './logout.server.ts';
 
 interface TestConfig {
+  deleteSession?: boolean;
   redirectTo?: string;
   sessionID?: string;
   userID?: string;
@@ -33,7 +34,10 @@ vi.stubGlobal(
 
 function setupTest(config: TestConfig = {}) {
   const loader = async ({ request }: LoaderFunctionArgs) => {
-    return logout(request, { redirectTo: config.redirectTo });
+    return logout(request, {
+      deleteSession: config.deleteSession,
+      redirectTo: config.redirectTo,
+    });
   };
 
   const TestRoutesStub = createRoutesStub([
@@ -95,8 +99,9 @@ test('it clears the auth session', async () => {
   expect(authSession.get('accessToken')).toBeUndefined();
 });
 
-test('it deletes the session from the database', async () => {
+test('it optionally deletes the session from the database', async () => {
   setupTest({
+    deleteSession: true,
     sessionID: 'test_session_id',
     userID: 'test_user_id',
   });
@@ -116,6 +121,7 @@ test('it deletes the session from the database', async () => {
 
 test('it continues logout flow even if session deletion fails', async () => {
   setupTest({
+    deleteSession: true,
     sessionID: 'invalid_session_id',
   });
 
