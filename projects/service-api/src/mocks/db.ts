@@ -7,9 +7,10 @@ export const db = factory({
     expiresAt: () => new Date(),
     id: primaryKey(() => createId()),
     ipAddress: () => '127.0.0.1',
-    refreshToken: () => 'refresh_token',
+    refreshToken: nullable(() => 'refresh_token'),
     updatedAt: () => new Date(),
     userID: () => createId(),
+    verified: Boolean,
   },
   user: {
     createdAt: () => new Date(),

@@ -1,7 +1,7 @@
 import { TRPCError } from '@trpc/server';
 import * as schema from '@vers/postgres-schema';
 import { RefreshTokensPayload } from '@vers/service-types';
-import { eq } from 'drizzle-orm';
+import { and, eq } from 'drizzle-orm';
 import { z } from 'zod';
 import type { Context } from '../types';
 import * as consts from '../consts';
@@ -10,6 +10,7 @@ import { t } from '../t';
 import { createJWT } from '../utils/create-jwt';
 
 export const RefreshTokensInputSchema = z.object({
+  id: z.string(),
   refreshToken: z.string(),
 });
 
@@ -19,50 +20,47 @@ export async function refreshTokens(
 ): Promise<RefreshTokensPayload> {
   try {
     const existingSession = await ctx.db.query.sessions.findFirst({
-      where: eq(schema.sessions.refreshToken, input.refreshToken),
+      where: and(
+        eq(schema.sessions.refreshToken, input.refreshToken),
+        eq(schema.sessions.id, input.id),
+      ),
     });
 
-    if (!existingSession) {
+    if (!existingSession?.refreshToken) {
       throw new TRPCError({
-        code: 'UNAUTHORIZED',
-        message: 'Invalid refresh token',
+        code: 'NOT_FOUND',
+        message: 'Session not found',
       });
     }
 
-    const { refreshToken, ...session } = existingSession;
-
     // Check if the session has expired
-    if (session.expiresAt < new Date()) {
+    if (existingSession.expiresAt < new Date()) {
       await ctx.db
         .delete(schema.sessions)
-        .where(eq(schema.sessions.id, session.id));
+        .where(eq(schema.sessions.id, existingSession.id));
 
       throw new TRPCError({
-        code: 'UNAUTHORIZED',
+        code: 'BAD_REQUEST',
         message: 'Session expired',
       });
     }
 
     const now = Date.now();
-    const sessionAge = now - session.createdAt.getTime();
+    const sessionAge = now - existingSession.createdAt.getTime();
 
-    // if our session has existed for less than our short refresh token duration,
+    // if our session has existed for less than our short sessionduration,
     // we can just create a new access token and skip rotating the refresh token
-    if (sessionAge < consts.REFRESH_TOKEN_DURATION) {
+    if (sessionAge < consts.SESSION_DURATION_SHORT) {
       const accessToken = await createJWT({
         expiresAt: new Date(Date.now() + consts.ACCESS_TOKEN_DURATION),
-        userID: session.userID,
+        userID: existingSession.userID,
       });
 
-      return {
-        accessToken,
-        refreshToken,
-        session,
-      };
+      return { accessToken, refreshToken: existingSession.refreshToken };
     }
 
     // generate a new refresh token so we can rotate it, using the same expiry as before
-    const newRefreshToken = await createJWT({
+    const refreshToken = await createJWT({
       expiresAt: existingSession.expiresAt,
       userID: existingSession.userID,
     });
@@ -77,16 +75,12 @@ export async function refreshTokens(
     await ctx.db
       .update(schema.sessions)
       .set({
-        refreshToken: newRefreshToken,
+        refreshToken,
         updatedAt,
       })
       .where(eq(schema.sessions.id, existingSession.id));
 
-    return {
-      accessToken,
-      refreshToken: newRefreshToken,
-      session,
-    };
+    return { accessToken, refreshToken };
   } catch (error: unknown) {
     logger.error(error);
 

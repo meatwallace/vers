@@ -52,15 +52,17 @@ export const LoginWithPassword = graphql.mutation<
     });
   }
 
-  const session = db.session.create({
-    userID: user.id,
+  const prevSessions = db.session.findMany({
+    where: {
+      userID: {
+        equals: user.id,
+      },
+    },
   });
 
-  const accessToken = encodeMockJWT({
-    exp: Number.parseInt(
-      (Date.now() + EXPIRATION_IN_MS).toString().slice(0, 10),
-    ),
-    sub: user.id,
+  const session = db.session.create({
+    userID: user.id,
+    verified: false,
   });
 
   const is2FAEnabled = db.verification.findFirst({
@@ -80,6 +82,24 @@ export const LoginWithPassword = graphql.mutation<
       },
     });
   }
+
+  if (prevSessions.length > 0) {
+    return HttpResponse.json({
+      data: {
+        loginWithPassword: {
+          sessionID: session.id,
+          transactionToken: 'valid_transaction_token',
+        },
+      },
+    });
+  }
+
+  const accessToken = encodeMockJWT({
+    exp: Number.parseInt(
+      (Date.now() + EXPIRATION_IN_MS).toString().slice(0, 10),
+    ),
+    sub: user.id,
+  });
 
   return HttpResponse.json({
     data: {

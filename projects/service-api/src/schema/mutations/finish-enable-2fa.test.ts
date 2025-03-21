@@ -26,12 +26,14 @@ test('it successfully completes 2FA setup', async () => {
 
   invariant(ctx.session, 'session is required');
 
-  const transactionID = createPendingTransaction({
-    action: SecureAction.TwoFactorAuthSetup,
-    ipAddress: ctx.ipAddress,
-    sessionID: ctx.session.id,
-    target: user.email,
-  });
+  const transactionID = createPendingTransaction(
+    {
+      action: SecureAction.TwoFactorAuthSetup,
+      sessionID: ctx.session.id,
+      target: user.email,
+    },
+    ctx,
+  );
 
   const transactionToken = await createTransactionToken(
     {
@@ -112,12 +114,14 @@ test('it returns an error if there is no 2FA verification record', async () => {
 
   invariant(ctx.session, 'session is required');
 
-  const transactionID = createPendingTransaction({
-    action: SecureAction.TwoFactorAuthSetup,
-    ipAddress: ctx.ipAddress,
-    sessionID: ctx.session.id,
-    target: user.email,
-  });
+  const transactionID = createPendingTransaction(
+    {
+      action: SecureAction.TwoFactorAuthSetup,
+      sessionID: ctx.session.id,
+      target: user.email,
+    },
+    ctx,
+  );
 
   const transactionToken = await createTransactionToken(
     {

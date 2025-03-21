@@ -21,19 +21,20 @@ import { HoneypotInputs } from 'remix-utils/honeypot/react';
 import { safeRedirect } from 'remix-utils/safe-redirect';
 import invariant from 'tiny-invariant';
 import { z } from 'zod';
+import type {
+  ForceLogoutPayload,
+  TwoFactorLoginPayload,
+} from '~/gql/graphql.ts';
 import { FormErrorList } from '~/components/form-error-list.tsx';
 import { RouteErrorBoundary } from '~/components/route-error-boundary.tsx';
 import { LoginWithPasswordMutation } from '~/data/mutations/login-with-password';
 import { VerificationType } from '~/gql/graphql.ts';
 import { useIsFormPending } from '~/hooks/use-is-form-pending';
 import { authSessionStorage } from '~/session/auth-session-storage.server.ts';
-import { storeAuthPayload } from '~/session/store-auth-payload.ts';
 import { verifySessionStorage } from '~/session/verify-session-storage.server.ts';
 import { Routes } from '~/types.ts';
 import { checkHoneypot } from '~/utils/check-honeypot.server.ts';
-import { getDomainURL } from '~/utils/get-domain-url.ts';
 import { handleGQLError } from '~/utils/handle-gql-error.ts';
-import { is2FARequiredPayload } from '~/utils/is-2fa-required-payload.ts';
 import { isMutationError } from '~/utils/is-mutation-error';
 import { requireAnonymous } from '~/utils/require-anonymous.server.ts';
 import { withErrorHandling } from '~/utils/with-error-handling.ts';
@@ -105,23 +106,8 @@ export const action = withErrorHandling(async (args: Route.ActionArgs) => {
     return data({ result: formResult }, { status: 400 });
   }
 
-  if (is2FARequiredPayload(result.data.loginWithPassword)) {
-    const verifyURL = new URL(
-      `${getDomainURL(args.request)}${Routes.VerifyOTP}`,
-    );
-
-    verifyURL.searchParams.set(QueryParam.Target, submission.value.email);
-    verifyURL.searchParams.set(QueryParam.Type, VerificationType.TwoFactorAuth);
-
-    if (submission.value.redirect) {
-      verifyURL.searchParams.set(
-        QueryParam.RedirectTo,
-        submission.value.redirect,
-      );
-    }
-
-    invariant(result.data.loginWithPassword.sessionID, 'sessionID is required');
-
+  // if we need to 2FA login, set our session as needed then redirect
+  if (is2FALoginPayload(result.data.loginWithPassword)) {
     const verifySession = await verifySessionStorage.getSession(
       args.request.headers.get('cookie'),
     );
@@ -136,18 +122,49 @@ export const action = withErrorHandling(async (args: Route.ActionArgs) => {
       result.data.loginWithPassword.transactionID,
     );
 
-    return redirect(verifyURL.toString(), {
+    const searchParams = new URLSearchParams({
+      [QueryParam.Target]: submission.value.email,
+      [QueryParam.Type]: VerificationType.TwoFactorAuth,
+    });
+
+    if (submission.value.redirect) {
+      searchParams.set(QueryParam.RedirectTo, submission.value.redirect);
+    }
+
+    return redirect(`${Routes.VerifyOTP}?${searchParams.toString()}`, {
       headers: {
         'set-cookie': await verifySessionStorage.commitSession(verifySession),
       },
     });
   }
 
+  // if we need to force logout, set our session as needed then redirect
+  if (isForceLogoutPayload(result.data.loginWithPassword)) {
+    const verifySession = await verifySessionStorage.getSession(
+      args.request.headers.get('cookie'),
+    );
+
+    verifySession.set('loginLogout#email', submission.value.email);
+    verifySession.set(
+      'loginLogout#transactionToken',
+      result.data.loginWithPassword.transactionToken,
+    );
+
+    return redirect(Routes.LoginForceLogout, {
+      headers: {
+        'set-cookie': await verifySessionStorage.commitSession(verifySession),
+      },
+    });
+  }
+
+  // if we're here, we've received our tokens and we can set the auth session
   const authSession = await authSessionStorage.getSession(
     args.request.headers.get('cookie'),
   );
 
-  storeAuthPayload(authSession, result.data.loginWithPassword);
+  authSession.set('sessionID', result.data.loginWithPassword.session.id);
+  authSession.set('accessToken', result.data.loginWithPassword.accessToken);
+  authSession.set('refreshToken', result.data.loginWithPassword.refreshToken);
 
   return redirect(safeRedirect(submission.value.redirect ?? Routes.Dashboard), {
     headers: {
@@ -157,6 +174,18 @@ export const action = withErrorHandling(async (args: Route.ActionArgs) => {
     },
   });
 });
+
+function is2FALoginPayload(
+  payload: object | TwoFactorLoginPayload,
+): payload is TwoFactorLoginPayload {
+  return 'transactionID' in payload;
+}
+
+function isForceLogoutPayload(
+  payload: ForceLogoutPayload | object,
+): payload is ForceLogoutPayload {
+  return 'transactionToken' in payload;
+}
 
 const pageInfo = css({
   marginBottom: '8',

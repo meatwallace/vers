@@ -38,7 +38,7 @@ test('it refreshes tokens for a young session without rotating the refresh token
 
   const session = {
     createdAt: new Date(),
-    expiresAt: new Date(Date.now() + consts.REFRESH_TOKEN_DURATION_LONG),
+    expiresAt: new Date(Date.now() + consts.SESSION_DURATION_LONG),
     id: createId(),
     ipAddress: '127.0.0.1',
     refreshToken: 'existing-refresh-token',
@@ -50,20 +50,13 @@ test('it refreshes tokens for a young session without rotating the refresh token
   vi.mocked(createJWT).mockResolvedValueOnce('new-access-token');
 
   const result = await caller.refreshTokens({
+    id: session.id,
     refreshToken: session.refreshToken,
   });
 
   expect(result).toStrictEqual({
     accessToken: 'new-access-token',
     refreshToken: session.refreshToken,
-    session: {
-      createdAt: expect.any(Date),
-      expiresAt: expect.any(Date),
-      id: session.id,
-      ipAddress: session.ipAddress,
-      updatedAt: expect.any(Date),
-      userID: session.userID,
-    },
   });
 
   expect(createJWT).toHaveBeenCalledTimes(1);
@@ -77,8 +70,8 @@ test('it rotates the refresh token if the provided one is older than our short r
   const { caller, user } = await setupTest({ db });
 
   const session = {
-    createdAt: new Date(Date.now() - consts.REFRESH_TOKEN_DURATION - 1000),
-    expiresAt: new Date(Date.now() + consts.REFRESH_TOKEN_DURATION_LONG),
+    createdAt: new Date(Date.now() - consts.SESSION_DURATION_SHORT - 1000),
+    expiresAt: new Date(Date.now() + consts.SESSION_DURATION_LONG),
     id: createId(),
     ipAddress: '127.0.0.1',
     refreshToken: 'existing-refresh-token',
@@ -92,20 +85,13 @@ test('it rotates the refresh token if the provided one is older than our short r
     .mockResolvedValueOnce('new-access-token');
 
   const result = await caller.refreshTokens({
+    id: session.id,
     refreshToken: session.refreshToken,
   });
 
   expect(result).toStrictEqual({
     accessToken: 'new-access-token',
     refreshToken: 'new-refresh-token',
-    session: {
-      createdAt: expect.any(Date),
-      expiresAt: expect.any(Date),
-      id: session.id,
-      ipAddress: session.ipAddress,
-      updatedAt: expect.any(Date),
-      userID: session.userID,
-    },
   });
 
   expect(createJWT).toHaveBeenCalledTimes(2);
@@ -131,10 +117,11 @@ test('it throws an error for an expired session', async () => {
 
   await expect(
     caller.refreshTokens({
+      id: session.id,
       refreshToken: session.refreshToken,
     }),
   ).rejects.toMatchObject({
-    code: 'UNAUTHORIZED',
+    code: 'BAD_REQUEST',
     message: 'Session expired',
   });
 
@@ -156,10 +143,11 @@ test('it throws an error for an invalid refresh token', async () => {
 
   await expect(
     caller.refreshTokens({
+      id: createId(),
       refreshToken: 'invalid-token',
     }),
   ).rejects.toMatchObject({
-    code: 'UNAUTHORIZED',
-    message: 'Invalid refresh token',
+    code: 'NOT_FOUND',
+    message: 'Session not found',
   });
 });

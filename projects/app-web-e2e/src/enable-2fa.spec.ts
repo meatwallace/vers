@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test';
+
 test('it enables 2FA for a user', async ({ page }) => {
   await page.setExtraHTTPHeaders({ 'x-forwarded-for': '127.0.0.1' });
 

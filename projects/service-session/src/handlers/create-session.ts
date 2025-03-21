@@ -7,7 +7,6 @@ import type { Context } from '../types';
 import * as consts from '../consts';
 import { logger } from '../logger';
 import { t } from '../t';
-import { createJWT } from '../utils/create-jwt';
 
 export const CreateSessionInputSchema = z.object({
   expiresAt: z.date().optional(),
@@ -23,45 +22,33 @@ export async function createSession(
   try {
     const { expiresAt, ipAddress, rememberMe, userID } = input;
 
-    const refreshTokenDuration = rememberMe
-      ? consts.REFRESH_TOKEN_DURATION_LONG
-      : consts.REFRESH_TOKEN_DURATION;
+    const sessionDuration = rememberMe
+      ? consts.SESSION_DURATION_LONG
+      : consts.SESSION_DURATION_SHORT;
 
-    const refreshTokenExpiresAt = expiresAt
+    const sessionExpiresAt = expiresAt
       ? new Date(expiresAt)
-      : new Date(Date.now() + refreshTokenDuration);
-
-    const refreshToken = await createJWT({
-      expiresAt: refreshTokenExpiresAt,
-      userID,
-    });
-
-    const accessToken = await createJWT({
-      expiresAt: new Date(Date.now() + consts.ACCESS_TOKEN_DURATION),
-      userID,
-    });
+      : new Date(Date.now() + sessionDuration);
 
     const session = {
       createdAt: new Date(),
-      expiresAt: refreshTokenExpiresAt,
+      expiresAt: sessionExpiresAt,
       id: createId(),
       ipAddress,
       updatedAt: new Date(),
       userID,
-    };
+      verified: false,
+    } satisfies typeof schema.sessions.$inferInsert;
 
-    await ctx.db.insert(schema.sessions).values({
-      ...session,
-      refreshToken,
-    });
+    await ctx.db.insert(schema.sessions).values(session);
 
-    return {
-      accessToken,
-      refreshToken,
-      session,
-    };
+    return session;
   } catch (error: unknown) {
     logger.error(error);
+
+    if (error instanceof TRPCError) {
+      throw error;
+    }
 
     throw new TRPCError({
       cause: error,

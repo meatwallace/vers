@@ -1,6 +1,6 @@
 import { builder } from '../builder';
 
-export interface VerificationRequiredPayloadData {
+interface VerificationRequiredPayloadData {
   transactionID: string;
 }
 

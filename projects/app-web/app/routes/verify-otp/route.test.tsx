@@ -89,6 +89,10 @@ function setupTest(config: TestConfig) {
       Component: () => 'CHANGE_EMAIL_ROUTE',
       path: Routes.ProfileChangeEmail,
     },
+    {
+      Component: () => 'FORCE_LOGOUT_ROUTE',
+      path: Routes.LoginForceLogout,
+    },
   ]);
 
   render(<VerifyOTPStub initialEntries={[config.initialPath]} />);
@@ -269,12 +273,21 @@ test('it handles 2FA disabling and redirects to the profile route on success', a
   const verifySession = await verifySessionStorage.getSession(setCookieHeader);
 
   expect(verifySession.get('disable2FA#transactionID')).toBeUndefined();
-  expect(verifySession.get('disable2FA#transactionToken')).toBeUndefined();
 });
 
 test('it handles 2FA login and redirects to the dashboard on success', async () => {
   db.user.create({
     email: 'test@example.com',
+    id: 'user_id',
+  });
+
+  db.verification.create({
+    target: 'test@example.com',
+    type: '2fa',
+  });
+
+  db.session.create({
+    userID: 'user_id',
   });
 
   const { user } = setupTest({
@@ -283,11 +296,6 @@ test('it handles 2FA login and redirects to the dashboard on success', async () 
       'login2FA#sessionID': 'test_unverified_session_id',
       'login2FA#transactionID': 'test_transaction_id',
     },
-  });
-
-  db.verification.create({
-    target: 'test@example.com',
-    type: '2fa',
   });
 
   const codeInput = await screen.findByTestId('otp-input');
@@ -305,6 +313,52 @@ test('it handles 2FA login and redirects to the dashboard on success', async () 
   expect(verifySession.get('login2FA#sessionID')).toBeUndefined();
   expect(verifySession.get('login2FA#transactionID')).toBeUndefined();
   expect(verifySession.get('login2FA#transactionToken')).toBeUndefined();
+});
+
+test('it handles 2FA login and redirects to the logout sessions route when a previous session exists', async () => {
+  db.user.create({
+    email: 'test@example.com',
+    id: 'user_id',
+  });
+
+  db.session.create({
+    userID: 'user_id',
+    verified: true,
+  });
+
+  db.session.create({
+    userID: 'user_id',
+  });
+
+  db.verification.create({
+    target: 'test@example.com',
+    type: '2fa',
+  });
+
+  const { user } = setupTest({
+    initialPath: '/verify-otp?type=TWO_FACTOR_AUTH&target=test@example.com',
+    sessionData: {
+      'login2FA#sessionID': 'test_unverified_session_id',
+      'login2FA#transactionID': 'test_transaction_id',
+    },
+  });
+
+  const codeInput = await screen.findByTestId('otp-input');
+  const submitButton = screen.getByRole('button', { name: /verify/i });
+
+  await user.type(codeInput, '999999');
+  await user.click(submitButton);
+
+  const forceLogoutRoute = await screen.findByText('FORCE_LOGOUT_ROUTE');
+
+  expect(forceLogoutRoute).toBeInTheDocument();
+
+  const verifySession = await verifySessionStorage.getSession(setCookieHeader);
+
+  expect(verifySession.get('loginLogout#email')).toBe('test@example.com');
+  expect(verifySession.get('loginLogout#transactionToken')).toBe(
+    'valid_transaction_token',
+  );
 });
 
 test('it handles changing email and redirects to the change email route on success', async () => {

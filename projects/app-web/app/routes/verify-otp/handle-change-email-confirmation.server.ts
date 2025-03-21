@@ -43,7 +43,6 @@ export async function handleChangeEmailConfirmation(
 
   // clear all session data related to email change confirmation
   verifySession.unset('changeEmailConfirm#transactionID');
-  verifySession.unset('changeEmailConfirm#transactionToken');
 
   const setCookieHeader =
     await verifySessionStorage.commitSession(verifySession);

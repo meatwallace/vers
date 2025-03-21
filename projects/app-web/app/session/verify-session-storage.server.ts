@@ -9,13 +9,15 @@ export type SessionKey =
   | 'login2FA#transactionID'
   | 'login2FA#transactionToken'
 
-  // 2FA disable
+  // login with forced logout
+  | 'loginLogout#email'
+  | 'loginLogout#transactionToken'
+
+  // disable 2FA
   | 'disable2FA#transactionID'
-  | 'disable2FA#transactionToken'
 
   // 2FA enable
   | 'enable2FA#transactionID'
-  | 'enable2FA#transactionToken'
 
   // onboarding
   | 'onboarding#email'
@@ -28,7 +30,6 @@ export type SessionKey =
 
   // change email confirmation
   | 'changeEmailConfirm#transactionID'
-  | 'changeEmailConfirm#transactionToken'
 
   // change password
   | 'changePassword#transactionID'

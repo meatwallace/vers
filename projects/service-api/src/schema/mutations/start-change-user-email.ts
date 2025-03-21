@@ -110,12 +110,14 @@ export async function startChangeUserEmail(
       to: args.input.email,
     });
 
-    const transactionID = createPendingTransaction({
-      action: SecureAction.ChangeEmailConfirmation,
-      ipAddress: ctx.ipAddress,
-      sessionID: ctx.session.id,
-      target: args.input.email,
-    });
+    const transactionID = createPendingTransaction(
+      {
+        action: SecureAction.ChangeEmailConfirmation,
+        sessionID: ctx.session.id,
+        target: args.input.email,
+      },
+      ctx,
+    );
 
     return { transactionID };
   } catch (error) {

@@ -12,6 +12,7 @@ export const schema = rateLimitDirectiveTransformer(builder.toSchema());
 export { resolve as finishEmailSignup } from './mutations/finish-email-sign-up';
 export { resolve as finishLoginWith2FA } from './mutations/finish-login-with-2fa';
 export { resolve as finishPasswordReset } from './mutations/finish-password-reset';
+export { resolve as loginWithForcedLogout } from './mutations/login-with-forced-logout';
 export { resolve as loginWithPassword } from './mutations/login-with-password';
 export { resolve as refreshAccessToken } from './mutations/refresh-access-token';
 export { resolve as startEmailSignup } from './mutations/start-email-sign-up';
@@ -35,9 +36,21 @@ export { resolve as finishChangeUserEmail } from './mutations/finish-change-user
 export { resolve as startChangeUserEmail } from './mutations/start-change-user-email';
 export { resolve as getCurrentUser } from './queries/get-current-user';
 
-// types
+// payload types
 export { AuthPayload } from './types/auth-payload';
+export { ForceLogoutPayload } from './types/force-logout-payload';
 export { MutationError } from './types/mutation-error';
 export { MutationErrorPayload } from './types/mutation-error-payload';
 export { MutationSuccess } from './types/mutation-success';
+export { TokenPayload } from './types/token-payload';
+export { TwoFactorLoginPayload } from './types/two-factor-login-payload';
+export { TwoFactorSuccessPayload } from './types/two-factor-success-payload';
+export { VerificationRequiredPayload } from './types/verification-required-payload';
+
+// domain types
+export { Session } from './types/session';
 export { User } from './types/user';
+
+// enums
+export { StepUpAction } from './types/step-up-action';
+export { VerificationType } from './types/verification-type';

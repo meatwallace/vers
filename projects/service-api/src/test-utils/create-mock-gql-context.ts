@@ -12,6 +12,7 @@ import { createTRPCClient } from '../utils/create-trpc-client';
 interface MockContextConfig {
   accessToken?: string;
   ipAddress?: string;
+  requestID?: string;
   session?: AuthedContext['session'];
   user?: AuthedContext['user'];
 }
@@ -23,7 +24,7 @@ export function createMockGQLContext(config: MockContextConfig): Context {
     request.headers.set('authorization', `Bearer ${config.accessToken}`);
   }
 
-  const requestID = createId();
+  const requestID = config.requestID ?? createId();
 
   const ipAddress =
     config.session?.ipAddress ?? config.ipAddress ?? '127.0.0.1';
@@ -59,6 +60,7 @@ export function createMockGQLContext(config: MockContextConfig): Context {
   const sharedContext = {
     ipAddress,
     request,
+    requestID,
     services: {
       email,
       session,

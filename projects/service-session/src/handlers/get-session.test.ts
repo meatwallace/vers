@@ -51,6 +51,7 @@ test('it returns the requested session', async () => {
     ipAddress: '127.0.0.1',
     updatedAt: expect.any(Date),
     userID: user.id,
+    verified: false,
   });
 });
 

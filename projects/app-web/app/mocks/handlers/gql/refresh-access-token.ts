@@ -6,7 +6,6 @@ import {
 import { db } from '../../db';
 import { UNKNOWN_ERROR } from '../../errors';
 import { encodeMockJWT } from '../../utils/encode-mock-jwt';
-import { addUserResolvedFields } from './utils/add-user-resolved-fields';
 
 interface RefreshAccessTokenVariables {
   input: RefreshAccessTokenInput;
@@ -68,10 +67,6 @@ export const RefreshAccessToken = graphql.mutation<
       refreshAccessToken: {
         accessToken,
         refreshToken: session.refreshToken,
-        session: {
-          ...session,
-          user: addUserResolvedFields(user),
-        },
       },
     },
   });

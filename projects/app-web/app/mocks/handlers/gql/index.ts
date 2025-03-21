@@ -8,6 +8,7 @@ import { FinishLoginWith2FA } from './finish-login-with-2fa';
 import { FinishPasswordReset } from './finish-password-reset';
 import { GetCurrentUser } from './get-current-user';
 import { GetEnable2FAVerification } from './get-enable-2fa-verification';
+import { LoginWithForcedLogout } from './login-with-forced-logout';
 import { LoginWithPassword } from './login-with-password';
 import { RefreshAccessToken } from './refresh-access-token';
 import { StartChangeUserEmail } from './start-change-user-email';
@@ -22,14 +23,15 @@ export const handlers = [
   FinishEmailSignup,
   FinishLoginWith2FA,
   FinishPasswordReset,
+  LoginWithForcedLogout,
   LoginWithPassword,
   RefreshAccessToken,
   StartEmailSignup,
   StartPasswordReset,
-  VerifyOTP,
   StartStepUpAuth,
+  VerifyOTP,
 
-  // 2fa management
+  // 2FA management
   FinishDisable2FA,
   FinishEnable2FA,
   GetEnable2FAVerification,
@@ -39,8 +41,8 @@ export const handlers = [
   DeleteSession,
 
   // users
-  GetCurrentUser,
   ChangeUserPassword,
-  StartChangeUserEmail,
   FinishChangeUserEmail,
+  GetCurrentUser,
+  StartChangeUserEmail,
 ];

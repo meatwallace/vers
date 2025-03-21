@@ -1,6 +1,11 @@
-import type { AuthPayload as AuthPayloadData } from '@vers/service-types';
 import { builder } from '../builder';
 import { Session } from './session';
+
+interface AuthPayloadData {
+  accessToken: string;
+  refreshToken: string;
+  session: typeof Session.$inferType;
+}
 
 export const AuthPayload = builder.objectRef<AuthPayloadData>('AuthPayload');
 

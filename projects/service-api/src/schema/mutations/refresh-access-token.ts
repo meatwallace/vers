@@ -1,9 +1,10 @@
+import invariant from 'tiny-invariant';
 import type { Context } from '~/types';
 import { logger } from '~/logger';
 import { builder } from '../builder';
 import { UNKNOWN_ERROR } from '../errors';
-import { AuthPayload } from '../types/auth-payload';
 import { MutationErrorPayload } from '../types/mutation-error-payload';
+import { TokenPayload } from '../types/token-payload';
 import { createPayloadResolver } from '../utils/create-payload-resolver';
 
 interface Args {
@@ -16,11 +17,14 @@ export async function refreshAccessToken(
   ctx: Context,
 ): Promise<typeof RefreshAccessTokenPayload.$inferType> {
   try {
-    const payload = await ctx.services.session.refreshTokens.mutate({
+    invariant(ctx.session, 'session is required');
+
+    const tokens = await ctx.services.session.refreshTokens.mutate({
+      id: ctx.session.id,
       refreshToken: args.input.refreshToken,
     });
 
-    return payload;
+    return tokens;
   } catch (error: unknown) {
     if (error instanceof Error) {
       logger.error(error);
@@ -39,8 +43,8 @@ const RefreshAccessTokenInput = builder.inputType('RefreshAccessTokenInput', {
 const RefreshAccessTokenPayload = builder.unionType(
   'RefreshAccessTokenPayload',
   {
-    resolveType: createPayloadResolver(AuthPayload),
-    types: [AuthPayload, MutationErrorPayload],
+    resolveType: createPayloadResolver(TokenPayload),
+    types: [TokenPayload, MutationErrorPayload],
   },
 );
 

@@ -64,6 +64,13 @@
       "when": 1741497084326,
       "tag": "0008_slim_wolfsbane",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1742475641419,
+      "tag": "0009_ambitious_expediter",
+      "breakpoints": true
     }
   ]
 }

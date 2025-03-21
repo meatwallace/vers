@@ -40,6 +40,7 @@ test('it returns all sessions for the user', async () => {
       refreshToken: 'refresh-token-1',
       updatedAt: now,
       userID: user.id,
+      verified: false,
     },
     {
       createdAt: now,
@@ -49,6 +50,7 @@ test('it returns all sessions for the user', async () => {
       refreshToken: 'refresh-token-2',
       updatedAt: now,
       userID: user.id,
+      verified: false,
     },
   ]);
 
@@ -66,6 +68,7 @@ test('it returns all sessions for the user', async () => {
       refreshToken: 'refresh-token-1',
       updatedAt: expect.any(Date),
       userID: user.id,
+      verified: false,
     },
     {
       createdAt: expect.any(Date),
@@ -75,6 +78,7 @@ test('it returns all sessions for the user', async () => {
       refreshToken: 'refresh-token-2',
       updatedAt: expect.any(Date),
       userID: user.id,
+      verified: false,
     },
   ]);
 });

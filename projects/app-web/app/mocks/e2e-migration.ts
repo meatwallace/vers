@@ -81,3 +81,18 @@ db.verification.create({
   target: 'e2e-change-email-2fa-user@test.com',
   type: '2fa',
 });
+
+// basic user with existings for login -> logout prev sessions flow
+const prevSessionUser = db.user.create({
+  email: 'e2e-login-logout-user@test.com',
+  name: 'E2E Login Logout User',
+  username: 'e2e_login_logout_user',
+});
+
+db.session.create({
+  userID: prevSessionUser.id,
+});
+
+db.session.create({
+  userID: prevSessionUser.id,
+});

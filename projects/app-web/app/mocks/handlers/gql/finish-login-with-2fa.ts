@@ -53,9 +53,32 @@ export const FinishLoginWith2FA = graphql.mutation<
     });
   }
 
-  const session = db.session.create({
-    userID: user.id,
+  // this is hacky - in our real server we store the pending session ID in the
+  // transaction token, but to avoid all that complexity we just grab the most
+  // recent session and treat it as our pending one.
+  const sessions = db.session.findMany({
+    orderBy: {
+      createdAt: 'asc',
+    },
+    where: {
+      userID: {
+        equals: user.id,
+      },
+    },
   });
+
+  const [session, ...prevSessions] = sessions;
+
+  if (prevSessions.length > 0) {
+    return HttpResponse.json({
+      data: {
+        finishLoginWith2FA: {
+          sessionID: session.id,
+          transactionToken: 'valid_transaction_token',
+        },
+      },
+    });
+  }
 
   const accessToken = encodeMockJWT({
     exp: Number.parseInt(

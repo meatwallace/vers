@@ -2,9 +2,11 @@ import type { Context } from '~/types';
 import { logger } from '~/logger';
 import { SecureAction } from '~/types';
 import { createPendingTransaction } from '~/utils/create-pending-transaction';
+import { createTransactionToken } from '~/utils/create-transaction-token';
 import { builder } from '../builder';
 import { INVALID_CREDENTIALS_ERROR, UNKNOWN_ERROR } from '../errors';
 import { AuthPayload } from '../types/auth-payload';
+import { ForceLogoutPayload } from '../types/force-logout-payload';
 import { MutationErrorPayload } from '../types/mutation-error-payload';
 import { TwoFactorLoginPayload } from '../types/two-factor-login-payload';
 
@@ -45,27 +47,53 @@ export async function loginWithPassword(
       type: '2fa',
     });
 
-    // create a session regardless if the user requires 2FA as we need it to
-    // bind the transaction to the session
-    const authPayload = await ctx.services.session.createSession.mutate({
+    const existingSessions = await ctx.services.session.getSessions.query({
+      userID: user.id,
+    });
+
+    const session = await ctx.services.session.createSession.mutate({
       ipAddress: ctx.ipAddress,
       rememberMe: args.input.rememberMe,
       userID: user.id,
     });
 
-    // If 2FA is enabled, return the two factor required payload
+    // If 2FA is enabled, bind to our 2FA secure action so we can finalize auth there
     if (verification) {
-      const transactionID = createPendingTransaction({
-        action: SecureAction.TwoFactorAuth,
-        ipAddress: ctx.ipAddress,
-        sessionID: authPayload.session.id,
-        target: user.email,
-      });
+      const transactionID = createPendingTransaction(
+        {
+          action: SecureAction.TwoFactorAuth,
+          sessionID: session.id,
+          target: user.email,
+        },
+        ctx,
+      );
 
-      return { sessionID: authPayload.session.id, transactionID };
+      return { sessionID: session.id, transactionID };
     }
 
-    return authPayload;
+    // if we have previous sessions, we can bind this auth to the force logout
+    // action then finalize auth from there
+    if (existingSessions.length > 0) {
+      const transactionToken = await createTransactionToken(
+        {
+          action: SecureAction.ForceLogout,
+          ipAddress: ctx.ipAddress,
+          isVerified: true,
+          sessionID: session.id,
+          target: user.email,
+        },
+        ctx,
+      );
+
+      return { sessionID: session.id, transactionToken };
+    }
+
+    // otherwise we're good to login - verify the session and return the tokens
+    const tokens = await ctx.services.session.verifySession.mutate({
+      id: session.id,
+    });
+
+    return { ...tokens, session };
   } catch (error: unknown) {
     if (error instanceof Error) {
       logger.error(error);
@@ -88,6 +116,10 @@ function resolveType(value: object) {
     return MutationErrorPayload;
   }
 
+  if ('transactionToken' in value) {
+    return ForceLogoutPayload;
+  }
+
   if ('transactionID' in value) {
     return TwoFactorLoginPayload;
   }
@@ -97,7 +129,12 @@ function resolveType(value: object) {
 
 const LoginWithPasswordPayload = builder.unionType('LoginWithPasswordPayload', {
   resolveType,
-  types: [AuthPayload, TwoFactorLoginPayload, MutationErrorPayload],
+  types: [
+    AuthPayload,
+    TwoFactorLoginPayload,
+    ForceLogoutPayload,
+    MutationErrorPayload,
+  ],
 });
 
 export const resolve = loginWithPassword;

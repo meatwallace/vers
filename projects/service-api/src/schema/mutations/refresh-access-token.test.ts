@@ -1,5 +1,6 @@
 import { expect, test } from 'vitest';
 import { drop } from '@mswjs/data';
+import invariant from 'tiny-invariant';
 import { db } from '~/mocks/db';
 import { createMockGQLContext } from '~/test-utils/create-mock-gql-context';
 import { resolve } from './refresh-access-token';
@@ -11,6 +12,8 @@ test('it refreshes access token with valid refresh token', async () => {
     refreshToken: 'valid_refresh_token',
     userID: user.id,
   });
+
+  invariant(session.refreshToken);
 
   const ctx = createMockGQLContext({ user });
 
@@ -25,14 +28,6 @@ test('it refreshes access token with valid refresh token', async () => {
   expect(result).toStrictEqual({
     accessToken: expect.any(String),
     refreshToken: expect.any(String),
-    session: {
-      createdAt: expect.any(Date),
-      expiresAt: expect.any(Date),
-      id: expect.any(String),
-      ipAddress: session.ipAddress,
-      updatedAt: expect.any(Date),
-      userID: user.id,
-    },
   });
 
   // verify old refresh token is no longer valid

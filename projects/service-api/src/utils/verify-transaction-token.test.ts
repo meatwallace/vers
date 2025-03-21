@@ -28,12 +28,16 @@ test('it returns true when no token is provided', async () => {
 });
 
 test('it validates a token with matching action, target, and IP', async () => {
-  const transactionID = createPendingTransaction({
-    action: SecureAction.Onboarding,
-    ipAddress: '127.0.0.1',
-    sessionID: null,
-    target: 'user_123',
-  });
+  const ctx = createMockGQLContext({ ipAddress: '127.0.0.1' });
+
+  const transactionID = createPendingTransaction(
+    {
+      action: SecureAction.Onboarding,
+      sessionID: null,
+      target: 'user_123',
+    },
+    ctx,
+  );
 
   const tokenParts = {
     action: SecureAction.Onboarding,
@@ -43,7 +47,6 @@ test('it validates a token with matching action, target, and IP', async () => {
     transactionID,
   };
 
-  const ctx = createMockGQLContext({ ipAddress: '127.0.0.1' });
   const token = await createTransactionToken(tokenParts, ctx);
 
   const result = await verifyTransactionToken(
@@ -69,12 +72,16 @@ test('it validates a token with matching action, target, and IP', async () => {
 });
 
 test('it returns null when action does not match', async () => {
-  const transactionID = createPendingTransaction({
-    action: SecureAction.Onboarding,
-    ipAddress: '127.0.0.1',
-    sessionID: null,
-    target: 'user_123',
-  });
+  const ctx = createMockGQLContext({ ipAddress: '127.0.0.1' });
+
+  const transactionID = createPendingTransaction(
+    {
+      action: SecureAction.Onboarding,
+      sessionID: null,
+      target: 'user_123',
+    },
+    ctx,
+  );
 
   const data = {
     action: SecureAction.Onboarding,
@@ -84,7 +91,6 @@ test('it returns null when action does not match', async () => {
     transactionID,
   };
 
-  const ctx = createMockGQLContext({ ipAddress: '127.0.0.1' });
   const token = await createTransactionToken(data, ctx);
 
   const result = await verifyTransactionToken(
@@ -100,23 +106,34 @@ test('it returns null when action does not match', async () => {
 });
 
 test('it returns null when IP address does not match', async () => {
-  const transactionID = createPendingTransaction({
-    action: SecureAction.Onboarding,
-    ipAddress: '127.0.0.1',
-    sessionID: null,
-    target: 'user_123',
+  const pendingCtx = createMockGQLContext({
+    ipAddress: '192.168.1.1',
+    requestID: 'test',
   });
+
+  const transactionID = createPendingTransaction(
+    {
+      action: SecureAction.Onboarding,
+      sessionID: null,
+      target: 'user_123',
+    },
+    pendingCtx,
+  );
 
   const data = {
     action: SecureAction.Onboarding,
-    ipAddress: '127.0.0.1',
+    ipAddress: '192.168.1.1',
     sessionID: null,
     target: 'user_123',
     transactionID,
   };
 
-  const ctx = createMockGQLContext({ ipAddress: '192.168.1.1' });
-  const token = await createTransactionToken(data, ctx);
+  const token = await createTransactionToken(data, pendingCtx);
+
+  const otherCtx = createMockGQLContext({
+    ipAddress: '127.0.0.1',
+    requestID: 'test',
+  });
 
   const result = await verifyTransactionToken(
     {
@@ -124,19 +141,23 @@ test('it returns null when IP address does not match', async () => {
       target: 'user_123',
       token,
     },
-    ctx,
+    otherCtx,
   );
 
   expect(result).toBeNull();
 });
 
 test('it returns null when token is reused', async () => {
-  const transactionID = createPendingTransaction({
-    action: SecureAction.Onboarding,
-    ipAddress: '127.0.0.1',
-    sessionID: null,
-    target: 'user_123',
-  });
+  const ctx = createMockGQLContext({ ipAddress: '127.0.0.1' });
+
+  const transactionID = createPendingTransaction(
+    {
+      action: SecureAction.Onboarding,
+      sessionID: null,
+      target: 'user_123',
+    },
+    ctx,
+  );
 
   const data = {
     action: SecureAction.Onboarding,
@@ -146,7 +167,6 @@ test('it returns null when token is reused', async () => {
     transactionID,
   };
 
-  const ctx = createMockGQLContext({ ipAddress: '127.0.0.1' });
   const token = await createTransactionToken(data, ctx);
 
   // First use should succeed
@@ -189,12 +209,16 @@ test('it validates session for actions that require it', async () => {
     userID: 'user_123',
   });
 
-  const transactionID = createPendingTransaction({
-    action: SecureAction.ChangeEmail,
-    ipAddress: session.ipAddress,
-    sessionID: session.id,
-    target: 'user_123',
-  });
+  const ctx = createMockGQLContext({ session });
+
+  const transactionID = createPendingTransaction(
+    {
+      action: SecureAction.ChangeEmail,
+      sessionID: session.id,
+      target: 'user_123',
+    },
+    ctx,
+  );
 
   const data = {
     action: SecureAction.ChangeEmail,
@@ -203,8 +227,6 @@ test('it validates session for actions that require it', async () => {
     target: 'user_123',
     transactionID,
   };
-
-  const ctx = createMockGQLContext({ session });
 
   const token = await createTransactionToken(data, ctx);
 
@@ -231,18 +253,22 @@ test('it validates session for actions that require it', async () => {
 });
 
 test('it returns null when session is required but not found', async () => {
+  const ctx = createMockGQLContext({ ipAddress: '127.0.0.1' });
+
   // we need to create the session temporarily for our token to be successfully created
   const session = db.session.create({
     ipAddress: '127.0.0.1',
     userID: 'user_123',
   });
 
-  const transactionID = createPendingTransaction({
-    action: SecureAction.ChangeEmail,
-    ipAddress: '127.0.0.1',
-    sessionID: session.id,
-    target: 'user_123',
-  });
+  const transactionID = createPendingTransaction(
+    {
+      action: SecureAction.ChangeEmail,
+      sessionID: session.id,
+      target: 'user_123',
+    },
+    ctx,
+  );
 
   const data = {
     action: SecureAction.ChangeEmail,
@@ -252,7 +278,6 @@ test('it returns null when session is required but not found', async () => {
     transactionID,
   };
 
-  const ctx = createMockGQLContext({ ipAddress: '127.0.0.1' });
   const token = await createTransactionToken(data, ctx);
 
   // delete the session prior to verifying the token
@@ -280,21 +305,23 @@ test('it returns null when session ID does not match', async () => {
     userID: 'user_123',
   });
 
-  const transactionID = createPendingTransaction({
-    action: SecureAction.ChangeEmail,
+  const pendingTransactionContext = createMockGQLContext({
     ipAddress: '127.0.0.1',
-    sessionID: pendingTransactionSession.id,
-    target: 'user_123',
+    session: pendingTransactionSession,
   });
+
+  const transactionID = createPendingTransaction(
+    {
+      action: SecureAction.ChangeEmail,
+      sessionID: pendingTransactionSession.id,
+      target: 'user_123',
+    },
+    pendingTransactionContext,
+  );
 
   const verifySession = db.session.create({
     ipAddress: '127.0.0.1',
     userID: 'user_123',
-  });
-
-  const pendingTransactionContext = createMockGQLContext({
-    ipAddress: '127.0.0.1',
-    session: pendingTransactionSession,
   });
 
   const verifySessionContext = createMockGQLContext({
@@ -327,12 +354,16 @@ test('it returns null when session ID does not match', async () => {
 test('it returns null when token is expired', async () => {
   vi.useFakeTimers();
 
-  const transactionID = createPendingTransaction({
-    action: SecureAction.TwoFactorAuth,
-    ipAddress: '127.0.0.1',
-    sessionID: null,
-    target: 'user_123',
-  });
+  const ctx = createMockGQLContext({ ipAddress: '127.0.0.1' });
+
+  const transactionID = createPendingTransaction(
+    {
+      action: SecureAction.TwoFactorAuth,
+      sessionID: null,
+      target: 'user_123',
+    },
+    ctx,
+  );
 
   const data = {
     action: SecureAction.TwoFactorAuth,
@@ -342,7 +373,6 @@ test('it returns null when token is expired', async () => {
     transactionID,
   };
 
-  const ctx = createMockGQLContext({ ipAddress: '127.0.0.1' });
   const token = await createTransactionToken(data, ctx);
 
   const twoMinutesInMS = 2 * 60 * 1000;

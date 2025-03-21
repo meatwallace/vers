@@ -14,12 +14,14 @@ afterEach(() => {
 test('it completes the email signup process when transaction token is valid', async () => {
   const ctx = createMockGQLContext({});
 
-  const transactionID = createPendingTransaction({
-    action: SecureAction.Onboarding,
-    ipAddress: ctx.ipAddress,
-    sessionID: null,
-    target: 'user@test.com',
-  });
+  const transactionID = createPendingTransaction(
+    {
+      action: SecureAction.Onboarding,
+      sessionID: null,
+      target: 'user@test.com',
+    },
+    ctx,
+  );
 
   const transactionToken = await createTransactionToken(
     {
@@ -53,8 +55,10 @@ test('it completes the email signup process when transaction token is valid', as
       expiresAt: expect.any(Date),
       id: expect.any(String),
       ipAddress: ctx.ipAddress,
+      refreshToken: null,
       updatedAt: expect.any(Date),
       userID: expect.any(String),
+      verified: false,
     },
   });
 
@@ -108,12 +112,14 @@ test('it returns an error if the transaction token is invalid', async () => {
 test('it returns an ambiguous error if the user already exists', async () => {
   const ctx = createMockGQLContext({});
 
-  const transactionID = createPendingTransaction({
-    action: SecureAction.Onboarding,
-    ipAddress: ctx.ipAddress,
-    sessionID: null,
-    target: 'user@test.com',
-  });
+  const transactionID = createPendingTransaction(
+    {
+      action: SecureAction.Onboarding,
+      sessionID: null,
+      target: 'user@test.com',
+    },
+    ctx,
+  );
 
   const initialUser = db.user.create({
     email: 'user@test.com',

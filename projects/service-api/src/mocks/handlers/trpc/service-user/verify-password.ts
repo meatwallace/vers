@@ -10,7 +10,7 @@ export const verifyPassword = trpc.verifyPassword.mutation(({ input }) => {
   if (!user) {
     throw new TRPCError({
       code: 'NOT_FOUND',
-      message: 'No user with that email',
+      message: 'User not found',
     });
   }
 

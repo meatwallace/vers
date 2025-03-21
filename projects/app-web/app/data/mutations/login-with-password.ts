@@ -17,6 +17,11 @@ export const LoginWithPasswordMutation = graphql(/* GraphQL */ `
         sessionID
       }
 
+      ... on ForceLogoutPayload {
+        sessionID
+        transactionToken
+      }
+
       ... on MutationErrorPayload {
         error {
           title

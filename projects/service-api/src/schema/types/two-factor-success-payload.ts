@@ -1,6 +1,6 @@
 import { builder } from '../builder';
 
-export interface TwoFactorSuccessPayloadData {
+interface TwoFactorSuccessPayloadData {
   transactionToken: string;
 }
 

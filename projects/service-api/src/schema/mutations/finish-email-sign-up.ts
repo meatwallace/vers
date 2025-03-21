@@ -46,13 +46,21 @@ export async function finishEmailSignup(
       username: args.input.username,
     });
 
-    const authPayload = await ctx.services.session.createSession.mutate({
+    const session = await ctx.services.session.createSession.mutate({
       ipAddress: ctx.ipAddress,
       rememberMe: args.input.rememberMe,
       userID: user.id,
     });
 
-    return authPayload;
+    const tokens = await ctx.services.session.verifySession.mutate({
+      id: session.id,
+    });
+
+    return {
+      accessToken: tokens.accessToken,
+      refreshToken: tokens.refreshToken,
+      session: session,
+    };
   } catch (error: unknown) {
     if (error instanceof Error) {
       logger.error(error);

@@ -21,8 +21,8 @@ import { verifySessionStorage } from '~/session/verify-session-storage.server.ts
 import { Routes } from '~/types.ts';
 import { checkHoneypot } from '~/utils/check-honeypot.server.ts';
 import { handleGQLError } from '~/utils/handle-gql-error.ts';
-import { is2FARequiredPayload } from '~/utils/is-2fa-required-payload.ts';
 import { isMutationError } from '~/utils/is-mutation-error.ts';
+import { isVerificationRequiredPayload } from '~/utils/is-verification-required-payload.ts';
 import { requireAnonymous } from '~/utils/require-anonymous.server.ts';
 import { withErrorHandling } from '~/utils/with-error-handling.ts';
 import { UserEmailSchema } from '~/validation/user-email-schema.ts';
@@ -92,7 +92,7 @@ export const action = withErrorHandling(async (args: Route.ActionArgs) => {
     return data({ result: formResult }, { status: 400 });
   }
 
-  if (is2FARequiredPayload(result.data.startPasswordReset)) {
+  if (isVerificationRequiredPayload(result.data.startPasswordReset)) {
     const verifySession = await verifySessionStorage.getSession(
       args.request.headers.get('cookie'),
     );

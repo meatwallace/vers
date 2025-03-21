@@ -4,6 +4,7 @@ export enum Routes {
   ForgotPassword = '/forgot-password',
   Index = '/',
   Login = '/login',
+  LoginForceLogout = '/login/force-logout',
   Logout = '/logout',
   Onboarding = '/onboarding',
   Profile = '/profile',
@@ -21,3 +22,8 @@ type TimingMetric =
   | { description?: string; start?: never; time: number };
 
 export type Timings = Record<string, Array<TimingMetric>>;
+
+export interface GenericGQLPayload {
+  __typename: string;
+  [key: string]: unknown;
+}
