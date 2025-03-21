@@ -1,4 +1,4 @@
-import { afterEach, expect, test } from 'vitest';
+import { afterEach, expect, test, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { createRoutesStub } from 'react-router';
@@ -7,12 +7,29 @@ import { GraphQLError } from 'graphql';
 import { graphql } from 'msw';
 import { db } from '~/mocks/db.ts';
 import { server } from '~/mocks/node.ts';
+import { verifySessionStorage } from '~/session/verify-session-storage.server.ts';
 import { composeDataFnWrappers } from '~/test-utils/compose-data-fn-wrappers.ts';
 import { withAppLoadContext } from '~/test-utils/with-app-load-context.ts';
 import { withAuthedUser } from '~/test-utils/with-authed-user.ts';
 import { withRouteProps } from '~/test-utils/with-route-props.tsx';
 import { Routes } from '~/types.ts';
 import { action, loader, Login } from './route.tsx';
+
+let setCookieHeader: null | string = null;
+
+const _Response = globalThis.Response;
+
+// stub the global Response object so we can capture the cookie header
+vi.stubGlobal(
+  'Response',
+  vi.fn((body?: BodyInit | null, init?: ResponseInit) => {
+    if (init?.headers instanceof Headers) {
+      setCookieHeader = init.headers.get('set-cookie');
+    }
+
+    return new _Response(body, init);
+  }),
+);
 
 interface TestConfig {
   initialPath?: string;
@@ -58,6 +75,14 @@ function setupTest(config: TestConfig) {
       Component: () => 'CUSTOM_REDIRECT_ROUTE',
       path: '/custom-redirect-route',
     },
+    {
+      Component: () => 'VERIFY_OTP_ROUTE',
+      path: Routes.VerifyOTP,
+    },
+    {
+      Component: () => 'FORCE_LOGOUT_ROUTE',
+      path: Routes.LoginForceLogout,
+    },
   ]);
 
   render(<LoginStub initialEntries={[initialPath]} />);
@@ -69,6 +94,8 @@ afterEach(() => {
   server.resetHandlers();
 
   drop(db);
+
+  setCookieHeader = null;
 });
 
 test('it renders the login form', async () => {
@@ -146,6 +173,72 @@ test('it redirects to dashboard on successful login', async () => {
   const dashboardRoute = await screen.findByText('DASHBOARD_ROUTE');
 
   expect(dashboardRoute).toBeInTheDocument();
+});
+
+test('it redirects to verify-otp when 2FA is required', async () => {
+  db.user.create({
+    email: 'test@example.com',
+    password: 'password123',
+  });
+
+  db.verification.create({
+    target: 'test@example.com',
+    type: '2fa',
+  });
+
+  const { user } = setupTest({ isAuthed: false });
+
+  const emailInput = await screen.findByLabelText('Email');
+  const passwordInput = screen.getByLabelText('Password');
+  const submitButton = screen.getByRole('button', { name: 'Login' });
+
+  await user.type(emailInput, 'test@example.com');
+  await user.type(passwordInput, 'password123');
+  await user.click(submitButton);
+
+  const verifyOtpRoute = await screen.findByText('VERIFY_OTP_ROUTE');
+
+  expect(verifyOtpRoute).toBeInTheDocument();
+
+  const verifySession = await verifySessionStorage.getSession(setCookieHeader);
+
+  expect(verifySession.get('login2FA#transactionID')).toBe('transaction_id');
+  expect(verifySession.get('login2FA#sessionID')).toStrictEqual(
+    expect.any(String),
+  );
+});
+
+test('it redirects to the force logout sessions route when a previous session exists', async () => {
+  db.user.create({
+    email: 'test@example.com',
+    id: 'user_id',
+    password: 'password123',
+  });
+
+  db.session.create({
+    userID: 'user_id',
+  });
+
+  const { user } = setupTest({ isAuthed: false });
+
+  const emailInput = await screen.findByLabelText('Email');
+  const passwordInput = screen.getByLabelText('Password');
+  const submitButton = screen.getByRole('button', { name: 'Login' });
+
+  await user.type(emailInput, 'test@example.com');
+  await user.type(passwordInput, 'password123');
+  await user.click(submitButton);
+
+  const forceLogoutRoute = await screen.findByText('FORCE_LOGOUT_ROUTE');
+
+  expect(forceLogoutRoute).toBeInTheDocument();
+
+  const verifySession = await verifySessionStorage.getSession(setCookieHeader);
+
+  expect(verifySession.get('loginLogout#email')).toBe('test@example.com');
+  expect(verifySession.get('loginLogout#transactionToken')).toBe(
+    'valid_transaction_token',
+  );
 });
 
 test('it redirects to the specified route when provided', async () => {

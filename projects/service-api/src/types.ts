@@ -13,6 +13,7 @@ export type Env = z.infer<typeof envSchema>;
 export interface AuthedContext {
   ipAddress: string;
   request: Request;
+  requestID: string;
   services: Services;
   session: SessionData;
   user: UserData;
@@ -21,6 +22,7 @@ export interface AuthedContext {
 export interface UnverifiedAuthContext {
   ipAddress: string;
   request: Request;
+  requestID: string;
   services: Services;
   session: SessionData;
   user: null;
@@ -29,6 +31,7 @@ export interface UnverifiedAuthContext {
 export interface AnonymousContext {
   ipAddress: string;
   request: Request;
+  requestID: string;
   services: Services;
   session: null;
   user: null;

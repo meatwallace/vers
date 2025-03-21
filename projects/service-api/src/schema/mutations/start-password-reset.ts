@@ -102,12 +102,14 @@ export async function startPasswordReset(
       to: args.input.email,
     });
 
-    const transactionID = createPendingTransaction({
-      action: SecureAction.ResetPassword,
-      ipAddress: ctx.ipAddress,
-      sessionID: null,
-      target: args.input.email,
-    });
+    const transactionID = createPendingTransaction(
+      {
+        action: SecureAction.ResetPassword,
+        sessionID: null,
+        target: args.input.email,
+      },
+      ctx,
+    );
 
     if (twoFactorVerification) {
       return { transactionID };

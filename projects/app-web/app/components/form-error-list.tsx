@@ -1,8 +1,8 @@
 import { css } from '@vers/styled-system/css';
 
 interface Props {
-  errors: Array<string>;
-  id: string;
+  errors: Array<null | string | undefined>;
+  id?: string;
 }
 
 const errorList = css({
@@ -22,7 +22,7 @@ export function FormErrorList(props: Props) {
   }
 
   return (
-    <ul className={errorList} id={props.id}>
+    <ul {...props} className={errorList}>
       {errors.map((error) => (
         <li key={error} className={errorItem}>
           {error}

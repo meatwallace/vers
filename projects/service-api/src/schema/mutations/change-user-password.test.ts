@@ -64,12 +64,14 @@ test('it changes password when user has 2FA enabled and provides valid transacti
 
   const ctx = createMockGQLContext({ session, user });
 
-  const transactionID = createPendingTransaction({
-    action: SecureAction.ChangePassword,
-    ipAddress: ctx.ipAddress,
-    sessionID: session.id,
-    target: user.email,
-  });
+  const transactionID = createPendingTransaction(
+    {
+      action: SecureAction.ChangePassword,
+      sessionID: session.id,
+      target: user.email,
+    },
+    ctx,
+  );
 
   const transactionToken = await createTransactionToken(
     {

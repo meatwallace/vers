@@ -17,12 +17,14 @@ afterEach(() => {
 test('it verifies a valid onboarding otp and returns a valid transaction token', async () => {
   const ctx = createMockGQLContext({});
 
-  const transactionID = createPendingTransaction({
-    action: SecureAction.Onboarding,
-    ipAddress: ctx.ipAddress,
-    sessionID: null,
-    target: 'test@example.com',
-  });
+  const transactionID = createPendingTransaction(
+    {
+      action: SecureAction.Onboarding,
+      sessionID: null,
+      target: 'test@example.com',
+    },
+    ctx,
+  );
 
   const { otp, ...verificationConfig } = await generateTOTP({
     algorithm: 'SHA-256',
@@ -80,12 +82,14 @@ test('it verifies a valid change email otp and returns a valid transaction token
 
   const ctx = createMockGQLContext({ session });
 
-  const transactionID = createPendingTransaction({
-    action: SecureAction.ChangeEmail,
-    ipAddress: ctx.ipAddress,
-    sessionID: session.id,
-    target: 'test@example.com',
-  });
+  const transactionID = createPendingTransaction(
+    {
+      action: SecureAction.ChangeEmail,
+      sessionID: session.id,
+      target: 'test@example.com',
+    },
+    ctx,
+  );
 
   const { otp, ...verificationConfig } = await generateTOTP({
     algorithm: 'SHA-256',
@@ -143,12 +147,14 @@ test('it verifies a valid change password otp and returns a valid transaction to
 
   const ctx = createMockGQLContext({ session });
 
-  const transactionID = createPendingTransaction({
-    action: SecureAction.ChangePassword,
-    ipAddress: ctx.ipAddress,
-    sessionID: session.id,
-    target: 'test@example.com',
-  });
+  const transactionID = createPendingTransaction(
+    {
+      action: SecureAction.ChangePassword,
+      sessionID: session.id,
+      target: 'test@example.com',
+    },
+    ctx,
+  );
 
   const { otp, ...verificationConfig } = await generateTOTP({
     algorithm: 'SHA-256',
@@ -204,12 +210,14 @@ test('it verifies a valid change password otp and returns a valid transaction to
 test('it verifies a valid reset password otp and returns a valid transaction token', async () => {
   const ctx = createMockGQLContext({});
 
-  const transactionID = createPendingTransaction({
-    action: SecureAction.ResetPassword,
-    ipAddress: ctx.ipAddress,
-    sessionID: null,
-    target: 'test@example.com',
-  });
+  const transactionID = createPendingTransaction(
+    {
+      action: SecureAction.ResetPassword,
+      sessionID: null,
+      target: 'test@example.com',
+    },
+    ctx,
+  );
 
   const { otp, ...verificationConfig } = await generateTOTP({
     algorithm: 'SHA-256',
@@ -267,12 +275,14 @@ test('it verifies a valid change email confirmation otp and returns a valid tran
 
   const ctx = createMockGQLContext({ session });
 
-  const transactionID = createPendingTransaction({
-    action: SecureAction.ChangeEmailConfirmation,
-    ipAddress: ctx.ipAddress,
-    sessionID: session.id,
-    target: 'test@example.com',
-  });
+  const transactionID = createPendingTransaction(
+    {
+      action: SecureAction.ChangeEmailConfirmation,
+      sessionID: session.id,
+      target: 'test@example.com',
+    },
+    ctx,
+  );
 
   const { otp, ...verificationConfig } = await generateTOTP({
     algorithm: 'SHA-256',
@@ -332,12 +342,14 @@ test('it throws an error if session validation fails', async () => {
     ipAddress: ctx.ipAddress,
   });
 
-  const transactionID = createPendingTransaction({
-    action: SecureAction.TwoFactorAuth,
-    ipAddress: ctx.ipAddress,
-    sessionID: session.id,
-    target: 'test@example.com',
-  });
+  const transactionID = createPendingTransaction(
+    {
+      action: SecureAction.TwoFactorAuth,
+      sessionID: session.id,
+      target: 'test@example.com',
+    },
+    ctx,
+  );
 
   const { otp, ...verificationConfig } = await generateTOTP({
     algorithm: 'SHA-256',
@@ -373,12 +385,14 @@ test('it throws an error if session validation fails', async () => {
 test('it returns an error for an invalid OTP', async () => {
   const ctx = createMockGQLContext({});
 
-  const transactionID = createPendingTransaction({
-    action: SecureAction.Onboarding,
-    ipAddress: ctx.ipAddress,
-    sessionID: null,
-    target: 'test@example.com',
-  });
+  const transactionID = createPendingTransaction(
+    {
+      action: SecureAction.Onboarding,
+      sessionID: null,
+      target: 'test@example.com',
+    },
+    ctx,
+  );
 
   const { otp, ...verificationConfig } = await generateTOTP({
     algorithm: 'SHA-256',
@@ -413,12 +427,14 @@ test('it returns an error for an invalid OTP', async () => {
 test('it returns an error if verification does not exist', async () => {
   const ctx = createMockGQLContext({});
 
-  const transactionID = createPendingTransaction({
-    action: SecureAction.Onboarding,
-    ipAddress: ctx.ipAddress,
-    sessionID: null,
-    target: 'nonexistent@example.com',
-  });
+  const transactionID = createPendingTransaction(
+    {
+      action: SecureAction.Onboarding,
+      sessionID: null,
+      target: 'nonexistent@example.com',
+    },
+    ctx,
+  );
 
   const args = {
     input: {

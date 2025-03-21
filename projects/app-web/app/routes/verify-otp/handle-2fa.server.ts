@@ -1,8 +1,9 @@
 import { redirect } from 'react-router';
+import { safeRedirect } from 'remix-utils/safe-redirect';
 import invariant from 'tiny-invariant';
 import { FinishLoginWith2FAMutation } from '~/data/mutations/finish-login-with-2fa';
+import { ForceLogoutPayload } from '~/gql/graphql.ts';
 import { authSessionStorage } from '~/session/auth-session-storage.server.ts';
-import { storeAuthPayload } from '~/session/store-auth-payload.ts';
 import { verifySessionStorage } from '~/session/verify-session-storage.server.ts';
 import { Routes } from '~/types.ts';
 import { handleGQLError } from '~/utils/handle-gql-error.ts';
@@ -42,11 +43,29 @@ export async function handle2FA(ctx: HandleVerificationContext) {
   verifySession.unset('login2FA#transactionID');
   verifySession.unset('login2FA#sessionID');
 
+  // if we need to force logout, set our session as needed then redirect
+  if (isForceLogoutPayload(result.data.finishLoginWith2FA)) {
+    verifySession.set('loginLogout#email', ctx.submission.value.target);
+    verifySession.set(
+      'loginLogout#transactionToken',
+      result.data.finishLoginWith2FA.transactionToken,
+    );
+
+    return redirect(Routes.LoginForceLogout, {
+      headers: {
+        'set-cookie': await verifySessionStorage.commitSession(verifySession),
+      },
+    });
+  }
+
+  // if we're here, we've received our tokens and we can set the auth session
   const authSession = await authSessionStorage.getSession(
     ctx.request.headers.get('cookie'),
   );
 
-  storeAuthPayload(authSession, result.data.finishLoginWith2FA);
+  authSession.set('sessionID', result.data.finishLoginWith2FA.session.id);
+  authSession.set('accessToken', result.data.finishLoginWith2FA.accessToken);
+  authSession.set('refreshToken', result.data.finishLoginWith2FA.refreshToken);
 
   const redirectTo = ctx.submission.value.redirect ?? Routes.Dashboard;
 
@@ -64,5 +83,11 @@ export async function handle2FA(ctx: HandleVerificationContext) {
     }),
   );
 
-  return redirect(redirectTo, { headers });
+  return redirect(safeRedirect(redirectTo), { headers });
+}
+
+function isForceLogoutPayload(
+  payload: ForceLogoutPayload | object,
+): payload is ForceLogoutPayload {
+  return 'transactionToken' in payload;
 }

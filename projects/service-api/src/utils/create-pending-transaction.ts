@@ -1,10 +1,9 @@
-import { createId } from '@paralleldrive/cuid2';
+import type { Context } from '~/types';
 import { SecureAction } from '~/types';
 import { pendingTransactionCache } from './pending-transaction-cache';
 
 interface Data {
   action: SecureAction;
-  ipAddress: string;
   sessionID: null | string;
   target: string;
 }
@@ -15,13 +14,16 @@ interface Data {
  *
  * @returns The pending transaction's ID.
  */
-export function createPendingTransaction(data: Data): string {
-  const transactionID = createId();
+export function createPendingTransaction(data: Data, ctx: Context): string {
+  if (pendingTransactionCache.has(ctx.requestID)) {
+    throw new Error('Only one pending transaction is allowed per request');
+  }
 
-  pendingTransactionCache.set(transactionID, {
+  pendingTransactionCache.set(ctx.requestID, {
     ...data,
     attempts: 0,
+    ipAddress: ctx.ipAddress,
   });
 
-  return transactionID;
+  return ctx.requestID;
 }

@@ -52,6 +52,7 @@ export async function createYogaContext(
   const sharedContext = {
     ipAddress: honoCtx.get('ipAddress'),
     request: yogaCtx.request,
+    requestID,
     services: {
       email,
       session,

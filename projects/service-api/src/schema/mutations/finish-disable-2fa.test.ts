@@ -27,12 +27,14 @@ test('it successfully disables 2FA with a valid transaction token', async () => 
 
   const ctx = createMockGQLContext({ session, user });
 
-  const transactionID = createPendingTransaction({
-    action: SecureAction.TwoFactorAuthDisable,
-    ipAddress: ctx.ipAddress,
-    sessionID: session.id,
-    target: user.email,
-  });
+  const transactionID = createPendingTransaction(
+    {
+      action: SecureAction.TwoFactorAuthDisable,
+      sessionID: session.id,
+      target: user.email,
+    },
+    ctx,
+  );
 
   const transactionToken = await createTransactionToken(
     {

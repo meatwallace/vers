@@ -27,7 +27,7 @@ export async function changePassword(
     if (!user) {
       throw new TRPCError({
         code: 'NOT_FOUND',
-        message: 'No user with that ID',
+        message: 'User not found',
       });
     }
 

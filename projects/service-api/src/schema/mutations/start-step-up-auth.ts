@@ -57,12 +57,14 @@ export async function startStepUpAuth(
       };
     }
 
-    const transactionID = createPendingTransaction({
-      action: STEP_UP_ACTION_TO_SECURE_ACTION[args.input.action],
-      ipAddress: ctx.ipAddress,
-      sessionID: ctx.session.id,
-      target: ctx.user.email,
-    });
+    const transactionID = createPendingTransaction(
+      {
+        action: STEP_UP_ACTION_TO_SECURE_ACTION[args.input.action],
+        sessionID: ctx.session.id,
+        target: ctx.user.email,
+      },
+      ctx,
+    );
 
     return { transactionID };
   } catch (error) {

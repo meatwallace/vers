@@ -22,12 +22,14 @@ test('it verifies the transaction token and sends a notification email', async (
 
   const ctx = createMockGQLContext({ session, user });
 
-  const transactionID = createPendingTransaction({
-    action: SecureAction.ChangeEmailConfirmation,
-    ipAddress: ctx.ipAddress,
-    sessionID: session.id,
-    target: 'new@test.com',
-  });
+  const transactionID = createPendingTransaction(
+    {
+      action: SecureAction.ChangeEmailConfirmation,
+      sessionID: session.id,
+      target: 'new@test.com',
+    },
+    ctx,
+  );
 
   const transactionToken = await createTransactionToken(
     {

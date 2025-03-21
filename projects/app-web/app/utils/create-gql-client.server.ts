@@ -3,7 +3,6 @@ import { Client, fetchExchange } from '@urql/core';
 import { authExchange as createAuthExchange } from '@urql/exchange-auth';
 import { UnreachableCodeError } from '@vers/utils';
 import { authSessionStorage } from '~/session/auth-session-storage.server';
-import { storeAuthPayload } from '~/session/store-auth-payload';
 import { verifySessionStorage } from '~/session/verify-session-storage.server';
 import { Routes } from '~/types';
 import { isURQLFetchError } from './is-urql-fetch-error.server';
@@ -64,12 +63,13 @@ export async function createGQLClient(request: Request): Promise<Client> {
           throw new UnreachableCodeError('logout throws a redirect');
         }
 
-        const authPayload = await refreshAccessToken(request, {
+        const tokenPayload = await refreshAccessToken(request, {
           refreshToken,
           utils,
         });
 
-        storeAuthPayload(authSession, authPayload);
+        authSession.set('accessToken', tokenPayload.accessToken);
+        authSession.set('refreshToken', tokenPayload.refreshToken);
 
         const setCookieHeader =
           await authSessionStorage.commitSession(authSession);

@@ -6,6 +6,7 @@ export default [
   layout('layouts/public-layout.tsx', [
     index('routes/_index/route.tsx'),
     route(Routes.Login, 'routes/login/route.tsx'),
+    route(Routes.LoginForceLogout, 'routes/login_force-logout/route.tsx'),
     route(Routes.Signup, 'routes/signup/route.tsx'),
     route(Routes.Onboarding, 'routes/onboarding/route.tsx'),
     route(Routes.VerifyOTP, 'routes/verify-otp/route.tsx'),

@@ -65,7 +65,7 @@ test('it rejects a non-existent user', async () => {
     }),
   ).rejects.toMatchObject({
     code: 'NOT_FOUND',
-    message: 'No user with that email',
+    message: 'User not found',
   });
 });
 

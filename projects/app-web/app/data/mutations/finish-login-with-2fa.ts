@@ -12,6 +12,11 @@ export const FinishLoginWith2FAMutation = graphql(/* GraphQL */ `
         }
       }
 
+      ... on ForceLogoutPayload {
+        sessionID
+        transactionToken
+      }
+
       ... on MutationErrorPayload {
         error {
           title

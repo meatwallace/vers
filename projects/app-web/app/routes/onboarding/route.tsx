@@ -18,7 +18,6 @@ import { RouteErrorBoundary } from '~/components/route-error-boundary.tsx';
 import { FinishEmailSignupMutation } from '~/data/mutations/finish-email-signup';
 import { useIsFormPending } from '~/hooks/use-is-form-pending';
 import { authSessionStorage } from '~/session/auth-session-storage.server.ts';
-import { storeAuthPayload } from '~/session/store-auth-payload.ts';
 import { verifySessionStorage } from '~/session/verify-session-storage.server.ts';
 import { Routes } from '~/types.ts';
 import { checkHoneypot } from '~/utils/check-honeypot.server.ts';
@@ -113,7 +112,9 @@ export const action = withErrorHandling(async (args: Route.ActionArgs) => {
     args.request.headers.get('cookie'),
   );
 
-  storeAuthPayload(authSession, result.data.finishEmailSignup);
+  authSession.set('sessionID', result.data.finishEmailSignup.session.id);
+  authSession.set('accessToken', result.data.finishEmailSignup.accessToken);
+  authSession.set('refreshToken', result.data.finishEmailSignup.refreshToken);
 
   const verifySession = await verifySessionStorage.getSession();
 

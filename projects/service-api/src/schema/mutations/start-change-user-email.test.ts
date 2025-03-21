@@ -69,12 +69,14 @@ test('it follows the usual flow and validates the transaction token when the use
 
   const ctx = createMockGQLContext({ session, user });
 
-  const transactionID = createPendingTransaction({
-    action: SecureAction.ChangeEmail,
-    ipAddress: ctx.ipAddress,
-    sessionID: session.id,
-    target: user.email,
-  });
+  const transactionID = createPendingTransaction(
+    {
+      action: SecureAction.ChangeEmail,
+      sessionID: session.id,
+      target: user.email,
+    },
+    ctx,
+  );
 
   const transactionToken = await createTransactionToken(
     {
@@ -174,12 +176,14 @@ test('it returns an error when the new email is already in use', async () => {
 
   const ctx = createMockGQLContext({ session, user });
 
-  const transactionID = createPendingTransaction({
-    action: SecureAction.ChangeEmail,
-    ipAddress: ctx.ipAddress,
-    sessionID: session.id,
-    target: user.email,
-  });
+  const transactionID = createPendingTransaction(
+    {
+      action: SecureAction.ChangeEmail,
+      sessionID: session.id,
+      target: user.email,
+    },
+    ctx,
+  );
 
   const transactionToken = await createTransactionToken(
     {

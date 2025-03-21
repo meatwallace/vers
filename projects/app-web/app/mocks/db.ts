@@ -15,6 +15,7 @@ export const db = factory({
         sub: createId(),
       }),
     userID: () => createId(),
+    verified: Boolean,
   },
   user: {
     createdAt: () => new Date().toISOString(),

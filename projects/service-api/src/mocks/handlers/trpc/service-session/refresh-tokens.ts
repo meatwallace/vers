@@ -15,19 +15,16 @@ export const refreshTokens = trpc.refreshTokens.mutation(({ input }) => {
     });
   }
 
-  const { refreshToken: oldRefreshToken, ...sessionData } = session;
-
-  const newRefreshToken = `refresh_token_${Date.now()}`;
+  const refreshToken = `refresh_token_${Date.now()}`;
 
   db.session.update({
-    data: { refreshToken: newRefreshToken },
+    data: { refreshToken },
     where: { id: { equals: session.id } },
   });
 
   const result: RefreshTokensPayload = {
     accessToken: `access_token_${Date.now()}`,
-    refreshToken: newRefreshToken,
-    session: sessionData,
+    refreshToken,
   };
 
   return result;

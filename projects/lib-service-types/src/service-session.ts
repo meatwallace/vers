@@ -12,11 +12,11 @@ interface SessionTokens {
   refreshToken: string;
 }
 
-export type AuthPayload = SessionTokens & {
-  session: SessionData;
-};
+// export type TokenPayload = SessionTokens & {
+//   session: SessionData;
+// };
 
-export type CreateSessionPayload = AuthPayload;
+export type CreateSessionPayload = SessionData;
 
 export type DeleteSessionPayload = Record<string, never>;
 
@@ -24,4 +24,6 @@ export type GetSessionPayload = null | SessionData;
 
 export type GetSessionsPayload = Array<SessionData>;
 
-export type RefreshTokensPayload = AuthPayload;
+export type RefreshTokensPayload = SessionTokens;
+
+export type VerifySessionPayload = SessionTokens;

@@ -1,7 +1,7 @@
 import { builder } from '../builder';
 import { MutationError } from './mutation-error';
 
-export interface MutationErrorPayloadData {
+interface MutationErrorPayloadData {
   error: typeof MutationError.$inferType;
 }
 

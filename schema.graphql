@@ -63,7 +63,7 @@ input FinishLoginWith2FAInput {
   transactionToken: String!
 }
 
-union FinishLoginWith2FAPayload = AuthPayload | MutationErrorPayload
+union FinishLoginWith2FAPayload = AuthPayload | ForceLogoutPayload | MutationErrorPayload
 
 input FinishPasswordResetInput {
   email: String!
@@ -74,9 +74,21 @@ input FinishPasswordResetInput {
 
 union FinishPasswordResetPayload = MutationErrorPayload | MutationSuccess
 
+type ForceLogoutPayload {
+  sessionID: String!
+  transactionToken: String!
+}
+
 input GetSessionsInput {
   placeholder: String
 }
+
+input LoginWithForcedLogoutInput {
+  target: String!
+  transactionToken: String!
+}
+
+union LoginWithForcedLogoutPayload = AuthPayload | MutationErrorPayload
 
 input LoginWithPasswordInput {
   email: String!
@@ -84,7 +96,7 @@ input LoginWithPasswordInput {
   rememberMe: Boolean!
 }
 
-union LoginWithPasswordPayload = AuthPayload | MutationErrorPayload | TwoFactorLoginPayload
+union LoginWithPasswordPayload = AuthPayload | ForceLogoutPayload | MutationErrorPayload | TwoFactorLoginPayload
 
 type Mutation {
   changeUserPassword(input: ChangeUserPasswordInput!): ChangeUserPasswordPayload!
@@ -95,6 +107,7 @@ type Mutation {
   finishEnable2FA(input: FinishEnable2FAInput!): FinishEnable2FAPayload!
   finishLoginWith2FA(input: FinishLoginWith2FAInput!): FinishLoginWith2FAPayload!
   finishPasswordReset(input: FinishPasswordResetInput!): FinishPasswordResetPayload!
+  loginWithForcedLogout(input: LoginWithForcedLogoutInput!): LoginWithForcedLogoutPayload!
   loginWithPassword(input: LoginWithPasswordInput!): LoginWithPasswordPayload!
   refreshAccessToken(input: RefreshAccessTokenInput!): RefreshAccessTokenPayload!
   startChangeUserEmail(input: StartChangeUserEmailInput!): StartChangeUserEmailPayload!
@@ -128,7 +141,7 @@ input RefreshAccessTokenInput {
   refreshToken: String!
 }
 
-union RefreshAccessTokenPayload = AuthPayload | MutationErrorPayload
+union RefreshAccessTokenPayload = MutationErrorPayload | TokenPayload
 
 type Session {
   createdAt: DateTime!
@@ -172,6 +185,11 @@ enum StepUpAction {
   CHANGE_EMAIL
   CHANGE_PASSWORD
   DISABLE_2FA
+}
+
+type TokenPayload {
+  accessToken: String!
+  refreshToken: String!
 }
 
 type TwoFactorLoginPayload {

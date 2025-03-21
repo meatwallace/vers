@@ -126,12 +126,14 @@ test('it updates the password when 2fa is required and the transaction token is 
 
   const ctx = createMockGQLContext({});
 
-  const transactionID = createPendingTransaction({
-    action: SecureAction.ResetPassword,
-    ipAddress: ctx.ipAddress,
-    sessionID: null,
-    target: user.email,
-  });
+  const transactionID = createPendingTransaction(
+    {
+      action: SecureAction.ResetPassword,
+      sessionID: null,
+      target: user.email,
+    },
+    ctx,
+  );
 
   const transactionToken = await createTransactionToken(
     {

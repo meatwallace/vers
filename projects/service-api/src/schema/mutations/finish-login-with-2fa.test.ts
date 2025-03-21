@@ -1,6 +1,5 @@
 import { afterEach, expect, test } from 'vitest';
 import { drop } from '@mswjs/data';
-import invariant from 'tiny-invariant';
 import { db } from '~/mocks/db';
 import { createMockGQLContext } from '~/test-utils/create-mock-gql-context';
 import { SecureAction } from '~/types';
@@ -12,7 +11,7 @@ afterEach(() => {
   drop(db);
 });
 
-test('it returns an auth payload when the transaction token is valid', async () => {
+test('it returns tokens when the transaction token is valid and there are no previous sessions', async () => {
   const user = db.user.create({
     email: 'user@test.com',
   });
@@ -20,16 +19,19 @@ test('it returns an auth payload when the transaction token is valid', async () 
   const session = db.session.create({
     expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 30),
     userID: user.id,
+    verified: false,
   });
 
   const ctx = createMockGQLContext({ session });
 
-  const transactionID = createPendingTransaction({
-    action: SecureAction.TwoFactorAuth,
-    ipAddress: ctx.ipAddress,
-    sessionID: session.id,
-    target: 'user@test.com',
-  });
+  const transactionID = createPendingTransaction(
+    {
+      action: SecureAction.TwoFactorAuth,
+      sessionID: session.id,
+      target: 'user@test.com',
+    },
+    ctx,
+  );
 
   const verification = db.verification.create({
     target: 'user@test.com',
@@ -65,16 +67,69 @@ test('it returns an auth payload when the transaction token is valid', async () 
       expiresAt: expect.any(Date),
       id: expect.any(String),
       ipAddress: ctx.ipAddress,
+      refreshToken: expect.any(String),
       updatedAt: expect.any(Date),
       userID: user.id,
+      verified: false,
     },
   });
+});
 
-  invariant('session' in result, 'result should be successful');
+test('it returns a force logout payload when the transaction token is valid and there are previous sessions', async () => {
+  const user = db.user.create({
+    email: 'user@test.com',
+  });
 
-  // verify we've got a new session with the same expiry as the previous one
-  expect(result.session.id).not.toBe(session.id);
-  expect(result.session.expiresAt).toStrictEqual(session.expiresAt);
+  // initial session we'll consider the previous session
+  db.session.create({
+    userID: user.id,
+  });
+
+  const session = db.session.create({
+    userID: user.id,
+  });
+
+  const ctx = createMockGQLContext({ session });
+
+  const transactionID = createPendingTransaction(
+    {
+      action: SecureAction.TwoFactorAuth,
+      sessionID: session.id,
+      target: 'user@test.com',
+    },
+    ctx,
+  );
+
+  const verification = db.verification.create({
+    target: 'user@test.com',
+    type: '2fa',
+  });
+
+  const transactionToken = await createTransactionToken(
+    {
+      action: SecureAction.TwoFactorAuth,
+      ipAddress: ctx.ipAddress,
+      sessionID: session.id,
+      target: verification.target,
+      transactionID,
+    },
+    ctx,
+  );
+
+  const args = {
+    input: {
+      rememberMe: true,
+      target: verification.target,
+      transactionToken,
+    },
+  };
+
+  const result = await resolve({}, args, ctx);
+
+  expect(result).toStrictEqual({
+    sessionID: session.id,
+    transactionToken: expect.any(String),
+  });
 });
 
 test('it returns an error when 2FA is not enabled', async () => {
@@ -89,12 +144,14 @@ test('it returns an error when 2FA is not enabled', async () => {
     userID: user.id,
   });
 
-  const transactionID = createPendingTransaction({
-    action: SecureAction.TwoFactorAuth,
-    ipAddress: ctx.ipAddress,
-    sessionID: session.id,
-    target: 'user@test.com',
-  });
+  const transactionID = createPendingTransaction(
+    {
+      action: SecureAction.TwoFactorAuth,
+      sessionID: session.id,
+      target: 'user@test.com',
+    },
+    ctx,
+  );
 
   const transactionToken = await createTransactionToken(
     {

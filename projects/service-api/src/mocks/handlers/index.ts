@@ -4,6 +4,7 @@ import { deleteSession } from './trpc/service-session/delete-session';
 import { getSession } from './trpc/service-session/get-session';
 import { getSessions } from './trpc/service-session/get-sessions';
 import { refreshTokens } from './trpc/service-session/refresh-tokens';
+import { verifySession } from './trpc/service-session/verify-session';
 import { changeUserPassword } from './trpc/service-user/change-password';
 import { createPasswordResetToken } from './trpc/service-user/create-password-reset-token';
 import { createUser } from './trpc/service-user/create-user';
@@ -29,6 +30,7 @@ export const handlers = [
   getSession,
   getSessions,
   refreshTokens,
+  verifySession,
 
   // service-user
   resetPassword,

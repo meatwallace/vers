@@ -7,9 +7,15 @@ const container = css({
   flexDirection: 'column',
   marginLeft: 'auto',
   marginRight: 'auto',
-  maxWidth: '96',
   paddingTop: '8',
-  width: '2/3',
+  width: {
+    '2xl': '1/2',
+    base: '4/5',
+    lg: '2/3',
+    md: '4/5',
+    sm: '4/5',
+    xl: '1/2',
+  },
 });
 
 export function PublicLayout() {

@@ -9,12 +9,9 @@ import { logout } from './logout.server.ts';
 const RefreshAccessTokenMutation = graphql(/* GraphQL */ `
   mutation RefreshAccessToken($input: RefreshAccessTokenInput!) {
     refreshAccessToken(input: $input) {
-      ... on AuthPayload {
+      ... on TokenPayload {
         accessToken
         refreshToken
-        session {
-          id
-        }
       }
 
       ... on MutationErrorPayload {
@@ -32,18 +29,15 @@ interface Context {
   utils: AuthUtilities;
 }
 
-interface AuthPayload {
+interface TokenPayload {
   accessToken: string;
   refreshToken: string;
-  session: {
-    id: string;
-  };
 }
 
 export async function refreshAccessToken(
   request: Request,
   ctx: Context,
-): Promise<AuthPayload> {
+): Promise<TokenPayload> {
   const result = await ctx.utils.mutate(RefreshAccessTokenMutation, {
     input: {
       refreshToken: ctx.refreshToken,

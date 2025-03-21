@@ -24,12 +24,14 @@ export async function startEmailSignup(
   ctx: Context,
 ): Promise<typeof StartEmailSignupPayload.$inferType> {
   try {
-    const transactionID = createPendingTransaction({
-      action: SecureAction.Onboarding,
-      ipAddress: ctx.ipAddress,
-      sessionID: null,
-      target: args.input.email,
-    });
+    const transactionID = createPendingTransaction(
+      {
+        action: SecureAction.Onboarding,
+        sessionID: null,
+        target: args.input.email,
+      },
+      ctx,
+    );
 
     const existingUser = await ctx.services.user.getUser.query({
       email: args.input.email,

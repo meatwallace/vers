@@ -13,7 +13,7 @@ import { refreshAccessToken } from './refresh-access-token.server';
 const loader: LoaderFunction = async ({ request }) => {
   const client = await createGQLClient(request);
 
-  const authPayload = await refreshAccessToken(request, {
+  const tokenPayload = await refreshAccessToken(request, {
     refreshToken: 'valid-refresh-token',
     utils: {
       appendHeaders: (operation) => {
@@ -25,7 +25,7 @@ const loader: LoaderFunction = async ({ request }) => {
     },
   });
 
-  return authPayload;
+  return tokenPayload;
 };
 
 function setupTest() {
@@ -61,9 +61,6 @@ test('it refreshes the access token', async () => {
           refreshAccessToken: {
             accessToken: 'new-access-token',
             refreshToken: 'valid-refresh-token',
-            session: {
-              id: 'session-id',
-            },
           },
         },
       }),
@@ -74,13 +71,11 @@ test('it refreshes the access token', async () => {
 
   const testRoute = await screen.findByText('TEST_ROUTE');
   const refreshToken = screen.getByText(/valid-refresh-token/);
-  const sessionID = screen.getByText(/session-id/);
   const accessToken = screen.getByText(/new-access-token/);
 
   expect(testRoute).toBeInTheDocument();
   expect(accessToken).toBeInTheDocument();
   expect(refreshToken).toBeInTheDocument();
-  expect(sessionID).toBeInTheDocument();
 });
 
 test('it redirects to login with the current URL as the redirect on mutation error', async () => {

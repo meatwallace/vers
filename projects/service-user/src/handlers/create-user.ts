@@ -68,6 +68,10 @@ async function createUser(
       }
     }
 
+    if (error instanceof TRPCError) {
+      throw error;
+    }
+
     throw new TRPCError({
       cause: error,
       code: 'INTERNAL_SERVER_ERROR',

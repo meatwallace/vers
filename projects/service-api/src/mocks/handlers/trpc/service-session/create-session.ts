@@ -16,15 +16,10 @@ export const createSession = trpc.createSession.mutation(({ input }) => {
   const session = db.session.create({
     expiresAt,
     ipAddress: input.ipAddress,
-    refreshToken: `refresh_token_${Date.now()}`,
+    refreshToken: null,
     userID: input.userID,
+    verified: false,
   });
 
-  const { refreshToken, ...sessionData } = session;
-
-  return {
-    accessToken: `access_token_${Date.now()}`,
-    refreshToken,
-    session: sessionData,
-  };
+  return session;
 });

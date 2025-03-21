@@ -53,5 +53,8 @@ test('it throws an error if the user does not exist', async () => {
       id: 'non-existent-id',
       password: 'newpassword123',
     }),
-  ).rejects.toThrow('No user with that ID');
+  ).rejects.toMatchObject({
+    code: 'NOT_FOUND',
+    message: 'User not found',
+  });
 });

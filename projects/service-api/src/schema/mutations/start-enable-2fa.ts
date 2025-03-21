@@ -65,12 +65,14 @@ export async function startEnable2FA(
       type: '2fa-setup',
     });
 
-    const transactionID = createPendingTransaction({
-      action: SecureAction.TwoFactorAuthSetup,
-      ipAddress: ctx.ipAddress,
-      sessionID: ctx.session.id,
-      target: ctx.user.email,
-    });
+    const transactionID = createPendingTransaction(
+      {
+        action: SecureAction.TwoFactorAuthSetup,
+        sessionID: ctx.session.id,
+        target: ctx.user.email,
+      },
+      ctx,
+    );
 
     return { transactionID };
   } catch (error) {

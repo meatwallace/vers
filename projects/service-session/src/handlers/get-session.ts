@@ -28,6 +28,10 @@ export async function getSession(
   } catch (error: unknown) {
     logger.error(error);
 
+    if (error instanceof TRPCError) {
+      throw error;
+    }
+
     throw new TRPCError({
       cause: error,
       code: 'INTERNAL_SERVER_ERROR',
