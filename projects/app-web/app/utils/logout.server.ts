@@ -8,6 +8,7 @@ import { combineHeaders } from './combine-headers.server.ts';
 import { createGQLClient } from './create-gql-client.server.ts';
 
 interface LogoutOptions {
+  deleteSession?: boolean;
   redirectTo?: string;
   responseInit?: ResponseInit;
 }
@@ -31,7 +32,7 @@ export async function logout(
 
   const sessionID = authSession.get('sessionID');
 
-  if (sessionID) {
+  if (sessionID && options.deleteSession) {
     // if we fail our server side session cleanup, ignore error's and continue.
     try {
       await client.mutation(DeleteSessionMutation, {

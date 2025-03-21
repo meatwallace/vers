@@ -9,7 +9,7 @@ export function loader() {
 }
 
 export async function action(args: Route.ActionArgs) {
-  return logout(args.request);
+  return logout(args.request, { deleteSession: true });
 }
 
 export function ErrorBoundary() {
