@@ -359,6 +359,9 @@ test('it handles 2FA login and redirects to the logout sessions route when a pre
   expect(verifySession.get('loginLogout#transactionToken')).toBe(
     'valid_transaction_token',
   );
+  expect(verifySession.get('login2FA#sessionID')).toBe(
+    'test_unverified_session_id',
+  );
 });
 
 test('it handles changing email and redirects to the change email route on success', async () => {

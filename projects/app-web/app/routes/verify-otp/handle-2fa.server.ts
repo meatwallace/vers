@@ -39,9 +39,8 @@ export async function handle2FA(ctx: HandleVerificationContext) {
     ctx.request.headers.get('cookie'),
   );
 
-  // clean up our session data
+  // yeet the transaction ID as we don't need it anymore
   verifySession.unset('login2FA#transactionID');
-  verifySession.unset('login2FA#sessionID');
 
   // if we need to force logout, set our session as needed then redirect
   if (isForceLogoutPayload(result.data.finishLoginWith2FA)) {
@@ -66,6 +65,10 @@ export async function handle2FA(ctx: HandleVerificationContext) {
   authSession.set('sessionID', result.data.finishLoginWith2FA.session.id);
   authSession.set('accessToken', result.data.finishLoginWith2FA.accessToken);
   authSession.set('refreshToken', result.data.finishLoginWith2FA.refreshToken);
+
+  // now that we've put our verified our session into our auth session, we can unset it from
+  // our 2FA session data
+  verifySession.unset('login2FA#sessionID');
 
   const redirectTo = ctx.submission.value.redirect ?? Routes.Dashboard;
 
