@@ -109,6 +109,9 @@ async function handleConfirm(args: Route.ActionArgs) {
     );
   }
 
+  // yeet the unverified session ID from our 2FA login data incase that's how we ended up here
+  verifySession.unset('login2FA#sessionID');
+
   verifySession.unset('loginLogout#email');
   verifySession.unset('loginLogout#transactionToken');
 
