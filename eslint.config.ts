@@ -151,8 +151,15 @@ export default tseslint.config(
       ],
       'perfectionist/sort-sets': ['error', { partitionByComment: true }],
       'perfectionist/sort-union-types': ['error', { partitionByComment: true }],
-
       'unicorn/no-null': 'off',
+      'unicorn/numeric-separators-style': [
+        'error',
+        {
+          hexadecimal: {
+            minimumDigits: 10,
+          },
+        },
+      ],
       'unicorn/prevent-abbreviations': 'off',
     },
     settings: {
