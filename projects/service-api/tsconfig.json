@@ -5,20 +5,21 @@
     "baseUrl": ".",
     "paths": {
       "~/*": ["./src/*"],
+      "@vers/activity-simulation": ["../lib-activity-simulation/src"],
       "@vers/design-system": ["../lib-design-system/src"],
-      "@vers/styled-system/*": ["../lib-styled-system/styled-system/*"],
+      "@vers/email-templates": ["../lib-email-templates/src"],
       "@vers/panda-preset": ["../lib-panda-preset/src"],
-      "@vers/email-templates": ["../lib-email-templates/src/index.ts"],
-      "@vers/postgres-schema": ["../lib-postgres-schema/src/index.ts"],
-      "@vers/service-test-utils": ["../lib-service-test-utils/src/index.ts"],
-      "@vers/service-types": ["../lib-service-types/src/index.ts"],
-      "@vers/service-utils": ["../lib-service-utils/src/index.ts"],
-      "@vers/utils": ["../lib-utils/src/index.ts"],
+      "@vers/postgres-schema": ["../lib-postgres-schema/src"],
+      "@vers/service-test-utils": ["../lib-service-test-utils/src"],
+      "@vers/service-types": ["../lib-service-types/src"],
+      "@vers/service-utils": ["../lib-service-utils/src"],
+      "@vers/styled-system/*": ["../lib-styled-system/styled-system/*"],
+      "@vers/utils": ["../lib-utils/src"],
 
-      "@vers/service-email": ["../service-email/src/index.ts"],
-      "@vers/service-user": ["../service-user/src/index.ts"],
-      "@vers/service-session": ["../service-session/src/index.ts"],
-      "@vers/service-verification": ["../service-verification/src/index.ts"]
+      "@vers/service-email": ["../service-email/src"],
+      "@vers/service-session": ["../service-session/src"],
+      "@vers/service-user": ["../service-user/src"],
+      "@vers/service-verification": ["../service-verification/src"]
     }
   },
   "files": [],
