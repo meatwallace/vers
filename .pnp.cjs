@@ -151,6 +151,7 @@ const RAW_RUNTIME_STATE =
           ["postcss", "npm:8.5.3"],\
           ["postgres", "npm:3.4.5"],\
           ["prettier", "npm:3.5.3"],\
+          ["pure-rand", "npm:7.0.1"],\
           ["qrcode", "npm:1.5.4"],\
           ["rate-limiter-flexible", "npm:5.0.5"],\
           ["react", "npm:19.0.0"],\
@@ -174,6 +175,7 @@ const RAW_RUNTIME_STATE =
           ["vite", "virtual:2374804c710bce591a104410bcd13e40c0832c53c15df3ef835a8d768123341b4e7b02280752402cc164167c85ce67046da53fc5c3021eb9bc43a5c6039fb303#npm:6.2.2"],\
           ["vite-tsconfig-paths", "virtual:2374804c710bce591a104410bcd13e40c0832c53c15df3ef835a8d768123341b4e7b02280752402cc164167c85ce67046da53fc5c3021eb9bc43a5c6039fb303#npm:5.1.4"],\
           ["vitest", "virtual:2374804c710bce591a104410bcd13e40c0832c53c15df3ef835a8d768123341b4e7b02280752402cc164167c85ce67046da53fc5c3021eb9bc43a5c6039fb303#npm:3.0.8"],\
+          ["xxhash-wasm", "npm:1.1.0"],\
           ["zod", "npm:3.24.2"]\
         ],\
         "linkType": "SOFT"\
@@ -12503,6 +12505,7 @@ const RAW_RUNTIME_STATE =
           ["postcss", "npm:8.5.3"],\
           ["postgres", "npm:3.4.5"],\
           ["prettier", "npm:3.5.3"],\
+          ["pure-rand", "npm:7.0.1"],\
           ["qrcode", "npm:1.5.4"],\
           ["rate-limiter-flexible", "npm:5.0.5"],\
           ["react", "npm:19.0.0"],\
@@ -12526,6 +12529,7 @@ const RAW_RUNTIME_STATE =
           ["vite", "virtual:2374804c710bce591a104410bcd13e40c0832c53c15df3ef835a8d768123341b4e7b02280752402cc164167c85ce67046da53fc5c3021eb9bc43a5c6039fb303#npm:6.2.2"],\
           ["vite-tsconfig-paths", "virtual:2374804c710bce591a104410bcd13e40c0832c53c15df3ef835a8d768123341b4e7b02280752402cc164167c85ce67046da53fc5c3021eb9bc43a5c6039fb303#npm:5.1.4"],\
           ["vitest", "virtual:2374804c710bce591a104410bcd13e40c0832c53c15df3ef835a8d768123341b4e7b02280752402cc164167c85ce67046da53fc5c3021eb9bc43a5c6039fb303#npm:3.0.8"],\
+          ["xxhash-wasm", "npm:1.1.0"],\
           ["zod", "npm:3.24.2"]\
         ],\
         "linkType": "SOFT"\
@@ -25071,6 +25075,15 @@ const RAW_RUNTIME_STATE =
         "linkType": "HARD"\
       }]\
     ]],\
+    ["pure-rand", [\
+      ["npm:7.0.1", {\
+        "packageLocation": "./.yarn/cache/pure-rand-npm-7.0.1-c1074fa9ee-9cade41030.zip/node_modules/pure-rand/",\
+        "packageDependencies": [\
+          ["pure-rand", "npm:7.0.1"]\
+        ],\
+        "linkType": "HARD"\
+      }]\
+    ]],\
     ["qrcode", [\
       ["npm:1.5.4", {\
         "packageLocation": "./.yarn/cache/qrcode-npm-1.5.4-7eaef32d9f-ae1d57c9cf.zip/node_modules/qrcode/",\
@@ -29686,6 +29699,15 @@ const RAW_RUNTIME_STATE =
         "packageLocation": "./.yarn/cache/xtend-npm-4.0.2-7f2375736e-366ae4783e.zip/node_modules/xtend/",\
         "packageDependencies": [\
           ["xtend", "npm:4.0.2"]\
+        ],\
+        "linkType": "HARD"\
+      }]\
+    ]],\
+    ["xxhash-wasm", [\
+      ["npm:1.1.0", {\
+        "packageLocation": "./.yarn/cache/xxhash-wasm-npm-1.1.0-3ea0978f68-35aa152fc7.zip/node_modules/xxhash-wasm/",\
+        "packageDependencies": [\
+          ["xxhash-wasm", "npm:1.1.0"]\
         ],\
         "linkType": "HARD"\
       }]\
