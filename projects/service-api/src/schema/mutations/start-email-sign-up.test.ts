@@ -37,7 +37,7 @@ test('it creates a verification code and sends an email to the user', async () =
   const emails = sentEmails.get('user@test.com');
 
   expect(emails?.length).toBe(1);
-  expect(emails?.[0].html).toContain('http://localhost:4000/verify-otp');
+  expect(emails?.[0]?.html).toContain('http://localhost:4000/verify-otp');
 });
 
 test('it notifies an existing user that they have an account and returns success', async () => {
@@ -64,5 +64,5 @@ test('it notifies an existing user that they have an account and returns success
   const emails = sentEmails.get('user@test.com');
 
   expect(emails?.length).toBe(1);
-  expect(emails?.[0].subject).toContain('You already have an account!');
+  expect(emails?.[0]?.subject).toContain('You already have an account!');
 });

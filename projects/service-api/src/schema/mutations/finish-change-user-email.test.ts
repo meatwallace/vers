@@ -57,7 +57,7 @@ test('it verifies the transaction token and sends a notification email', async (
   const emails = sentEmails.get('old@test.com');
 
   expect(emails?.length).toBe(1);
-  expect(emails?.[0].subject).toBe('Your Email Address Has Been Changed');
+  expect(emails?.[0]?.subject).toBe('Your Email Address Has Been Changed');
 });
 
 test('it returns an error for an invalid transaction token', async () => {

@@ -15,6 +15,7 @@ const secureHeadersConfig = secureHeaders({
     imgSrc: ["'self'", 'data:'],
     mediaSrc: ["'self'", 'data:'],
     scriptSrc: [
+      "'unsafe-eval'",
       "'strict-dynamic'",
       "'self'",
       (c) => `'nonce-${c.get('cspNonce')}'`,

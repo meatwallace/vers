@@ -66,3 +66,21 @@ test('should update a verification record', async () => {
     type: '2fa',
   });
 });
+
+test('should throw an error if the verification is not found', async () => {
+  await using handle = await createTestDB();
+
+  const { db } = handle;
+
+  const { caller } = setupTest({ db });
+
+  const update = {
+    id: 'non-existent-id',
+    type: '2fa',
+  } as const;
+
+  await expect(caller.updateVerification(update)).rejects.toMatchObject({
+    code: 'NOT_FOUND',
+    message: 'Verification not found',
+  });
+});

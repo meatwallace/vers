@@ -56,6 +56,7 @@ export default tseslint.config(
         'error',
         {
           ignoreArrowShorthand: true,
+          ignoreVoidReturningFunctions: true,
         },
       ],
       '@typescript-eslint/no-inferrable-types': [
@@ -64,6 +65,7 @@ export default tseslint.config(
           ignoreParameters: true,
         },
       ],
+      '@typescript-eslint/no-non-null-assertion': 'warn',
       '@typescript-eslint/no-unsafe-assignment': 'off',
       '@typescript-eslint/no-unused-vars': [
         'error',
@@ -180,6 +182,7 @@ export default tseslint.config(
     },
     rules: {
       ...vitest.configs.all.rules,
+      '@typescript-eslint/no-non-null-assertion': 'off',
       'vitest/max-expects': 'off',
       'vitest/no-alias-methods': 'error',
       'vitest/no-conditional-in-test': 'error',

@@ -1,4 +1,4 @@
-import { afterEach, expect, test } from 'vitest';
+import { afterEach, expect, test, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { createRoutesStub } from 'react-router';
@@ -18,6 +18,16 @@ interface TestConfig {
     name?: string;
   };
 }
+
+// for now, stub out our worker initialisation
+vi.mock('@vers/idle-client', async (importOriginal) => {
+  const original = await importOriginal<typeof import('@vers/idle-client')>();
+
+  return {
+    ...original,
+    useSimulationWorker: () => true,
+  };
+});
 
 function setupTest(config: TestConfig) {
   const user = userEvent.setup();
@@ -63,7 +73,7 @@ test('it redirects to the login route when not authenticated', async () => {
 test('it renders the dashboard when authenticated', async () => {
   setupTest({ isAuthed: true, user: { id: 'user_id', name: 'Test User' } });
 
-  const dashboardHeader = await screen.findByText('Under Construction');
+  const [aetherNode] = await screen.findAllByText(/Aether Node/i);
 
-  expect(dashboardHeader).toBeInTheDocument();
+  expect(aetherNode).toBeInTheDocument();
 });

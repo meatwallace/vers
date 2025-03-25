@@ -1,10 +1,6 @@
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
 import { workspaceRoot } from '@nx/devkit';
-import { nxE2EPreset } from '@nx/playwright/preset';
 import { defineConfig, devices } from '@playwright/test';
-
-const __filename = fileURLToPath(import.meta.url);
 
 const baseURL = process.env.BASE_URL ?? 'http://localhost:4000';
 
@@ -20,10 +16,10 @@ const dotEnvFile = path.join(projectRoot, '.env');
 process.loadEnvFile(dotEnvFile);
 
 export default defineConfig({
-  ...nxE2EPreset(__filename, { testDir: './src' }),
   expect: {
     timeout: 10 * 1000,
   },
+  fullyParallel: true,
   outputDir: '.test-results',
   projects: [
     {
@@ -31,7 +27,8 @@ export default defineConfig({
       use: { ...devices['Desktop Chrome'] },
     },
   ],
-  timeout: 60 * 1000,
+  retries: 0,
+  timeout: 30 * 1000,
   use: {
     baseURL,
     screenshot: 'only-on-failure',
@@ -46,4 +43,5 @@ export default defineConfig({
     timeout: 60 * 1000,
     url: 'http://localhost:4000',
   },
+  workers: process.env.CI ? 1 : undefined,
 });

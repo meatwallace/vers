@@ -3,6 +3,7 @@ import * as schema from '@vers/postgres-schema';
 import { ChangePasswordPayload } from '@vers/service-types';
 import { hashPassword } from '@vers/service-utils';
 import { eq } from 'drizzle-orm';
+import invariant from 'tiny-invariant';
 import { z } from 'zod';
 import { logger } from '~/logger';
 import type { Context } from '../types';
@@ -43,6 +44,8 @@ export async function changePassword(
       .returning({
         updatedID: schema.users.id,
       });
+
+    invariant(updatedUser, 'user must be found');
 
     return { updatedID: updatedUser.updatedID };
   } catch (error: unknown) {

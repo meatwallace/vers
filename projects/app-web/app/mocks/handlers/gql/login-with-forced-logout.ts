@@ -1,4 +1,5 @@
 import { graphql, HttpResponse } from 'msw';
+import invariant from 'tiny-invariant';
 import {
   LoginWithForcedLogoutInput,
   LoginWithForcedLogoutPayload,
@@ -67,6 +68,8 @@ export const LoginWithForcedLogout = graphql.mutation<
   });
 
   const [session, ...prevSessions] = sessions;
+
+  invariant(session, 'session must exist');
 
   db.session.deleteMany({
     where: {

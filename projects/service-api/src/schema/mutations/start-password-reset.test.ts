@@ -43,7 +43,7 @@ test('it sets a reset token, sends an email then returns success for an existing
   const emails = sentEmails.get('test@example.com');
 
   expect(emails?.length).toBe(1);
-  expect(emails?.[0].html).toContain(
+  expect(emails?.[0]?.html).toContain(
     `http://localhost:4000/reset-password?token=${user?.passwordResetToken}&amp;email=test%40example.com`,
   );
 });
@@ -78,7 +78,7 @@ test('it directs the user to verify an OTP when 2FA is enabled', async () => {
   const emails = sentEmails.get('test@example.com');
 
   expect(emails?.length).toBe(1);
-  expect(emails?.[0].html).toContain(
+  expect(emails?.[0]?.html).toContain(
     'http://localhost:4000/verify-otp?type=RESET_PASSWORD',
   );
 });

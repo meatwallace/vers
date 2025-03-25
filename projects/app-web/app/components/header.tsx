@@ -13,6 +13,7 @@ interface Props {
 const header = css({
   backgroundColor: 'neutral.950',
   display: 'flex',
+  height: '14',
 });
 
 const leftContainer = css({

@@ -50,3 +50,18 @@ test('it deletes a verification record', async () => {
 
   expect(verification).toBeUndefined();
 });
+
+test('should throw an error if the verification is not found', async () => {
+  await using handle = await createTestDB();
+
+  const { db } = handle;
+
+  const { caller } = setupTest({ db });
+
+  await expect(
+    caller.deleteVerification({ id: 'non-existent-id' }),
+  ).rejects.toMatchObject({
+    code: 'NOT_FOUND',
+    message: 'Verification not found',
+  });
+});

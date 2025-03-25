@@ -3,15 +3,20 @@
 #root {
   /* required for base-ui popovers to work */
   isolation: isolate;
-  background-color: #111112;
 }
 
 html,
 body,
 #root {
+  background-color: #111112;
   height: 100%;
 }
 
 body {
   color: #d4d4d4;
+}
+
+#root {
+  display: flex;
+  flex-direction: column;
 }

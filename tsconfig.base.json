@@ -19,23 +19,27 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "strict": true,
+    "noUncheckedIndexedAccess": true,
     "allowImportingTsExtensions": true,
     "noEmit": true,
     "paths": {
-      "@vers/activity-simulation": ["projects/lib-activity-simulation/src"],
       "@vers/design-system": ["projects/lib-design-system/src"],
       "@vers/email-templates": ["projects/lib-email-templates/src"],
+      "@vers/idle-client": ["projects/lib-idle-client/src"],
+      "@vers/idle-core": ["projects/lib-idle-core/src"],
       "@vers/panda-preset": ["projects/lib-panda-preset/src"],
       "@vers/postgres-schema": ["projects/lib-postgres-schema/src"],
-      "@vers/service-email": ["projects/service-email/src"],
-      "@vers/service-session": ["projects/service-session/src"],
       "@vers/service-test-utils": ["projects/lib-service-test-utils/src"],
       "@vers/service-types": ["projects/lib-service-types/src"],
       "@vers/service-user": ["projects/service-user/src"],
       "@vers/service-utils": ["projects/lib-service-utils/src"],
-      "@vers/service-verification": ["projects/service-verification/src"],
       "@vers/styled-system/*": ["projects/lib-styled-system/styled-system/*"],
-      "@vers/utils": ["projects/lib-utils/src"]
+      "@vers/utils": ["projects/lib-utils/src"],
+
+      "@vers/service-api": ["projects/service-api/src"],
+      "@vers/service-session": ["projects/service-session/src"],
+      "@vers/service-email": ["projects/service-email/src"],
+      "@vers/service-verification": ["projects/service-verification/src"]
     }
   },
   "exclude": ["node_modules", "tmp"],

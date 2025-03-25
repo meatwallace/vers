@@ -23,6 +23,13 @@ export async function deleteVerification(
         deletedID: schema.verifications.id,
       });
 
+    if (!verification) {
+      throw new TRPCError({
+        code: 'NOT_FOUND',
+        message: 'Verification not found',
+      });
+    }
+
     const payload = {
       deletedID: verification.deletedID,
     };

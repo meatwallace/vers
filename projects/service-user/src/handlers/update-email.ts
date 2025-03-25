@@ -40,6 +40,13 @@ export async function updateEmail(
         .where(eq(schema.users.id, id))
         .returning({ updatedID: schema.users.id });
 
+      if (!updated) {
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: 'User not found',
+        });
+      }
+
       const twoFactorAuth = await tx.query.verifications.findFirst({
         where: and(
           eq(schema.verifications.target, user.email),

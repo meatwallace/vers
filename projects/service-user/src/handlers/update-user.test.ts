@@ -85,3 +85,21 @@ test('it allows partial updating', async () => {
     updatedAt: expect.any(Date),
   });
 });
+
+test('should throw an error if the user is not found', async () => {
+  await using handle = await createTestDB();
+
+  const { db } = handle;
+
+  const { caller } = setupTest({ db });
+
+  const update = {
+    id: 'non-existent-id',
+    name: 'Updated Name',
+  } as const;
+
+  await expect(caller.updateUser(update)).rejects.toMatchObject({
+    code: 'NOT_FOUND',
+    message: 'User not found',
+  });
+});

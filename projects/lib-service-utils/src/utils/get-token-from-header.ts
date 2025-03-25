@@ -13,5 +13,5 @@ export function getTokenFromHeader(
 
   const [, token] = headerParts;
 
-  return token;
+  return token ?? null;
 }

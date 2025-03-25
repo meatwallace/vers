@@ -31,6 +31,12 @@ export async function updateUser(
         updatedID: schema.users.id,
       });
 
+    if (!user) {
+      throw new TRPCError({
+        code: 'NOT_FOUND',
+        message: 'User not found',
+      });
+    }
     return { updatedID: user.updatedID };
   } catch (error: unknown) {
     logger.error(error);

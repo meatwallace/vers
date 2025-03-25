@@ -1,5 +1,5 @@
 import type { GlobalProvider } from '@ladle/react';
-import { Heading } from '~/components/heading/heading';
+import { Heading } from '../src/components/heading/heading';
 import '../src/styled-system/styles.css';
 
 export const Provider = (props: Parameters<GlobalProvider>[0]) => (

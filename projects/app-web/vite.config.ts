@@ -81,7 +81,10 @@ export default defineConfig({
     include: ['app/**/*.test.{ts,tsx}'],
     passWithNoTests: true,
     reporters: ['default'],
-    setupFiles: ['vitest.setup.ts'],
+    setupFiles: ['@vitest/web-worker', 'vitest.setup.ts'],
     watch: false,
+  },
+  worker: {
+    plugins: () => [tsconfigPaths()],
   },
 });
