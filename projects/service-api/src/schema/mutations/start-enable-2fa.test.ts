@@ -109,7 +109,7 @@ test('it replaces an existing 2FA setup verification record', async () => {
   });
 
   expect(verifications).toHaveLength(1);
-  expect(verifications[0].id).not.toBe(firstVerification.id);
+  expect(verifications[0]?.id).not.toBe(firstVerification.id);
 });
 
 test('it returns an error if the user isnt authenticated', async () => {

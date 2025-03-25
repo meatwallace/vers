@@ -1,9 +1,9 @@
 import { getFormProps, getInputProps, useForm } from '@conform-to/react';
 import { getZodConstraint, parseWithZod } from '@conform-to/zod';
 import { z } from 'zod';
-import { Button } from '~/components/button/button';
-import { CheckboxField } from '~/components/checkbox-field/checkbox-field';
-import { Field } from '~/components/field/field';
+import { Button } from '../components/button/button';
+import { CheckboxField } from '../components/checkbox-field/checkbox-field';
+import { Field } from '../components/field/field';
 
 const SignupFormSchema = z.object({
   agreeToTerms: z

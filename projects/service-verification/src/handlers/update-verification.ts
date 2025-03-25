@@ -27,6 +27,13 @@ export async function updateVerification(
         updatedID: schema.verifications.id,
       });
 
+    if (!verification) {
+      throw new TRPCError({
+        code: 'NOT_FOUND',
+        message: 'Verification not found',
+      });
+    }
+
     return { updatedID: verification.updatedID };
   } catch (error: unknown) {
     logger.error(error);

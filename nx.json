@@ -19,12 +19,6 @@
         "serveTargetName": "serve",
         "serveStaticTargetName": "serve-static"
       }
-    },
-    {
-      "plugin": "@nx/playwright/plugin",
-      "options": {
-        "targetName": "e2e"
-      }
     }
   ],
   "nxCloudAccessToken": "YTRjZDAxOTYtOTI0Mi00ODFkLWFmM2ItYjM3NjBiMmRlZjVifHJlYWQ=",

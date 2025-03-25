@@ -49,8 +49,8 @@ test('it creates a verification record and sends an email to the new address', a
   const emails = sentEmails.get('new@test.com');
 
   expect(emails?.length).toBe(1);
-  expect(emails?.[0].subject).toBe('Verify Your New Email Address');
-  expect(emails?.[0].html).toContain('verify-otp');
+  expect(emails?.[0]?.subject).toBe('Verify Your New Email Address');
+  expect(emails?.[0]?.html).toContain('verify-otp');
 });
 
 test('it follows the usual flow and validates the transaction token when the user requires 2FA', async () => {
@@ -114,8 +114,8 @@ test('it follows the usual flow and validates the transaction token when the use
   const emails = sentEmails.get('new@test.com');
 
   expect(emails?.length).toBe(1);
-  expect(emails?.[0].subject).toBe('Verify Your New Email Address');
-  expect(emails?.[0].html).toContain('verify-otp');
+  expect(emails?.[0]?.subject).toBe('Verify Your New Email Address');
+  expect(emails?.[0]?.html).toContain('verify-otp');
 });
 
 test('it returns an error when the user requires 2FA and the transaction token is invalid', async () => {

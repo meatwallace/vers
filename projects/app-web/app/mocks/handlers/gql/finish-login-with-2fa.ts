@@ -1,4 +1,5 @@
 import { graphql, HttpResponse } from 'msw';
+import invariant from 'tiny-invariant';
 import type {
   FinishLoginWith2FaInput,
   FinishLoginWith2FaPayload,
@@ -68,6 +69,8 @@ export const FinishLoginWith2FA = graphql.mutation<
   });
 
   const [session, ...prevSessions] = sessions;
+
+  invariant(session, 'session must exist');
 
   if (prevSessions.length > 0) {
     return HttpResponse.json({

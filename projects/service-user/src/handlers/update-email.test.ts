@@ -114,3 +114,21 @@ test('it updates a users 2FA setup verification', async () => {
     target: 'updated@test.com',
   });
 });
+
+test('should throw an error if the user is not found', async () => {
+  await using handle = await createTestDB();
+
+  const { db } = handle;
+
+  const { caller } = setupTest({ db });
+
+  const update = {
+    email: 'updated@test.com',
+    id: 'non-existent-id',
+  } as const;
+
+  await expect(caller.updateEmail(update)).rejects.toMatchObject({
+    code: 'NOT_FOUND',
+    message: 'User not found',
+  });
+});

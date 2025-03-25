@@ -68,7 +68,7 @@ jobs:
         run: yarn nx affected -t build
 
       - name: Install E2E browsers
-        run: yarn playwright install --with-deps
+        run: yarn playwright install --with-deps --only-shell chromium
 
       - name: E2E Tests
         run: yarn nx affected -t e2e

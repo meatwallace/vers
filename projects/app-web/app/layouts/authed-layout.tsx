@@ -33,16 +33,17 @@ export const loader = withErrorHandling(async (args: Route.LoaderArgs) => {
 const container = css({
   alignItems: 'center',
   display: 'flex',
+  flex: '1',
   flexDirection: 'column',
   marginLeft: 'auto',
   marginRight: 'auto',
-  paddingTop: '8',
+  paddingTop: '6',
   width: {
     '2xl': '1/2',
     base: '4/5',
     lg: '2/3',
-    md: '4/5',
-    sm: '4/5',
+    md: '10/12',
+    sm: '11/12',
     xl: '1/2',
   },
 });

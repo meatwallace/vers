@@ -62,8 +62,8 @@ test('it flags a session as verified and returns new tokens', async () => {
     refreshToken: 'mock-refresh-token',
   });
 
-  const refreshTokenCall = vi.mocked(createJWT).mock.calls[0][0];
-  const accessTokenCall = vi.mocked(createJWT).mock.calls[1][0];
+  const refreshTokenCall = vi.mocked(createJWT).mock.calls[0]![0];
+  const accessTokenCall = vi.mocked(createJWT).mock.calls[1]![0];
 
   const refreshTokenExpires = refreshTokenCall.expiresAt.getTime();
   const accessTokenExpires = accessTokenCall.expiresAt.getTime();
