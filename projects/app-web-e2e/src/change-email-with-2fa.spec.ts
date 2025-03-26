@@ -17,11 +17,11 @@ test('it changes email for a user with 2FA', async ({ page }) => {
   await page.getByTestId('otp-input').fill('999999');
   await page.getByRole('button', { exact: true, name: 'Verify' }).click();
 
-  await expect(page).toHaveURL(/localhost:4000\/dashboard/);
+  await expect(page).toHaveURL(/localhost:4000\/nexus/);
 
-  await page.getByRole('link', { name: 'e2e_change_email_2fa_user' }).click();
+  await page.getByRole('link', { name: 'Account' }).click();
 
-  await expect(page).toHaveURL(/localhost:4000\/profile/);
+  await expect(page).toHaveURL(/localhost:4000\/account/);
 
   await page.getByRole('link', { exact: true, name: 'Change Email' }).click();
 
@@ -30,7 +30,7 @@ test('it changes email for a user with 2FA', async ({ page }) => {
   await page.getByTestId('otp-input').fill('999999');
   await page.getByRole('button', { exact: true, name: 'Verify' }).click();
 
-  await expect(page).toHaveURL(/localhost:4000\/profile\/change-email/);
+  await expect(page).toHaveURL(/localhost:4000\/account\/change-email/);
 
   const newEmail = `new-email-2fa-${Date.now()}@test.com`;
 
@@ -42,6 +42,6 @@ test('it changes email for a user with 2FA', async ({ page }) => {
   await page.getByTestId('otp-input').fill('999999');
   await page.getByRole('button', { exact: true, name: 'Verify' }).click();
 
-  await expect(page).toHaveURL(/localhost:4000\/profile$/);
+  await expect(page).toHaveURL(/localhost:4000\/account$/);
   await expect(page.getByText(newEmail)).toBeVisible();
 });

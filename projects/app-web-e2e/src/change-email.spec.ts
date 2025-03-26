@@ -12,15 +12,15 @@ test('it changes email for a user without 2FA', async ({ page }) => {
   await page.getByLabel('Password').fill('password');
   await page.getByRole('button', { exact: true, name: 'Login' }).click();
 
-  await expect(page).toHaveURL(/localhost:4000\/dashboard/);
+  await expect(page).toHaveURL(/localhost:4000\/nexus/);
 
-  await page.getByRole('link', { name: 'e2e_change_email_user' }).click();
+  await page.getByRole('link', { name: 'Account' }).click();
 
-  await expect(page).toHaveURL(/localhost:4000\/profile/);
+  await expect(page).toHaveURL(/localhost:4000\/account/);
 
   await page.getByRole('link', { exact: true, name: 'Change Email' }).click();
 
-  await expect(page).toHaveURL(/localhost:4000\/profile\/change-email/);
+  await expect(page).toHaveURL(/localhost:4000\/account\/change-email/);
 
   const newEmail = `new-email-${Date.now()}@test.com`;
 
@@ -32,6 +32,6 @@ test('it changes email for a user without 2FA', async ({ page }) => {
   await page.getByTestId('otp-input').fill('999999');
   await page.getByRole('button', { exact: true, name: 'Verify' }).click();
 
-  await expect(page).toHaveURL(/localhost:4000\/profile$/);
+  await expect(page).toHaveURL(/localhost:4000\/account$/);
   await expect(page.getByText(newEmail)).toBeVisible();
 });

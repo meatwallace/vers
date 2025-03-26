@@ -1,21 +1,16 @@
-import type { RecipeVariantProps, Styles } from '@vers/styled-system/css';
-import { css, cva } from '@vers/styled-system/css';
+import type { RecipeVariantProps } from '@vers/styled-system/css';
+import { cva, cx } from '@vers/styled-system/css';
 
 export type Props = RecipeVariantProps<typeof text> & {
   as?: React.ElementType;
   bold?: boolean;
   children: React.ReactNode;
-  css?: Styles;
+  className?: string;
 };
 
 const text = cva({
   base: {
-    color: 'neutral.300',
-    fontFamily: 'karla',
-    fontSize: 'md',
-    fontWeight: 'normal',
-    lineHeight: 'normal',
-    marginBottom: '2',
+    //
   },
   variants: {
     align: {
@@ -42,9 +37,9 @@ export function Text(props: Props) {
 
   return (
     <Element
-      className={css(
-        text.raw({ align: props.align, bold: props.bold }),
-        props.css,
+      className={cx(
+        text({ align: props.align, bold: props.bold }),
+        props.className,
       )}
     >
       {props.children}

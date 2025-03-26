@@ -142,7 +142,7 @@ test('it refreshes the access token when receiving a 401 error and redirects to 
   const cookieHeader = await authSessionStorage.commitSession(authSession);
 
   // ensure we include the .data suffix so we can test that it gets removed
-  const request = new Request('http://localhost:3000/dashboard.data');
+  const request = new Request('http://localhost:3000/nexus.data');
 
   // attach our initial auth session to the request
   request.headers.set('cookie', cookieHeader);
@@ -161,7 +161,7 @@ test('it refreshes the access token when receiving a 401 error and redirects to 
   expect(result.error).toMatchObject({
     networkError: new Response(null, {
       headers: {
-        Location: '/dashboard',
+        Location: '/nexus',
       },
       status: 302,
     }),
@@ -187,7 +187,7 @@ test('it logs the user out and redirects them to the login page if they get a 40
 
   server.use(unauthorizedHandler);
 
-  const request = new Request('http://localhost:3000/dashboard');
+  const request = new Request('http://localhost:3000/nexus');
 
   const client = await createGQLClient(request);
 

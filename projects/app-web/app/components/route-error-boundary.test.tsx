@@ -54,7 +54,9 @@ test('it displays a not found message for 404 errors', async () => {
   expect(errorMessage).toBeInTheDocument();
 });
 
-test('it displays a generic error message for non-route errors', async () => {
+test('it displays a generic error message for non-route errors in production', async () => {
+  vi.stubEnv('NODE_ENV', 'production');
+
   setupTest({
     error: new Error('Test error'),
   });
@@ -62,4 +64,26 @@ test('it displays a generic error message for non-route errors', async () => {
   const errorMessage = await screen.findByText('Something went wrong');
 
   expect(errorMessage).toBeInTheDocument();
+});
+
+test('it displays the actual error message in development', async () => {
+  vi.stubEnv('NODE_ENV', 'development');
+
+  setupTest({
+    error: new Error('Test error'),
+  });
+
+  const errorMessage = await screen.findByText('Test error');
+
+  expect(errorMessage).toBeInTheDocument();
+});
+
+test('it provides a button to logout', async () => {
+  setupTest({
+    error: createMockRouteError({ status: 404, statusText: 'Not Found' }),
+  });
+
+  const logoutButton = await screen.findByRole('button', { name: /logout/i });
+
+  expect(logoutButton).toBeInTheDocument();
 });

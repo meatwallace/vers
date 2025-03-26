@@ -62,8 +62,8 @@ function setupTest(config: TestConfig) {
       path: '/',
     },
     {
-      Component: () => 'DASHBOARD_ROUTE',
-      path: Routes.Dashboard,
+      Component: () => 'NEXUS_ROUTE',
+      path: Routes.Nexus,
     },
     {
       Component: () => 'SIGNUP_ROUTE',
@@ -104,12 +104,12 @@ test('it redirects to the signup route when no transaction token is stored in th
   expect(signupRoute).toBeInTheDocument();
 });
 
-test('it redirects to the dashboard route when authenticated', async () => {
+test('it redirects to the nexus route when authenticated', async () => {
   setupTest({ isAuthed: true, isOnboarding: true });
 
-  const dashboardRoute = await screen.findByText('DASHBOARD_ROUTE');
+  const nexusRoute = await screen.findByText('NEXUS_ROUTE');
 
-  expect(dashboardRoute).toBeInTheDocument();
+  expect(nexusRoute).toBeInTheDocument();
 });
 
 test('it renders the onboarding form', async () => {
@@ -180,7 +180,7 @@ test('it shows validation error for mismatched passwords', async () => {
   expect(passwordError).toBeInTheDocument();
 });
 
-test('it redirects to dashboard on successful account creation', async () => {
+test('it redirects to the nexus on successful account creation', async () => {
   const { user } = setupTest({ isAuthed: false, isOnboarding: true });
 
   const usernameInput = await screen.findByLabelText('Username');
@@ -201,7 +201,7 @@ test('it redirects to dashboard on successful account creation', async () => {
   await user.click(agreeToTermsCheckbox);
   await user.click(createAccountButton);
 
-  const dashboardRoute = await screen.findByText('DASHBOARD_ROUTE');
+  const nexusRoute = await screen.findByText('NEXUS_ROUTE');
 
-  expect(dashboardRoute).toBeInTheDocument();
+  expect(nexusRoute).toBeInTheDocument();
 });

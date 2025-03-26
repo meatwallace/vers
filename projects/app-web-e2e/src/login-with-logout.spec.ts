@@ -19,6 +19,5 @@ test('it logs in a user and prompts them to logout their previous sessions', asy
 
   await page.getByRole('button', { name: 'Confirm' }).click();
 
-  await expect(page).toHaveURL(/localhost:4000\/dashboard/);
-  await expect(page.getByText('e2e_login_logout_user')).toBeVisible();
+  await expect(page).toHaveURL(/localhost:4000\/nexus/);
 });

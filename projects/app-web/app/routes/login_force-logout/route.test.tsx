@@ -62,8 +62,8 @@ function setupTest(config: TestConfig) {
       path: Routes.LoginForceLogout,
     },
     {
-      Component: () => 'DASHBOARD_ROUTE',
-      path: Routes.Dashboard,
+      Component: () => 'NEXUS_ROUTE',
+      path: Routes.Nexus,
     },
     {
       Component: () => 'LOGIN_ROUTE',
@@ -88,12 +88,12 @@ afterEach(() => {
   setCookieHeader = null;
 });
 
-test('it redirects to the dashboard if the user is authed', async () => {
+test('it redirects to the nexus if the user is authed', async () => {
   setupTest({ isAuthed: true });
 
-  const dashboardRoute = await screen.findByText('DASHBOARD_ROUTE');
+  const nexusRoute = await screen.findByText('NEXUS_ROUTE');
 
-  expect(dashboardRoute).toBeInTheDocument();
+  expect(nexusRoute).toBeInTheDocument();
 });
 
 test('it redirects to the login page if the session is missing', async () => {
@@ -125,7 +125,7 @@ test("it renders a confirmation dialog to forcefully logout the user's previous 
   expect(cancelButton).toBeInTheDocument();
 });
 
-test('it logs the user in and redirects to the dashboard if the user confirms the dialog', async () => {
+test('it logs the user in and redirects to the nexus if the user confirms the dialog', async () => {
   db.user.create({
     email: 'test@test.com',
     id: 'user_id',
@@ -147,9 +147,9 @@ test('it logs the user in and redirects to the dashboard if the user confirms th
 
   await user.click(confirmButton);
 
-  const dashboardRoute = await screen.findByText('DASHBOARD_ROUTE');
+  const nexusRoute = await screen.findByText('NEXUS_ROUTE');
 
-  expect(dashboardRoute).toBeInTheDocument();
+  expect(nexusRoute).toBeInTheDocument();
 
   const verifySession = await verifySessionStorage.getSession(setCookieHeader);
 

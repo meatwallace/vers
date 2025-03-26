@@ -74,20 +74,20 @@ function setupTest(config: TestConfig) {
       path: Routes.Index,
     },
     {
-      Component: () => 'DASHBOARD_ROUTE',
-      path: Routes.Dashboard,
+      Component: () => 'NEXUS_ROUTE',
+      path: Routes.Nexus,
     },
     {
-      Component: () => 'PROFILE_ROUTE',
-      path: Routes.Profile,
+      Component: () => 'ACCOUNT_ROUTE',
+      path: Routes.Account,
     },
     {
       Component: () => 'CHANGE_PASSWORD_ROUTE',
-      path: Routes.ProfileChangePassword,
+      path: Routes.AccountChangePassword,
     },
     {
       Component: () => 'CHANGE_EMAIL_ROUTE',
-      path: Routes.ProfileChangeEmail,
+      path: Routes.AccountChangeEmail,
     },
     {
       Component: () => 'FORCE_LOGOUT_ROUTE',
@@ -225,7 +225,7 @@ test('it handles 2FA setup and throws an error', async () => {
   expect(errorBoundary).toBeInTheDocument();
 });
 
-test('it handles 2FA disabling and redirects to the profile route on success', async () => {
+test('it handles 2FA disabling and redirects to the account route on success', async () => {
   const { user } = setupTest({
     initialPath:
       '/verify-otp?type=TWO_FACTOR_AUTH_DISABLE&target=test@example.com',
@@ -249,9 +249,9 @@ test('it handles 2FA disabling and redirects to the profile route on success', a
   await user.type(codeInput, '999999');
   await user.click(submitButton);
 
-  const profileRoute = await screen.findByText('PROFILE_ROUTE');
+  const accountRoute = await screen.findByText('ACCOUNT_ROUTE');
 
-  expect(profileRoute).toBeInTheDocument();
+  expect(accountRoute).toBeInTheDocument();
 
   const twoFactorAuth = db.verification.findFirst({
     where: {
@@ -275,7 +275,7 @@ test('it handles 2FA disabling and redirects to the profile route on success', a
   expect(verifySession.get('disable2FA#transactionID')).toBeUndefined();
 });
 
-test('it handles 2FA login and redirects to the dashboard on success', async () => {
+test('it handles 2FA login and redirects to the nexus on success', async () => {
   db.user.create({
     email: 'test@example.com',
     id: 'user_id',
@@ -304,9 +304,9 @@ test('it handles 2FA login and redirects to the dashboard on success', async () 
   await user.type(codeInput, '999999');
   await user.click(submitButton);
 
-  const dashboardRoute = await screen.findByText('DASHBOARD_ROUTE');
+  const nexusRoute = await screen.findByText('NEXUS_ROUTE');
 
-  expect(dashboardRoute).toBeInTheDocument();
+  expect(nexusRoute).toBeInTheDocument();
 
   const verifySession = await verifySessionStorage.getSession(setCookieHeader);
 
@@ -395,13 +395,40 @@ test('it handles changing email and redirects to the change email route on succe
   );
 });
 
-test.todo(
-  'it handles changed email verification and redirects to the profile route on success',
-);
+test('it handles changed email verification and redirects to the account route on success', async () => {
+  const { user } = setupTest({
+    initialPath:
+      '/verify-otp?type=CHANGE_EMAIL_CONFIRMATION&target=test@example.com',
+    isAuthed: true,
+    sessionData: {
+      'changeEmailConfirm#transactionID': 'test_transaction_id',
+    },
+  });
+
+  db.verification.create({
+    target: 'test@example.com',
+    type: 'change-email',
+  });
+
+  const codeInput = await screen.findByTestId('otp-input');
+  const submitButton = screen.getByRole('button', { name: /verify/i });
+
+  await user.type(codeInput, '999999');
+  await user.click(submitButton);
+
+  const accountRoute = await screen.findByText('ACCOUNT_ROUTE');
+
+  expect(accountRoute).toBeInTheDocument();
+
+  const verifySession = await verifySessionStorage.getSession(setCookieHeader);
+
+  expect(verifySession.get('changeEmailConfirm#transactionID')).toBeUndefined();
+});
 
 test('it handles change password verification and redirects to the change password route on success', async () => {
   const { user } = setupTest({
     initialPath: '/verify-otp?type=CHANGE_PASSWORD&target=test@example.com',
+    isAuthed: true,
     sessionData: {
       'changePassword#transactionID': 'test_transaction_id',
     },

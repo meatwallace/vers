@@ -25,8 +25,8 @@ function setupTest(config: TestConfig = {}) {
       path: '/',
     },
     {
-      Component: () => 'DASHBOARD_ROUTE',
-      path: Routes.Dashboard,
+      Component: () => 'NEXUS_ROUTE',
+      path: Routes.Nexus,
     },
   ]);
 
@@ -45,10 +45,10 @@ test('it allows access when no session exists', async () => {
   expect(testRoute).toBeInTheDocument();
 });
 
-test('it redirects to dashboard when a session exists', async () => {
+test('it redirects to the nexus when a session exists', async () => {
   setupTest({ isAuthed: true });
 
-  const dashboardRoute = await screen.findByText('DASHBOARD_ROUTE');
+  const nexusRoute = await screen.findByText('NEXUS_ROUTE');
 
-  expect(dashboardRoute).toBeInTheDocument();
+  expect(nexusRoute).toBeInTheDocument();
 });

@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 
-test('it logs in a user and displays their dashboard', async ({ page }) => {
+test('it logs in a user and displays the nexus', async ({ page }) => {
   await page.setExtraHTTPHeaders({ 'x-forwarded-for': '127.0.0.1' });
 
   await page.goto('/');
@@ -12,6 +12,5 @@ test('it logs in a user and displays their dashboard', async ({ page }) => {
   await page.getByLabel('Password').fill(`password`);
   await page.getByRole('button', { exact: true, name: 'Login' }).click();
 
-  await expect(page).toHaveURL(/localhost:4000\/dashboard/);
-  await expect(page.getByText('e2e_user')).toBeVisible();
+  await expect(page).toHaveURL(/localhost:4000\/nexus/);
 });

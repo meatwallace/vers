@@ -91,7 +91,7 @@ export function StatusButton(props: Props) {
   return (
     <Button
       {...restProps}
-      className={cx(isError && !isIdle && errorStatusButton)}
+      className={cx(isError && !isIdle && errorStatusButton, props.className)}
     >
       <div
         className={cx(

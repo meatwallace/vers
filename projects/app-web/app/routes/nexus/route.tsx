@@ -7,17 +7,18 @@ import {
   useCharacter,
   useSimulationWorker,
 } from '@vers/idle-client';
-import { css } from '@vers/styled-system/css';
+import { ContentContainer } from '~/components/content-container';
 import { RouteErrorBoundary } from '~/components/route-error-boundary.tsx';
 import { requireAuth } from '~/utils/require-auth.server.ts';
 import { withErrorHandling } from '~/utils/with-error-handling.ts';
 import type { Route } from './+types/route.ts';
 import { activityData, characterData, initialSeed } from './data.ts';
+import * as styles from './route.styles.ts';
 
 export const meta: Route.MetaFunction = () => [
   {
     description: '',
-    title: 'vers | Dashboard',
+    title: 'vers | Nexus',
   },
 ];
 
@@ -27,31 +28,8 @@ export const loader = withErrorHandling(async (args: Route.LoaderArgs) => {
   return {};
 });
 
-const startContainer = css({
-  display: 'flex',
-  flexDirection: 'column',
-  gap: '6',
-  textAlign: 'center',
-  width: '96',
-});
-
-const container = css({
-  display: 'flex',
-  flexDirection: 'column',
-  flexWrap: 'nowrap',
-  height: '2xl',
-  maxHeight: {
-    // all pages have 24px top padding & 56px of header
-    base: '[calc(100vh - 24px - 56px)]',
-    lg: '2xl',
-  },
-  paddingBottom: '4',
-  userSelect: 'none',
-  width: 'full',
-});
-
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export function Dashboard(props: Route.ComponentProps) {
+export function Nexus(props: Route.ComponentProps) {
   const worker = useSimulationWorker();
   const activity = useActivity();
   const character = useCharacter();
@@ -77,27 +55,35 @@ export function Dashboard(props: Route.ComponentProps) {
 
   if (!activity || !character) {
     return (
-      <div className={startContainer}>
-        <Text>
+      <ContentContainer>
+        <Text className={styles.infoText}>
           For all intents and purposes, this is just a test of the fundamental
           idle simulation & auto-battler. No character truly exists, nor is any
           data being synced. However, if you wish to see the work in progress,
           you can start the Aether Node.
         </Text>
-        <Button variant="primary" onClick={initializeSimulation}>
+        <Button
+          className={styles.button}
+          variant="primary"
+          onClick={initializeSimulation}
+        >
           1. Emulate Initial Data Fetch
         </Button>
-        <Button variant="primary" onClick={setActivity}>
+        <Button
+          className={styles.button}
+          variant="primary"
+          onClick={setActivity}
+        >
           2. Start Aether Node
         </Button>
-      </div>
+      </ContentContainer>
     );
   }
 
   return (
-    <div className={container}>
+    <ContentContainer>
       <AetherNode />
-    </div>
+    </ContentContainer>
   );
 }
 
@@ -105,4 +91,4 @@ export function ErrorBoundary() {
   return <RouteErrorBoundary />;
 }
 
-export default Dashboard;
+export default Nexus;

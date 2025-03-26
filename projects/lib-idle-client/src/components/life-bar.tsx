@@ -1,4 +1,3 @@
-import type { Styles } from '@vers/styled-system/css';
 import { Text } from '@vers/design-system';
 import { css } from '@vers/styled-system/css';
 
@@ -8,12 +7,12 @@ const lifeBarContainer = css({
   gap: '2',
 });
 
-const lifeLabel: Styles = {
+const lifeLabel = css({
   fontSize: 'xs',
   lineHeight: 'tight',
   marginBottom: '0',
   textAlign: 'right',
-};
+});
 
 const lifeBar = css({
   backgroundColor: 'neutral.700',
@@ -41,7 +40,7 @@ export function LifeBar(props: LifeBarProps) {
 
   return (
     <div className={lifeBarContainer}>
-      <Text css={lifeLabel}>
+      <Text className={lifeLabel}>
         Life:{' '}
         <strong>
           {props.life} / {props.maxLife}

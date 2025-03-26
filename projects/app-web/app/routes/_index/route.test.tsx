@@ -38,8 +38,8 @@ function setupTest(config: TestConfig) {
       path: Routes.Login,
     },
     {
-      Component: () => 'DASHBOARD_ROUTE',
-      path: Routes.Dashboard,
+      Component: () => 'NEXUS_ROUTE',
+      path: Routes.Nexus,
     },
   ]);
 
@@ -72,10 +72,10 @@ test('it renders a log in button that navigates to the log in route when clicked
   expect(loggedOutMessage).toBeInTheDocument();
 });
 
-test('it redirects to the dashboard if the user is logged in', async () => {
+test('it redirects to the nexus if the user is logged in', async () => {
   setupTest({ isAuthed: true });
 
-  const dashboardMessage = await screen.findByText('DASHBOARD_ROUTE');
+  const nexusRoute = await screen.findByText('NEXUS_ROUTE');
 
-  expect(dashboardMessage).toBeInTheDocument();
+  expect(nexusRoute).toBeInTheDocument();
 });

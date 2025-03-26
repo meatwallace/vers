@@ -14,7 +14,7 @@ import { withAuthedUser } from '~/test-utils/with-authed-user.ts';
 import { withRouteProps } from '~/test-utils/with-route-props.tsx';
 import { withSession } from '~/test-utils/with-session.ts';
 import { Routes } from '~/types.ts';
-import { action, loader, ProfileChangeUserPassword } from './route.tsx';
+import { AccountChangeUserPassword, action, loader } from './route.tsx';
 
 interface TestConfig {
   isAuthed?: boolean;
@@ -66,16 +66,16 @@ function setupTest(config: TestConfig) {
     config.isAuthed && ((_) => withAuthedUser(_, { user: config.user })),
   );
 
-  const ProfileChangeUserPasswordStub = createRoutesStub([
+  const AccountChangeUserPasswordStub = createRoutesStub([
     {
       action: _action,
-      Component: withRouteProps(ProfileChangeUserPassword),
+      Component: withRouteProps(AccountChangeUserPassword),
       loader: _loader,
       path: '/',
     },
     {
-      Component: () => 'PROFILE_ROUTE',
-      path: Routes.Profile,
+      Component: () => 'ACCOUNT_ROUTE',
+      path: Routes.Account,
     },
     {
       Component: () => 'LOGIN_ROUTE',
@@ -96,7 +96,7 @@ function setupTest(config: TestConfig) {
     },
   ]);
 
-  render(<ProfileChangeUserPasswordStub />);
+  render(<AccountChangeUserPasswordStub />);
 
   return { user };
 }
@@ -239,9 +239,9 @@ test('it handles a successful password change without 2FA', async () => {
   await user.type(confirmPasswordInput, 'new_password');
   await user.click(submitButton);
 
-  const profileRoute = await screen.findByText('PROFILE_ROUTE');
+  const accountRoute = await screen.findByText('ACCOUNT_ROUTE');
 
-  expect(profileRoute).toBeInTheDocument();
+  expect(accountRoute).toBeInTheDocument();
 });
 
 test('it handles a successful password change with 2FA enabled and a transaction token in the session', async () => {
@@ -268,9 +268,9 @@ test('it handles a successful password change with 2FA enabled and a transaction
   await user.type(confirmPasswordInput, 'new_password');
   await user.click(submitButton);
 
-  const profileRoute = await screen.findByText('PROFILE_ROUTE');
+  const accountRoute = await screen.findByText('ACCOUNT_ROUTE');
 
-  expect(profileRoute).toBeInTheDocument();
+  expect(accountRoute).toBeInTheDocument();
 
   const verifySession = await verifySessionStorage.getSession(setCookieHeader);
 

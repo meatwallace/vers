@@ -1,5 +1,4 @@
 import { data, redirect, Link as RRLink, useFetcher } from 'react-router';
-import type { Styles } from '@vers/styled-system/css';
 import { Brand, Heading, StatusButton, Text } from '@vers/design-system';
 import { css } from '@vers/styled-system/css';
 import invariant from 'tiny-invariant';
@@ -140,7 +139,7 @@ async function handleConfirm(args: Route.ActionArgs) {
     await verifySessionStorage.commitSession(verifySession),
   );
 
-  return redirect(Routes.Dashboard, { headers });
+  return redirect(Routes.Nexus, { headers });
 }
 
 async function handleCancel(args: Route.ActionArgs) {
@@ -164,9 +163,9 @@ const pageInfo = css({
   textAlign: 'center',
 });
 
-const infoText: Styles = {
+const infoText = css({
   marginBottom: '6',
-};
+});
 
 const buttonContainer = css({
   alignItems: 'center',
@@ -193,7 +192,7 @@ export function LoginForceLogout() {
           <Brand size="xl" />
         </RRLink>
         <Heading level={2}>You are logged in elsewhere</Heading>
-        <Text css={infoText}>
+        <Text className={infoText}>
           You are currently logged in somewhere else. To ensure your account can
           be properly synchronized, we need to log you out there, before we can
           log you in here.

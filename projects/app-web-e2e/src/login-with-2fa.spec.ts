@@ -1,8 +1,6 @@
 import { expect, test } from '@playwright/test';
 
-test('it logs in a user with 2FA and displays their dashboard', async ({
-  page,
-}) => {
+test('it logs in a user with 2FA and displays the nexus', async ({ page }) => {
   await page.setExtraHTTPHeaders({ 'x-forwarded-for': '127.0.0.1' });
 
   await page.goto('/');
@@ -19,6 +17,5 @@ test('it logs in a user with 2FA and displays their dashboard', async ({
   await page.getByTestId('otp-input').fill('999999');
   await page.getByRole('button', { exact: true, name: 'Verify' }).click();
 
-  await expect(page).toHaveURL(/localhost:4000\/dashboard/);
-  await expect(page.getByText('e2e_2fa_user')).toBeVisible();
+  await expect(page).toHaveURL(/localhost:4000\/nexus/);
 });

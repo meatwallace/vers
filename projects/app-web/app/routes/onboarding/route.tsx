@@ -136,7 +136,7 @@ export const action = withErrorHandling(async (args: Route.ActionArgs) => {
     await verifySessionStorage.commitSession(verifySession),
   );
 
-  return redirect(Routes.Dashboard, { headers });
+  return redirect(Routes.Nexus, { headers });
 });
 
 const pageInfo = css({

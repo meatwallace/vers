@@ -12,7 +12,7 @@ import { withAuthedUser } from '~/test-utils/with-authed-user.ts';
 import { withRouteProps } from '~/test-utils/with-route-props.tsx';
 import { withSession } from '~/test-utils/with-session.ts';
 import { Routes } from '~/types.ts';
-import { action, loader, ProfileVerify2FARoute } from './route.tsx';
+import { AccountVerify2FARoute, action, loader } from './route.tsx';
 
 interface TestConfig {
   isAuthed?: boolean;
@@ -46,16 +46,16 @@ async function setupTest(config: TestConfig = {}) {
     (_) => withSession(_, { 'enable2FA#transactionID': config.transactionID }),
   );
 
-  const ProfileVerify2FAStub = createRoutesStub([
+  const AccountVerify2FAStub = createRoutesStub([
     {
       action: _action,
-      Component: withRouteProps(ProfileVerify2FARoute),
+      Component: withRouteProps(AccountVerify2FARoute),
       loader: _loader,
       path: '/',
     },
     {
-      Component: () => 'PROFILE_ROUTE',
-      path: Routes.Profile,
+      Component: () => 'ACCOUNT_ROUTE',
+      path: Routes.Account,
     },
     {
       Component: () => 'LOGIN_ROUTE',
@@ -63,7 +63,7 @@ async function setupTest(config: TestConfig = {}) {
     },
   ]);
 
-  render(<ProfileVerify2FAStub />);
+  render(<AccountVerify2FAStub />);
 
   return { user };
 }
@@ -82,7 +82,7 @@ test('it redirects to login if the user is not authenticated', async () => {
   expect(loginRoute).toBeInTheDocument();
 });
 
-test('it redirects to profile page if the user has 2FA enabled', async () => {
+test('it redirects to the account page if the user has 2FA enabled', async () => {
   db.verification.create({
     target: 'test@example.com',
     type: '2fa',
@@ -90,9 +90,9 @@ test('it redirects to profile page if the user has 2FA enabled', async () => {
 
   await setupTest({ isAuthed: true, user: { email: 'test@example.com' } });
 
-  const profileRoute = await screen.findByText('PROFILE_ROUTE');
+  const accountRoute = await screen.findByText('ACCOUNT_ROUTE');
 
-  expect(profileRoute).toBeInTheDocument();
+  expect(accountRoute).toBeInTheDocument();
 });
 
 test('it renders the 2FA setup page with QR code and form', async () => {
@@ -119,7 +119,7 @@ test('it renders the 2FA setup page with QR code and form', async () => {
   expect(submitButton).toBeInTheDocument();
 });
 
-test('it redirects to profile page on successful 2FA setup', async () => {
+test('it redirects to the account page on successful 2FA setup', async () => {
   const { user } = await setupTest({
     isAuthed: true,
     transactionID: 'test-transaction-id',
@@ -139,9 +139,9 @@ test('it redirects to profile page on successful 2FA setup', async () => {
   await user.type(codeInput, '999999');
   await user.click(submitButton);
 
-  const profileRoute = await screen.findByText('PROFILE_ROUTE');
+  const accountRoute = await screen.findByText('ACCOUNT_ROUTE');
 
-  expect(profileRoute).toBeInTheDocument();
+  expect(accountRoute).toBeInTheDocument();
 });
 
 test('it shows validation errors for invalid code', async () => {

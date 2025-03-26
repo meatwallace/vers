@@ -12,7 +12,7 @@ import { withAppLoadContext } from '~/test-utils/with-app-load-context.ts';
 import { withAuthedUser } from '~/test-utils/with-authed-user.ts';
 import { withRouteProps } from '~/test-utils/with-route-props.tsx';
 import { Routes } from '~/types.ts';
-import { action, loader, Profile } from './route.tsx';
+import { Account, action, loader } from './route.tsx';
 
 interface TestConfig {
   isAuthed: boolean;
@@ -39,10 +39,10 @@ function setupTest(config: TestConfig) {
     config.isAuthed && ((_) => withAuthedUser(_, { user: config.user })),
   );
 
-  const ProfileStub = createRoutesStub([
+  const AccountStub = createRoutesStub([
     {
       action: _action,
-      Component: withRouteProps(Profile),
+      Component: withRouteProps(Account),
       loader: _loader,
       path: '/',
     },
@@ -57,15 +57,15 @@ function setupTest(config: TestConfig) {
     },
     {
       Component: () => 'CHANGE_EMAIL_ROUTE',
-      path: Routes.ProfileChangeEmail,
+      path: Routes.AccountChangeEmail,
     },
     {
       Component: () => 'CHANGE_PASSWORD_ROUTE',
-      path: Routes.ProfileChangePassword,
+      path: Routes.AccountChangePassword,
     },
   ]);
 
-  render(<ProfileStub />);
+  render(<AccountStub />);
 
   return { user };
 }
@@ -84,7 +84,7 @@ test('it redirects to the login route when not authenticated', async () => {
   expect(loginRoute).toBeInTheDocument();
 });
 
-test('it renders the profile page with user information when authenticated', async () => {
+test('it renders the account page with user information when authenticated', async () => {
   setupTest({
     isAuthed: true,
     user: {

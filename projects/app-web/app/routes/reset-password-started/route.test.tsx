@@ -28,8 +28,8 @@ function setupTest(config: TestConfig = {}) {
       path: '/',
     },
     {
-      Component: () => 'DASHBOARD_ROUTE',
-      path: Routes.Dashboard,
+      Component: () => 'NEXUS_ROUTE',
+      path: Routes.Nexus,
     },
     {
       Component: () => 'FORGOT_PASSWORD_ROUTE',
@@ -42,12 +42,12 @@ function setupTest(config: TestConfig = {}) {
   return { user };
 }
 
-test('it redirects to the dashboard if the user is authenticated', async () => {
+test('it redirects to the nexus if the user is authenticated', async () => {
   setupTest({ isAuthed: true });
 
-  const dashboardRoute = await screen.findByText('DASHBOARD_ROUTE');
+  const nexusRoute = await screen.findByText('NEXUS_ROUTE');
 
-  expect(dashboardRoute).toBeInTheDocument();
+  expect(nexusRoute).toBeInTheDocument();
 });
 
 test('it renders the reset password started page with a link to request another reset email', async () => {

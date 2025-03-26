@@ -19,15 +19,16 @@ export default [
     ),
   ]),
 
-  layout('layouts/authed-layout.tsx', [
-    route(Routes.Dashboard, 'routes/dashboard/route.tsx'),
-    route(Routes.Profile, 'routes/profile/route.tsx'),
-    route(Routes.ProfileChangeEmail, 'routes/profile_change-email/route.tsx'),
+  layout('layouts/authed-layout/authed-layout.tsx', [
+    route(Routes.Nexus, 'routes/nexus/route.tsx'),
+    route(Routes.Account, 'routes/account/route.tsx'),
+    route(Routes.AccountChangeEmail, 'routes/account_change-email/route.tsx'),
     route(
-      Routes.ProfileChangePassword,
-      'routes/profile_change-password/route.tsx',
+      Routes.AccountChangePassword,
+      'routes/account_change-password/route.tsx',
     ),
-    route(Routes.ProfileVerify2FA, 'routes/profile_verify-2fa/route.tsx'),
+    route(Routes.AccountVerify2FA, 'routes/account_verify-2fa/route.tsx'),
+    route(Routes.Aether, 'routes/aether/route.tsx'),
   ]),
 
   route('*', 'routes/splat/route.tsx'),

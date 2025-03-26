@@ -31,9 +31,9 @@ export async function handle2FADisable(ctx: HandleVerificationContext) {
     throw result.error;
   }
 
-  // regardless of the outcome, redirect to our profile route to show the user the result.
+  // regardless of the outcome, redirect to our account route to show the user the result.
   // if we failed, its low effort to have them try again.
-  return redirect(Routes.Profile, {
+  return redirect(Routes.Account, {
     headers: {
       'set-cookie': await verifySessionStorage.commitSession(verifySession),
     },
