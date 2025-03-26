@@ -23,7 +23,7 @@ export async function handleChangeEmail(
   verifySession.unset('changeEmail#transactionID');
   verifySession.set('changeEmail#transactionToken', ctx.transactionToken);
 
-  return redirect(Routes.ProfileChangeEmail, {
+  return redirect(Routes.AccountChangeEmail, {
     headers: {
       'set-cookie': await verifySessionStorage.commitSession(verifySession),
     },

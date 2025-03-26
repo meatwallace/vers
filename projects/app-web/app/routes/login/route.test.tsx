@@ -64,8 +64,8 @@ function setupTest(config: TestConfig) {
       path: '/',
     },
     {
-      Component: () => 'DASHBOARD_ROUTE',
-      path: Routes.Dashboard,
+      Component: () => 'NEXUS_ROUTE',
+      path: Routes.Nexus,
     },
     {
       Component: () => 'SIGNUP_ROUTE',
@@ -154,7 +154,7 @@ test('it navigates to signup page when clicking the signup link', async () => {
   expect(signupRoute).toBeInTheDocument();
 });
 
-test('it redirects to dashboard on successful login', async () => {
+test('it redirects to the nexus on successful login', async () => {
   db.user.create({
     email: 'test@example.com',
     password: 'password123',
@@ -170,9 +170,9 @@ test('it redirects to dashboard on successful login', async () => {
   await user.type(passwordInput, 'password123');
   await user.click(submitButton);
 
-  const dashboardRoute = await screen.findByText('DASHBOARD_ROUTE');
+  const nexusRoute = await screen.findByText('NEXUS_ROUTE');
 
-  expect(dashboardRoute).toBeInTheDocument();
+  expect(nexusRoute).toBeInTheDocument();
 });
 
 test('it redirects to verify-otp when 2FA is required', async () => {
@@ -303,10 +303,10 @@ test('it shows a generic error if the mutation fails', async () => {
   expect(error).toBeInTheDocument();
 });
 
-test('it redirects to the dashboard route when already authenticated', async () => {
+test('it redirects to the nexus route when already authenticated', async () => {
   setupTest({ isAuthed: true });
 
-  const dashboardRoute = await screen.findByText('DASHBOARD_ROUTE');
+  const nexusRoute = await screen.findByText('NEXUS_ROUTE');
 
-  expect(dashboardRoute).toBeInTheDocument();
+  expect(nexusRoute).toBeInTheDocument();
 });

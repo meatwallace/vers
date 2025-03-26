@@ -17,11 +17,11 @@ test('it disables 2FA for a user', async ({ page }) => {
   await page.getByTestId('otp-input').fill('999999');
   await page.getByRole('button', { exact: true, name: 'Verify' }).click();
 
-  await expect(page).toHaveURL(/localhost:4000\/dashboard/);
+  await expect(page).toHaveURL(/localhost:4000\/nexus/);
 
-  await page.getByRole('link', { name: 'e2e_disable_2fa_user' }).click();
+  await page.getByRole('link', { name: 'Account' }).click();
 
-  await expect(page).toHaveURL(/localhost:4000\/profile/);
+  await expect(page).toHaveURL(/localhost:4000\/account/);
 
   await page.getByRole('button', { name: 'Disable 2FA' }).click();
 
@@ -30,7 +30,7 @@ test('it disables 2FA for a user', async ({ page }) => {
   await page.getByTestId('otp-input').fill('999999');
   await page.getByRole('button', { exact: true, name: 'Verify' }).click();
 
-  await expect(page).toHaveURL(/localhost:4000\/profile/);
+  await expect(page).toHaveURL(/localhost:4000\/account/);
   await expect(
     page.getByText('Two-factor authentication is not enabled'),
   ).toBeVisible();

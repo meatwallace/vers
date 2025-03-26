@@ -1,6 +1,6 @@
 import * as React from 'react';
 import type { RecipeVariantProps, Styles } from '@vers/styled-system/css';
-import { css, cva } from '@vers/styled-system/css';
+import { cva, cx } from '@vers/styled-system/css';
 
 export type ButtonBaseProps = RecipeVariantProps<typeof button> & {
   children: React.ReactNode;
@@ -36,7 +36,6 @@ const button = cva({
     fontWeight: 'semibold',
     justifyContent: 'center',
     lineHeight: 'none',
-    marginBottom: '2',
     overflow: 'hidden',
     position: 'relative',
     rounded: 'sm',
@@ -150,6 +149,13 @@ const button = cva({
         borderColor: 'neutral.100/20',
         color: 'neutral.100',
       },
+      transparent: {
+        _hover: {
+          background: 'transparent',
+        },
+        background: 'transparent',
+        borderWidth: '0',
+      },
     },
   },
 });
@@ -164,14 +170,7 @@ export function Button<T extends React.ElementType = 'button'>(
   return (
     <Element
       {...restProps}
-      className={css(
-        button.raw({
-          fullWidth,
-          size,
-          variant,
-        }),
-        props.css,
-      )}
+      className={cx(button({ fullWidth, size, variant }), props.className)}
     />
   );
 }

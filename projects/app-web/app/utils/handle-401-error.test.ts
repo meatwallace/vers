@@ -10,7 +10,7 @@ afterEach(() => {
 });
 
 test('it logs the user out and redirects to the login page with the current URL as the redirect when the error is a 401', async () => {
-  const request = new Request('http://localhost:3000/dashboard?test=true');
+  const request = new Request('http://localhost:3000/nexus?test=true');
 
   const response = new Response(null, { status: 401 });
   const error = new CombinedError({ response });
@@ -18,7 +18,7 @@ test('it logs the user out and redirects to the login page with the current URL 
   await expect(handle401Error(request, error)).rejects.toStrictEqual(
     new Response(null, {
       headers: {
-        Location: '/login?redirect=%2Fdashboard%3Ftest%3Dtrue',
+        Location: '/login?redirect=%2Fnexus%3Ftest%3Dtrue',
       },
       status: 302,
     }),
@@ -26,12 +26,12 @@ test('it logs the user out and redirects to the login page with the current URL 
 
   expect(logoutSpy).toHaveBeenCalledOnce();
   expect(logoutSpy).toHaveBeenCalledWith(request, {
-    redirectTo: '/login?redirect=%2Fdashboard%3Ftest%3Dtrue',
+    redirectTo: '/login?redirect=%2Fnexus%3Ftest%3Dtrue',
   });
 });
 
 test('it does not log out the user when the error is not a 401', async () => {
-  const request = new Request('http://localhost:3000/dashboard');
+  const request = new Request('http://localhost:3000/nexus');
 
   const error = new Error('test');
 

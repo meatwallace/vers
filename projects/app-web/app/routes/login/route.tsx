@@ -16,7 +16,6 @@ import {
   StatusButton,
   Text,
 } from '@vers/design-system';
-import { css } from '@vers/styled-system/css';
 import { HoneypotInputs } from 'remix-utils/honeypot/react';
 import { safeRedirect } from 'remix-utils/safe-redirect';
 import invariant from 'tiny-invariant';
@@ -43,6 +42,7 @@ import { PasswordSchema } from '~/validation/password-schema.ts';
 import { UserEmailSchema } from '~/validation/user-email-schema.ts';
 import type { Route } from './+types/route.ts';
 import { QueryParam } from '../verify-otp/types.ts';
+import * as styles from './route.styles.ts';
 
 const LoginFormSchema = z.object({
   email: UserEmailSchema,
@@ -166,7 +166,7 @@ export const action = withErrorHandling(async (args: Route.ActionArgs) => {
   authSession.set('accessToken', result.data.loginWithPassword.accessToken);
   authSession.set('refreshToken', result.data.loginWithPassword.refreshToken);
 
-  return redirect(safeRedirect(submission.value.redirect ?? Routes.Dashboard), {
+  return redirect(safeRedirect(submission.value.redirect ?? Routes.Nexus), {
     headers: {
       'set-cookie': await authSessionStorage.commitSession(authSession, {
         expires: new Date(result.data.loginWithPassword.session.expiresAt),
@@ -186,22 +186,6 @@ function isForceLogoutPayload(
 ): payload is ForceLogoutPayload {
   return 'transactionToken' in payload;
 }
-
-const pageInfo = css({
-  marginBottom: '8',
-  textAlign: 'center',
-});
-
-const formStyles = css({
-  display: 'flex',
-  flexDirection: 'column',
-  marginBottom: '6',
-  width: '96',
-});
-
-const forgotPasswordLink = css({
-  alignSelf: 'flex-end',
-});
 
 export function Login(props: Route.ComponentProps) {
   const [searchParams] = useSearchParams();
@@ -226,14 +210,14 @@ export function Login(props: Route.ComponentProps) {
 
   return (
     <>
-      <section className={pageInfo}>
+      <section className={styles.pageInfo}>
         <RRLink to={Routes.Index}>
           <Brand size="xl" />
         </RRLink>
         <Heading level={2}>Welcome back</Heading>
         <Text>Please enter your details to login</Text>
       </section>
-      <Form method="POST" {...getFormProps(form)} className={formStyles}>
+      <Form method="POST" {...getFormProps(form)} className={styles.formStyles}>
         <HoneypotInputs />
         <Field
           errors={fields.email.errors ?? []}
@@ -261,6 +245,7 @@ export function Login(props: Route.ComponentProps) {
         />
         <FormErrorList errors={form.errors ?? []} id={form.errorId} />
         <StatusButton
+          className={styles.submitButton}
           disabled={isFormPending}
           status={submitButtonStatus}
           type="submit"
@@ -269,7 +254,7 @@ export function Login(props: Route.ComponentProps) {
         >
           Login
         </StatusButton>
-        <Link className={forgotPasswordLink} to={Routes.ForgotPassword}>
+        <Link className={styles.forgotPasswordLink} to={Routes.ForgotPassword}>
           Forgot your password?
         </Link>
       </Form>

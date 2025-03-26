@@ -2,12 +2,12 @@ import { data, Form, redirect } from 'react-router';
 import { getFormProps, getInputProps, useForm } from '@conform-to/react';
 import { getZodConstraint, parseWithZod } from '@conform-to/zod';
 import { Field, Heading, StatusButton, Text } from '@vers/design-system';
-import { css } from '@vers/styled-system/css';
 import invariant from 'tiny-invariant';
 import { z } from 'zod';
+import { ContentContainer } from '~/components/content-container';
 import { FormErrorList } from '~/components/form-error-list.tsx';
 import { RouteErrorBoundary } from '~/components/route-error-boundary.tsx';
-import { StartChangeUserEmailMutation } from '~/data/mutations/start-change-user-email.ts';
+import { ChangeUserPasswordMutation } from '~/data/mutations/change-user-password.ts';
 import { StartStepUpAuthMutation } from '~/data/mutations/start-step-up-auth.ts';
 import { GetCurrentUserQuery } from '~/data/queries/get-current-user';
 import { StepUpAction, VerificationType } from '~/gql/graphql.ts';
@@ -18,14 +18,15 @@ import { handleGQLError } from '~/utils/handle-gql-error.ts';
 import { isMutationError } from '~/utils/is-mutation-error.ts';
 import { requireAuth } from '~/utils/require-auth.server.ts';
 import { withErrorHandling } from '~/utils/with-error-handling.ts';
-import { UserEmailSchema } from '~/validation/user-email-schema.ts';
+import { ConfirmPasswordSchema } from '~/validation/confirm-password-schema.ts';
 import type { Route } from './+types/route.ts';
 import { QueryParam } from '../verify-otp/types.ts';
+import * as styles from './route.styles.ts';
 
 export const meta: Route.MetaFunction = () => [
   {
-    description: 'Change your account email address',
-    title: 'vers | Change Email',
+    description: 'Change your account password',
+    title: 'vers | Change Password',
   },
 ];
 
@@ -36,7 +37,7 @@ export const loader = withErrorHandling(async (args: Route.LoaderArgs) => {
     args.request.headers.get('cookie'),
   );
 
-  const transactionToken = verifySession.get('changeEmail#transactionToken');
+  const transactionToken = verifySession.get('changePassword#transactionToken');
 
   // if we have a transaction token, presumably we've already 2FA'd so we're good to go
   if (transactionToken) {
@@ -64,7 +65,7 @@ export const loader = withErrorHandling(async (args: Route.LoaderArgs) => {
   // and store a pending transaction ID in the session
   const result = await args.context.client.mutation(StartStepUpAuthMutation, {
     input: {
-      action: StepUpAction.ChangeEmail,
+      action: StepUpAction.ChangePassword,
     },
   });
 
@@ -81,7 +82,7 @@ export const loader = withErrorHandling(async (args: Route.LoaderArgs) => {
   invariant(result.data, 'if no error, there must be data');
 
   verifySession.set(
-    'changeEmail#transactionID',
+    'changePassword#transactionID',
     result.data.startStepUpAuth.transactionID,
   );
 
@@ -90,7 +91,7 @@ export const loader = withErrorHandling(async (args: Route.LoaderArgs) => {
 
   const verifySearchParams = new URLSearchParams({
     [QueryParam.Target]: user.email,
-    [QueryParam.Type]: VerificationType.ChangeEmail,
+    [QueryParam.Type]: VerificationType.ChangePassword,
   });
 
   return redirect(`${Routes.VerifyOTP}?${verifySearchParams.toString()}`, {
@@ -98,24 +99,23 @@ export const loader = withErrorHandling(async (args: Route.LoaderArgs) => {
   });
 });
 
-const ChangeUserEmailFormSchema = z.object({
-  email: UserEmailSchema,
-});
+const ChangeUserPasswordFormSchema = z
+  .object({
+    currentPassword: z.string().min(1, 'Current password is required'),
+  })
+  .and(ConfirmPasswordSchema);
 
-const formStyles = css({
-  display: 'flex',
-  flexDirection: 'column',
-  marginBottom: '6',
-  width: '96',
-});
-
+// as our mutation doesn't explicitly require a transaction token to be passed,
+// our logic can be the same here for both 2FA and non-2FA password change flows.
+// our loader should prevent us from ever seeing running this action unless we're
+// ready to execute.
 export const action = withErrorHandling(async (args: Route.ActionArgs) => {
   await requireAuth(args.request);
 
   const formData = await args.request.formData();
 
   const submission = parseWithZod(formData, {
-    schema: ChangeUserEmailFormSchema,
+    schema: ChangeUserPasswordFormSchema,
   });
 
   if (submission.status !== 'success') {
@@ -129,14 +129,15 @@ export const action = withErrorHandling(async (args: Route.ActionArgs) => {
     args.request.headers.get('Cookie'),
   );
 
-  const transactionToken = verifySession.get('changeEmail#transactionToken');
+  const transactionToken = verifySession.get('changePassword#transactionToken');
 
   const result = await args.context.client.mutation(
-    StartChangeUserEmailMutation,
+    ChangeUserPasswordMutation,
     {
       input: {
-        email: submission.value.email,
-        transactionToken: transactionToken,
+        currentPassword: submission.value.currentPassword,
+        newPassword: submission.value.password,
+        transactionToken,
       },
     },
   );
@@ -151,44 +152,35 @@ export const action = withErrorHandling(async (args: Route.ActionArgs) => {
     return data({ result: formResult }, { status: 400 });
   }
 
-  if (isMutationError(result.data?.startChangeUserEmail)) {
+  if (isMutationError(result.data?.changeUserPassword)) {
     const formResult = submission.reply({
-      formErrors: [result.data.startChangeUserEmail.error.message],
+      formErrors: [result.data.changeUserPassword.error.message],
     });
 
     return data({ result: formResult }, { status: 400 });
   }
 
-  invariant(result.data, 'if no error, there must be data');
-
-  verifySession.unset('changeEmail#transactionID');
-  verifySession.set(
-    'changeEmailConfirm#transactionID',
-    result.data.startChangeUserEmail.transactionID,
-  );
+  // clear any session data that might be set that we no longer need
+  verifySession.unset('changePassword#transactionToken');
+  verifySession.unset('changePassword#transactionID');
 
   const setCookieHeader =
     await verifySessionStorage.commitSession(verifySession);
 
-  const verifySearchParams = new URLSearchParams({
-    [QueryParam.Target]: submission.value.email,
-    [QueryParam.Type]: VerificationType.ChangeEmailConfirmation,
-  });
-
-  return redirect(`${Routes.VerifyOTP}?${verifySearchParams.toString()}`, {
+  return redirect(Routes.Account, {
     headers: { 'set-cookie': setCookieHeader },
   });
 });
 
-export function ProfileChangeUserEmail(props: Route.ComponentProps) {
+export function AccountChangeUserPassword(props: Route.ComponentProps) {
   const isFormPending = useIsFormPending();
 
   const [form, fields] = useForm({
-    constraint: getZodConstraint(ChangeUserEmailFormSchema),
-    id: 'change-email-form',
+    constraint: getZodConstraint(ChangeUserPasswordFormSchema),
+    id: 'change-password-form',
     lastResult: props.actionData?.result,
     onValidate({ formData }) {
-      return parseWithZod(formData, { schema: ChangeUserEmailFormSchema });
+      return parseWithZod(formData, { schema: ChangeUserPasswordFormSchema });
     },
     shouldRevalidate: 'onBlur',
   });
@@ -198,34 +190,59 @@ export function ProfileChangeUserEmail(props: Route.ComponentProps) {
     : StatusButton.Status.Idle;
 
   return (
-    <>
-      <Heading level={2}>Change your email address</Heading>
-      <Text align="center">
-        Enter your new email address below. A verification link will be sent to
-        the new email address to confirm the change.
-      </Text>
-      <Form method="POST" {...getFormProps(form)} className={formStyles}>
-        <Field
-          errors={fields.email.errors ?? []}
-          inputProps={{
-            ...getInputProps(fields.email, { type: 'email' }),
-            autoComplete: 'email',
-            placeholder: 'your.new.email@example.com',
-          }}
-          labelProps={{ children: 'New Email Address' }}
-        />
-        <FormErrorList errors={form.errors ?? []} id={form.errorId} />
-        <StatusButton
-          disabled={isFormPending}
-          status={submitButtonStatus}
-          type="submit"
-          variant="primary"
-          fullWidth
+    <ContentContainer>
+      <div className={styles.container}>
+        <Heading level={2}>Change your password</Heading>
+        <Text align="center">
+          To change your password, please enter your current password and then
+          enter your new password twice.
+        </Text>
+        <Form
+          method="POST"
+          {...getFormProps(form)}
+          className={styles.formStyles}
         >
-          Change Email
-        </StatusButton>
-      </Form>
-    </>
+          <Field
+            errors={fields.currentPassword.errors ?? []}
+            inputProps={{
+              ...getInputProps(fields.currentPassword, { type: 'password' }),
+              autoComplete: 'current-password',
+              autoFocus: true,
+              placeholder: '********',
+            }}
+            labelProps={{ children: 'Current Password' }}
+          />
+          <Field
+            errors={fields.password.errors ?? []}
+            inputProps={{
+              ...getInputProps(fields.password, { type: 'password' }),
+              autoComplete: 'new-password',
+              placeholder: '********',
+            }}
+            labelProps={{ children: 'New Password' }}
+          />
+          <Field
+            errors={fields.confirmPassword.errors ?? []}
+            inputProps={{
+              ...getInputProps(fields.confirmPassword, { type: 'password' }),
+              autoComplete: 'new-password',
+              placeholder: '********',
+            }}
+            labelProps={{ children: 'Confirm New Password' }}
+          />
+          <FormErrorList errors={form.errors ?? []} id={form.errorId} />
+          <StatusButton
+            disabled={isFormPending}
+            status={submitButtonStatus}
+            type="submit"
+            variant="primary"
+            fullWidth
+          >
+            Change Password
+          </StatusButton>
+        </Form>
+      </div>
+    </ContentContainer>
   );
 }
 
@@ -233,4 +250,4 @@ export function ErrorBoundary() {
   return <RouteErrorBoundary />;
 }
 
-export default ProfileChangeUserEmail;
+export default AccountChangeUserPassword;

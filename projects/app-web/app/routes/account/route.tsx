@@ -1,10 +1,9 @@
 import { data, Form, redirect, useFetcher } from 'react-router';
-import type { Styles } from '@vers/styled-system/css';
 import { parseWithZod } from '@conform-to/zod';
 import { Button, Heading, Link, StatusButton, Text } from '@vers/design-system';
-import { css } from '@vers/styled-system/css';
 import invariant from 'tiny-invariant';
 import { z } from 'zod';
+import { ContentContainer } from '~/components/content-container';
 import { RouteErrorBoundary } from '~/components/route-error-boundary.tsx';
 import { StartEnable2FAMutation } from '~/data/mutations/start-enable-2fa';
 import { StartStepUpAuthMutation } from '~/data/mutations/start-step-up-auth';
@@ -19,6 +18,7 @@ import { requireAuth } from '~/utils/require-auth.server.ts';
 import { withErrorHandling } from '~/utils/with-error-handling.ts';
 import type { Route } from './+types/route.ts';
 import { QueryParam } from '../verify-otp/types.ts';
+import * as styles from './route.styles.ts';
 
 const TwoFactorDisableFormSchema = z.object({
   target: z.string().min(1),
@@ -26,8 +26,8 @@ const TwoFactorDisableFormSchema = z.object({
 
 export const meta: Route.MetaFunction = () => [
   {
-    description: 'Manage your profile and security settings',
-    title: 'vers | Profile',
+    description: 'Manage your account and security settings',
+    title: 'vers | Account',
   },
 ];
 
@@ -99,7 +99,7 @@ async function handleEnable2FA(args: Route.ActionArgs) {
     result.data.startEnable2FA.transactionID,
   );
 
-  return redirect(Routes.ProfileVerify2FA, {
+  return redirect(Routes.AccountVerify2FA, {
     headers: {
       'Set-Cookie': await verifySessionStorage.commitSession(verifySession),
     },
@@ -157,37 +157,7 @@ async function handleDisable2FA(args: Route.ActionArgs, formData: FormData) {
   });
 }
 
-const profileSection = css({
-  alignSelf: 'flex-start',
-  borderBottomWidth: '1',
-  borderColor: 'neutral.800',
-  display: 'flex',
-  flexDirection: 'column',
-  marginBottom: '3',
-  paddingBottom: '3',
-  width: 'full',
-});
-
-const profileInfoRow = css({
-  marginBottom: '2',
-});
-
-const profileInfoLabel: Styles = {
-  color: 'neutral.500',
-  fontWeight: 'bold',
-  marginBottom: '1',
-};
-
-const profileInfoValue: Styles = {
-  marginBottom: '1',
-};
-
-const twoFactorDescription: Styles = {
-  color: 'neutral.500',
-  marginBottom: '4',
-};
-
-export function Profile(props: Route.ComponentProps) {
+export function Account(props: Route.ComponentProps) {
   const twoFactorFetcher = useFetcher<{ error: string }>();
   const isFormPending = useIsFormPending();
 
@@ -198,32 +168,34 @@ export function Profile(props: Route.ComponentProps) {
   const { user } = props.loaderData;
 
   return (
-    <>
+    <ContentContainer>
       <Heading level={2}>Account Management</Heading>
-      <section className={profileSection}>
+      <section className={styles.profileSection}>
         <Heading level={3}>User Information</Heading>
-        <div className={profileInfoRow}>
-          <Text css={profileInfoLabel}>Username</Text>
-          <Text css={profileInfoValue}>{user.username}</Text>
+        <div className={styles.profileInfoRow}>
+          <Text className={styles.profileInfoLabel} bold>
+            Username
+          </Text>
+          <Text className={styles.profileInfoValue}>{user.username}</Text>
         </div>
-        <div className={profileInfoRow}>
-          <Text css={profileInfoLabel}>Name</Text>
-          <Text css={profileInfoValue}>{user.name}</Text>
+        <div className={styles.profileInfoRow}>
+          <Text className={styles.profileInfoLabel}>Name</Text>
+          <Text className={styles.profileInfoValue}>{user.name}</Text>
         </div>
-        <div className={profileInfoRow}>
-          <Text css={profileInfoLabel}>Email</Text>
-          <Text css={profileInfoValue}>{user.email}</Text>
-          <Link to={Routes.ProfileChangeEmail}>Change Email</Link>
+        <div className={styles.profileInfoRow}>
+          <Text className={styles.profileInfoLabel}>Email</Text>
+          <Text className={styles.profileInfoValue}>{user.email}</Text>
+          <Link to={Routes.AccountChangeEmail}>Change Email</Link>
         </div>
       </section>
-      <section className={profileSection}>
+      <section className={styles.profileSection}>
         <Heading level={3}>Secure Actions</Heading>
-        <Link to={Routes.ProfileChangePassword}>Change Password</Link>
+        <Link to={Routes.AccountChangePassword}>Change Password</Link>
         <Form action={Routes.Logout} method="post">
           <Button variant="link">Logout</Button>
         </Form>
       </section>
-      <section className={profileSection}>
+      <section className={styles.profileSection}>
         <Heading level={3}>Two-Factor Authentication</Heading>
 
         {user.is2FAEnabled && (
@@ -252,7 +224,7 @@ export function Profile(props: Route.ComponentProps) {
             <Text>
               Two-factor authentication is <strong>not enabled</strong>.
             </Text>
-            <Text css={twoFactorDescription}>
+            <Text className={styles.twoFactorDescription}>
               Two factor authentication adds an extra layer of security to your
               account. You will need to enter a code from an authenticator app
               like <Link to="https://1password.com">1Password</Link> to log in.
@@ -276,7 +248,7 @@ export function Profile(props: Route.ComponentProps) {
           </>
         )}
       </section>
-    </>
+    </ContentContainer>
   );
 }
 
@@ -284,4 +256,4 @@ export function ErrorBoundary() {
   return <RouteErrorBoundary />;
 }
 
-export default Profile;
+export default Account;

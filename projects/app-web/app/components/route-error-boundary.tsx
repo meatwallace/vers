@@ -1,7 +1,8 @@
 import { useEffect } from 'react';
+import { Form } from 'react-router';
 import { isRouteErrorResponse, useRouteError } from 'react-router';
 import { captureException } from '@sentry/react';
-import { Brand, Heading, Link, Text } from '@vers/design-system';
+import { Brand, Button, Heading, Link, Text } from '@vers/design-system';
 import { css } from '@vers/styled-system/css';
 import { Routes } from '~/types';
 import { getErrorMessage } from '~/utils/get-error-message';
@@ -31,7 +32,7 @@ export function RouteErrorBoundary() {
   }
 
   const errorMessage =
-    process.env.NODE_ENV === 'development' ? (
+    process.env.NODE_ENV === 'production' ? (
       <Text>
         Sorry, an unknown error occurred. Please try again later. If the problem
         persists, please <Link to={Routes.Contact}>contact support</Link>.
@@ -68,6 +69,9 @@ function ErrorBoundaryContainer(props: Props) {
       <Brand size="xl" />
       {props.children}
       <Link to={Routes.Index}>Go back to the home page</Link>
+      <Form action={Routes.Logout} method="post">
+        <Button variant="link">Or click here to logout</Button>
+      </Form>
     </div>
   );
 }

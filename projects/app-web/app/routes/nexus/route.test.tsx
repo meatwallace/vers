@@ -9,7 +9,7 @@ import { withAppLoadContext } from '~/test-utils/with-app-load-context.ts';
 import { withAuthedUser } from '~/test-utils/with-authed-user.ts';
 import { withRouteProps } from '~/test-utils/with-route-props.tsx';
 import { Routes } from '~/types.ts';
-import { Dashboard, loader } from './route.tsx';
+import { loader, Nexus } from './route.tsx';
 
 interface TestConfig {
   isAuthed: boolean;
@@ -38,9 +38,9 @@ function setupTest(config: TestConfig) {
     config.isAuthed && ((_) => withAuthedUser(_, { user: config.user })),
   );
 
-  const DashboardStub = createRoutesStub([
+  const NexusStub = createRoutesStub([
     {
-      Component: withRouteProps(Dashboard),
+      Component: withRouteProps(Nexus),
       loader: _loader,
       path: '/',
     },
@@ -55,7 +55,7 @@ function setupTest(config: TestConfig) {
     },
   ]);
 
-  render(<DashboardStub />);
+  render(<NexusStub />);
 
   return { user };
 }
@@ -70,7 +70,7 @@ test('it redirects to the login route when not authenticated', async () => {
   await screen.findByText('LOGIN_ROUTE');
 });
 
-test('it renders the dashboard when authenticated', async () => {
+test('it renders the nexus when authenticated', async () => {
   setupTest({ isAuthed: true, user: { id: 'user_id', name: 'Test User' } });
 
   const [aetherNode] = await screen.findAllByText(/Aether Node/i);

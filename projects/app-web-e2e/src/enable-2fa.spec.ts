@@ -12,20 +12,20 @@ test('it enables 2FA for a user', async ({ page }) => {
   await page.getByLabel('Password').fill(`password`);
   await page.getByRole('button', { exact: true, name: 'Login' }).click();
 
-  await expect(page).toHaveURL(/localhost:4000\/dashboard/);
+  await expect(page).toHaveURL(/localhost:4000\/nexus/);
 
-  await page.getByRole('link', { name: 'e2e_enable_2fa_user' }).click();
+  await page.getByRole('link', { name: 'Account' }).click();
 
-  await expect(page).toHaveURL(/localhost:4000\/profile/);
+  await expect(page).toHaveURL(/localhost:4000\/account/);
 
   await page.getByRole('button', { name: 'Enable 2FA' }).click();
 
-  await expect(page).toHaveURL(/localhost:4000\/profile\/2fa/);
+  await expect(page).toHaveURL(/localhost:4000\/account\/2fa/);
 
   await page.getByTestId('otp-input').fill('999999');
   await page.getByRole('button', { exact: true, name: 'Submit' }).click();
 
-  await expect(page).toHaveURL(/localhost:4000\/profile/);
+  await expect(page).toHaveURL(/localhost:4000\/account/);
   await expect(
     page.getByText('You have enabled two-factor authentication'),
   ).toBeVisible();

@@ -31,7 +31,7 @@ function setupTest(config: TestConfig) {
           <button type="submit">Logout</button>
         </Form>
       ),
-      path: Routes.Dashboard,
+      path: Routes.Nexus,
     },
     {
       action: _action,
@@ -45,9 +45,7 @@ function setupTest(config: TestConfig) {
     },
   ]);
 
-  render(
-    <LogoutStub initialEntries={[config.initialPath ?? Routes.Dashboard]} />,
-  );
+  render(<LogoutStub initialEntries={[config.initialPath ?? Routes.Nexus]} />);
 
   return { user };
 }

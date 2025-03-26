@@ -36,9 +36,9 @@ const strictRoutes = [
   Routes.VerifyOTP,
   Routes.Onboarding,
   Routes.ResetPassword,
-  Routes.Profile,
-  Routes.ProfileVerify2FA,
-  Routes.ProfileChangePassword,
+  Routes.Account,
+  Routes.AccountVerify2FA,
+  Routes.AccountChangePassword,
 ];
 
 export async function rateLimit(ctx: Context<object, string>, next: Next) {

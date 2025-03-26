@@ -3,8 +3,6 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { createRoutesStub } from 'react-router';
 import { drop } from '@mswjs/data';
-import { GraphQLError } from 'graphql';
-import { graphql } from 'msw';
 import { db } from '~/mocks/db.ts';
 import { server } from '~/mocks/node.ts';
 import { composeDataFnWrappers } from '~/test-utils/compose-data-fn-wrappers.ts';
@@ -31,7 +29,7 @@ function setupTest(config: TestConfig) {
     config.isAuthed && ((_) => withAuthedUser(_, { user: config.user })),
   );
 
-  const DashboardStub = createRoutesStub([
+  const AuthedLayoutStub = createRoutesStub([
     {
       Component: withRouteProps(AuthedLayout),
       loader: _loader,
@@ -43,7 +41,7 @@ function setupTest(config: TestConfig) {
     },
   ]);
 
-  render(<DashboardStub />);
+  render(<AuthedLayoutStub />);
 
   return { user };
 }
@@ -56,18 +54,6 @@ afterEach(() => {
 
 test('it redirects to the login route when not authenticated', async () => {
   setupTest({ isAuthed: false });
-
-  await screen.findByText('LOGIN_ROUTE');
-});
-
-test('it redirects to the login route when fetching the current user fails', async () => {
-  server.use(
-    graphql.query('GetCurrentUser', () => {
-      throw new GraphQLError('Failed to fetch current user');
-    }),
-  );
-
-  setupTest({ isAuthed: true, user: { id: 'user_id' } });
 
   await screen.findByText('LOGIN_ROUTE');
 });

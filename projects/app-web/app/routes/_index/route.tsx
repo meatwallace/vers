@@ -24,7 +24,7 @@ const pageInfo = css({
 });
 
 const signUpButton = css({
-  marginBottom: '5',
+  marginBottom: '4',
 });
 
 const accountSection = css({

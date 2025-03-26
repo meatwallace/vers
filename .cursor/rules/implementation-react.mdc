@@ -7,7 +7,7 @@ alwaysApply: false
 
 Example code:
 
-* React Router route - [route.tsx](mdc:projects/app-web/app/routes/dashboard/route.tsx)
+* React Router route - [route.tsx](mdc:projects/app-web/app/routes/nexus/route.tsx)
 * Component - [status-button.tsx](mdc:projects/app-web/app/components/status-button.tsx)
 
 ## Component Structure

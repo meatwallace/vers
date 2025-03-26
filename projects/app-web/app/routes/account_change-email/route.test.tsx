@@ -14,7 +14,7 @@ import { withAuthedUser } from '~/test-utils/with-authed-user.ts';
 import { withRouteProps } from '~/test-utils/with-route-props.tsx';
 import { withSession } from '~/test-utils/with-session.ts';
 import { Routes } from '~/types.ts';
-import { action, loader, ProfileChangeUserEmail } from './route.tsx';
+import { AccountChangeUserEmail, action, loader } from './route.tsx';
 
 interface TestConfig {
   isAuthed?: boolean;
@@ -65,16 +65,16 @@ function setupTest(config: TestConfig) {
     config.isAuthed && ((_) => withAuthedUser(_, { user: config.user })),
   );
 
-  const ProfileChangeUserEmailStub = createRoutesStub([
+  const AccountChangeUserEmailStub = createRoutesStub([
     {
       action: _action,
-      Component: withRouteProps(ProfileChangeUserEmail),
+      Component: withRouteProps(AccountChangeUserEmail),
       loader: _loader,
       path: '/',
     },
     {
-      Component: () => 'PROFILE_ROUTE',
-      path: Routes.Profile,
+      Component: () => 'ACCOUNT_ROUTE',
+      path: Routes.Account,
     },
     {
       Component: () => 'LOGIN_ROUTE',
@@ -95,7 +95,7 @@ function setupTest(config: TestConfig) {
     },
   ]);
 
-  render(<ProfileChangeUserEmailStub />);
+  render(<AccountChangeUserEmailStub />);
 
   return { user };
 }

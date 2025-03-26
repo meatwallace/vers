@@ -47,7 +47,7 @@ export async function handleChangeEmailConfirmation(
   const setCookieHeader =
     await verifySessionStorage.commitSession(verifySession);
 
-  return redirect(Routes.Profile, {
+  return redirect(Routes.Account, {
     headers: {
       'set-cookie': setCookieHeader,
     },

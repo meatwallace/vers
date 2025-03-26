@@ -10,6 +10,6 @@ export async function requireAnonymous(request: Request) {
   const sessionID = authSession.get('sessionID');
 
   if (sessionID) {
-    throw redirect(Routes.Dashboard);
+    throw redirect(Routes.Nexus);
   }
 }

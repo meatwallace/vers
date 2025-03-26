@@ -12,24 +12,24 @@ test('it changes password for a user without 2FA', async ({ page }) => {
   await page.getByLabel('Password').fill('password');
   await page.getByRole('button', { exact: true, name: 'Login' }).click();
 
-  await expect(page).toHaveURL(/localhost:4000\/dashboard/);
+  await expect(page).toHaveURL(/localhost:4000\/nexus/);
 
-  await page.getByRole('link', { name: 'e2e_change_password_user' }).click();
+  await page.getByRole('link', { name: 'Account' }).click();
 
-  await expect(page).toHaveURL(/localhost:4000\/profile/);
+  await expect(page).toHaveURL(/localhost:4000\/account/);
 
   await page
     .getByRole('link', { exact: true, name: 'Change Password' })
     .click();
 
-  await expect(page).toHaveURL(/localhost:4000\/profile\/change-password/);
+  await expect(page).toHaveURL(/localhost:4000\/account\/change-password/);
 
   await page.getByLabel('Current Password').fill('password');
   await page.getByLabel('New Password', { exact: true }).fill('newpassword123');
   await page.getByLabel('Confirm New Password').fill('newpassword123');
   await page.getByRole('button', { name: 'Change Password' }).click();
 
-  await expect(page).toHaveURL(/localhost:4000\/profile$/);
+  await expect(page).toHaveURL(/localhost:4000\/account$/);
 
   await page.getByRole('button', { name: 'Logout' }).click();
 
@@ -40,5 +40,5 @@ test('it changes password for a user without 2FA', async ({ page }) => {
   await page.getByLabel('Password').fill('newpassword123');
   await page.getByRole('button', { exact: true, name: 'Login' }).click();
 
-  await expect(page).toHaveURL(/localhost:4000\/dashboard/);
+  await expect(page).toHaveURL(/localhost:4000\/nexus/);
 });

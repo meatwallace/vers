@@ -8,10 +8,10 @@ import {
   StatusButton,
   Text,
 } from '@vers/design-system';
-import { css } from '@vers/styled-system/css';
 import QRCode from 'qrcode';
 import invariant from 'tiny-invariant';
 import { z } from 'zod';
+import { ContentContainer } from '~/components/content-container';
 import { FormErrorList } from '~/components/form-error-list.tsx';
 import { RouteErrorBoundary } from '~/components/route-error-boundary.tsx';
 import { FinishEnable2FAMutation } from '~/data/mutations/finish-enable-2fa';
@@ -27,6 +27,7 @@ import { isMutationError } from '~/utils/is-mutation-error.ts';
 import { requireAuth } from '~/utils/require-auth.server.ts';
 import { withErrorHandling } from '~/utils/with-error-handling.ts';
 import type { Route } from './+types/route.ts';
+import * as styles from './route.styles.ts';
 
 const VerifyOTPFormSchema = z.object({
   code: z.string().length(6, 'Invalid code'),
@@ -54,9 +55,9 @@ export const loader = withErrorHandling(async (args: Route.LoaderArgs) => {
 
   invariant(currentUserResult.data, 'if no error, there should be data');
 
-  // if we've already got 2FA enabled send us back to the profile page
+  // if we've already got 2FA enabled send us back to the account page
   if (currentUserResult.data.getCurrentUser.is2FAEnabled) {
-    return redirect(Routes.Profile);
+    return redirect(Routes.Account);
   }
 
   const twoFactorVerifyResult = await args.context.client.query(
@@ -181,40 +182,12 @@ export const action = withErrorHandling(async (args: Route.ActionArgs) => {
     );
   }
 
-  return redirect(Routes.Profile, {
+  return redirect(Routes.Account, {
     headers: { 'Set-Cookie': setCookieHeader },
   });
 });
 
-const section = css({
-  alignItems: 'center',
-  display: 'flex',
-  flexDirection: 'column',
-  marginBottom: '6',
-});
-
-const formStyles = css({
-  display: 'flex',
-  flexDirection: 'column',
-});
-
-const qrCode = css({
-  borderRadius: 'md',
-  marginBottom: '4',
-  marginTop: '2',
-});
-
-const otpCode = css({
-  marginBottom: '2',
-  marginTop: '2',
-  maxWidth: '72',
-});
-
-const otpField = css({
-  marginTop: '2',
-});
-
-export function ProfileVerify2FARoute(props: Route.ComponentProps) {
+export function AccountVerify2FARoute(props: Route.ComponentProps) {
   const isFormPending = useIsFormPending();
 
   const [form, fields] = useForm({
@@ -234,58 +207,64 @@ export function ProfileVerify2FARoute(props: Route.ComponentProps) {
     : StatusButton.Status.Idle;
 
   return (
-    <>
-      <Heading level={2}>Setup 2FA</Heading>
-      <section className={section}>
-        <Text bold>Scan this QR code with your authenticator app.</Text>
-        <Text>
-          Once you enable 2FA, you will need to enter a code from your
-          authenticator app every time you log in or perform important actions.
-          Do not lose access to your authenticator app, or you will lose access
-          to your account.
-        </Text>
-        <img
-          alt="QR code for 2FA"
-          className={qrCode}
-          src={props.loaderData.qrCode}
-        />
-      </section>
-      <section className={section}>
-        <Text>
-          If you cannot scan the QR code, you can manually add this account to
-          your authenticator app using this code:
-        </Text>
-        <SingleLineCode className={otpCode}>
-          {props.loaderData.otpURI}
-        </SingleLineCode>
-      </section>
-      <section className={section}>
-        <Text>
-          Once you have added the account to your authenticator app, enter the
-          code from your authenticator app below.
-        </Text>
-        <Form method="POST" {...getFormProps(form)} className={formStyles}>
-          <OTPField
-            className={otpField}
-            errors={fields.code.errors ?? []}
-            inputProps={{
-              ...getInputProps(fields.code, { type: 'text' }),
-              autoComplete: 'one-time-code',
-              autoFocus: true,
-            }}
+    <ContentContainer>
+      <div className={styles.container}>
+        <Heading level={2}>Setup 2FA</Heading>
+        <section className={styles.section}>
+          <Text bold>Scan this QR code with your authenticator app.</Text>
+          <Text>
+            Once you enable 2FA, you will need to enter a code from your
+            authenticator app every time you log in or perform important
+            actions. Do not lose access to your authenticator app, or you will
+            lose access to your account.
+          </Text>
+          <img
+            alt="QR code for 2FA"
+            className={styles.qrCode}
+            src={props.loaderData.qrCode}
           />
-          <input {...getInputProps(fields.target, { type: 'hidden' })} />
-          <FormErrorList errors={form.errors ?? []} id={form.errorId} />
-          <StatusButton
-            status={submitButtonStatus}
-            type="submit"
-            variant="primary"
+        </section>
+        <section className={styles.section}>
+          <Text>
+            If you cannot scan the QR code, you can manually add this account to
+            your authenticator app using this code:
+          </Text>
+          <SingleLineCode className={styles.otpCode}>
+            {props.loaderData.otpURI}
+          </SingleLineCode>
+        </section>
+        <section className={styles.section}>
+          <Text>
+            Once you have added the account to your authenticator app, enter the
+            code from your authenticator app below.
+          </Text>
+          <Form
+            method="POST"
+            {...getFormProps(form)}
+            className={styles.formStyles}
           >
-            Submit
-          </StatusButton>
-        </Form>
-      </section>
-    </>
+            <OTPField
+              className={styles.otpField}
+              errors={fields.code.errors ?? []}
+              inputProps={{
+                ...getInputProps(fields.code, { type: 'text' }),
+                autoComplete: 'one-time-code',
+                autoFocus: true,
+              }}
+            />
+            <input {...getInputProps(fields.target, { type: 'hidden' })} />
+            <FormErrorList errors={form.errors ?? []} id={form.errorId} />
+            <StatusButton
+              status={submitButtonStatus}
+              type="submit"
+              variant="primary"
+            >
+              Submit
+            </StatusButton>
+          </Form>
+        </section>
+      </div>
+    </ContentContainer>
   );
 }
 
@@ -293,4 +272,4 @@ export function ErrorBoundary() {
   return <RouteErrorBoundary />;
 }
 
-export default ProfileVerify2FARoute;
+export default AccountVerify2FARoute;

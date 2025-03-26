@@ -16,7 +16,7 @@ export async function handleChangePassword(ctx: HandleVerificationContext) {
   verifySession.unset('changePassword#transactionID');
   verifySession.set('changePassword#transactionToken', ctx.transactionToken);
 
-  return redirect(Routes.ProfileChangePassword, {
+  return redirect(Routes.AccountChangePassword, {
     headers: {
       'set-cookie': await verifySessionStorage.commitSession(verifySession),
     },

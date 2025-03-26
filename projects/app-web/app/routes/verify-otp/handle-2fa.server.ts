@@ -70,7 +70,7 @@ export async function handle2FA(ctx: HandleVerificationContext) {
   // our 2FA session data
   verifySession.unset('login2FA#sessionID');
 
-  const redirectTo = ctx.submission.value.redirect ?? Routes.Dashboard;
+  const redirectTo = ctx.submission.value.redirect ?? Routes.Nexus;
 
   const headers = new Headers();
 

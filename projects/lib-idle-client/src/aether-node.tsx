@@ -7,11 +7,15 @@ import { useActivity } from './state/use-activity';
 import { useCharacter } from './state/use-character';
 
 const container = css({
+  // backgroundColor: 'red.800',
   display: 'flex',
+  // flex: '1',
   flexDirection: 'row',
   flexWrap: 'nowrap',
-  height: 'full',
-  maxHeight: 'full',
+  height: '96',
+  // height: 'full',
+  // maxHeight: 'full',
+  maxHeight: 'dvh',
   width: 'full',
 });
 

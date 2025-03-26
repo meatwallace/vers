@@ -62,8 +62,8 @@ function setupTest(config: TestConfig) {
       path: Routes.VerifyOTP,
     },
     {
-      Component: () => 'DASHBOARD_ROUTE',
-      path: Routes.Dashboard,
+      Component: () => 'NEXUS_ROUTE',
+      path: Routes.Nexus,
     },
   ]);
 
@@ -154,10 +154,10 @@ test('it shows a generic error if the mutation fails', async () => {
   expect(errorMessage).toBeInTheDocument();
 });
 
-test('it redirects to the dashboard route when already authenticated', async () => {
+test('it redirects to the nexus route when already authenticated', async () => {
   setupTest({ isAuthed: true });
 
-  const dashboardRoute = await screen.findByText('DASHBOARD_ROUTE');
+  const nexusRoute = await screen.findByText('NEXUS_ROUTE');
 
-  expect(dashboardRoute).toBeInTheDocument();
+  expect(nexusRoute).toBeInTheDocument();
 });
