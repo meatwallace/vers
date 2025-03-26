@@ -5,6 +5,7 @@
     "sourceMap": true,
     "declaration": false,
     "moduleResolution": "Bundler",
+    "resolveJsonModule": true,
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     "emitDecoratorMetadata": true,
@@ -23,6 +24,7 @@
     "allowImportingTsExtensions": true,
     "noEmit": true,
     "paths": {
+      "@vers/aether-core": ["projects/lib-aether-core/src"],
       "@vers/design-system": ["projects/lib-design-system/src"],
       "@vers/email-templates": ["projects/lib-email-templates/src"],
       "@vers/idle-client": ["projects/lib-idle-client/src"],
