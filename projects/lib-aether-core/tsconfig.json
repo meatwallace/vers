@@ -22,9 +22,9 @@
   "files": [],
   "include": [
     "vitest.config.ts",
-    "vitest.global-setup.ts",
     "vitest.setup.ts",
-    "src/**/*.ts"
+    "src/**/*.ts",
+    "generate-graph.ts"
   ],
   "exclude": []
 }
