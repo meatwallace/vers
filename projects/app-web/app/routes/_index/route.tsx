@@ -51,6 +51,7 @@ export function Index() {
 
       <section className={accountSection}>
         <Button
+          // @ts-expect-error - obscure polymorphic component type issue
           as={RRLink}
           className={signUpButton}
           to={Routes.Signup}

@@ -5,10 +5,14 @@ import { AetherGraph } from './types';
 /**
  * Generates a graph of AetherNodes
  *
+ *
+ * TRUST ME BRO.
+ *
  * @param maxDifficulty - The maximum difficulty of the graph
  * @returns A graph of AetherNodes
  */
 export function generateGraph(maxDifficulty: number): AetherGraph {
+  // TODO: refactor this array to a map keyed by difficulty so we can simply look up and avoid all our index juggling
   const graph: AetherGraph = [];
 
   const centralNode = createAetherNode(0, 0);
@@ -30,36 +34,102 @@ export function generateGraph(maxDifficulty: number): AetherGraph {
     invariant(node, 'node is required');
 
     const nodesInCurrentLevel = 4 * node.difficulty;
-    const nodesInPreviousLevel = 4 * (node.difficulty - 1);
-    const nodesInNextLevel = 4 * (node.difficulty + 1);
+    const nodesInPreviousLevel = nodesInCurrentLevel - 4;
+    const nodesInNextLevel = nodesInCurrentLevel + 4;
 
+    const startIndexOfCurrentLevel = i - node.index;
+    const startIndexOfPreviousLevel =
+      startIndexOfCurrentLevel - nodesInPreviousLevel;
+    const startIndexOfNextLevel =
+      startIndexOfCurrentLevel + nodesInCurrentLevel;
+
+    // we'll manually attach our origin node at the end
     if (node.difficulty > 0) {
-      let prevIndex1 = i - nodesInPreviousLevel - 1;
-      const prevIndex2 = prevIndex1 + 1;
+      let prevIndex1: number;
+      let prevIndex2: number;
+      let nextIndex1: number;
+      let nextIndex2: number;
 
-      const startIndexOfCurrentLevel = i - node.index;
-      const startIndexOfPreviousLevel =
-        startIndexOfCurrentLevel - nodesInPreviousLevel;
+      const segment = Math.floor(node.index / node.difficulty);
 
-      // if the index we resolved is before the start of the previous difficulty,
-      // we instead grab the final node of the next difficulty - almost like we
-      // wrap around backwards
-      if (prevIndex1 < startIndexOfPreviousLevel) {
-        prevIndex1 =
-          startIndexOfCurrentLevel + nodesInCurrentLevel + nodesInNextLevel - 1;
+      switch (segment) {
+        case 0: {
+          prevIndex1 = i - nodesInPreviousLevel;
+          prevIndex2 = prevIndex1 - 1;
+          nextIndex1 = i + nodesInCurrentLevel;
+          nextIndex2 = nextIndex1 + 1;
+
+          // if it is the first node of the difficulty, we need to connect to the last node of the next
+          if (node.index / node.difficulty === 0) {
+            prevIndex2 = startIndexOfNextLevel + nodesInNextLevel - 1;
+          }
+
+          break;
+        }
+
+        case 1: {
+          prevIndex1 = i - nodesInPreviousLevel - 1;
+          prevIndex2 = prevIndex1 - 1;
+          nextIndex1 = i + nodesInCurrentLevel + 1;
+          nextIndex2 = nextIndex1 + 1;
+
+          // we're travelling along our axis, so connect to a the higher difficulty node
+          if (node.index / node.difficulty === 1) {
+            prevIndex2 = startIndexOfNextLevel + node.index;
+          }
+
+          break;
+        }
+
+        case 2: {
+          prevIndex1 = i - nodesInPreviousLevel - 2;
+          prevIndex2 = prevIndex1 - 1;
+          nextIndex1 = i + nodesInCurrentLevel + 2;
+          nextIndex2 = nextIndex1 + 1;
+
+          // we're travelling along our axis, so connect to a the higher difficulty node
+          if (node.index / node.difficulty === 2) {
+            prevIndex2 = startIndexOfNextLevel + node.index + 1;
+          }
+
+          break;
+        }
+
+        case 3: {
+          prevIndex1 = i - nodesInPreviousLevel - 3;
+          prevIndex2 = prevIndex1 - 1;
+          nextIndex1 = i + nodesInCurrentLevel + 3;
+          nextIndex2 = nextIndex1 + 1;
+
+          // we're travelling along our axis, so connect to a the higher difficulty node
+          if (node.index / node.difficulty === 3) {
+            prevIndex2 = startIndexOfNextLevel + node.index + 2;
+          }
+
+          // if its the last node of the difficulty, we need to connect to the first node of the previous
+          if (node.index + 1 === nodesInCurrentLevel) {
+            prevIndex1 = startIndexOfPreviousLevel;
+          }
+
+          break;
+        }
+
+        default: {
+          invariant(false, 'invalid segment');
+        }
       }
 
-      const nextIndex1 = i + nodesInCurrentLevel;
-      const nextIndex2 = nextIndex1 + 1;
+      const connection1 = graph[prevIndex1];
+      const connection2 = graph[prevIndex2];
+      const connection3 = graph[nextIndex1];
+      const connection4 = graph[nextIndex2];
 
-      /* eslint-disable @typescript-eslint/no-non-null-assertion */
-      const connection1 = graph[prevIndex1]!;
-      const connection2 = graph[prevIndex2]!;
-      const connection3 = graph[nextIndex1]!;
-      const connection4 = graph[nextIndex2]!;
-      /* eslint-enable @typescript-eslint/no-non-null-assertion */
-
-      node.connections = [connection1, connection2, connection3, connection4];
+      node.connections = [
+        connection1?.id ?? null,
+        connection2?.id ?? null,
+        connection3?.id ?? null,
+        connection4?.id ?? null,
+      ];
     }
   }
 
@@ -69,8 +139,8 @@ export function generateGraph(maxDifficulty: number): AetherGraph {
 
     invariant(node, 'node is required');
 
-    centralNode.connections[i] = node;
-    node.connections[0] = centralNode;
+    centralNode.connections[i] = node.id;
+    node.connections[0] = centralNode.id;
   }
 
   return graph;

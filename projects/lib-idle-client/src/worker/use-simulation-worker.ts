@@ -1,4 +1,5 @@
-import { useEffect, useRef } from 'react';
+import { useEffect } from 'react';
+import { setWorker, useWorker } from '@vers/idle-client';
 import type {
   InitialStateMessage,
   SimulationUpdateMessage,
@@ -11,22 +12,18 @@ import { WorkerMessageType } from '../types.ts';
 import SimulationWorker from './worker.ts?sharedworker';
 
 export function useSimulationWorker() {
-  const workerRef = useRef<null | SharedWorker>(null);
+  const existingWorker = useWorker();
 
   useEffect(() => {
-    const worker = new SimulationWorker();
+    const worker = existingWorker ?? new SimulationWorker();
 
-    workerRef.current = worker;
+    setWorker(worker);
 
     // eslint-disable-next-line unicorn/prefer-add-event-listener
     worker.port.onmessage = handleWorkerMessage;
+  }, [existingWorker]);
 
-    return () => {
-      worker.port.close();
-    };
-  }, []);
-
-  return workerRef.current;
+  return existingWorker;
 }
 
 function handleWorkerMessage(event: MessageEvent<WorkerMessage>) {

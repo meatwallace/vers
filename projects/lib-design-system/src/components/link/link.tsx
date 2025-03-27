@@ -1,16 +1,13 @@
 import * as React from 'react';
 import { Link as RRLink } from 'react-router';
 import { css, cx } from '@vers/styled-system/css';
+import { PolymorphicComponentProps } from '../../types';
 
-export interface LinkBaseProps {
+export interface LinkProps<C extends React.ElementType = typeof RRLink> {
+  as?: C;
   children: React.ReactNode;
   to: string;
 }
-
-export type Props<T extends React.ElementType = typeof RRLink> = LinkBaseProps &
-  Omit<React.ComponentPropsWithoutRef<T>, keyof LinkBaseProps> & {
-    as?: T;
-  };
 
 export const link = css({
   _hover: {
@@ -20,7 +17,7 @@ export const link = css({
 });
 
 export function Link<T extends React.ElementType = typeof RRLink>(
-  props: Props<T>,
+  props: PolymorphicComponentProps<T, LinkProps>,
 ) {
   const { as, className, ...restProps } = props;
 

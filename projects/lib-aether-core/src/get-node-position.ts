@@ -16,8 +16,8 @@ export function getNodePosition(
   const segments = difficulty * 4;
   const segmentRadians = (2 * Math.PI) / segments;
 
-  const x = Math.round(difficulty * Math.cos(segmentRadians * i));
-  const y = Math.round(difficulty * Math.sin(segmentRadians * i));
+  const x = Number((difficulty * Math.cos(segmentRadians * i)).toFixed(3));
+  const y = Number((difficulty * Math.sin(segmentRadians * i)).toFixed(3));
 
   return [x, y];
 }

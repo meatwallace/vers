@@ -1,18 +1,5 @@
-export interface SerializableAetherNode {
-  c: [null | string, null | string, null | string, null | string];
-  d: number;
-  i: string;
-  p: [number, number];
-  s: number;
-}
-
 export interface AetherNode {
-  connections: [
-    AetherNode | null,
-    AetherNode | null,
-    AetherNode | null,
-    AetherNode | null,
-  ];
+  connections: [null | string, null | string, null | string, null | string];
   difficulty: number;
   id: string;
   index: number;
@@ -20,6 +7,15 @@ export interface AetherNode {
   seed: number;
 }
 
-export type SerializableAetherGraph = Array<SerializableAetherNode>;
-
 export type AetherGraph = Array<AetherNode>;
+
+export interface CompressedAetherNode {
+  c: [null | string, null | string, null | string, null | string];
+  d: number;
+  i: number;
+  id: string;
+  p: [number, number];
+  s: number;
+}
+
+export type CompressedAetherGraphData = Array<CompressedAetherNode>;
