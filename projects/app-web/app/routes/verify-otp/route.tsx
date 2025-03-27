@@ -52,7 +52,6 @@ export const meta: Route.MetaFunction = () => [
   },
 ];
 
-// eslint-disable-next-line @typescript-eslint/require-await
 export const loader = withErrorHandling(async (args: Route.LoaderArgs) => {
   const url = new URL(args.request.url);
 

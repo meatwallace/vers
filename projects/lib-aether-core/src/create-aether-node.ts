@@ -1,13 +1,7 @@
-import { init } from '@paralleldrive/cuid2';
+import type { AetherNode } from './types';
+import { createID } from './create-id';
 import { getNodePosition } from './get-node-position';
-import { AetherNode } from './types';
-
-function getSeed() {
-  // return Date.now() ^ (Math.random() * 0x100000000);
-  return Date.now() ^ (Math.random() * 0x10000000);
-}
-
-const createId = init({ length: 6 });
+import { getSeed } from './get-seed';
 
 export function createAetherNode(
   index: number,
@@ -16,7 +10,7 @@ export function createAetherNode(
   return {
     connections: [null, null, null, null],
     difficulty,
-    id: createId(),
+    id: createID(),
     index,
     position: getNodePosition(index, difficulty),
     seed: getSeed(),

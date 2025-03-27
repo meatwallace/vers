@@ -81,25 +81,43 @@ export const preset = definePreset({
       },
       tokens: {
         colors: {
-          birch: {
-            100: { value: '#ece5db' },
-            200: { value: '#dcd0ba' },
-            300: { value: '#c5b491' },
-            400: { value: '#ad996e' },
-            50: { value: '#f7f4ee' },
-            500: { value: '#927e50' },
-            600: { value: '#73633d' },
-            700: { value: '#594f32' },
-            800: { value: '#48402c' },
-            900: { value: '#3a3525' },
-            950: { value: '#211e12' },
+          /* eslint-disable perfectionist/sort-objects */
+          twine: {
+            50: { value: '#FBF8F1' },
+            100: { value: '#F5EDDF' },
+            200: { value: '#E9D8BF' },
+            300: { value: '#DBBD96' },
+            400: { value: '#CD9E6E' },
+            500: { value: '#C1834E' },
+            600: { value: '#B36F43' },
+            700: { value: '#955939' },
+            800: { value: '#794933' },
+            900: { value: '#623D2C' },
+            950: { value: '#341E16' },
           },
+          /* eslint-enable perfectionist/sort-objects */
         },
         fonts: {
           fira: { value: 'var(--font-fira-code), Menlo, monospace' },
           josefin: { value: 'var(--font-josefin-sans), sans-serif' },
           karla: { value: 'var(--font-karla), sans-serif' },
         },
+        spacing: {
+          hairline: { value: '1px' },
+        },
+      },
+    },
+  },
+  utilities: {
+    extend: {
+      borderGradient: {
+        className: 'border-gradient',
+        transform(value) {
+          return {
+            borderImage: `linear-gradient(45deg, transparent 5%, ${value} 50%, transparent 99%) 1`,
+          };
+        },
+        values: 'colors',
       },
     },
   },

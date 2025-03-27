@@ -1,12 +1,12 @@
 import * as fs from 'node:fs';
 import { fileURLToPath } from 'node:url';
-import { generateGraph } from './src/generate-graph';
-import { getSerializableAetherGraph } from './src/get-serializable-aether-graph';
+import { generateGraphNodes } from './src/generate-graph-nodes';
+import { getCompressedAetherGraph } from './src/get-compressed-aether-graph';
 
-const MAX_DIFFICULTY = 3;
+const MAX_DIFFICULTY = 100;
 
-const graph = generateGraph(MAX_DIFFICULTY);
-const graphData = getSerializableAetherGraph(graph);
+const graph = generateGraphNodes(MAX_DIFFICULTY);
+const graphData = getCompressedAetherGraph(graph);
 
 const outFileURL = new URL('src/aether-graph.json', import.meta.url);
 const outFile = fileURLToPath(outFileURL);

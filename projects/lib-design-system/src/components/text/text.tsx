@@ -1,9 +1,12 @@
+import * as React from 'react';
 import type { RecipeVariantProps } from '@vers/styled-system/css';
 import { cva, cx } from '@vers/styled-system/css';
+import { PolymorphicComponentProps } from '../../types';
 
-export type Props = RecipeVariantProps<typeof text> & {
-  as?: React.ElementType;
-  bold?: boolean;
+export type TextProps<C extends React.ElementType = 'p'> = RecipeVariantProps<
+  typeof text
+> & {
+  as?: C;
   children: React.ReactNode;
   className?: string;
 };
@@ -32,17 +35,14 @@ const text = cva({
   },
 });
 
-export function Text(props: Props) {
-  const Element = props.as ?? 'p';
+export function Text<C extends React.ElementType = 'p'>(
+  props: PolymorphicComponentProps<C, TextProps>,
+) {
+  const { align, as, bold, className, ...restProps } = props;
+
+  const Element = as ?? 'p';
 
   return (
-    <Element
-      className={cx(
-        text({ align: props.align, bold: props.bold }),
-        props.className,
-      )}
-    >
-      {props.children}
-    </Element>
+    <Element {...restProps} className={cx(text({ align, bold }), className)} />
   );
 }

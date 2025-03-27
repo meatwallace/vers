@@ -27,7 +27,6 @@ export async function createGQLClient(request: Request): Promise<Client> {
     request.headers.get('cookie'),
   );
 
-  // eslint-disable-next-line @typescript-eslint/require-await
   const authExchange = createAuthExchange(async (utils) => {
     return {
       addAuthToOperation: (operation) => {

@@ -9,7 +9,6 @@ test('it rethrows redirects', () => {
   });
 
   expect(() => handleGQLError(error)).toThrow(
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     expect.objectContaining({
       status: 302,
     }),

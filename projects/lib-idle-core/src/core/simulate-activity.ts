@@ -12,7 +12,6 @@ import { createEnemyGroupKilledCheckpoint } from './utils/create-enemy-group-kil
 import { createFailedCheckpoint } from './utils/create-failed-checkpoint';
 import { createStartedCheckpoint } from './utils/create-started-checkpoint';
 
-// eslint-disable-next-line @typescript-eslint/require-await
 export async function* simulateActivity(
   executor: CombatExecutor,
   activity: Activity,

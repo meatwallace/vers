@@ -11,7 +11,7 @@ const attackTimerBar = css({
 });
 
 const attackTimerBarFill = css({
-  backgroundColor: 'birch.300',
+  backgroundColor: 'twine.300',
   height: '2',
   position: 'absolute',
   transition: '[width]',

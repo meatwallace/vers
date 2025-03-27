@@ -1,3 +1,4 @@
+export { BackgroundPattern } from './components/background-pattern/background-pattern.tsx';
 export { Brand } from './components/brand/brand.tsx';
 export { Button } from './components/button/button.tsx';
 export { Card } from './components/card/card.tsx';
@@ -13,3 +14,4 @@ export { SingleLineCode } from './components/single-line-code/single-line-code.t
 export { Spinner } from './components/spinner/spinner.tsx';
 export { StatusButton } from './components/status-button/status-button.tsx';
 export { Text } from './components/text/text.tsx';
+export { Tooltip } from './components/tooltip/tooltip.tsx';

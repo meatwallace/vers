@@ -6,7 +6,7 @@ import { HandleVerificationContext } from './types';
  * by our `/verify-otp` route. We implement custom UI and handling for
  * some cases i.e. initial enabling of 2FA.
  */
-// eslint-disable-next-line @typescript-eslint/require-await
+
 export async function handleUnsupported(
   ctx: HandleVerificationContext,
 ): Promise<Response> {

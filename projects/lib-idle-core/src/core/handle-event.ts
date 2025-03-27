@@ -8,7 +8,6 @@ import { CombatEventType } from '../types';
 import { handleCharacterAttack } from './handle-character-attack';
 import { handleEnemyAttack } from './handle-enemy-attack';
 
-// eslint-disable-next-line @typescript-eslint/no-unnecessary-type-parameters
 export function handleEvent<T extends CombatEventType>(
   event: Extract<CombatEvent, { type: T }>,
   character: Character,

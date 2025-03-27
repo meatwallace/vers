@@ -3,7 +3,6 @@ import { Context } from 'hono';
 import { Hono } from 'hono';
 import { remoteAddressMiddleware } from './remote-address-middleware';
 
-// eslint-disable-next-line @typescript-eslint/require-await
 const testHandlerSpy = vi.fn(async (ctx: Context) => {
   return ctx.json({ ipAddress: ctx.get('ipAddress') });
 });
