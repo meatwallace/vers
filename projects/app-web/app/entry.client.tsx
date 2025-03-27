@@ -10,6 +10,7 @@ if (import.meta.env.PROD && import.meta.env.SENTRY_DSN) {
 }
 
 const SILENCED_UNHANDLED_URLS = [
+  'node_modules',
   '/__manifest',
   '.woff',
   '.svg',

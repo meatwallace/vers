@@ -32,6 +32,8 @@ test('it initializes the worker connection', () => {
   unmount();
 });
 
+test.todo('it returns an existing worker instead of creating a new one');
+
 test('it handles state updates from worker', async () => {
   const { rerender, result } = renderHook(() => useSimulationWorker());
 

@@ -174,6 +174,32 @@ export default tseslint.config(
     },
   },
 
+  // --- react-three-fiber specific config
+  {
+    files: [
+      '**/projects/aether-client/**/*.ts',
+      '**/projects/aether-client/**/*.tsx',
+    ],
+    rules: {
+      'react/no-unknown-property': [
+        'error',
+        {
+          ignore: [
+            'args',
+            'position',
+            'rotation',
+            'scale',
+            'intensity',
+            'geometry',
+            'far',
+            'near',
+            'userData',
+          ],
+        },
+      ],
+    },
+  },
+
   // --- test specific config
   {
     files: ['**/*.test.ts', '**/*.test.tsx'],

@@ -31,6 +31,7 @@ export const loader = withErrorHandling(async (args: Route.LoaderArgs) => {
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function Nexus(props: Route.ComponentProps) {
   const worker = useSimulationWorker();
+
   const activity = useActivity();
   const character = useCharacter();
 
