@@ -5,7 +5,6 @@ import { requireAuth } from '../utils/require-auth';
 
 type Args = Record<PropertyKey, never>;
 
-// eslint-disable-next-line @typescript-eslint/require-await
 export async function getCurrentUser(
   _: object,
   __: Args,

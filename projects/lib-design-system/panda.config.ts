@@ -8,6 +8,7 @@ export default defineConfig({
   outdir: 'src/styled-system',
   preflight: true,
   presets: [preset],
+  shorthands: false,
   strictPropertyValues: true,
   strictTokens: true,
 });

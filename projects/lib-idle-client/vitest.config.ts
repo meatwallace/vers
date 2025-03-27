@@ -15,7 +15,7 @@ export default defineConfig({
       reportsDirectory: '../../coverage/apps/lib-idle-client',
     },
     environment: 'happy-dom',
-    include: ['src/**/*.test.ts'],
+    include: ['src/**/*.test.{ts,tsx}'],
     passWithNoTests: true,
     reporters: ['default'],
     setupFiles: ['@vitest/web-worker', './vitest.setup.ts'],

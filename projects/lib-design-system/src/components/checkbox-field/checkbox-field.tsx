@@ -45,6 +45,7 @@ export function CheckboxField(props: Props) {
   const id = props.checkboxProps.id ?? fallbackID;
   const errorID = `${id}-error`;
   const [firstError] = props.errors;
+
   return (
     <Field.Root className={container}>
       <div className={field}>

@@ -50,7 +50,6 @@ KQIDAQAB
 -----END PUBLIC KEY-----
 `;
 
-// eslint-disable-next-line @typescript-eslint/require-await
 const testHandlerSpy = vi.fn(async (ctx: Context) => {
   return ctx.json({
     payload: ctx.get('jwtPayload'),

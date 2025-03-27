@@ -1,16 +1,7 @@
 import * as React from 'react';
 import type { RecipeVariantProps, Styles } from '@vers/styled-system/css';
 import { cva, cx } from '@vers/styled-system/css';
-
-export type ButtonBaseProps = RecipeVariantProps<typeof button> & {
-  children: React.ReactNode;
-  css?: Styles;
-};
-
-export type Props<T extends React.ElementType = 'button'> = ButtonBaseProps &
-  Omit<React.ComponentPropsWithoutRef<T>, keyof ButtonBaseProps> & {
-    as?: T;
-  };
+import { PolymorphicComponentProps } from '../../types';
 
 const button = cva({
   base: {
@@ -136,16 +127,16 @@ const button = cva({
       tertiary: {
         _disabled: {
           _hover: {
-            background: 'birch.900',
+            background: 'twine.900',
           },
-          background: 'birch.900',
+          background: 'twine.900',
           borderColor: 'neutral.100/5',
           color: 'neutral.500',
         },
         _hover: {
-          background: 'birch.300',
+          background: 'twine.300',
         },
-        background: 'birch.400',
+        background: 'twine.400',
         borderColor: 'neutral.100/20',
         color: 'neutral.100',
       },
@@ -160,8 +151,18 @@ const button = cva({
   },
 });
 
-export function Button<T extends React.ElementType = 'button'>(
-  props: Props<T>,
+export type ButtonProps<C extends React.ElementType = 'button'> =
+  RecipeVariantProps<typeof button> & {
+    as?: C;
+    children: React.ReactNode;
+    css?: Styles;
+  };
+
+export type Props<C extends React.ElementType = 'button'> =
+  PolymorphicComponentProps<C, ButtonProps>;
+
+export function Button<C extends React.ElementType = 'button'>(
+  props: PolymorphicComponentProps<C, ButtonProps>,
 ) {
   const { as, className, fullWidth, size, variant, ...restProps } = props;
 
@@ -170,7 +171,7 @@ export function Button<T extends React.ElementType = 'button'>(
   return (
     <Element
       {...restProps}
-      className={cx(button({ fullWidth, size, variant }), props.className)}
+      className={cx(button({ fullWidth, size, variant }), className)}
     />
   );
 }

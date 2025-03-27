@@ -1,1 +1,5 @@
-export { default as aetherGraph } from './aether-graph.json';
+export { default as data } from './aether-graph.json';
+
+export { decompressAetherNodes } from './decompress-aether-nodes';
+
+export * from './types';

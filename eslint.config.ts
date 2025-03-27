@@ -28,8 +28,8 @@ export default tseslint.config(
   ...compat.extends('plugin:react-hooks/recommended'),
   jsxA11yPlugin.flatConfigs.recommended,
   perfectionist.configs['recommended-natural'],
-  tseslint.configs.strictTypeChecked,
-  tseslint.configs.stylisticTypeChecked,
+  tseslint.configs.strict,
+  tseslint.configs.stylistic,
   {
     languageOptions: {
       globals: {
@@ -37,9 +37,7 @@ export default tseslint.config(
       },
       parserOptions: {
         ecmaVersion: 'latest',
-        projectService: true,
         sourceType: 'module',
-        tsconfigRootDir: import.meta.dirname,
       },
     },
     plugins: {
@@ -50,13 +48,6 @@ export default tseslint.config(
         'error',
         {
           default: 'generic',
-        },
-      ],
-      '@typescript-eslint/no-confusing-void-expression': [
-        'error',
-        {
-          ignoreArrowShorthand: true,
-          ignoreVoidReturningFunctions: true,
         },
       ],
       '@typescript-eslint/no-inferrable-types': [
@@ -74,15 +65,6 @@ export default tseslint.config(
         },
       ],
       '@typescript-eslint/only-throw-error': 'off',
-      '@typescript-eslint/restrict-template-expressions': [
-        'error',
-        {
-          allow: [{ from: 'lib', name: ['URL'] }],
-          allowBoolean: true,
-          allowNullish: true,
-          allowNumber: true,
-        },
-      ],
       'drizzle/enforce-delete-with-where': 'off',
       'drizzle/enforce-update-with-where': 'error',
       'perfectionist/sort-enums': ['error', { partitionByComment: true }],
@@ -171,6 +153,33 @@ export default tseslint.config(
         pragma: 'React',
         version: 'detect',
       },
+    },
+  },
+
+  // --- react-three-fiber specific config
+  {
+    files: [
+      '**/projects/lib-aether-client/**/*.ts',
+      '**/projects/lib-aether-client/**/*.tsx',
+    ],
+    rules: {
+      'react/no-unknown-property': [
+        'error',
+        {
+          ignore: [
+            'args',
+            'attach',
+            'position',
+            'rotation',
+            'scale',
+            'intensity',
+            'geometry',
+            'far',
+            'near',
+            'userData',
+          ],
+        },
+      ],
     },
   },
 
