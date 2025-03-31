@@ -1,5 +1,5 @@
+import { PasswordSchema } from '@vers/validation';
 import { z } from 'zod';
-import { PasswordSchema } from './password-schema.ts';
 
 export const ConfirmPasswordSchema = z
   .object({ confirmPassword: PasswordSchema, password: PasswordSchema })

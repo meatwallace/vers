@@ -2,6 +2,7 @@ import { TRPCError } from '@trpc/server';
 import * as schema from '@vers/postgres-schema';
 import { ChangePasswordPayload } from '@vers/service-types';
 import { hashPassword } from '@vers/service-utils';
+import { PasswordSchema } from '@vers/validation';
 import { eq } from 'drizzle-orm';
 import invariant from 'tiny-invariant';
 import { z } from 'zod';
@@ -11,7 +12,7 @@ import { t } from '../t';
 
 export const ChangePasswordInputSchema = z.object({
   id: z.string(),
-  password: z.string(),
+  password: PasswordSchema,
 });
 
 export async function changePassword(

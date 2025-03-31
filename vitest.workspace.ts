@@ -1,1 +1,3 @@
-export default ['**/*/vite.config.ts', '**/*/vitest.config.ts'];
+import { defineWorkspace } from 'vitest/config';
+
+export default defineWorkspace(['projects/*']);

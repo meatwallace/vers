@@ -23,7 +23,7 @@ export async function setupTestDB(
 
   const migrationsFolder =
     config.migrationsFolder ??
-    path.join(process.cwd(), '../db-postgres/migrations');
+    path.join(process.cwd(), './projects/db-postgres/migrations');
 
   await migrate(db, { migrationsFolder });
 
