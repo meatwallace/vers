@@ -49,12 +49,12 @@ export const nav = css({
     width: '2',
   },
   _scrollbarThumb: {
-    backgroundColor: 'neutral.700',
+    backgroundColor: 'gray.700',
   },
   _scrollbarTrack: {
-    backgroundColor: 'neutral.950',
+    backgroundColor: 'neutral.950/50',
   },
-  backgroundColor: 'neutral.900',
+  backgroundColor: 'gray.900',
   display: 'flex',
   flexDirection: 'column',
   height: 'full',
@@ -96,7 +96,7 @@ export const navSection = css({
 });
 
 export const navSectionTitle = css({
-  color: 'neutral.500',
+  color: 'gray.400',
   fontFamily: 'josefin',
   fontSize: 'xs',
   marginX: '6',
@@ -120,11 +120,11 @@ export const navLink = cva({
       transform: 'scale(0.98)',
     },
     _hover: {
-      backgroundColor: 'neutral.950/40',
+      backgroundColor: 'gray.950/40',
       textDecoration: 'none',
     },
     alignItems: 'center',
-    color: 'neutral.50',
+    color: 'gray.200',
     display: 'flex',
     fontSize: 'sm',
     fontWeight: 'medium',
@@ -140,10 +140,10 @@ export const navLink = cva({
     isActive: {
       true: {
         _hover: {
-          backgroundColor: 'neutral.800/70',
+          backgroundColor: 'gray.800/70',
           textDecoration: 'none',
         },
-        backgroundColor: 'neutral.800/70',
+        backgroundColor: 'gray.800/70',
       },
     },
     isDisabled: {

@@ -2,7 +2,7 @@ import { css, cx } from '@vers/styled-system/css';
 import { useCombatElapsed } from '../state/use-combat-elapsed';
 
 const attackTimerBar = css({
-  backgroundColor: 'neutral.700',
+  backgroundColor: 'gray.700',
   height: '2',
   overflow: 'hidden',
   position: 'relative',

@@ -1,7 +1,7 @@
 import { css } from '@vers/styled-system/css';
 
 export const header = css({
-  backgroundColor: 'neutral.950',
+  backgroundColor: 'gray.950',
   display: {
     base: 'flex',
     md: 'none',

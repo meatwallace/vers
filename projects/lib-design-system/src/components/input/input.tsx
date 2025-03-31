@@ -9,23 +9,23 @@ export type Props = React.ComponentProps<typeof BaseInput> & {
 
 const input = css({
   _focusVisible: {
-    borderColor: 'neutral.400',
+    borderColor: 'gray.400',
     outline: 'none',
   },
   _invalid: {
     borderColor: 'red.500',
   },
   _placeholder: {
-    color: 'neutral.600',
+    color: 'gray.600',
   },
-  backgroundColor: 'neutral.800',
-  borderColor: 'neutral.700',
-  borderRadius: 'md',
+  backgroundColor: 'gray.800',
+  borderColor: 'gray.700',
   borderWidth: '1',
-  color: 'neutral.300',
+  color: 'gray.300',
   outline: 'none',
   paddingX: '3',
   paddingY: '2',
+  rounded: 'md',
   width: 'full',
 });
 

@@ -15,7 +15,7 @@ const lifeLabel = css({
 });
 
 const lifeBar = css({
-  backgroundColor: 'neutral.700',
+  backgroundColor: 'gray.700',
   marginBottom: '2',
   rounded: 'xs',
 });

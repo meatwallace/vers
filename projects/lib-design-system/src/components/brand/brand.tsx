@@ -7,7 +7,7 @@ export type Props = RecipeVariantProps<typeof brand> & {
 
 const brand = cva({
   base: {
-    color: 'sky.300',
+    color: 'sky.400',
     fontFamily: 'josefin',
     fontSize: '7xl',
     fontWeight: 'bold',
