@@ -1,3 +1,4 @@
+import type { ServiceRouter as CharacterServiceRouter } from '@vers/service-character';
 import type { ServiceRouter as EmailServiceRouter } from '@vers/service-email';
 import type { ServiceRouter as SessionServiceRouter } from '@vers/service-session';
 import type { ServiceRouter as UserServiceRouter } from '@vers/service-user';
@@ -17,6 +18,13 @@ export async function createYogaContext(
   const requestID = honoCtx.get('requestId');
   const authHeader = yogaCtx.request.headers.get('authorization');
   const accessToken = getTokenFromHeader(authHeader);
+
+  const character = createTRPCClient<CharacterServiceRouter>({
+    accessToken,
+    apiURL: env.CHARACTERS_SERVICE_URL,
+    requestID,
+    serviceID: ServiceID.ServiceCharacter,
+  });
 
   const email = createTRPCClient<EmailServiceRouter>({
     accessToken,
@@ -54,6 +62,7 @@ export async function createYogaContext(
     request: yogaCtx.request,
     requestID,
     services: {
+      character,
       email,
       session,
       user,
