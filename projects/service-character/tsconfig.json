@@ -18,21 +18,15 @@
       "@vers/service-types": ["../lib-service-types/src"],
       "@vers/service-utils": ["../lib-service-utils/src"],
       "@vers/styled-system/*": ["../lib-styled-system/styled-system/*"],
-      "@vers/utils": ["../lib-utils/src"],
-
-      "@vers/service-character": ["../service-character/src"],
-      "@vers/service-email": ["../service-email/src"],
-      "@vers/service-session": ["../service-session/src"],
-      "@vers/service-user": ["../service-user/src"],
-      "@vers/service-verification": ["../service-verification/src"]
+      "@vers/utils": ["../lib-utils/src"]
     }
   },
   "files": [],
   "include": [
     "vitest.config.ts",
+    "vitest.global-setup.ts",
     "vitest.setup.ts",
-    "src/**/*.ts",
-    "../lib-service-utils/src/middleware/remote-address-middleware.ts"
+    "src/**/*.ts"
   ],
   "exclude": []
 }
