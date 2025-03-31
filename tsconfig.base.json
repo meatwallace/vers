@@ -39,6 +39,7 @@
       "@vers/service-utils": ["projects/lib-service-utils/src"],
       "@vers/styled-system/*": ["projects/lib-styled-system/styled-system/*"],
       "@vers/utils": ["projects/lib-utils/src"],
+      "@vers/validation": ["projects/lib-validation/src"],
 
       "@vers/service-api": ["projects/service-api/src"],
       "@vers/service-session": ["projects/service-session/src"],

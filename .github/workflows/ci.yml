@@ -61,7 +61,7 @@ jobs:
       - name: Unit Tests
         run: |
           yarn pg:test-container:start
-          yarn nx affected -t test
+          yarn test
 
       - name: Build
         if: ${{ github.ref_name != 'main' }}

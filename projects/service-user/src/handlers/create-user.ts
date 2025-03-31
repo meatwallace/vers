@@ -3,6 +3,12 @@ import { TRPCError } from '@trpc/server';
 import * as schema from '@vers/postgres-schema';
 import { CreateUserPayload } from '@vers/service-types';
 import { hashPassword, isUniqueConstraintError } from '@vers/service-utils';
+import {
+  NameSchema,
+  PasswordSchema,
+  UserEmailSchema,
+  UsernameSchema,
+} from '@vers/validation';
 import * as pg from 'postgres';
 import { z } from 'zod';
 import { logger } from '~/logger';
@@ -10,10 +16,10 @@ import type { Context } from '../types';
 import { t } from '../t';
 
 const CreateUserInputSchema = z.object({
-  email: z.string().email(),
-  name: z.string(),
-  password: z.string(),
-  username: z.string(),
+  email: UserEmailSchema,
+  name: NameSchema,
+  password: PasswordSchema,
+  username: UsernameSchema,
 });
 
 async function createUser(

@@ -16,6 +16,7 @@ import {
   StatusButton,
   Text,
 } from '@vers/design-system';
+import { PasswordSchema, UserEmailSchema } from '@vers/validation';
 import { HoneypotInputs } from 'remix-utils/honeypot/react';
 import { safeRedirect } from 'remix-utils/safe-redirect';
 import invariant from 'tiny-invariant';
@@ -38,8 +39,6 @@ import { isMutationError } from '~/utils/is-mutation-error';
 import { requireAnonymous } from '~/utils/require-anonymous.server.ts';
 import { withErrorHandling } from '~/utils/with-error-handling.ts';
 import { FormBooleanSchema } from '~/validation/form-boolean-schema.ts';
-import { PasswordSchema } from '~/validation/password-schema.ts';
-import { UserEmailSchema } from '~/validation/user-email-schema.ts';
 import type { Route } from './+types/route.ts';
 import { QueryParam } from '../verify-otp/types.ts';
 import * as styles from './route.styles.ts';

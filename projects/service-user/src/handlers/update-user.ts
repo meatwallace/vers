@@ -1,6 +1,7 @@
 import { TRPCError } from '@trpc/server';
 import * as schema from '@vers/postgres-schema';
 import { UpdateUserPayload } from '@vers/service-types';
+import { NameSchema, UsernameSchema } from '@vers/validation';
 import { eq } from 'drizzle-orm';
 import { z } from 'zod';
 import { logger } from '~/logger';
@@ -9,8 +10,8 @@ import { t } from '../t';
 
 export const UpdateUserInputSchema = z.object({
   id: z.string(),
-  name: z.string().optional(),
-  username: z.string().optional(),
+  name: NameSchema.optional(),
+  username: UsernameSchema.optional(),
 });
 
 export async function updateUser(

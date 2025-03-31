@@ -19,6 +19,7 @@
       "@vers/service-utils": ["../lib-service-utils/src"],
       "@vers/styled-system/*": ["../lib-styled-system/styled-system/*"],
       "@vers/utils": ["../lib-utils/src"],
+      "@vers/validation": ["../lib-validation/src"],
 
       "@vers/service-character": ["../service-character/src"],
       "@vers/service-email": ["../service-email/src"],

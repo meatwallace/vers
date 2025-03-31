@@ -1,6 +1,7 @@
 import { TRPCError } from '@trpc/server';
 import * as schema from '@vers/postgres-schema';
 import { UpdateEmailPayload } from '@vers/service-types';
+import { UserEmailSchema } from '@vers/validation';
 import { and, eq, or } from 'drizzle-orm';
 import { z } from 'zod';
 import { logger } from '~/logger';
@@ -8,7 +9,7 @@ import type { Context } from '../types';
 import { t } from '../t';
 
 export const UpdateEmailInputSchema = z.object({
-  email: z.string(),
+  email: UserEmailSchema,
   id: z.string(),
 });
 

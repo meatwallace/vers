@@ -18,7 +18,8 @@
       "@vers/service-types": ["../lib-service-types/src"],
       "@vers/service-utils": ["../lib-service-utils/src"],
       "@vers/styled-system/*": ["../lib-styled-system/styled-system/*"],
-      "@vers/utils": ["../lib-utils/src"]
+      "@vers/utils": ["../lib-utils/src"],
+      "@vers/validation": ["../lib-validation/src"]
     }
   },
   "include": ["playwright.config.ts", "src/**/*.ts"]

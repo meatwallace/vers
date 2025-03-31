@@ -10,6 +10,7 @@ import {
   Text,
 } from '@vers/design-system';
 import { css } from '@vers/styled-system/css';
+import { UserEmailSchema } from '@vers/validation';
 import { HoneypotInputs } from 'remix-utils/honeypot/react';
 import invariant from 'tiny-invariant';
 import { z } from 'zod';
@@ -25,7 +26,6 @@ import { handleGQLError } from '~/utils/handle-gql-error.ts';
 import { isMutationError } from '~/utils/is-mutation-error.ts';
 import { requireAnonymous } from '~/utils/require-anonymous.server.ts';
 import { withErrorHandling } from '~/utils/with-error-handling.ts';
-import { UserEmailSchema } from '~/validation/user-email-schema.ts';
 import type { Route } from './+types/route.ts';
 import { QueryParam } from '../verify-otp/types.ts';
 

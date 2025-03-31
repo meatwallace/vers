@@ -10,6 +10,7 @@ import {
   Text,
 } from '@vers/design-system';
 import { css } from '@vers/styled-system/css';
+import { NameSchema, UsernameSchema } from '@vers/validation';
 import { HoneypotInputs } from 'remix-utils/honeypot/react';
 import invariant from 'tiny-invariant';
 import { z } from 'zod';
@@ -26,8 +27,6 @@ import { isMutationError } from '~/utils/is-mutation-error';
 import { withErrorHandling } from '~/utils/with-error-handling.ts';
 import { ConfirmPasswordSchema } from '~/validation/confirm-password-schema.ts';
 import { FormBooleanSchema } from '~/validation/form-boolean-schema.ts';
-import { NameSchema } from '~/validation/name-schema.ts';
-import { UsernameSchema } from '~/validation/username-schema.ts';
 import type { Route } from './+types/route.ts';
 import { requireOnboardingSession } from './require-onboarding-session.server.ts';
 

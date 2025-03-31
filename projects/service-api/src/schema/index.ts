@@ -48,6 +48,7 @@ export { TwoFactorSuccessPayload } from './types/two-factor-success-payload';
 export { VerificationRequiredPayload } from './types/verification-required-payload';
 
 // domain types
+export { Character } from './types/character';
 export { Session } from './types/session';
 export { User } from './types/user';
 
