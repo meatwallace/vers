@@ -7,12 +7,12 @@ export type Props = React.ComponentProps<'code'>;
 const container = css({
   alignItems: 'center',
   backgroundColor: 'neutral.900',
-  borderRadius: 'md',
   display: 'flex',
   paddingLeft: '4',
   paddingRight: '7',
   paddingY: '2',
   position: 'relative',
+  rounded: 'md',
 });
 
 const pre = css({

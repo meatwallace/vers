@@ -119,6 +119,75 @@ export const preset = definePreset({
         },
         values: 'colors',
       },
+      marginX: {
+        className: 'mx',
+        transform(value) {
+          return {
+            marginLeft: value,
+            marginRight: value,
+          };
+        },
+        values: 'spacing',
+      },
+      marginY: {
+        className: 'my',
+        transform(value) {
+          return {
+            marginBottom: value,
+            marginTop: value,
+          };
+        },
+        values: 'spacing',
+      },
+      paddingX: {
+        className: 'px',
+        transform(value) {
+          return {
+            paddingLeft: value,
+            paddingRight: value,
+          };
+        },
+        values: 'spacing',
+      },
+      paddingY: {
+        className: 'py',
+        transform(value) {
+          return {
+            paddingBottom: value,
+            paddingTop: value,
+          };
+        },
+        values: 'spacing',
+      },
+      rounded: {
+        className: 'rounded',
+        transform(value) {
+          return {
+            borderRadius: value,
+          };
+        },
+        values: 'radii',
+      },
+      roundedBottom: {
+        className: 'rounded-b',
+        transform(value) {
+          return {
+            borderBottomLeftRadius: value,
+            borderBottomRightRadius: value,
+          };
+        },
+        values: 'radii',
+      },
+      roundedTop: {
+        className: 'rounded-t',
+        transform(value) {
+          return {
+            borderTopLeftRadius: value,
+            borderTopRightRadius: value,
+          };
+        },
+        values: 'radii',
+      },
     },
   },
 });

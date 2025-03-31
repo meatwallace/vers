@@ -11,6 +11,7 @@ import type { SimulationContext } from './simulation';
 
 export interface CharacterData {
   id: string;
+  image: string; // temporary, will remove later
   level: number;
   life: number;
   name: string;
@@ -73,6 +74,7 @@ export type CharacterBehaviourAppState = {
 export interface CharacterAppState {
   readonly behaviours: CharacterBehaviourAppState;
   readonly id: string;
+  readonly image: string; // temporary, will remove later
   readonly isAlive: boolean;
   readonly level: number;
   readonly life: number;

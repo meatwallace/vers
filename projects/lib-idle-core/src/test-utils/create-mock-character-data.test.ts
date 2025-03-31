@@ -7,6 +7,7 @@ test('it creates character data with expected properties', () => {
 
   expect(character).toStrictEqual({
     id: expect.any(String),
+    image: '/assets/images/character-placeholder.png',
     level: 1,
     life: 200,
     name: 'Test Character',
@@ -25,6 +26,7 @@ test('it creates character data with expected properties', () => {
 test('it creates character data with custom properties', () => {
   const character = createMockCharacterData({
     id: 'test-id',
+    image: '/assets/images/character-placeholder-2.png',
     level: 2,
     life: 100,
     name: 'Test Character 2',
@@ -41,6 +43,7 @@ test('it creates character data with custom properties', () => {
 
   expect(character).toStrictEqual({
     id: 'test-id',
+    image: '/assets/images/character-placeholder-2.png',
     level: 2,
     life: 100,
     name: 'Test Character 2',

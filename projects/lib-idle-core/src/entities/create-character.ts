@@ -59,6 +59,7 @@ export function createCharacter(
       ...state,
       behaviours: behaviourState,
       id: data.id,
+      image: data.image,
       isAlive: state.status === EntityStatus.Alive,
       level: data.level,
       mainHandAttack,

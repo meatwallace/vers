@@ -13,6 +13,7 @@ test('it renders character information', () => {
       },
     },
     id: '1',
+    image: '/assets/images/character-placeholder.png',
     isAlive: true,
     level: 1,
     life: 75,

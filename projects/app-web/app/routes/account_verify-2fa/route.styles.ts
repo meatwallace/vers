@@ -18,9 +18,9 @@ export const formStyles = css({
 });
 
 export const qrCode = css({
-  borderRadius: 'md',
   marginBottom: '6',
   marginTop: '4',
+  rounded: 'md',
 });
 
 export const otpCode = css({

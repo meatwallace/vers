@@ -8,6 +8,7 @@ test('it returns true if it is an initialize message', () => {
   const message: InitializeMessage = {
     character: {
       id: '1',
+      image: '/assets/images/character-placeholder.png',
       level: 1,
       life: 100,
       name: 'Test Character',

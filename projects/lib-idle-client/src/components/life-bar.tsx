@@ -5,6 +5,8 @@ const lifeBarContainer = css({
   display: 'flex',
   flexDirection: 'column',
   gap: '2',
+  position: 'relative',
+  zIndex: '1',
 });
 
 const lifeLabel = css({
@@ -16,6 +18,8 @@ const lifeLabel = css({
 
 const lifeBar = css({
   backgroundColor: 'gray.700',
+  borderColor: 'gray.800',
+  borderWidth: '1',
   marginBottom: '2',
   rounded: 'xs',
 });

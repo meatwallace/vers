@@ -28,6 +28,7 @@ export const initialSeed = Date.now() ^ (Math.random() * 0x100000000);
 
 export const characterData: CharacterData = {
   id: '1',
+  image: '/assets/images/rogue.png',
   level: 1,
   life: 200,
   name: 'Test Character',

@@ -18,7 +18,7 @@ if (env.isProduction && env.SENTRY_DSN) {
   void import('./utils/init-sentry.ts').then(({ initSentry }) => initSentry());
 }
 
-if (env.isE2E) {
+if (!import.meta.env.PROD && env.isE2E) {
   void import('../app/mocks/e2e-migration.ts');
 }
 

@@ -9,6 +9,7 @@ test('it creates an initial state message', () => {
     character: {
       behaviours: {},
       id: '1',
+      image: '/assets/images/character-placeholder.png',
       isAlive: true,
       level: 1,
       life: 100,

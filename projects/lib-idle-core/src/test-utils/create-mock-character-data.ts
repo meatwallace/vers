@@ -7,6 +7,7 @@ export function createMockCharacterData(
 ): CharacterData {
   const character: CharacterData = {
     id: createId(),
+    image: '/assets/images/character-placeholder.png',
     level: 1,
     life: 200,
     name: 'Test Character',

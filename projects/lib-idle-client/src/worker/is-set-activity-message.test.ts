@@ -23,6 +23,7 @@ test('it returns false if it is not a set activity message', () => {
   const message: InitializeMessage = {
     character: {
       id: '1',
+      image: '/assets/images/character-placeholder.png',
       level: 1,
       life: 100,
       name: 'Test Character',
