@@ -8,8 +8,8 @@ const enemyInfo = css({
   _last: {
     marginBottom: '0',
   },
-  backgroundColor: 'neutral.800',
-  borderColor: 'neutral.600',
+  backgroundColor: 'gray.800',
+  borderColor: 'gray.600',
   borderWidth: '1',
   boxShadow: 'md',
   padding: '2',

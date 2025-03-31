@@ -5,8 +5,8 @@ import { AttackTimerBar } from './attack-timer-bar';
 import { LifeBar } from './life-bar';
 
 const characterInfo = css({
-  backgroundColor: 'neutral.800',
-  borderColor: 'neutral.700',
+  backgroundColor: 'gray.800',
+  borderColor: 'gray.700',
   borderWidth: '1',
   boxShadow: 'md',
   padding: '2',

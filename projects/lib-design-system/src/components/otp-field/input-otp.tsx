@@ -48,7 +48,7 @@ function InputOTPGroup(props: React.ComponentProps<'div'>) {
 InputOTP.Group = InputOTPGroup;
 
 const separator = css({
-  backgroundColor: 'neutral.800',
+  backgroundColor: 'gray.800',
   height: '1',
   rounded: 'sm',
   width: '1',
@@ -68,10 +68,10 @@ InputOTP.Separator = InputOTPSeparator;
 
 const slot = css({
   alignItems: 'center',
-  backgroundColor: 'neutral.800',
-  borderColor: 'neutral.800',
+  backgroundColor: 'gray.800',
+  borderColor: 'gray.800',
   borderWidth: '1',
-  color: 'neutral.300',
+  color: 'gray.300',
   display: 'flex',
   fontSize: 'md',
   height: '11',

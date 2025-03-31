@@ -16,7 +16,7 @@ export const profileInfoRow = css({
 });
 
 export const profileInfoLabel = css({
-  color: 'neutral.500',
+  color: 'gray.500',
   fontWeight: 'bold',
   marginBottom: '1',
 });
@@ -26,6 +26,6 @@ export const profileInfoValue = css({
 });
 
 export const twoFactorDescription = css({
-  color: 'neutral.500',
+  color: 'gray.500',
   marginBottom: '4',
 });
