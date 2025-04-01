@@ -33,6 +33,7 @@ test('it updates a character name', async () => {
   const result = await caller.updateCharacter({
     id: character.id,
     name: 'Updated Name',
+    userID: user.id,
   });
 
   expect(result).toStrictEqual({
@@ -54,12 +55,13 @@ test('it throws an error when character is not found', async () => {
   await using handle = await createTestDB();
 
   const { db } = handle;
-  const { caller } = await setupTest({ db });
+  const { caller, user } = await setupTest({ db });
 
   await expect(
     caller.updateCharacter({
       id: createId(),
       name: 'New Name',
+      userID: user.id,
     }),
   ).rejects.toMatchObject({
     code: 'NOT_FOUND',

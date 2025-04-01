@@ -11,6 +11,7 @@ import { t } from '../t';
 const UpdateCharacterInputSchema = z.object({
   id: z.string(),
   name: CharacterNameSchema,
+  userID: z.string(),
 });
 
 async function updateCharacter(

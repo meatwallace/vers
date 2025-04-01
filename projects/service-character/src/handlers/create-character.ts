@@ -2,8 +2,8 @@ import { createId } from '@paralleldrive/cuid2';
 import { TRPCError } from '@trpc/server';
 import * as schema from '@vers/postgres-schema';
 import { CreateCharacterPayload } from '@vers/service-types';
+import { isPGError, isUniqueConstraintError } from '@vers/service-utils';
 import { CharacterNameSchema } from '@vers/validation';
-import { eq } from 'drizzle-orm';
 import { z } from 'zod';
 import { logger } from '~/logger';
 import type { Context } from '../types';
@@ -19,18 +19,6 @@ async function createCharacter(
   ctx: Context,
 ): Promise<CreateCharacterPayload> {
   try {
-    const existingCharacter = await ctx.db.query.characters.findFirst({
-      where: eq(schema.characters.userID, input.userID),
-    });
-
-    // for now, we limit our users to 1 character
-    if (existingCharacter) {
-      throw new TRPCError({
-        code: 'CONFLICT',
-        message: 'User already has a character',
-      });
-    }
-
     const createdAt = new Date();
 
     const character: typeof schema.characters.$inferSelect = {
@@ -49,8 +37,14 @@ async function createCharacter(
   } catch (error: unknown) {
     logger.error(error);
 
-    if (error instanceof TRPCError) {
-      throw error;
+    if (
+      isPGError(error) &&
+      isUniqueConstraintError(error, 'characters_name_unique')
+    ) {
+      throw new TRPCError({
+        code: 'CONFLICT',
+        message: 'A character with that name already exists',
+      });
     }
 
     throw new TRPCError({

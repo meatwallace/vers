@@ -1,3 +1,8 @@
+import { createCharacter } from './trpc/service-character/create-character';
+import { deleteCharacter } from './trpc/service-character/delete-character';
+import { getCharacter } from './trpc/service-character/get-character';
+import { getCharacters } from './trpc/service-character/get-characters';
+import { updateCharacter } from './trpc/service-character/update-character';
 import { sendEmail } from './trpc/service-email/send-email';
 import { createSession } from './trpc/service-session/create-session';
 import { deleteSession } from './trpc/service-session/delete-session';
@@ -21,6 +26,13 @@ import { updateVerification } from './trpc/service-verification/update-verificat
 import { verifyCode } from './trpc/service-verification/verify-code';
 
 export const handlers = [
+  // service-character
+  createCharacter,
+  deleteCharacter,
+  getCharacter,
+  getCharacters,
+  updateCharacter,
+
   // service-email
   sendEmail,
 
