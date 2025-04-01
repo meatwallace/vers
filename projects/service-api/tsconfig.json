@@ -5,8 +5,8 @@
     "baseUrl": ".",
     "paths": {
       "~/*": ["./src/*"],
-      "@vers/aether-core": ["../lib-aether-core/src"],
       "@vers/aether-client": ["../lib-aether-client/src"],
+      "@vers/aether-core": ["../lib-aether-core/src"],
       "@vers/client-test-utils": ["../lib-client-test-utils/src"],
       "@vers/design-system": ["../lib-design-system/src"],
       "@vers/email-templates": ["../lib-email-templates/src"],
@@ -20,7 +20,6 @@
       "@vers/styled-system/*": ["../lib-styled-system/styled-system/*"],
       "@vers/utils": ["../lib-utils/src"],
       "@vers/validation": ["../lib-validation/src"],
-
       "@vers/service-character": ["../service-character/src"],
       "@vers/service-email": ["../service-email/src"],
       "@vers/service-session": ["../service-session/src"],

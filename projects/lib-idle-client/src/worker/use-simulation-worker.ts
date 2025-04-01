@@ -1,5 +1,4 @@
 import { useEffect } from 'react';
-import { setWorker, useWorker } from '@vers/idle-client';
 import type {
   InitialStateMessage,
   SimulationUpdateMessage,
@@ -8,6 +7,8 @@ import type {
 import { setActivity } from '../state/set-activity.ts';
 import { setCharacter } from '../state/set-character.ts';
 import { setCombat } from '../state/set-combat.ts';
+import { setWorker } from '../state/set-worker.ts';
+import { useWorker } from '../state/use-worker.ts';
 import { WorkerMessageType } from '../types.ts';
 import SimulationWorker from './worker.ts?sharedworker';
 
