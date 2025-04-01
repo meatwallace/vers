@@ -48,24 +48,24 @@ test('it creates a character with default values', async () => {
   expect(character).toStrictEqual(result);
 });
 
-test('it throws an error if a user already has a character', async () => {
+test('it throws an error if a character with the same name already exists', async () => {
   await using handle = await createTestDB();
 
   const { db } = handle;
   const { caller, user } = await setupTest({ db });
 
   await caller.createCharacter({
-    name: 'First Character',
+    name: 'Character #1',
     userID: user.id,
   });
 
   await expect(
     caller.createCharacter({
-      name: 'Second Character',
+      name: 'Character #1',
       userID: user.id,
     }),
   ).rejects.toMatchObject({
     code: 'CONFLICT',
-    message: 'User already has a character',
+    message: 'A character with that name already exists',
   });
 });

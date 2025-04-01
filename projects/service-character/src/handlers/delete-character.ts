@@ -9,6 +9,7 @@ import { t } from '../t';
 
 const DeleteCharacterInputSchema = z.object({
   id: z.string(),
+  userID: z.string(),
 });
 
 async function deleteCharacter(

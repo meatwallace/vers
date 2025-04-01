@@ -2,14 +2,17 @@ import { createId } from '@paralleldrive/cuid2';
 import { TRPCError } from '@trpc/server';
 import * as schema from '@vers/postgres-schema';
 import { CreateUserPayload } from '@vers/service-types';
-import { hashPassword, isUniqueConstraintError } from '@vers/service-utils';
+import {
+  hashPassword,
+  isPGError,
+  isUniqueConstraintError,
+} from '@vers/service-utils';
 import {
   NameSchema,
   PasswordSchema,
   UserEmailSchema,
   UsernameSchema,
 } from '@vers/validation';
-import * as pg from 'postgres';
 import { z } from 'zod';
 import { logger } from '~/logger';
 import type { Context } from '../types';
@@ -58,7 +61,7 @@ async function createUser(
   } catch (error: unknown) {
     logger.error(error);
 
-    if (error instanceof pg.PostgresError) {
+    if (isPGError(error)) {
       if (isUniqueConstraintError(error, 'users_email_unique')) {
         throw new TRPCError({
           code: 'CONFLICT',

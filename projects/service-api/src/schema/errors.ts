@@ -31,3 +31,14 @@ export const TWO_FACTOR_ALREADY_ENABLED_ERROR = {
   message: '2FA is already enabled for your account.',
   title: '2FA already enabled',
 };
+
+// character errors
+export const CHARACTER_LIMIT_REACHED_ERROR = {
+  message: 'Please delete one of your characters and try again.',
+  title: 'Character limit reached',
+};
+
+export const CHARACTER_NAME_EXISTS_ERROR = {
+  message: 'A character with this name already exists.',
+  title: 'Character name taken',
+};

@@ -4,7 +4,7 @@ import { users } from './users';
 export const characters = pgTable('characters', {
   id: text('id').notNull().primaryKey(),
   level: integer('level').notNull().default(1),
-  name: text('name').notNull(),
+  name: text('name').notNull().unique(),
   userID: text('user_id')
     .notNull()
     .references(() => users.id, { onDelete: 'cascade', onUpdate: 'cascade' }),

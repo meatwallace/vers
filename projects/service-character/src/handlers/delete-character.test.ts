@@ -32,6 +32,7 @@ test('it deletes a character', async () => {
 
   await caller.deleteCharacter({
     id: character.id,
+    userID: user.id,
   });
 
   const deleted = await db.query.characters.findFirst({
@@ -45,11 +46,12 @@ test('it throws an error when character is not found', async () => {
   await using handle = await createTestDB();
 
   const { db } = handle;
-  const { caller } = await setupTest({ db });
+  const { caller, user } = await setupTest({ db });
 
   await expect(
     caller.deleteCharacter({
       id: createId(),
+      userID: user.id,
     }),
   ).rejects.toMatchObject({
     code: 'NOT_FOUND',

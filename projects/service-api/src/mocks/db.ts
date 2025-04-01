@@ -2,6 +2,15 @@ import { factory, nullable, primaryKey } from '@mswjs/data';
 import { createId } from '@paralleldrive/cuid2';
 
 export const db = factory({
+  character: {
+    createdAt: () => new Date(),
+    id: primaryKey(() => createId()),
+    level: () => 1,
+    name: () => 'Test Character',
+    updatedAt: () => new Date(),
+    userID: () => createId(),
+    xp: () => 0,
+  },
   session: {
     createdAt: () => new Date(),
     expiresAt: () => new Date(),
