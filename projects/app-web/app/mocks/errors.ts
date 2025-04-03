@@ -31,3 +31,13 @@ export const TWO_FACTOR_ALREADY_ENABLED_ERROR = {
   message: '2FA is already enabled for your account.',
   title: '2FA already enabled',
 };
+
+export const AVATAR_LIMIT_REACHED_ERROR = {
+  message: 'Please delete one of your Avatars and try again.',
+  title: 'Avatar limit reached',
+};
+
+export const AVATAR_NAME_EXISTS_ERROR = {
+  message: 'An Avatar with this name already exists.',
+  title: 'Avatar name taken',
+};

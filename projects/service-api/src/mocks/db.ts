@@ -1,12 +1,14 @@
 import { factory, nullable, primaryKey } from '@mswjs/data';
 import { createId } from '@paralleldrive/cuid2';
+import { Class } from '@vers/data';
 
 export const db = factory({
-  character: {
+  avatar: {
+    class: () => Class.Brute as (typeof Class)[keyof typeof Class],
     createdAt: () => new Date(),
     id: primaryKey(() => createId()),
     level: () => 1,
-    name: () => 'Test Character',
+    name: () => 'Test Avatar',
     updatedAt: () => new Date(),
     userID: () => createId(),
     xp: () => 0,

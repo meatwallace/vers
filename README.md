@@ -22,6 +22,9 @@ yarn codegen:graphql
 # run panda css codegen
 yarn codegen:styles
 
+# regenerate tsconfig's paths after adding/renaming a package
+yarn codegen:paths
+
 # spin up full backend via docker compose
 yarn stack start
 

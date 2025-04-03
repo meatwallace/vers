@@ -32,13 +32,13 @@ export const TWO_FACTOR_ALREADY_ENABLED_ERROR = {
   title: '2FA already enabled',
 };
 
-// character errors
-export const CHARACTER_LIMIT_REACHED_ERROR = {
-  message: 'Please delete one of your characters and try again.',
-  title: 'Character limit reached',
+// avatar errors
+export const AVATAR_LIMIT_REACHED_ERROR = {
+  message: 'Please delete one of your Avatars and try again.',
+  title: 'Avatar limit reached',
 };
 
-export const CHARACTER_NAME_EXISTS_ERROR = {
-  message: 'A character with this name already exists.',
-  title: 'Character name taken',
+export const AVATAR_NAME_EXISTS_ERROR = {
+  message: 'An Avatar with this name already exists.',
+  title: 'Avatar name taken',
 };

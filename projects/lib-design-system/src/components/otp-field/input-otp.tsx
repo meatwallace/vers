@@ -68,7 +68,7 @@ InputOTP.Separator = InputOTPSeparator;
 
 const slot = css({
   alignItems: 'center',
-  backgroundColor: 'gray.800',
+  backgroundColor: 'gray.900',
   borderColor: 'gray.700',
   borderWidth: '1',
   color: 'gray.300',

@@ -23,7 +23,7 @@ export const Icon = {
   Account: GiCog,
   Aether: GiStarSwirl,
   Arena: GiCrossedSwords,
-  Character: GiCharacter,
+  Avatar: GiCharacter,
   Forge: GiAnvil,
   Guild: GiGriffinShield,
   Leaderboard: GiAchievement,

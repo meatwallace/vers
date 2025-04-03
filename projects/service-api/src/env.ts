@@ -18,7 +18,7 @@ export const envSchema = z
     SENTRY_DSN: z.string().url().optional(),
 
     // service URLs
-    CHARACTERS_SERVICE_URL: z.string().url(),
+    AVATARS_SERVICE_URL: z.string().url(),
     EMAILS_SERVICE_URL: z.string().url(),
     SESSIONS_SERVICE_URL: z.string().url(),
     USERS_SERVICE_URL: z.string().url(),

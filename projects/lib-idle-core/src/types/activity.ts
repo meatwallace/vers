@@ -18,6 +18,7 @@ export enum ActivityFailureAction {
 
 export interface AetherNodeActivityData extends IActivityData {
   enemies: Array<EnemyData>;
+  seed: number;
   type: ActivityType.AetherNode;
 }
 
@@ -29,6 +30,7 @@ export interface ActivityAppState {
   readonly enemiesRemaining: number;
   readonly enemyGroups: Array<EnemyGroupAppState>;
   readonly enemyGroupsRemaining: number;
+  readonly id: string;
   readonly name: string;
 }
 

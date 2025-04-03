@@ -42,7 +42,7 @@ test('it generates hashes of consistent length', async () => {
   const shortHash = await hashPassword(shortPassword);
   const longHash = await hashPassword(longPassword);
 
-  // verify both hashes are the same length (60 characters for bcrypt)
+  // verify both hashes are the same length (60 avatars for bcrypt)
   expect(shortHash).toHaveLength(60);
   expect(longHash).toHaveLength(60);
 });

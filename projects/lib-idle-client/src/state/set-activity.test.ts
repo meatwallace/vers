@@ -11,6 +11,7 @@ test('it updates the activity state', () => {
     enemiesRemaining: 20,
     enemyGroups: [],
     enemyGroupsRemaining: 4,
+    id: '1',
     name: 'Test Activity',
   };
 
@@ -26,6 +27,7 @@ test('it updates the activity state', () => {
     enemiesRemaining: 20,
     enemyGroups: [],
     enemyGroupsRemaining: 4,
+    id: '1',
     name: 'Test Activity',
   });
 });

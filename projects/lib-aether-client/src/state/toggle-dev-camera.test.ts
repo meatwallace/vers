@@ -1,4 +1,20 @@
-import { test } from 'vitest';
+import { expect, test } from 'vitest';
+import { renderHook } from '@testing-library/react';
+import { toggleDevCamera } from './toggle-dev-camera';
+import { useIsDevCameraActive } from './use-is-dev-camera-active';
 
-test.todo('it toggles dev camera state from false to true');
-test.todo('it toggles dev camera state from true to false');
+test('it toggles dev camera state from false to true', () => {
+  const { rerender, result } = renderHook(() => useIsDevCameraActive());
+
+  expect(result.current).toBeFalse();
+
+  toggleDevCamera();
+  rerender();
+
+  expect(result.current).toBeTrue();
+
+  toggleDevCamera();
+  rerender();
+
+  expect(result.current).toBeFalse();
+});

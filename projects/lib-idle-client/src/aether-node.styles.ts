@@ -18,7 +18,7 @@ export const section = css({
   padding: '2',
 });
 
-export const characterSection = css({
+export const avatarSection = css({
   flex: '1',
 });
 

@@ -1,9 +1,9 @@
 import { expect, test } from 'vitest';
 import { createActivity } from '../../core/create-activity';
 import { createCombatExecutor } from '../../core/create-combat-executor';
-import { createCharacter } from '../../entities/create-character';
+import { createAvatar } from '../../entities/create-avatar';
 import { createMockActivityData } from '../../test-utils/create-mock-activity-data';
-import { createMockCharacterData } from '../../test-utils/create-mock-character-data';
+import { createMockAvatarData } from '../../test-utils/create-mock-avatar-data';
 import { createMockEnemyData } from '../../test-utils/create-mock-enemy-data';
 import { createMockSimulationContext } from '../../test-utils/create-mock-simulation-context';
 import { BehaviourID, EntityStatus } from '../../types';
@@ -20,14 +20,14 @@ test('it schedules attacks on the tick event', () => {
     },
   });
 
-  const characterData = createMockCharacterData({ life: 10 });
+  const avatarData = createMockAvatarData({ life: 10 });
   const activityData = createMockActivityData({ enemies: [enemyData] });
 
   const ctx = createMockSimulationContext();
   const activity = createActivity(activityData, ctx, { groupSize: 1 });
-  const character = createCharacter(characterData, ctx);
+  const avatar = createAvatar(avatarData, ctx);
   const enemyGroup = activity.currentEnemyGroup;
-  const combatExecutor = createCombatExecutor(activity, character, ctx);
+  const combatExecutor = createCombatExecutor(activity, avatar, ctx);
 
   const enemy = enemyGroup!.enemies[0]!;
   const behaviour = create(enemy);
@@ -40,13 +40,13 @@ test('it schedules attacks on the tick event', () => {
 
   handleTick(enemy, behaviour, combatExecutor);
 
-  expect(character.status).toBe(EntityStatus.Alive);
+  expect(avatar.status).toBe(EntityStatus.Alive);
 
   combatExecutor.run(1);
 
   handleTick(enemy, behaviour, combatExecutor);
 
-  expect(character.status).toBe(EntityStatus.Dead);
+  expect(avatar.status).toBe(EntityStatus.Dead);
   expect(behaviour.state.lastAttackTime).toBe(1000);
 });
 
@@ -60,14 +60,14 @@ test('it schedules multiple attacks for high APS weapons', () => {
     },
   });
 
-  const characterData = createMockCharacterData({ life: 50 });
+  const avatarData = createMockAvatarData({ life: 50 });
   const activityData = createMockActivityData({ enemies: [enemyData] });
 
   const ctx = createMockSimulationContext();
   const activity = createActivity(activityData, ctx, { groupSize: 1 });
-  const character = createCharacter(characterData, ctx);
+  const avatar = createAvatar(avatarData, ctx);
   const enemyGroup = activity.currentEnemyGroup;
-  const combatExecutor = createCombatExecutor(activity, character, ctx);
+  const combatExecutor = createCombatExecutor(activity, avatar, ctx);
 
   const enemy = enemyGroup!.enemies[0]!;
   const behaviour = create(enemy);
@@ -81,6 +81,6 @@ test('it schedules multiple attacks for high APS weapons', () => {
 
   combatExecutor.run(1);
 
-  expect(character.status).toBe(EntityStatus.Dead);
+  expect(avatar.status).toBe(EntityStatus.Dead);
   expect(behaviour.state.lastAttackTime).toBe(2500);
 });

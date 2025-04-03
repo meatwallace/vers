@@ -53,6 +53,7 @@ export function createActivity(
       enemiesRemaining,
       enemyGroups: enemyGroups.map((group) => group.getAppState()),
       enemyGroupsRemaining,
+      id: data.id,
       name: data.name,
     };
   };

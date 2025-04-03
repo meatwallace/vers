@@ -3,7 +3,6 @@ import { handleInitializeMessage } from './handle-initialize-message';
 import { handleSetActivityMessage } from './handle-set-activity-message';
 import { isInitializeMessage } from './is-initialize-message';
 import { isSetActivityMessage } from './is-set-activity-message';
-import { getSimulation } from './simulation';
 
 export async function handleClientMessage(
   event: MessageEvent<ClientMessage>,
@@ -14,7 +13,7 @@ export async function handleClientMessage(
     await handleInitializeMessage(event.data);
   }
 
-  if (isSetActivityMessage(event.data) && !getSimulation()?.activity) {
+  if (isSetActivityMessage(event.data)) {
     handleSetActivityMessage(event.data);
   }
 }

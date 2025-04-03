@@ -21,18 +21,18 @@ interface ICombatEvent {
 }
 
 export enum CombatEventType {
-  CharacterAttack = 'character_attack',
+  AvatarAttack = 'avatar_attack',
   EnemyAttack = 'enemy_attack',
 }
 
-export interface CharacterAttackEvent extends ICombatEvent {
-  type: CombatEventType.CharacterAttack;
+export interface AvatarAttackEvent extends ICombatEvent {
+  type: CombatEventType.AvatarAttack;
 }
 
 export interface EnemyAttackEvent extends ICombatEvent {
   type: CombatEventType.EnemyAttack;
 }
 
-export type CombatEvent = CharacterAttackEvent | EnemyAttackEvent;
+export type CombatEvent = AvatarAttackEvent | EnemyAttackEvent;
 
-export type AttackEvent = CharacterAttackEvent | EnemyAttackEvent;
+export type AttackEvent = AvatarAttackEvent | EnemyAttackEvent;

@@ -1,4 +1,10 @@
+import { useEffect } from 'react';
 import { Outlet } from 'react-router';
+import {
+  createInitializeMessage,
+  useSimulationInitialized,
+  useSimulationWorker,
+} from '@vers/idle-client';
 import { Header } from '~/components/header';
 import { SideNavigation } from '~/components/side-navigation';
 import { requireAuth } from '~/utils/require-auth.server.ts';
@@ -8,11 +14,26 @@ import * as styles from './authed-layout.styles.ts';
 
 export const loader = withErrorHandling(async (args: Route.LoaderArgs) => {
   await requireAuth(args.request);
+
+  return {};
 });
 
-export function AuthedLayout() {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export function AuthedLayout(props: Route.ComponentProps) {
+  const worker = useSimulationWorker();
+  const initialized = useSimulationInitialized();
+
+  useEffect(() => {
+    if (worker && !initialized) {
+      const message = createInitializeMessage();
+
+      worker.port.postMessage(message);
+    }
+  }, [worker, initialized]);
+
   return (
     <div className={styles.container}>
+      {/* TODO: render current activity preview here */}
       <Header />
       <SideNavigation />
       <main className={styles.contentContainer}>

@@ -29,15 +29,15 @@ services:
       - '3000'
     ports:
       - '3000:3000'
-  service-character:
+  service-avatar:
     build:
       context: .
-      dockerfile: projects/service-character/Dockerfile
+      dockerfile: projects/service-avatar/Dockerfile
       args:
         BUILD_MODE: development
     env_file:
-      - projects/service-character/.env.development
-      - projects/service-character/.env.development.local
+      - projects/service-avatar/.env.development
+      - projects/service-avatar/.env.development.local
     environment:
       - DATABASE_URL=postgresql://admin:password@postgres:5433/vers
     ports:

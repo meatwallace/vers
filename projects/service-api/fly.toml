@@ -6,7 +6,7 @@ primary_region = 'syd'
 [env]
   API_IDENTIFIER = 'https://api.versidle.com/'
   APP_WEB_URL = 'https://versidle.com'
-  CHARACTERS_SERVICE_URL = 'http://vers-service-character.internal:3005/'
+  AVATARS_SERVICE_URL = 'http://vers-service-avatar.internal:3005/'
   EMAILS_SERVICE_URL = 'http://vers-service-email.internal:3001/'
   HOSTNAME = '0.0.0.0'
   LOGGING = 'info'

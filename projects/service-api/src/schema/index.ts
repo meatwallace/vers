@@ -26,6 +26,13 @@ export { resolve as finishEnable2FA } from './mutations/finish-enable-2fa';
 export { resolve as startEnable2FA } from './mutations/start-enable-2fa';
 export { resolve as getEnable2FAVerification } from './queries/get-enable-2fa-verification';
 
+// avatar
+export { resolve as createAvatar } from './mutations/create-avatar';
+export { resolve as deleteAvatar } from './mutations/delete-avatar';
+export { resolve as updateAvatar } from './mutations/update-avatar';
+export { resolve as getAvatar } from './queries/get-avatar';
+export { resolve as getAvatars } from './queries/get-avatars';
+
 // session
 export { resolve as deleteSession } from './mutations/delete-session';
 export { resolve as getSessions } from './queries/get-sessions';
@@ -48,10 +55,11 @@ export { TwoFactorSuccessPayload } from './types/two-factor-success-payload';
 export { VerificationRequiredPayload } from './types/verification-required-payload';
 
 // domain types
-export { Character } from './types/character';
+export { Avatar } from './types/avatar';
 export { Session } from './types/session';
 export { User } from './types/user';
 
 // enums
+// export { AvatarClass } from './types/avatar-class';
 export { StepUpAction } from './types/step-up-action';
 export { VerificationType } from './types/verification-type';

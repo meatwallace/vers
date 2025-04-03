@@ -1,15 +1,15 @@
 import { expect, test } from 'vitest';
 import type { EnemyAttackEvent } from '../types';
-import { createCharacter } from '../entities/create-character';
+import { createAvatar } from '../entities/create-avatar';
 import { createMockActivityData } from '../test-utils/create-mock-activity-data';
-import { createMockCharacterData } from '../test-utils/create-mock-character-data';
+import { createMockAvatarData } from '../test-utils/create-mock-avatar-data';
 import { createMockEnemyData } from '../test-utils/create-mock-enemy-data';
 import { createMockSimulationContext } from '../test-utils/create-mock-simulation-context';
 import { CombatEventType } from '../types';
 import { createActivity } from './create-activity';
 import { handleEnemyAttack } from './handle-enemy-attack';
 
-test('it applies damage from the enemy to the character', () => {
+test('it applies damage from the enemy to the avatar', () => {
   const enemyData = createMockEnemyData({
     life: 100,
     primaryAttack: {
@@ -19,14 +19,14 @@ test('it applies damage from the enemy to the character', () => {
     },
   });
 
-  const characterData = createMockCharacterData({ life: 100 });
+  const avatarData = createMockAvatarData({ life: 100 });
 
   const activityData = createMockActivityData({
     enemies: [enemyData],
   });
 
   const ctx = createMockSimulationContext();
-  const character = createCharacter(characterData, ctx);
+  const avatar = createAvatar(avatarData, ctx);
   const activity = createActivity(activityData, ctx, {
     groupCount: 1,
     groupSize: 1,
@@ -41,9 +41,9 @@ test('it applies damage from the enemy to the character', () => {
     type: CombatEventType.EnemyAttack,
   };
 
-  handleEnemyAttack(event, character, activity);
+  handleEnemyAttack(event, avatar, activity);
 
-  expect(character.life).toBe(90);
+  expect(avatar.life).toBe(90);
 });
 
 test('it does nothing if the enemy is dead', () => {
@@ -56,14 +56,14 @@ test('it does nothing if the enemy is dead', () => {
     },
   });
 
-  const characterData = createMockCharacterData({ life: 100 });
+  const avatarData = createMockAvatarData({ life: 100 });
 
   const activityData = createMockActivityData({
     enemies: [enemyData],
   });
 
   const ctx = createMockSimulationContext();
-  const character = createCharacter(characterData, ctx);
+  const avatar = createAvatar(avatarData, ctx);
   const activity = createActivity(activityData, ctx, {
     groupCount: 1,
     groupSize: 1,
@@ -81,9 +81,9 @@ test('it does nothing if the enemy is dead', () => {
     type: CombatEventType.EnemyAttack,
   };
 
-  handleEnemyAttack(event, character, activity);
+  handleEnemyAttack(event, avatar, activity);
 
-  expect(character.life).toBe(100);
+  expect(avatar.life).toBe(100);
 });
 
 // this covers a regression where we weren't correctly filtering our enemies
@@ -99,14 +99,14 @@ test('it correctly resolves the correct event source', () => {
     },
   });
 
-  const characterData = createMockCharacterData({ life: 100 });
+  const avatarData = createMockAvatarData({ life: 100 });
 
   const activityData = createMockActivityData({
     enemies: [enemyData],
   });
 
   const ctx = createMockSimulationContext();
-  const character = createCharacter(characterData, ctx);
+  const avatar = createAvatar(avatarData, ctx);
   const activity = createActivity(activityData, ctx, {
     groupCount: 1,
     // it's important we have more than 1 enemy so we can ensure event source
@@ -126,7 +126,7 @@ test('it correctly resolves the correct event source', () => {
   // kill the enemy
   firstEnemy.receiveDamage(100);
 
-  handleEnemyAttack(event, character, activity);
+  handleEnemyAttack(event, avatar, activity);
 
-  expect(character.life).toBe(100);
+  expect(avatar.life).toBe(100);
 });

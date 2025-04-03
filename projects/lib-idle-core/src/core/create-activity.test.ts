@@ -27,3 +27,24 @@ test('it creates an activity with a fixed size for each group', () => {
     (group: EnemyGroup) => group.enemies.length === 3,
   );
 });
+
+test('it returns the expected activity state for a client app', () => {
+  const ctx = createMockSimulationContext();
+  const activityData = createMockActivityData();
+  const activity = createActivity(activityData, ctx);
+
+  const state = activity.getAppState();
+
+  expect(state).toStrictEqual({
+    currentEnemyGroup: {
+      enemies: expect.any(Array),
+      id: expect.any(String),
+    },
+    elapsed: 0,
+    enemiesRemaining: expect.any(Number),
+    enemyGroups: expect.any(Array),
+    enemyGroupsRemaining: expect.any(Number),
+    id: activity.id,
+    name: activity.name,
+  });
+});

@@ -1,9 +1,9 @@
 export { AetherNode } from './aether-node';
-export { setWorker } from './state/set-worker';
+export { setSimulationWorker } from './state/set-simulation-worker';
 export { useActivity } from './state/use-activity';
-export { useCharacter } from './state/use-character';
-export { useWorker } from './state/use-worker';
-
+export { useAvatar } from './state/use-avatar';
+export { useSimulationInitialized } from './state/use-simulation-initialized';
 export * from './types';
-
+export { createInitializeMessage } from './worker/create-initialize-message';
+export { createSetActivityMessage } from './worker/create-set-activity-message';
 export { useSimulationWorker } from './worker/use-simulation-worker';

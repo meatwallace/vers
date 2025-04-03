@@ -12,7 +12,7 @@ import QRCode from 'qrcode';
 import invariant from 'tiny-invariant';
 import { z } from 'zod';
 import { ContentContainer } from '~/components/content-container';
-import { FormErrorList } from '~/components/form-error-list.tsx';
+import { FormErrorList } from '~/components/form-error-list/form-error-list.tsx';
 import { RouteErrorBoundary } from '~/components/route-error-boundary.tsx';
 import { FinishEnable2FAMutation } from '~/data/mutations/finish-enable-2fa';
 import { VerifyOTPMutation } from '~/data/mutations/verify-otp';

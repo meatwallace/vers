@@ -2,7 +2,7 @@ import invariant from 'tiny-invariant';
 import type {
   Activity,
   ActivityCheckpointGenerator,
-  Character,
+  Avatar,
   CombatExecutor,
   SimulationContext,
 } from '../types';
@@ -15,7 +15,7 @@ import { createStartedCheckpoint } from './utils/create-started-checkpoint';
 export async function* simulateActivity(
   executor: CombatExecutor,
   activity: Activity,
-  character: Character,
+  avatar: Avatar,
   ctx: SimulationContext,
 ): ActivityCheckpointGenerator {
   invariant(activity, 'activity is required');
@@ -32,7 +32,7 @@ export async function* simulateActivity(
     `${label} starting combat with first group of ${activity.currentEnemyGroup?.enemies.length} enemies`,
   );
 
-  while (character.isAlive && activity.isEnemyGroupsRemaining) {
+  while (avatar.isAlive && activity.isEnemyGroupsRemaining) {
     executor.run(timestep);
 
     if (activity.currentEnemyGroup?.remaining === 0) {
@@ -48,7 +48,7 @@ export async function* simulateActivity(
     }
   }
 
-  if (!character.isAlive) {
+  if (!avatar.isAlive) {
     return createFailedCheckpoint(activity, ctx);
   }
 

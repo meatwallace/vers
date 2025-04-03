@@ -1,6 +1,6 @@
 import type {
   Activity,
-  Character,
+  Avatar,
   CombatEvent,
   CombatExecutor,
   CombatExecutorAppState,
@@ -11,7 +11,7 @@ import { handleEvent } from './handle-event';
 
 export function createCombatExecutor(
   activity: Activity,
-  character: Character,
+  avatar: Avatar,
   ctx: SimulationContext,
 ): CombatExecutor {
   let elapsed = 0;
@@ -26,12 +26,12 @@ export function createCombatExecutor(
   };
 
   const processEvents = () => {
-    const sortEvents = createEventSorter(character);
+    const sortEvents = createEventSorter(avatar);
 
     scheduledEvents.sort(sortEvents);
 
     scheduledEvents.map((event: CombatEvent) => {
-      handleEvent(event, character, activity, ctx);
+      handleEvent(event, avatar, activity, ctx);
     });
 
     scheduledEvents = [];
@@ -40,7 +40,7 @@ export function createCombatExecutor(
   const reset = () => {
     elapsed = 0;
 
-    character.reset({ soft: true });
+    avatar.reset({ soft: true });
   };
 
   const executor: CombatExecutor = {
@@ -58,7 +58,7 @@ export function createCombatExecutor(
   const run = (delta: number) => {
     elapsed += delta;
 
-    character.handleTick(executor, ctx);
+    avatar.handleTick(executor, ctx);
     activity.currentEnemyGroup?.enemies.map((enemy) =>
       enemy.handleTick(executor, ctx),
     );

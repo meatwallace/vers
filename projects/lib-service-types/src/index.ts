@@ -1,4 +1,4 @@
-export * from './service-character';
+export * from './service-avatar';
 export * from './service-email';
 export { ServiceID } from './service-id';
 export * from './service-session';

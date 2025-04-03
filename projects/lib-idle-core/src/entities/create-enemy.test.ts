@@ -5,7 +5,7 @@ import { createActivity } from '../core/create-activity';
 import { createCombatExecutor } from '../core/create-combat-executor';
 import { createEnemyGroup } from '../core/utils/create-enemy-group';
 import { createMockActivityData } from '../test-utils/create-mock-activity-data';
-import { createMockCharacterData } from '../test-utils/create-mock-character-data';
+import { createMockAvatarData } from '../test-utils/create-mock-avatar-data';
 import { createMockEnemyData } from '../test-utils/create-mock-enemy-data';
 import { createMockSimulationContext } from '../test-utils/create-mock-simulation-context';
 import {
@@ -14,7 +14,7 @@ import {
   EntityType,
   LifecycleEvent,
 } from '../types';
-import { createCharacter } from './create-character';
+import { createAvatar } from './create-avatar';
 import { createEnemy } from './create-enemy';
 
 test('it creates an enemy with correct initial values', () => {
@@ -67,12 +67,12 @@ test('it reduces life and updates status when killed', () => {
 
 test('it calls all registered handlers when handling a tick', () => {
   const ctx = createMockSimulationContext();
-  const characterData = createMockCharacterData();
-  const character = createCharacter(characterData, ctx);
+  const avatarData = createMockAvatarData();
+  const avatar = createAvatar(avatarData, ctx);
   const activityData = createMockActivityData();
   const activity = createActivity(activityData, ctx);
   const enemyGroup = createEnemyGroup(activityData, ctx, 1);
-  const combatExecutor = createCombatExecutor(activity, character, ctx);
+  const combatExecutor = createCombatExecutor(activity, avatar, ctx);
 
   const handlerSpy = vi.fn();
 
@@ -99,12 +99,12 @@ test('it calls all registered handlers when handling a tick', () => {
 
 test('it allows removing behaviours', () => {
   const ctx = createMockSimulationContext();
-  const characterData = createMockCharacterData();
-  const character = createCharacter(characterData, ctx);
+  const avatarData = createMockAvatarData();
+  const avatar = createAvatar(avatarData, ctx);
   const activityData = createMockActivityData();
   const activity = createActivity(activityData, ctx);
   const enemyGroup = createEnemyGroup(activityData, ctx, 1);
-  const combatExecutor = createCombatExecutor(activity, character, ctx);
+  const combatExecutor = createCombatExecutor(activity, avatar, ctx);
 
   const handlerSpy = vi.fn();
 
@@ -128,4 +128,32 @@ test('it allows removing behaviours', () => {
   enemy.handleTick(combatExecutor, ctx);
 
   expect(handlerSpy).not.toHaveBeenCalled();
+});
+
+test('it returns the expected enemy state for a client app', () => {
+  const ctx = createMockSimulationContext();
+  const data = createMockEnemyData();
+  const enemy = createEnemy(data, ctx);
+
+  const state = enemy.getAppState();
+
+  expect(state).toStrictEqual({
+    behaviours: {
+      enemyPrimaryAttack: {
+        lastAttackTime: expect.any(Number),
+      },
+    },
+    id: enemy.id,
+    isAlive: true,
+    level: enemy.level,
+    life: enemy.life,
+    maxLife: enemy.life,
+    name: enemy.name,
+    primaryAttack: {
+      maxDamage: expect.any(Number),
+      minDamage: expect.any(Number),
+      speed: expect.any(Number),
+    },
+    status: EntityStatus.Alive,
+  });
 });

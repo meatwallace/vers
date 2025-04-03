@@ -1,5 +1,5 @@
 import type {
-  Character,
+  Avatar,
   CombatExecutor,
   Enemy,
   Entity,
@@ -62,7 +62,7 @@ export type PlayerWeaponAttackBehaviourState = BehaviourState<{
 }>;
 
 export interface PlayerWeaponAttackBehaviour
-  extends IBehaviour<Character, PlayerWeaponAttackBehaviourState> {
+  extends IBehaviour<Avatar, PlayerWeaponAttackBehaviourState> {
   // meta
   readonly id: BehaviourID.PlayerWeaponAttack;
 
@@ -86,7 +86,7 @@ export interface EnemyPrimaryAttackBehaviour
 }
 
 export interface PlayerTestBehaviour
-  extends IBehaviour<Character, Record<never, never>> {
+  extends IBehaviour<Avatar, Record<never, never>> {
   readonly id: BehaviourID.Test;
 }
 
@@ -94,9 +94,7 @@ export interface EnemyTestBehaviour extends IBehaviour<Enemy> {
   readonly id: BehaviourID.Test;
 }
 
-export type CharacterBehaviour =
-  | PlayerTestBehaviour
-  | PlayerWeaponAttackBehaviour;
+export type AvatarBehaviour = PlayerTestBehaviour | PlayerWeaponAttackBehaviour;
 
 export type EnemyBehaviour = EnemyPrimaryAttackBehaviour | EnemyTestBehaviour;
 

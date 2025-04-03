@@ -2,15 +2,15 @@ import { expect, test } from 'vitest';
 import invariant from 'tiny-invariant';
 import { createActivity } from '../../core/create-activity';
 import { createCombatExecutor } from '../../core/create-combat-executor';
-import { createCharacter } from '../../entities/create-character';
+import { createAvatar } from '../../entities/create-avatar';
 import { createMockActivityData } from '../../test-utils/create-mock-activity-data';
-import { createMockCharacterData } from '../../test-utils/create-mock-character-data';
+import { createMockAvatarData } from '../../test-utils/create-mock-avatar-data';
 import { createMockEnemyData } from '../../test-utils/create-mock-enemy-data';
 import { createMockSimulationContext } from '../../test-utils/create-mock-simulation-context';
 import { isAttackReady } from './is-attack-ready';
 
 test('it returns true when elapsed time is equal or greater than the next attack time', () => {
-  const characterData = createMockCharacterData();
+  const avatarData = createMockAvatarData();
   const enemyData = createMockEnemyData({
     primaryAttack: {
       maxDamage: 10,
@@ -22,9 +22,9 @@ test('it returns true when elapsed time is equal or greater than the next attack
   const activityData = createMockActivityData({ enemies: [enemyData] });
 
   const ctx = createMockSimulationContext();
-  const character = createCharacter(characterData, ctx);
+  const avatar = createAvatar(avatarData, ctx);
   const activity = createActivity(activityData, ctx, { groupSize: 1 });
-  const executor = createCombatExecutor(activity, character, ctx);
+  const executor = createCombatExecutor(activity, avatar, ctx);
 
   const enemy = activity.currentEnemyGroup?.enemies[0];
 
@@ -42,7 +42,7 @@ test('it returns true when elapsed time is equal or greater than the next attack
 });
 
 test('it returns false when elapsed time is less than next attack time', () => {
-  const characterData = createMockCharacterData();
+  const avatarData = createMockAvatarData();
   const enemyData = createMockEnemyData({
     primaryAttack: {
       maxDamage: 10,
@@ -54,9 +54,9 @@ test('it returns false when elapsed time is less than next attack time', () => {
   const activityData = createMockActivityData({ enemies: [enemyData] });
 
   const ctx = createMockSimulationContext();
-  const character = createCharacter(characterData, ctx);
+  const avatar = createAvatar(avatarData, ctx);
   const activity = createActivity(activityData, ctx, { groupSize: 1 });
-  const executor = createCombatExecutor(activity, character, ctx);
+  const executor = createCombatExecutor(activity, avatar, ctx);
 
   const enemy = activity.currentEnemyGroup?.enemies[0];
 
@@ -68,7 +68,7 @@ test('it returns false when elapsed time is less than next attack time', () => {
 });
 
 test('it uses the last attacked time to calculate the next attack time', () => {
-  const characterData = createMockCharacterData();
+  const avatarData = createMockAvatarData();
   const enemyData = createMockEnemyData({
     primaryAttack: {
       maxDamage: 10,
@@ -80,9 +80,9 @@ test('it uses the last attacked time to calculate the next attack time', () => {
   const activityData = createMockActivityData({ enemies: [enemyData] });
 
   const ctx = createMockSimulationContext();
-  const character = createCharacter(characterData, ctx);
+  const avatar = createAvatar(avatarData, ctx);
   const activity = createActivity(activityData, ctx, { groupSize: 1 });
-  const executor = createCombatExecutor(activity, character, ctx);
+  const executor = createCombatExecutor(activity, avatar, ctx);
 
   const enemy = activity.currentEnemyGroup?.enemies[0];
 
@@ -102,7 +102,7 @@ test('it uses the last attacked time to calculate the next attack time', () => {
 });
 
 test('it returns false when the enemy is dead', () => {
-  const characterData = createMockCharacterData();
+  const avatarData = createMockAvatarData();
   const enemyData = createMockEnemyData({
     life: 1,
     primaryAttack: {
@@ -115,9 +115,9 @@ test('it returns false when the enemy is dead', () => {
   const activityData = createMockActivityData({ enemies: [enemyData] });
 
   const ctx = createMockSimulationContext();
-  const character = createCharacter(characterData, ctx);
+  const avatar = createAvatar(avatarData, ctx);
   const activity = createActivity(activityData, ctx, { groupSize: 1 });
-  const executor = createCombatExecutor(activity, character, ctx);
+  const executor = createCombatExecutor(activity, avatar, ctx);
 
   const enemy = activity.currentEnemyGroup?.enemies[0];
 

@@ -1,7 +1,7 @@
 import { expect, test } from 'vitest';
-import { createCharacter } from '../entities/create-character';
+import { createAvatar } from '../entities/create-avatar';
 import { createMockActivityData } from '../test-utils/create-mock-activity-data';
-import { createMockCharacterData } from '../test-utils/create-mock-character-data';
+import { createMockAvatarData } from '../test-utils/create-mock-avatar-data';
 import { createMockEnemyData } from '../test-utils/create-mock-enemy-data';
 import { createMockSimulationContext } from '../test-utils/create-mock-simulation-context';
 import {
@@ -17,7 +17,7 @@ import { createCombatExecutor } from './create-combat-executor';
 import { simulateActivity } from './simulate-activity';
 
 test('it immediately generates a started checkpoint', async () => {
-  const characterData = createMockCharacterData();
+  const avatarData = createMockAvatarData();
   const enemyData = createMockEnemyData();
 
   const activityData = createMockActivityData({
@@ -26,10 +26,10 @@ test('it immediately generates a started checkpoint', async () => {
 
   const ctx = createMockSimulationContext();
   const activity = createActivity(activityData, ctx);
-  const character = createCharacter(characterData, ctx);
-  const executor = createCombatExecutor(activity, character, ctx);
+  const avatar = createAvatar(avatarData, ctx);
+  const executor = createCombatExecutor(activity, avatar, ctx);
 
-  const generator = simulateActivity(executor, activity, character, ctx);
+  const generator = simulateActivity(executor, activity, avatar, ctx);
 
   const { value: firstCheckpoint } = await generator.next();
 
@@ -50,7 +50,7 @@ test('it generates enemy group killed checkpoints', async () => {
     speed: 6,
   };
 
-  const characterData = createMockCharacterData({
+  const avatarData = createMockAvatarData({
     paperdoll: {
       [EquipmentSlot.MainHand]: weapon,
     },
@@ -67,10 +67,10 @@ test('it generates enemy group killed checkpoints', async () => {
 
   const ctx = createMockSimulationContext();
   const activity = createActivity(activityData, ctx, { groupSize: 5 });
-  const character = createCharacter(characterData, ctx);
-  const executor = createCombatExecutor(activity, character, ctx);
+  const avatar = createAvatar(avatarData, ctx);
+  const executor = createCombatExecutor(activity, avatar, ctx);
 
-  const generator = simulateActivity(executor, activity, character, ctx);
+  const generator = simulateActivity(executor, activity, avatar, ctx);
 
   // skip the started checkpoint
   await generator.next(1000);
@@ -95,8 +95,8 @@ test('it generates enemy group killed checkpoints', async () => {
   });
 });
 
-test('it generates a failed checkpoint when the character dies', async () => {
-  const characterData = createMockCharacterData({ life: 1 });
+test('it generates a failed checkpoint when the avatar dies', async () => {
+  const avatarData = createMockAvatarData({ life: 1 });
 
   const enemyData = createMockEnemyData({
     life: 9999,
@@ -110,10 +110,10 @@ test('it generates a failed checkpoint when the character dies', async () => {
   const activityData = createMockActivityData({ enemies: [enemyData] });
   const ctx = createMockSimulationContext();
   const activity = createActivity(activityData, ctx);
-  const character = createCharacter(characterData, ctx);
-  const executor = createCombatExecutor(activity, character, ctx);
+  const avatar = createAvatar(avatarData, ctx);
+  const executor = createCombatExecutor(activity, avatar, ctx);
 
-  const generator = simulateActivity(executor, activity, character, ctx);
+  const generator = simulateActivity(executor, activity, avatar, ctx);
 
   let done = false;
   let checkpoint: ActivityCheckpoint | null = null;
@@ -145,7 +145,7 @@ test('it returns a completed checkpoint when all enemies are defeated', async ()
     speed: 6,
   };
 
-  const characterData = createMockCharacterData({
+  const avatarData = createMockAvatarData({
     paperdoll: {
       [EquipmentSlot.MainHand]: weapon,
     },
@@ -162,10 +162,10 @@ test('it returns a completed checkpoint when all enemies are defeated', async ()
 
   const ctx = createMockSimulationContext();
   const activity = createActivity(activityData, ctx);
-  const character = createCharacter(characterData, ctx);
-  const executor = createCombatExecutor(activity, character, ctx);
+  const avatar = createAvatar(avatarData, ctx);
+  const executor = createCombatExecutor(activity, avatar, ctx);
 
-  const generator = simulateActivity(executor, activity, character, ctx);
+  const generator = simulateActivity(executor, activity, avatar, ctx);
 
   let done = false;
   let checkpoint: ActivityCheckpoint | null = null;

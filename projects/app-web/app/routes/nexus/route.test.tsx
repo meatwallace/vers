@@ -1,4 +1,4 @@
-import { afterEach, expect, test, vi } from 'vitest';
+import { afterEach, expect, test } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { createRoutesStub } from 'react-router';
@@ -18,16 +18,6 @@ interface TestConfig {
     name?: string;
   };
 }
-
-// for now, stub out our worker initialisation
-vi.mock('@vers/idle-client', async (importOriginal) => {
-  const original = await importOriginal<typeof import('@vers/idle-client')>();
-
-  return {
-    ...original,
-    useSimulationWorker: () => true,
-  };
-});
 
 function setupTest(config: TestConfig) {
   const user = userEvent.setup();
@@ -53,6 +43,10 @@ function setupTest(config: TestConfig) {
       Component: () => 'LOGIN_ROUTE',
       path: Routes.Login,
     },
+    {
+      Component: () => 'AVATAR_CREATE_ROUTE',
+      path: Routes.AvatarCreate,
+    },
   ]);
 
   render(<NexusStub />);
@@ -70,10 +64,29 @@ test('it redirects to the login route when not authenticated', async () => {
   await screen.findByText('LOGIN_ROUTE');
 });
 
-test('it renders the nexus when authenticated', async () => {
+test('it renders the nexus when authenticated and a user has an avatar', async () => {
+  db.avatar.create({ userID: 'user_id' });
+
   setupTest({ isAuthed: true, user: { id: 'user_id', name: 'Test User' } });
 
-  const [aetherNode] = await screen.findAllByText(/Aether Node/i);
+  const nexus = await screen.findByText('Nexus');
 
-  expect(aetherNode).toBeInTheDocument();
+  expect(nexus).toBeInTheDocument();
+});
+
+test('it renders a call to action when a user does not have an avatar', async () => {
+  const { user } = setupTest({
+    isAuthed: true,
+    user: { id: 'user_id', name: 'Test User' },
+  });
+
+  const callToAction = await screen.findByText('Awaken your Avatar');
+
+  expect(callToAction).toBeInTheDocument();
+
+  await user.click(callToAction);
+
+  const avatarCreateRoute = await screen.findByText('AVATAR_CREATE_ROUTE');
+
+  expect(avatarCreateRoute).toBeInTheDocument();
 });

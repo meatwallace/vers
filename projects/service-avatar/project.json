@@ -1,0 +1,61 @@
+{
+  "name": "service-avatar",
+  "$schema": "../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "projects/service-avatar/src",
+  "projectType": "application",
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "@nx/esbuild:esbuild",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
+      "options": {
+        "platform": "node",
+        "outputPath": "projects/service-avatar/dist",
+        "format": ["esm"],
+        "bundle": true,
+        "main": "projects/service-avatar/src/main.ts",
+        "tsConfig": "projects/service-avatar/tsconfig.app.json",
+        "assets": ["projects/service-avatar/src/assets"],
+        "generatePackageJson": true,
+        "external": ["pino-pretty", "pino-sentry-transport", "@sentry/node"],
+        "esbuildConfig": "projects/service-avatar/esbuild.config.cjs"
+      }
+    },
+    "serve": {
+      "executor": "@nx/js:node",
+      "defaultConfiguration": "development",
+      "options": {
+        "buildTarget": "service-avatar:build"
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "service-avatar:build:development"
+        },
+        "production": {
+          "buildTarget": "service-avatar:build:production"
+        }
+      }
+    },
+    "deploy": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "flyctl deploy --local-only --dockerfile projects/service-avatar/Dockerfile --config projects/service-avatar/fly.toml --build-arg SENTRY_AUTH_TOKEN=$SENTRY_AUTH_TOKEN"
+        ]
+      }
+    },
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          {
+            "command": "tsc -p tsconfig.json --noEmit",
+            "forwardAllArgs": false
+          }
+        ],
+        "cwd": "projects/service-avatar"
+      }
+    }
+  }
+}

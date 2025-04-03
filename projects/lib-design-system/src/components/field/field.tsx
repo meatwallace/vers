@@ -1,35 +1,17 @@
 import * as React from 'react';
 import { Field as BaseField } from '@base-ui-components/react/field';
-import { css, cx } from '@vers/styled-system/css';
-import { stack } from '@vers/styled-system/patterns';
+import { cx } from '@vers/styled-system/css';
 import { Input } from '../input/input';
+import * as styles from './field.styles.ts';
 
 interface Props {
+  className?: string;
   errors: Array<string>;
   inputProps: React.ComponentProps<typeof Input>;
   labelProps: React.ComponentProps<typeof BaseField.Label> & {
     className?: string;
   };
 }
-
-const container = stack({
-  gap: '2',
-  marginBottom: '3',
-  maxWidth: '96',
-});
-
-const label = css({
-  color: 'slate.200',
-  fontFamily: 'karla',
-  fontSize: 'sm',
-  fontWeight: 'semibold',
-  lineHeight: 'normal',
-});
-
-const errorStyle = css({
-  color: 'red.500',
-  fontSize: 'sm',
-});
 
 export function Field(props: Props) {
   const fallbackID = React.useId();
@@ -38,10 +20,10 @@ export function Field(props: Props) {
   const [firstError] = props.errors;
 
   return (
-    <BaseField.Root className={container} id={id}>
+    <BaseField.Root className={cx(styles.container, props.className)} id={id}>
       <BaseField.Label
         {...props.labelProps}
-        className={cx(label, props.labelProps.className)}
+        className={cx(styles.label, props.labelProps.className)}
       />
       <Input
         {...props.inputProps}
@@ -50,7 +32,7 @@ export function Field(props: Props) {
         aria-invalid={props.errors.length > 0}
         id={id}
       />
-      <BaseField.Error className={errorStyle} id={errorID} forceShow>
+      <BaseField.Error className={styles.errorStyle} id={errorID} forceShow>
         {firstError}
       </BaseField.Error>
     </BaseField.Root>

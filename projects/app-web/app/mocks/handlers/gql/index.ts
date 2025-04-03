@@ -1,3 +1,8 @@
+import { CreateAvatar } from './avatars/create-avatar';
+import { DeleteAvatar } from './avatars/delete-avatar';
+import { GetAvatar } from './avatars/get-avatar';
+import { GetAvatars } from './avatars/get-avatars';
+import { UpdateAvatar } from './avatars/update-avatar';
 import { ChangeUserPassword } from './change-user-password';
 import { DeleteSession } from './delete-session';
 import { FinishChangeUserEmail } from './finish-change-user-email';
@@ -45,4 +50,11 @@ export const handlers = [
   FinishChangeUserEmail,
   GetCurrentUser,
   StartChangeUserEmail,
+
+  // avatars
+  CreateAvatar,
+  DeleteAvatar,
+  GetAvatar,
+  GetAvatars,
+  UpdateAvatar,
 ];

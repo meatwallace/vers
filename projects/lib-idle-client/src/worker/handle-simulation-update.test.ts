@@ -1,5 +1,5 @@
 import { afterEach, expect, test, vi } from 'vitest';
-import { createMockCharacterData, createSimulation } from '@vers/idle-core';
+import { createSimulation } from '@vers/idle-core';
 import xxhash from 'xxhash-wasm';
 import { WorkerMessageType } from '../types';
 import { connections } from './connections';
@@ -30,9 +30,7 @@ test('it sends simulation update messages to all connections', () => {
 
   connections.add(mockPort);
 
-  const characterData = createMockCharacterData();
-
-  const simulation = createSimulation(characterData, 123, hasher);
+  const simulation = createSimulation(hasher);
 
   setSimulation(simulation);
 

@@ -1,29 +1,26 @@
 import { expect, test, vi } from 'vitest';
 import xxhash from 'xxhash-wasm';
 import { createMockActivityData } from '../test-utils/create-mock-activity-data';
-import { createMockCharacterData } from '../test-utils/create-mock-character-data';
+import { createMockAvatarData } from '../test-utils/create-mock-avatar-data';
 import { ActivityCheckpointType } from '../types';
 import { createSimulation } from './create-simulation';
 
 const hasher = await xxhash();
 
 test('it initializes with the expected values', () => {
-  const characterData = createMockCharacterData();
-  const seed = 12_345;
+  const simulation = createSimulation(hasher);
 
-  const simulation = createSimulation(characterData, seed, hasher);
-
-  expect(simulation.seed).toBe(seed);
   expect(simulation.elapsed).toBe(0);
   expect(simulation.activity).toBeNull();
 });
 
 test('it starts an activity', () => {
-  const characterData = createMockCharacterData();
-  const simulation = createSimulation(characterData, 12_345, hasher);
+  const avatarData = createMockAvatarData();
   const activityData = createMockActivityData();
 
-  simulation.startActivity(activityData);
+  const simulation = createSimulation(hasher);
+
+  simulation.startActivity(avatarData, activityData);
 
   expect(simulation.activity).toMatchObject({
     id: activityData.id,
@@ -32,25 +29,27 @@ test('it starts an activity', () => {
 });
 
 test('it calls an event listener when starting an activity', () => {
-  const characterData = createMockCharacterData();
-  const simulation = createSimulation(characterData, 12_345, hasher);
+  const avatarData = createMockAvatarData();
   const activityData = createMockActivityData();
+
+  const simulation = createSimulation(hasher);
 
   const listenerSpy = vi.fn();
 
   simulation.addEventListener('started', listenerSpy);
-  simulation.startActivity(activityData);
+  simulation.startActivity(avatarData, activityData);
 
   expect(listenerSpy).toHaveBeenCalledOnce();
   expect(listenerSpy).toHaveBeenCalledWith(simulation.state);
 });
 
 test('it stops an activity', async () => {
-  const characterData = createMockCharacterData();
-  const simulation = createSimulation(characterData, 12_345, hasher);
+  const avatarData = createMockAvatarData();
   const activityData = createMockActivityData();
 
-  simulation.startActivity(activityData);
+  const simulation = createSimulation(hasher);
+
+  simulation.startActivity(avatarData, activityData);
 
   await simulation.stopActivity();
 
@@ -58,14 +57,15 @@ test('it stops an activity', async () => {
 });
 
 test('it calls an event listener when stopping an activity', async () => {
-  const characterData = createMockCharacterData();
-  const simulation = createSimulation(characterData, 12_345, hasher);
+  const avatarData = createMockAvatarData();
   const activityData = createMockActivityData();
+
+  const simulation = createSimulation(hasher);
 
   const listenerSpy = vi.fn();
 
   simulation.addEventListener('stopped', listenerSpy);
-  simulation.startActivity(activityData);
+  simulation.startActivity(avatarData, activityData);
 
   await simulation.stopActivity();
 
@@ -74,11 +74,12 @@ test('it calls an event listener when stopping an activity', async () => {
 });
 
 test('it restarts an activity', () => {
-  const characterData = createMockCharacterData();
-  const simulation = createSimulation(characterData, 12_345, hasher);
+  const avatarData = createMockAvatarData();
   const activityData = createMockActivityData();
 
-  simulation.startActivity(activityData);
+  const simulation = createSimulation(hasher);
+
+  simulation.startActivity(avatarData, activityData);
 
   const originalActivity = simulation.activity;
 
@@ -89,14 +90,15 @@ test('it restarts an activity', () => {
 });
 
 test('it calls an event listener when restarting an activity', () => {
-  const characterData = createMockCharacterData();
-  const simulation = createSimulation(characterData, 12_345, hasher);
+  const avatarData = createMockAvatarData();
   const activityData = createMockActivityData();
+
+  const simulation = createSimulation(hasher);
 
   const listenerSpy = vi.fn();
 
   simulation.addEventListener('restarted', listenerSpy);
-  simulation.startActivity(activityData);
+  simulation.startActivity(avatarData, activityData);
 
   simulation.restartActivity();
 
@@ -104,28 +106,29 @@ test('it calls an event listener when restarting an activity', () => {
   expect(listenerSpy).toHaveBeenCalledWith(simulation.state);
 });
 
-test('it resets the character when restarting an activity', () => {
-  const characterData = createMockCharacterData({ life: 100 });
-  const simulation = createSimulation(characterData, 12_345, hasher);
+test('it resets the avatar when restarting an activity', () => {
+  const avatarData = createMockAvatarData({ life: 100 });
   const activityData = createMockActivityData();
 
-  simulation.startActivity(activityData);
+  const simulation = createSimulation(hasher);
 
-  simulation.state.character.receiveDamage(50);
+  simulation.startActivity(avatarData, activityData);
 
-  expect(simulation.state.character.life).toBe(50);
+  simulation.state.avatar?.receiveDamage(50);
+
+  expect(simulation.state.avatar?.life).toBe(50);
 
   simulation.restartActivity();
 
-  expect(simulation.state.character.life).toBe(100);
+  expect(simulation.state.avatar?.life).toBe(100);
 });
 
 test('it runs an activity and returns checkpoints', async () => {
-  const characterData = createMockCharacterData();
-  const simulation = createSimulation(characterData, 12_345, hasher);
+  const avatarData = createMockAvatarData();
+  const simulation = createSimulation(hasher);
   const activityData = createMockActivityData();
 
-  simulation.startActivity(activityData);
+  simulation.startActivity(avatarData, activityData);
 
   const firstCheckpoint = await simulation.run(100);
 
@@ -149,14 +152,14 @@ test('it runs an activity and returns checkpoints', async () => {
 });
 
 test('it calls an event listener when the state updates', async () => {
-  const characterData = createMockCharacterData();
-  const simulation = createSimulation(characterData, 12_345, hasher);
+  const avatarData = createMockAvatarData();
+  const simulation = createSimulation(hasher);
   const activityData = createMockActivityData();
 
   const listenerSpy = vi.fn();
 
   simulation.addEventListener('updated', listenerSpy);
-  simulation.startActivity(activityData);
+  simulation.startActivity(avatarData, activityData);
 
   // skip our initialisation state
   await simulation.run(1);
@@ -166,4 +169,16 @@ test('it calls an event listener when the state updates', async () => {
 
   expect(listenerSpy).toHaveBeenCalledOnce();
   expect(listenerSpy).toHaveBeenCalledWith(simulation.state);
+});
+
+test('it returns the expected simulation state for a client app', () => {
+  const simulation = createSimulation(hasher);
+
+  const state = simulation.getAppState();
+
+  expect(state).toStrictEqual({
+    activity: undefined,
+    avatar: undefined,
+    combat: undefined,
+  });
 });

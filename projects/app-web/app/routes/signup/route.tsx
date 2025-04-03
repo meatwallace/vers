@@ -14,7 +14,7 @@ import { UserEmailSchema } from '@vers/validation';
 import { HoneypotInputs } from 'remix-utils/honeypot/react';
 import invariant from 'tiny-invariant';
 import { z } from 'zod';
-import { FormErrorList } from '~/components/form-error-list.tsx';
+import { FormErrorList } from '~/components/form-error-list/form-error-list.tsx';
 import { RouteErrorBoundary } from '~/components/route-error-boundary.tsx';
 import { StartEmailSignupMutation } from '~/data/mutations/start-email-signup.ts';
 import { VerificationType } from '~/gql/graphql.ts';

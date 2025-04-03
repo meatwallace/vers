@@ -1,7 +1,7 @@
 import { afterEach, expect, test } from 'vitest';
 import {
   createMockActivityData,
-  createMockCharacterData,
+  createMockAvatarData,
   createSimulation,
 } from '@vers/idle-core';
 import xxhash from 'xxhash-wasm';
@@ -17,11 +17,7 @@ afterEach(() => {
 });
 
 test('it handles initialization messages', async () => {
-  const characterData = createMockCharacterData();
-
   const message: InitializeMessage = {
-    character: characterData,
-    seed: 123,
     type: ClientMessageType.Initialize,
   };
 
@@ -31,15 +27,12 @@ test('it handles initialization messages', async () => {
 
   const simulation = getSimulation();
 
-  expect(simulation?.state.character).toMatchObject({
-    id: characterData.id,
-    level: characterData.level,
-  });
+  expect(simulation).not.toBeNull();
 });
 
 test('it handles setting the activity', async () => {
-  const characterData = createMockCharacterData();
-  const simulation = createSimulation(characterData, 123, hasher);
+  const avatar = createMockAvatarData();
+  const simulation = createSimulation(hasher);
 
   setSimulation(simulation);
 
@@ -47,6 +40,7 @@ test('it handles setting the activity', async () => {
 
   const message: SetActivityMessage = {
     activity,
+    avatar,
     type: ClientMessageType.SetActivity,
   };
 
@@ -55,4 +49,5 @@ test('it handles setting the activity', async () => {
   await handleClientMessage(event);
 
   expect(simulation.activity?.id).toBe(activity.id);
+  expect(simulation.avatar?.id).toBe(avatar.id);
 });

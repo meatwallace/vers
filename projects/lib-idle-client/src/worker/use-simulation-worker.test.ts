@@ -1,14 +1,13 @@
 import { afterEach, expect, test } from 'vitest';
 import { renderHook } from '@testing-library/react';
 import { postMessageAndWaitForReply } from '@vers/client-test-utils';
-import {
-  createMockActivityData,
-  createMockCharacterData,
-} from '@vers/idle-core';
+import { createMockActivityData, createMockAvatarData } from '@vers/idle-core';
+import { setSimulationWorker } from 'src/state/set-simulation-worker';
 import invariant from 'tiny-invariant';
 import type { InitializeMessage, SetActivityMessage } from '../types';
 import { ClientMessageType, WorkerMessageType } from '../types';
 import { useSimulationWorker } from './use-simulation-worker';
+import SimulationWorker from './worker.ts?sharedworker';
 
 function wait(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -32,21 +31,26 @@ test('it initializes the worker connection', () => {
   unmount();
 });
 
-test.todo('it returns an existing worker instead of creating a new one');
+test('it returns an existing worker instead of creating a new one', () => {
+  const worker = new SimulationWorker();
+
+  setSimulationWorker(worker);
+
+  const { result } = renderHook(() => useSimulationWorker());
+
+  expect(result.current).toBe(worker);
+});
 
 test('it handles state updates from worker', async () => {
   const { rerender, result } = renderHook(() => useSimulationWorker());
 
   rerender();
 
-  const characterData = createMockCharacterData();
   expect(result.current).toBeInstanceOf(SharedWorker);
 
   invariant(result.current, 'Worker not initialized');
 
   const initializeMessage: InitializeMessage = {
-    character: characterData,
-    seed: 123,
     type: ClientMessageType.Initialize,
   };
 
@@ -59,6 +63,7 @@ test('it handles state updates from worker', async () => {
 
   const setActivityMessage: SetActivityMessage = {
     activity: createMockActivityData(),
+    avatar: createMockAvatarData(),
     type: ClientMessageType.SetActivity,
   };
 
