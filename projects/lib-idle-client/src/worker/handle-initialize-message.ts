@@ -9,6 +9,7 @@ import { handleSimulationStopped } from './handle-simulation-stopped';
 import { handleSimulationUpdate } from './handle-simulation-update';
 import { getSimulation, setSimulation } from './simulation';
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export async function handleInitializeMessage(message: InitializeMessage) {
   const hasher = await xxhash();
 
@@ -17,7 +18,7 @@ export async function handleInitializeMessage(message: InitializeMessage) {
     return;
   }
 
-  const simulation = createSimulation(message.character, message.seed, hasher);
+  const simulation = createSimulation(hasher);
 
   setSimulation(simulation);
 

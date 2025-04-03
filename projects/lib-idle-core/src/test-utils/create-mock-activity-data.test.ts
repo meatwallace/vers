@@ -22,6 +22,7 @@ test('it creates activity data with expected properties', () => {
     failureAction: ActivityFailureAction.Retry,
     id: expect.any(String),
     name: 'Aether Node',
+    seed: expect.any(Number),
     type: ActivityType.AetherNode,
   });
 });
@@ -34,6 +35,7 @@ test('it creates activity data with custom properties', () => {
     failureAction: ActivityFailureAction.Abort,
     id: 'custom-activity',
     name: 'Custom Activity',
+    seed: 123,
     type: ActivityType.AetherNode,
   });
 
@@ -42,6 +44,7 @@ test('it creates activity data with custom properties', () => {
     failureAction: ActivityFailureAction.Abort,
     id: 'custom-activity',
     name: 'Custom Activity',
+    seed: 123,
     type: ActivityType.AetherNode,
   });
 });

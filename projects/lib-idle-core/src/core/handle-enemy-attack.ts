@@ -1,23 +1,23 @@
-import type { Activity, Character, EnemyAttackEvent } from '../types';
+import type { Activity, Avatar, EnemyAttackEvent } from '../types';
 import { createLogLabel } from '../utils/create-log-label';
 import { logger } from '../utils/logger';
 
 export function handleEnemyAttack(
   event: EnemyAttackEvent,
-  character: Character,
+  avatar: Avatar,
   activity: Activity,
 ) {
   const enemy = activity.currentEnemyGroup?.enemies.find(
     (enemy) => enemy.id === event.source,
   );
 
-  if (enemy?.isAlive && character.isAlive) {
+  if (enemy?.isAlive && avatar.isAlive) {
     const label = createLogLabel('enemy', event.source);
 
     const damage = enemy.calcAttackDamage();
 
-    logger.debug(`${label} --> ${damage} damage to ${character.id}`);
+    logger.debug(`${label} --> ${damage} damage to ${avatar.id}`);
 
-    character.receiveDamage(damage);
+    avatar.receiveDamage(damage);
   }
 }

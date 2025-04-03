@@ -25,7 +25,7 @@ import type {
   ForceLogoutPayload,
   TwoFactorLoginPayload,
 } from '~/gql/graphql.ts';
-import { FormErrorList } from '~/components/form-error-list.tsx';
+import { FormErrorList } from '~/components/form-error-list/form-error-list.tsx';
 import { RouteErrorBoundary } from '~/components/route-error-boundary.tsx';
 import { LoginWithPasswordMutation } from '~/data/mutations/login-with-password';
 import { VerificationType } from '~/gql/graphql.ts';

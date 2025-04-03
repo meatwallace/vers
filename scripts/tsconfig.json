@@ -5,6 +5,7 @@
     "baseUrl": ".",
     "paths": {
       "~/*": ["./*"],
+      "@vers/data": ["../projects/lib-data/src/index.ts"],
       "@vers/email-templates": ["../projects/lib-email-templates/src/index.ts"],
       "@vers/postgres-schema": ["../projects/lib-postgres-schema/src/index.ts"],
       "@vers/service-test-utils": [

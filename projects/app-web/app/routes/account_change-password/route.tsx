@@ -5,7 +5,7 @@ import { Field, Heading, StatusButton, Text } from '@vers/design-system';
 import invariant from 'tiny-invariant';
 import { z } from 'zod';
 import { ContentContainer } from '~/components/content-container';
-import { FormErrorList } from '~/components/form-error-list.tsx';
+import { FormErrorList } from '~/components/form-error-list/form-error-list.tsx';
 import { RouteErrorBoundary } from '~/components/route-error-boundary.tsx';
 import { ChangeUserPasswordMutation } from '~/data/mutations/change-user-password.ts';
 import { StartStepUpAuthMutation } from '~/data/mutations/start-step-up-auth.ts';

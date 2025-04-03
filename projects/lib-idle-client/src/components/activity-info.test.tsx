@@ -11,6 +11,7 @@ test('it renders info about the provided activity', () => {
     enemiesRemaining: 20,
     enemyGroups: [],
     enemyGroupsRemaining: 4,
+    id: 'test-activity',
     name: 'Test Activity',
   };
 

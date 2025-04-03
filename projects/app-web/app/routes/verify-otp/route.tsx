@@ -20,7 +20,7 @@ import { HoneypotInputs } from 'remix-utils/honeypot/react';
 import invariant from 'tiny-invariant';
 import { z } from 'zod';
 import type { SessionKey } from '~/session/verify-session-storage.server.ts';
-import { FormErrorList } from '~/components/form-error-list.tsx';
+import { FormErrorList } from '~/components/form-error-list/form-error-list.tsx';
 import { RouteErrorBoundary } from '~/components/route-error-boundary.tsx';
 import { VerifyOTPMutation } from '~/data/mutations/verify-otp.ts';
 import { VerificationType } from '~/gql/graphql.ts';
@@ -173,13 +173,13 @@ const INSTRUCTION_BY_TYPE: Record<VerificationType, string> = {
   [VerificationType.ChangeEmail]:
     'To start changing your email address, please enter your six digit code from your authenticator app',
   [VerificationType.ChangeEmailConfirmation]:
-    "To confirm your new email address, please enter the six character code we've sent to your email",
+    "To confirm your new email address, please enter the six avatar code we've sent to your email",
   [VerificationType.ChangePassword]:
     'To start changing your password, please enter your six digit code from your authenticator app',
   [VerificationType.Onboarding]:
-    "To complete your account creation, please enter the six character code we've sent to your email",
+    "To complete your account creation, please enter the six avatar code we've sent to your email",
   [VerificationType.ResetPassword]:
-    "To reset your password, please enter the six character code we've sent to your email",
+    "To reset your password, please enter the six avatar code we've sent to your email",
   [VerificationType.TwoFactorAuth]:
     'To log in, please enter the six digit code from your authenticator app',
   [VerificationType.TwoFactorAuthDisable]:

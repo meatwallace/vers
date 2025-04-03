@@ -6,16 +6,16 @@ import { createInitialStateMessage } from './create-initial-state-message';
 
 test('it creates an initial state message', () => {
   const state: SimulationAppState = {
-    character: {
+    avatar: {
       behaviours: {},
       id: '1',
-      image: '/assets/images/character-placeholder.png',
+      image: '/assets/images/avatar-placeholder.png',
       isAlive: true,
       level: 1,
       life: 100,
       mainHandAttack: null,
       maxLife: 100,
-      name: 'Test Character',
+      name: 'Test Avatar',
       status: EntityStatus.Alive,
     },
     combat: { elapsed: 0 },

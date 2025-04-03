@@ -1,5 +1,5 @@
 import type { TRPCClient } from '@trpc/client';
-import type { ServiceRouter as CharacterServiceRouter } from '@vers/service-character';
+import type { ServiceRouter as AvatarServiceRouter } from '@vers/service-avatar';
 import type { ServiceRouter as EmailServiceRouter } from '@vers/service-email';
 import type { ServiceRouter as SessionServiceRouter } from '@vers/service-session';
 import type { SessionData, UserData } from '@vers/service-types';
@@ -41,7 +41,7 @@ export interface AnonymousContext {
 export type Context = AnonymousContext | AuthedContext | UnverifiedAuthContext;
 
 export interface Services {
-  character: TRPCClient<CharacterServiceRouter>;
+  avatar: TRPCClient<AvatarServiceRouter>;
   email: TRPCClient<EmailServiceRouter>;
   session: TRPCClient<SessionServiceRouter>;
   user: TRPCClient<UserServiceRouter>;

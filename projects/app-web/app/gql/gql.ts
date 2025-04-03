@@ -15,6 +15,7 @@ import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/
  */
 type Documents = {
     "\n  mutation ChangeUserPassword($input: ChangeUserPasswordInput!) {\n    changeUserPassword(input: $input) {\n      ... on MutationSuccess {\n        success\n      }\n\n      ... on MutationErrorPayload {\n        error {\n          title\n          message\n        }\n      }\n    }\n  }\n": typeof types.ChangeUserPasswordDocument,
+    "\n  mutation CreateAvatar($input: CreateAvatarInput!) {\n    createAvatar(input: $input) {\n      ... on Avatar {\n        id\n      }\n\n      ... on MutationErrorPayload {\n        error {\n          title\n          message\n        }\n      }\n    }\n  }\n": typeof types.CreateAvatarDocument,
     "\n  mutation DeleteSession($input: DeleteSessionInput!) {\n    deleteSession(input: $input) {\n      ... on MutationSuccess {\n        success\n      }\n\n      ... on MutationErrorPayload {\n        error {\n          title\n          message\n        }\n      }\n    }\n  }\n": typeof types.DeleteSessionDocument,
     "\n  mutation FinishChangeUserEmail($input: FinishChangeUserEmailInput!) {\n    finishChangeUserEmail(input: $input) {\n      ... on MutationSuccess {\n        success\n      }\n\n      ... on MutationErrorPayload {\n        error {\n          title\n          message\n        }\n      }\n    }\n  }\n": typeof types.FinishChangeUserEmailDocument,
     "\n  mutation FinishDisable2FA($input: FinishDisable2FAInput!) {\n    finishDisable2FA(input: $input) {\n      ... on MutationSuccess {\n        success\n      }\n\n      ... on MutationErrorPayload {\n        error {\n          title\n          message\n        }\n      }\n    }\n  }\n": typeof types.FinishDisable2FaDocument,
@@ -31,11 +32,13 @@ type Documents = {
     "\n  mutation StartPasswordReset($input: StartPasswordResetInput!) {\n    startPasswordReset(input: $input) {\n      ... on MutationSuccess {\n        success\n      }\n\n      ... on VerificationRequiredPayload {\n        transactionID\n      }\n\n      ... on MutationErrorPayload {\n        error {\n          title\n          message\n        }\n      }\n    }\n  }\n": typeof types.StartPasswordResetDocument,
     "\n  mutation StartStepUpAuth($input: StartStepUpAuthInput!) {\n    startStepUpAuth(input: $input) {\n      ... on VerificationRequiredPayload {\n        transactionID\n      }\n\n      ... on MutationErrorPayload {\n        error {\n          title\n          message\n        }\n      }\n    }\n  }\n": typeof types.StartStepUpAuthDocument,
     "\n  mutation VerifyOTP($input: VerifyOTPInput!) {\n    verifyOTP(input: $input) {\n      ... on TwoFactorSuccessPayload {\n        transactionToken\n      }\n\n      ... on MutationErrorPayload {\n        error {\n          title\n          message\n        }\n      }\n    }\n  }\n": typeof types.VerifyOtpDocument,
+    "\n  query GetAvatars($input: GetAvatarsInput!) {\n    getAvatars(input: $input) {\n      id\n      name\n      class\n      level\n      xp\n      createdAt\n    }\n  }\n": typeof types.GetAvatarsDocument,
     "\n  query GetCurrentUser {\n    getCurrentUser {\n      id\n      username\n      name\n      email\n      is2FAEnabled\n    }\n  }\n": typeof types.GetCurrentUserDocument,
     "\n  query GetEnable2FAVerification {\n    getEnable2FAVerification {\n      otpURI\n    }\n  }\n": typeof types.GetEnable2FaVerificationDocument,
 };
 const documents: Documents = {
     "\n  mutation ChangeUserPassword($input: ChangeUserPasswordInput!) {\n    changeUserPassword(input: $input) {\n      ... on MutationSuccess {\n        success\n      }\n\n      ... on MutationErrorPayload {\n        error {\n          title\n          message\n        }\n      }\n    }\n  }\n": types.ChangeUserPasswordDocument,
+    "\n  mutation CreateAvatar($input: CreateAvatarInput!) {\n    createAvatar(input: $input) {\n      ... on Avatar {\n        id\n      }\n\n      ... on MutationErrorPayload {\n        error {\n          title\n          message\n        }\n      }\n    }\n  }\n": types.CreateAvatarDocument,
     "\n  mutation DeleteSession($input: DeleteSessionInput!) {\n    deleteSession(input: $input) {\n      ... on MutationSuccess {\n        success\n      }\n\n      ... on MutationErrorPayload {\n        error {\n          title\n          message\n        }\n      }\n    }\n  }\n": types.DeleteSessionDocument,
     "\n  mutation FinishChangeUserEmail($input: FinishChangeUserEmailInput!) {\n    finishChangeUserEmail(input: $input) {\n      ... on MutationSuccess {\n        success\n      }\n\n      ... on MutationErrorPayload {\n        error {\n          title\n          message\n        }\n      }\n    }\n  }\n": types.FinishChangeUserEmailDocument,
     "\n  mutation FinishDisable2FA($input: FinishDisable2FAInput!) {\n    finishDisable2FA(input: $input) {\n      ... on MutationSuccess {\n        success\n      }\n\n      ... on MutationErrorPayload {\n        error {\n          title\n          message\n        }\n      }\n    }\n  }\n": types.FinishDisable2FaDocument,
@@ -52,6 +55,7 @@ const documents: Documents = {
     "\n  mutation StartPasswordReset($input: StartPasswordResetInput!) {\n    startPasswordReset(input: $input) {\n      ... on MutationSuccess {\n        success\n      }\n\n      ... on VerificationRequiredPayload {\n        transactionID\n      }\n\n      ... on MutationErrorPayload {\n        error {\n          title\n          message\n        }\n      }\n    }\n  }\n": types.StartPasswordResetDocument,
     "\n  mutation StartStepUpAuth($input: StartStepUpAuthInput!) {\n    startStepUpAuth(input: $input) {\n      ... on VerificationRequiredPayload {\n        transactionID\n      }\n\n      ... on MutationErrorPayload {\n        error {\n          title\n          message\n        }\n      }\n    }\n  }\n": types.StartStepUpAuthDocument,
     "\n  mutation VerifyOTP($input: VerifyOTPInput!) {\n    verifyOTP(input: $input) {\n      ... on TwoFactorSuccessPayload {\n        transactionToken\n      }\n\n      ... on MutationErrorPayload {\n        error {\n          title\n          message\n        }\n      }\n    }\n  }\n": types.VerifyOtpDocument,
+    "\n  query GetAvatars($input: GetAvatarsInput!) {\n    getAvatars(input: $input) {\n      id\n      name\n      class\n      level\n      xp\n      createdAt\n    }\n  }\n": types.GetAvatarsDocument,
     "\n  query GetCurrentUser {\n    getCurrentUser {\n      id\n      username\n      name\n      email\n      is2FAEnabled\n    }\n  }\n": types.GetCurrentUserDocument,
     "\n  query GetEnable2FAVerification {\n    getEnable2FAVerification {\n      otpURI\n    }\n  }\n": types.GetEnable2FaVerificationDocument,
 };
@@ -74,6 +78,10 @@ export function graphql(source: string): unknown;
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  mutation ChangeUserPassword($input: ChangeUserPasswordInput!) {\n    changeUserPassword(input: $input) {\n      ... on MutationSuccess {\n        success\n      }\n\n      ... on MutationErrorPayload {\n        error {\n          title\n          message\n        }\n      }\n    }\n  }\n"): (typeof documents)["\n  mutation ChangeUserPassword($input: ChangeUserPasswordInput!) {\n    changeUserPassword(input: $input) {\n      ... on MutationSuccess {\n        success\n      }\n\n      ... on MutationErrorPayload {\n        error {\n          title\n          message\n        }\n      }\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation CreateAvatar($input: CreateAvatarInput!) {\n    createAvatar(input: $input) {\n      ... on Avatar {\n        id\n      }\n\n      ... on MutationErrorPayload {\n        error {\n          title\n          message\n        }\n      }\n    }\n  }\n"): (typeof documents)["\n  mutation CreateAvatar($input: CreateAvatarInput!) {\n    createAvatar(input: $input) {\n      ... on Avatar {\n        id\n      }\n\n      ... on MutationErrorPayload {\n        error {\n          title\n          message\n        }\n      }\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
@@ -138,6 +146,10 @@ export function graphql(source: "\n  mutation StartStepUpAuth($input: StartStepU
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  mutation VerifyOTP($input: VerifyOTPInput!) {\n    verifyOTP(input: $input) {\n      ... on TwoFactorSuccessPayload {\n        transactionToken\n      }\n\n      ... on MutationErrorPayload {\n        error {\n          title\n          message\n        }\n      }\n    }\n  }\n"): (typeof documents)["\n  mutation VerifyOTP($input: VerifyOTPInput!) {\n    verifyOTP(input: $input) {\n      ... on TwoFactorSuccessPayload {\n        transactionToken\n      }\n\n      ... on MutationErrorPayload {\n        error {\n          title\n          message\n        }\n      }\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query GetAvatars($input: GetAvatarsInput!) {\n    getAvatars(input: $input) {\n      id\n      name\n      class\n      level\n      xp\n      createdAt\n    }\n  }\n"): (typeof documents)["\n  query GetAvatars($input: GetAvatarsInput!) {\n    getAvatars(input: $input) {\n      id\n      name\n      class\n      level\n      xp\n      createdAt\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

@@ -29,6 +29,9 @@ export default [
     ),
     route(Routes.AccountVerify2FA, 'routes/account_verify-2fa/route.tsx'),
     route(Routes.Aether, 'routes/aether/route.tsx'),
+    route(Routes.AetherNode, 'routes/aether_node/route.tsx'),
+    route(Routes.Avatar, 'routes/avatar/route.tsx'),
+    route(Routes.AvatarCreate, 'routes/avatar_create/route.tsx'),
   ]),
 
   route('*', 'routes/splat/route.tsx'),

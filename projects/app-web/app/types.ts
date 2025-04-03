@@ -22,8 +22,10 @@ export enum Routes {
 
   // game
   Aether = '/aether',
+  AetherNode = '/aether/current',
   Arena = '/arena',
-  Character = '/character',
+  Avatar = '/avatar',
+  AvatarCreate = '/avatar/create',
   Forge = '/forge',
   Nexus = '/nexus',
   Stash = '/stash',

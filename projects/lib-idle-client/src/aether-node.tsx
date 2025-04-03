@@ -2,16 +2,16 @@ import { Spinner } from '@vers/design-system';
 import { cx } from '@vers/styled-system/css';
 import * as styles from './aether-node.styles.ts';
 import { ActivityInfo } from './components/activity-info';
-import { CharacterInfo } from './components/character-info';
+import { AvatarInfo } from './components/avatar-info';
 import { EnemyInfo } from './components/enemy-info';
 import { useActivity } from './state/use-activity';
-import { useCharacter } from './state/use-character';
+import { useAvatar } from './state/use-avatar';
 
 export function AetherNode() {
   const activity = useActivity();
-  const character = useCharacter();
+  const avatar = useAvatar();
 
-  if (!activity || !character) {
+  if (!activity || !avatar) {
     return <Spinner />;
   }
 
@@ -19,9 +19,9 @@ export function AetherNode() {
 
   return (
     <div className={styles.container}>
-      <section className={cx(styles.section, styles.characterSection)}>
+      <section className={cx(styles.section, styles.avatarSection)}>
         <ActivityInfo activity={activity} />
-        <CharacterInfo character={character} />
+        <AvatarInfo avatar={avatar} />
       </section>
       <section className={cx(styles.section, styles.enemySection)}>
         {enemies.map((enemy) => (

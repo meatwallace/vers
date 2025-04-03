@@ -1,4 +1,4 @@
-import type { ServiceRouter as CharacterServiceRouter } from '@vers/service-character';
+import type { ServiceRouter as AvatarServiceRouter } from '@vers/service-avatar';
 import type { ServiceRouter as EmailServiceRouter } from '@vers/service-email';
 import type { ServiceRouter as SessionServiceRouter } from '@vers/service-session';
 import type { ServiceRouter as UserServiceRouter } from '@vers/service-user';
@@ -30,11 +30,11 @@ export function createMockGQLContext(config: MockContextConfig): Context {
   const ipAddress =
     config.session?.ipAddress ?? config.ipAddress ?? '127.0.0.1';
 
-  const character = createTRPCClient<CharacterServiceRouter>({
+  const avatar = createTRPCClient<AvatarServiceRouter>({
     accessToken: config.accessToken,
-    apiURL: env.CHARACTERS_SERVICE_URL,
+    apiURL: env.AVATARS_SERVICE_URL,
     requestID,
-    serviceID: ServiceID.ServiceCharacter,
+    serviceID: ServiceID.ServiceAvatar,
   });
 
   const email = createTRPCClient<EmailServiceRouter>({
@@ -70,7 +70,7 @@ export function createMockGQLContext(config: MockContextConfig): Context {
     request,
     requestID,
     services: {
-      character,
+      avatar,
       email,
       session,
       user,

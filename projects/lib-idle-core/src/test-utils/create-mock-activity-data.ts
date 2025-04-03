@@ -11,6 +11,7 @@ export function createMockActivityData(
     failureAction: ActivityFailureAction.Retry,
     id: createId(),
     name: 'Aether Node',
+    seed: 1,
     type: ActivityType.AetherNode,
     ...overrides,
   };

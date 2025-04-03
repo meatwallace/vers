@@ -7,7 +7,7 @@ test('it returns an aether node with no connections', () => {
   expect(node.connections).toStrictEqual([null, null, null, null]);
 });
 
-test('it generates an ID 6 characters long', () => {
+test('it generates an ID 6 avatars long', () => {
   const node = createAetherNode(0, 1);
 
   expect(node.id).toHaveLength(6);

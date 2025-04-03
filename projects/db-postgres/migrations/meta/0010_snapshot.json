@@ -1,13 +1,20 @@
 {
-  "id": "c4b6ad3d-17ce-4581-9e09-1498ab18da75",
+  "id": "5da6e581-8949-4b33-92a6-2f3052fb3c7e",
   "prevId": "779918a1-de3e-447f-ba4a-93a04a3b8807",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
-    "public.characters": {
-      "name": "characters",
+    "public.avatars": {
+      "name": "avatars",
       "schema": "",
       "columns": {
+        "class": {
+          "name": "class",
+          "type": "avatar_class",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
         "id": {
           "name": "id",
           "type": "text",
@@ -57,9 +64,9 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "characters_user_id_users_id_fk": {
-          "name": "characters_user_id_users_id_fk",
-          "tableFrom": "characters",
+        "avatars_user_id_users_id_fk": {
+          "name": "avatars_user_id_users_id_fk",
+          "tableFrom": "avatars",
           "tableTo": "users",
           "columnsFrom": ["user_id"],
           "columnsTo": ["id"],
@@ -69,8 +76,8 @@
       },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
-        "characters_name_unique": {
-          "name": "characters_name_unique",
+        "avatars_name_unique": {
+          "name": "avatars_name_unique",
           "nullsNotDistinct": false,
           "columns": ["name"]
         }
@@ -310,6 +317,11 @@
     }
   },
   "enums": {
+    "public.avatar_class": {
+      "name": "avatar_class",
+      "schema": "public",
+      "values": ["brute", "scoundrel", "scholar"]
+    },
     "public.verification_type": {
       "name": "verification_type",
       "schema": "public",

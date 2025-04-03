@@ -1,7 +1,7 @@
 import type {
+  AvatarBehaviour,
   Behaviour,
   BehaviourID,
-  CharacterBehaviour,
   EnemyBehaviour,
 } from './behaviour';
 import type { CombatExecutor } from './combat';
@@ -9,7 +9,7 @@ import type { SetEntityStateFn } from './core';
 import type { EquipmentSlot, EquipmentWeapon } from './equipment';
 import type { SimulationContext } from './simulation';
 
-export interface CharacterData {
+export interface AvatarData {
   id: string;
   image: string; // temporary, will remove later
   level: number;
@@ -53,26 +53,26 @@ interface IEntity<State extends object, EntityAppState extends object> {
   receiveDamage(amount: number): void;
 }
 
-export type Entity = Character | Enemy;
+export type Entity = Avatar | Enemy;
 
 interface ResetConfig {
   soft?: boolean;
 }
 
-export interface CharacterState {
+export interface AvatarState {
   readonly life: number;
   readonly maxLife: number;
   readonly status: EntityStatus;
 }
 
-export type CharacterBehaviourAppState = {
+export type AvatarBehaviourAppState = {
   [K in BehaviourID]?: ReturnType<
-    Extract<CharacterBehaviour, { id: K }>['getState']
+    Extract<AvatarBehaviour, { id: K }>['getState']
   >;
 };
 
-export interface CharacterAppState {
-  readonly behaviours: CharacterBehaviourAppState;
+export interface AvatarAppState {
+  readonly behaviours: AvatarBehaviourAppState;
   readonly id: string;
   readonly image: string; // temporary, will remove later
   readonly isAlive: boolean;
@@ -84,15 +84,15 @@ export interface CharacterAppState {
   readonly status: EntityStatus;
 }
 
-export interface Character extends IEntity<CharacterState, CharacterAppState> {
+export interface Avatar extends IEntity<AvatarState, AvatarAppState> {
   // meta
-  readonly type: EntityType.Character;
+  readonly type: EntityType.Avatar;
 
   // getters
   get mainHandEquipment(): EquipmentWeapon | null;
 
   // core
-  addBehaviour(behaviour: CharacterBehaviour): void;
+  addBehaviour(behaviour: AvatarBehaviour): void;
 
   // utils
   calcAttackDamage(): number;
@@ -144,7 +144,7 @@ export enum EntityStatus {
 }
 
 export enum EntityType {
-  Character = 'player_character',
+  Avatar = 'player_avatar',
   Enemy = 'enemy',
 }
 

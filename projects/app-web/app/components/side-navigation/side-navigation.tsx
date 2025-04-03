@@ -90,11 +90,10 @@ const GAME_LINKS: Record<string, LinkData> = {
     label: 'Aether',
     route: Routes.Aether,
   },
-  [Routes.Character]: {
-    Icon: Icon.Character,
-    label: 'Character',
-    notImplemented: true,
-    route: Routes.Character,
+  [Routes.Avatar]: {
+    Icon: Icon.Avatar,
+    label: 'Avatar',
+    route: Routes.Avatar,
   },
   [Routes.Stash]: {
     Icon: Icon.Stash,

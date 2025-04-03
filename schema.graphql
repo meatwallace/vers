@@ -4,6 +4,22 @@ type AuthPayload {
   session: Session!
 }
 
+type Avatar {
+  class: AvatarClass!
+  createdAt: DateTime!
+  id: ID!
+  level: Int!
+  name: String!
+  user: User!
+  xp: Int!
+}
+
+enum AvatarClass {
+  Brute
+  Scholar
+  Scoundrel
+}
+
 input ChangeUserPasswordInput {
   currentPassword: String!
   newPassword: String!
@@ -11,6 +27,13 @@ input ChangeUserPasswordInput {
 }
 
 union ChangeUserPasswordPayload = MutationErrorPayload | MutationSuccess
+
+input CreateAvatarInput {
+  class: AvatarClass!
+  name: String!
+}
+
+union CreateAvatarPayload = Avatar | MutationErrorPayload
 
 """
 A date string, such as 2007-12-03, compliant with the `full-date` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.
@@ -21,6 +44,12 @@ scalar Date
 A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.
 """
 scalar DateTime
+
+input DeleteAvatarInput {
+  id: String!
+}
+
+union DeleteAvatarPayload = MutationErrorPayload | MutationSuccess
 
 input DeleteSessionInput {
   id: String!
@@ -79,6 +108,14 @@ type ForceLogoutPayload {
   transactionToken: String!
 }
 
+input GetAvatarInput {
+  id: String!
+}
+
+input GetAvatarsInput {
+  placeholder: String
+}
+
 input GetSessionsInput {
   placeholder: String
 }
@@ -100,6 +137,8 @@ union LoginWithPasswordPayload = AuthPayload | ForceLogoutPayload | MutationErro
 
 type Mutation {
   changeUserPassword(input: ChangeUserPasswordInput!): ChangeUserPasswordPayload!
+  createAvatar(input: CreateAvatarInput!): CreateAvatarPayload!
+  deleteAvatar(input: DeleteAvatarInput!): DeleteAvatarPayload!
   deleteSession(input: DeleteSessionInput!): DeleteSessionPayload!
   finishChangeUserEmail(input: FinishChangeUserEmailInput!): FinishChangeUserEmailPayload!
   finishDisable2FA(input: FinishDisable2FAInput!): FinishDisable2FAPayload!
@@ -115,6 +154,7 @@ type Mutation {
   startEnable2FA(input: StartEnable2FAInput!): StartEnable2FAPayload!
   startPasswordReset(input: StartPasswordResetInput!): StartPasswordResetPayload!
   startStepUpAuth(input: StartStepUpAuthInput!): StartStepUpAuthPayload!
+  updateAvatar(input: UpdateAvatarInput!): UpdateAvatarPayload!
   verifyOTP(input: VerifyOTPInput!): VerifyOTPPayload!
 }
 
@@ -132,6 +172,8 @@ type MutationSuccess {
 }
 
 type Query {
+  getAvatar(input: GetAvatarInput!): Avatar
+  getAvatars(input: GetAvatarsInput!): [Avatar!]!
   getCurrentUser: User!
   getEnable2FAVerification: TwoFactorVerification!
   getSessions(input: GetSessionsInput!): [Session!]!
@@ -204,6 +246,13 @@ type TwoFactorSuccessPayload {
 type TwoFactorVerification {
   otpURI: String!
 }
+
+input UpdateAvatarInput {
+  id: String!
+  name: String!
+}
+
+union UpdateAvatarPayload = MutationErrorPayload | MutationSuccess
 
 type User {
   createdAt: DateTime!

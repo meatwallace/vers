@@ -1,32 +1,32 @@
 import type {
   Activity,
-  Character,
+  Avatar,
   CombatEvent,
   SimulationContext,
 } from '../types';
 import { CombatEventType } from '../types';
-import { handleCharacterAttack } from './handle-character-attack';
+import { handleAvatarAttack } from './handle-avatar-attack';
 import { handleEnemyAttack } from './handle-enemy-attack';
 
 export function handleEvent<T extends CombatEventType>(
   event: Extract<CombatEvent, { type: T }>,
-  character: Character,
+  avatar: Avatar,
   activity: Activity,
   ctx: SimulationContext,
 ) {
-  EVENT_HANDLER_FN[event.type](event, character, activity, ctx);
+  EVENT_HANDLER_FN[event.type](event, avatar, activity, ctx);
 }
 
 type EventHandlerMap = {
   [Type in CombatEventType]: (
     event: Extract<CombatEvent, { type: Type }>,
-    character: Character,
+    avatar: Avatar,
     activity: Activity,
     ctx: SimulationContext,
   ) => void;
 };
 
 const EVENT_HANDLER_FN: EventHandlerMap = {
-  [CombatEventType.CharacterAttack]: handleCharacterAttack,
+  [CombatEventType.AvatarAttack]: handleAvatarAttack,
   [CombatEventType.EnemyAttack]: handleEnemyAttack,
 } as const;

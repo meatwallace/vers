@@ -7,17 +7,17 @@ import type {
 } from './activity';
 import type { CombatExecutor, CombatExecutorAppState } from './combat';
 import type { RNG } from './core';
-import type { Character, CharacterAppState } from './entities';
+import type { Avatar, AvatarAppState, AvatarData } from './entities';
 
 export interface SimulationAppState {
   activity?: ActivityAppState;
-  character: CharacterAppState;
+  avatar?: AvatarAppState;
   combat?: CombatExecutorAppState;
 }
 
 export interface SimulationState {
   readonly activity: Activity | null;
-  readonly character: Character;
+  readonly avatar: Avatar | null;
   readonly combat: CombatExecutor | null;
   readonly elapsed: number;
 }
@@ -34,6 +34,7 @@ export interface Simulation {
 
   // getters
   get activity(): Activity | null;
+  get avatar(): Avatar | null;
   get ctx(): SimulationContext;
   get elapsed(): number;
   get seed(): number;
@@ -47,7 +48,7 @@ export interface Simulation {
   getAppState: () => SimulationAppState;
   restartActivity: () => void;
   run: (time: number) => Promise<ActivityCheckpoint | null>;
-  startActivity: (activityData: ActivityData) => void;
+  startActivity: (avatarData: AvatarData, activityData: ActivityData) => void;
   stopActivity: () => Promise<void>;
 }
 

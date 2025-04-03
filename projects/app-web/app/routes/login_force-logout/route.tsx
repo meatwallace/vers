@@ -2,7 +2,7 @@ import { data, redirect, Link as RRLink, useFetcher } from 'react-router';
 import { Brand, Heading, StatusButton, Text } from '@vers/design-system';
 import { css } from '@vers/styled-system/css';
 import invariant from 'tiny-invariant';
-import { FormErrorList } from '~/components/form-error-list.tsx';
+import { FormErrorList } from '~/components/form-error-list/form-error-list.tsx';
 import { RouteErrorBoundary } from '~/components/route-error-boundary.tsx';
 import { LoginWithForcedLogoutMutation } from '~/data/mutations/login-with-forced-logout';
 import { useIsFormPending } from '~/hooks/use-is-form-pending';

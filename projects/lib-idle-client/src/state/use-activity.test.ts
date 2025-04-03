@@ -11,6 +11,7 @@ test('it provides activity state', () => {
     enemiesRemaining: 20,
     enemyGroups: [],
     enemyGroupsRemaining: 4,
+    id: 'test-activity',
     name: 'Test Activity',
   };
 
@@ -24,6 +25,7 @@ test('it provides activity state', () => {
     enemiesRemaining: 20,
     enemyGroups: [],
     enemyGroupsRemaining: 4,
+    id: 'test-activity',
     name: 'Test Activity',
   });
 });

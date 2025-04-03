@@ -14,7 +14,7 @@ import { UserEmailSchema } from '@vers/validation';
 import { HoneypotInputs } from 'remix-utils/honeypot/react';
 import invariant from 'tiny-invariant';
 import { z } from 'zod';
-import { FormErrorList } from '~/components/form-error-list.tsx';
+import { FormErrorList } from '~/components/form-error-list/form-error-list.tsx';
 import { RouteErrorBoundary } from '~/components/route-error-boundary.tsx';
 import { StartPasswordResetMutation } from '~/data/mutations/start-password-reset';
 import { useIsFormPending } from '~/hooks/use-is-form-pending';

@@ -1,6 +1,6 @@
 import type {
   ActivityData,
-  CharacterData,
+  AvatarData,
   SimulationAppState,
 } from '@vers/idle-core';
 
@@ -15,12 +15,11 @@ interface IClientMessage {
 
 export interface SetActivityMessage extends IClientMessage {
   activity: ActivityData;
+  avatar: AvatarData;
   type: ClientMessageType.SetActivity;
 }
 
 export interface InitializeMessage extends IClientMessage {
-  character: CharacterData;
-  seed: number;
   type: ClientMessageType.Initialize;
 }
 

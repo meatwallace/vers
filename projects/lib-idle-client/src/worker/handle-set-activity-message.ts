@@ -1,11 +1,14 @@
-import invariant from 'tiny-invariant';
 import type { SetActivityMessage } from '../types';
 import { getSimulation } from './simulation';
 
 export function handleSetActivityMessage(message: SetActivityMessage) {
   const simulation = getSimulation();
 
-  invariant(simulation, 'simulation is required');
+  if (!simulation) {
+    console.warn('-- tried setting activity but no simulation');
 
-  simulation.startActivity(message.activity);
+    return;
+  }
+
+  simulation.startActivity(message.avatar, message.activity);
 }

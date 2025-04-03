@@ -1,8 +1,8 @@
 import { expect, test } from 'vitest';
 import type { EquipmentWeapon } from '../types';
-import { createCharacter } from '../entities/create-character';
+import { createAvatar } from '../entities/create-avatar';
 import { createMockActivityData } from '../test-utils/create-mock-activity-data';
-import { createMockCharacterData } from '../test-utils/create-mock-character-data';
+import { createMockAvatarData } from '../test-utils/create-mock-avatar-data';
 import { createMockEnemyData } from '../test-utils/create-mock-enemy-data';
 import { createMockSimulationContext } from '../test-utils/create-mock-simulation-context';
 import { EquipmentSlot } from '../types';
@@ -18,7 +18,7 @@ test('it processes events', () => {
     speed: 1,
   };
 
-  const characterData = createMockCharacterData({
+  const avatarData = createMockAvatarData({
     life: 100,
     paperdoll: {
       [EquipmentSlot.MainHand]: weapon,
@@ -39,7 +39,7 @@ test('it processes events', () => {
   });
 
   const ctx = createMockSimulationContext();
-  const character = createCharacter(characterData, ctx);
+  const avatar = createAvatar(avatarData, ctx);
   const activity = createActivity(activityData, ctx, {
     groupCount: 1,
     groupSize: 2,
@@ -47,13 +47,26 @@ test('it processes events', () => {
 
   const enemyGroup = activity.currentEnemyGroup;
 
-  const combatExecutor = createCombatExecutor(activity, character, ctx);
+  const combatExecutor = createCombatExecutor(activity, avatar, ctx);
 
   // run the combat for 1s so that all entities should attack once
   combatExecutor.run(1000);
 
-  // in this contrived example, the character should kill one enemy and be left with one enemy
+  // in this contrived example, the avatar should kill one enemy and be left with one enemy
   // and have received one enemy worth of damage
   expect(enemyGroup?.remaining).toBe(1);
-  expect(character.life).toBe(60);
+  expect(avatar.life).toBe(60);
+});
+
+test('it returns the expected combat executor state for a client app', () => {
+  const ctx = createMockSimulationContext();
+  const activity = createActivity(createMockActivityData(), ctx);
+  const avatar = createAvatar(createMockAvatarData(), ctx);
+  const combatExecutor = createCombatExecutor(activity, avatar, ctx);
+
+  const state = combatExecutor.getAppState();
+
+  expect(state).toStrictEqual({
+    elapsed: 0,
+  });
 });

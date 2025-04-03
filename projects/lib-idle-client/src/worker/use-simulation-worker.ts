@@ -5,20 +5,21 @@ import type {
   WorkerMessage,
 } from '../types.ts';
 import { setActivity } from '../state/set-activity.ts';
-import { setCharacter } from '../state/set-character.ts';
+import { setAvatar } from '../state/set-avatar.ts';
 import { setCombat } from '../state/set-combat.ts';
-import { setWorker } from '../state/set-worker.ts';
-import { useWorker } from '../state/use-worker.ts';
+import { setSimulationInitialized } from '../state/set-simulation-initialized.ts';
+import { setSimulationWorker } from '../state/set-simulation-worker.ts';
+import { useSimulationStore } from '../state/use-simulation-store.ts';
 import { WorkerMessageType } from '../types.ts';
 import SimulationWorker from './worker.ts?sharedworker';
 
 export function useSimulationWorker() {
-  const existingWorker = useWorker();
+  const existingWorker = useSimulationStore((state) => state.worker);
 
   useEffect(() => {
     const worker = existingWorker ?? new SimulationWorker();
 
-    setWorker(worker);
+    setSimulationWorker(worker);
 
     // eslint-disable-next-line unicorn/prefer-add-event-listener
     worker.port.onmessage = handleWorkerMessage;
@@ -28,8 +29,12 @@ export function useSimulationWorker() {
 }
 
 function handleWorkerMessage(event: MessageEvent<WorkerMessage>) {
+  if (isInitialStateMessage(event.data)) {
+    setSimulationInitialized(true);
+  }
+
   if (isInitialStateMessage(event.data) || isUpdateMessage(event.data)) {
-    setCharacter(event.data.state.character);
+    setAvatar(event.data.state.avatar);
     setActivity(event.data.state.activity);
     setCombat(event.data.state.combat);
   }

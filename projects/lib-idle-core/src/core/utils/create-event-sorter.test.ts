@@ -1,15 +1,15 @@
 import { expect, test } from 'vitest';
-import type { CharacterAttackEvent, EnemyAttackEvent } from '../../types';
-import { createCharacter } from '../../entities/create-character';
-import { createMockCharacterData } from '../../test-utils/create-mock-character-data';
+import type { AvatarAttackEvent, EnemyAttackEvent } from '../../types';
+import { createAvatar } from '../../entities/create-avatar';
+import { createMockAvatarData } from '../../test-utils/create-mock-avatar-data';
 import { createMockSimulationContext } from '../../test-utils/create-mock-simulation-context';
 import { CombatEventType } from '../../types';
 import { createEventSorter } from './create-event-sorter';
 
 test('it sorts events by time', () => {
   const ctx = createMockSimulationContext();
-  const data = createMockCharacterData();
-  const character = createCharacter(data, ctx);
+  const data = createMockAvatarData();
+  const avatar = createAvatar(data, ctx);
 
   const event1: EnemyAttackEvent = {
     id: 'event-1',
@@ -26,23 +26,23 @@ test('it sorts events by time', () => {
   };
 
   const events = [event1, event2];
-  const sorter = createEventSorter(character);
+  const sorter = createEventSorter(avatar);
 
   events.sort(sorter);
 
   expect(events).toStrictEqual([event2, event1]);
 });
 
-test('it prioritizes character events when time is equal', () => {
+test('it prioritizes avatar events when time is equal', () => {
   const ctx = createMockSimulationContext();
-  const data = createMockCharacterData();
-  const character = createCharacter(data, ctx);
+  const data = createMockAvatarData();
+  const avatar = createAvatar(data, ctx);
 
-  const playerEvent: CharacterAttackEvent = {
+  const playerEvent: AvatarAttackEvent = {
     id: 'event-1',
-    source: character.id,
+    source: avatar.id,
     time: 100,
-    type: CombatEventType.CharacterAttack,
+    type: CombatEventType.AvatarAttack,
   };
 
   const enemyEvent2: EnemyAttackEvent = {
@@ -60,7 +60,7 @@ test('it prioritizes character events when time is equal', () => {
   };
 
   const events = [enemyEvent2, enemyEvent3, playerEvent];
-  const sorter = createEventSorter(character);
+  const sorter = createEventSorter(avatar);
 
   events.sort(sorter);
 

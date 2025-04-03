@@ -1,6 +1,6 @@
 import { UnreachableCodeError } from '@vers/utils';
 import xxhash from 'xxhash-wasm';
-import type { ActivityCheckpoint, ActivityData, CharacterData } from '../types';
+import type { ActivityCheckpoint, ActivityData, AvatarData } from '../types';
 import { ActivityFailureAction } from '../types';
 import { isCompletedCheckpoint } from '../utils/is-completed-checkpoint';
 import { isEnemyGroupKilledCheckpoint } from '../utils/is-enemy-group-killed-checkpoint';
@@ -10,7 +10,6 @@ import { logger } from '../utils/logger';
 import { createSimulation } from './create-simulation';
 
 /**
- * @property initialSeed - should come from activity initialisation data or a previously simulated checkpoint seed
  * @property duration - how long to run the simulation for. derive from the checkpoint data submitted by the
  * cient, or if simulating offline progress the duration since the last checkpoint (if any)
  * @property stopAtSeed - if a final seed is provided we will stop processing once we've reached it. useful for
@@ -18,7 +17,6 @@ import { createSimulation } from './create-simulation';
  */
 interface SimulationConfig {
   duration: number;
-  initialSeed: number;
   stopAtSeed?: number;
 }
 
@@ -31,7 +29,7 @@ const SERVER_SIMULATION_INTERVAL = 100;
 
 export async function runSimulation(
   activity: ActivityData,
-  character: CharacterData,
+  avatar: AvatarData,
   config: SimulationConfig,
 ): Promise<SimulationOutput> {
   const hasher = await xxhash();
@@ -40,9 +38,9 @@ export async function runSimulation(
 
   logger.debug(`${label} starting simulation`);
 
-  const simulation = createSimulation(character, config.initialSeed, hasher);
+  const simulation = createSimulation(hasher);
 
-  simulation.startActivity(activity);
+  simulation.startActivity(avatar, activity);
 
   const checkpoints: Array<ActivityCheckpoint> = [];
 

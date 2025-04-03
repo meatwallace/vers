@@ -1,20 +1,14 @@
 import { expect, test } from 'vitest';
 import { postMessageAndWaitForReply } from '@vers/client-test-utils';
-import {
-  createMockActivityData,
-  createMockCharacterData,
-} from '@vers/idle-core';
+import { createMockActivityData, createMockAvatarData } from '@vers/idle-core';
 import type { InitializeMessage, SetActivityMessage } from '../types';
 import { ClientMessageType, WorkerMessageType } from '../types';
 import SimulationWorker from './worker.ts?sharedworker';
 
 test('it sends the initial state', async () => {
-  const characterData = createMockCharacterData();
   const worker = new SimulationWorker();
 
   const message: InitializeMessage = {
-    character: characterData,
-    seed: 123,
     type: ClientMessageType.Initialize,
   };
 
@@ -24,19 +18,18 @@ test('it sends the initial state', async () => {
 });
 
 test('it processes simulation updates', async () => {
-  const characterData = createMockCharacterData();
   const worker = new SimulationWorker();
 
   const initializeMessage: InitializeMessage = {
-    character: characterData,
-    seed: 123,
     type: ClientMessageType.Initialize,
   };
 
-  const activityData = createMockActivityData();
+  const activity = createMockActivityData();
+  const avatar = createMockAvatarData();
 
   const setActivityMessage: SetActivityMessage = {
-    activity: activityData,
+    activity,
+    avatar,
     type: ClientMessageType.SetActivity,
   };
 

@@ -1,4 +1,4 @@
-export { characters } from './characters';
+export { avatarClassEnum, avatars } from './avatars';
 
 export { sessions } from './sessions';
 

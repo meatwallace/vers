@@ -3,9 +3,11 @@ import { deepEqual } from 'fast-equals';
 import invariant from 'tiny-invariant';
 import type {
   Activity,
+  ActivityCheckpoint,
   ActivityCheckpointGenerator,
   ActivityData,
-  CharacterData,
+  Avatar,
+  AvatarData,
   CombatExecutor,
   Simulation,
   SimulationContext,
@@ -13,20 +15,16 @@ import type {
   SimulationListener,
   SimulationState,
 } from '../types';
-import { createCharacter } from '../entities/create-character';
+import { createAvatar } from '../entities/create-avatar';
 import { createRNG } from '../utils/create-rng';
 import { createActivity } from './create-activity';
 import { createCombatExecutor } from './create-combat-executor';
 import { simulateActivity } from './simulate-activity';
 import { getAppState } from './utils/get-app-state';
 
-export function createSimulation(
-  characterData: CharacterData,
-  seed: number,
-  hasher: XXHashAPI,
-): Simulation {
-  const rng = createRNG(seed);
-
+export function createSimulation(hasher: XXHashAPI): Simulation {
+  let _rng = createRNG(0);
+  let _avatar: Avatar | null = null;
   let _activityData: ActivityData | null = null;
   let _activity: Activity | null = null;
   let _combat: CombatExecutor | null = null;
@@ -39,17 +37,17 @@ export function createSimulation(
       return _elapsed;
     },
     hasher,
-    rng,
+    get rng() {
+      return _rng;
+    },
   };
-
-  const _character = createCharacter(characterData, ctx);
 
   const state: SimulationState = {
     get activity() {
       return _activity;
     },
-    get character() {
-      return _character;
+    get avatar() {
+      return _avatar;
     },
     get combat() {
       return _combat;
@@ -66,17 +64,34 @@ export function createSimulation(
     updated: [],
   };
 
-  const startActivity = (activityData: ActivityData) => {
+  const startActivity = async (
+    avatarData: AvatarData,
+    activityData: ActivityData,
+  ) => {
+    const isSameActivity = _activityData?.id === activityData.id;
+    const isSameAvatar = _avatar?.id === avatarData.id;
+
+    if (isSameActivity && isSameAvatar) {
+      return;
+    }
+
+    if (_generator) {
+      await stopActivity();
+    }
+
     _activityData = activityData;
+    _rng = createRNG(activityData.seed);
+    _avatar = createAvatar(avatarData, ctx);
     _activity = createActivity(activityData, ctx);
-    _combat = createCombatExecutor(_activity, state.character, ctx);
-    _generator = simulateActivity(_combat, _activity, state.character, ctx);
+    _combat = createCombatExecutor(_activity, _avatar, ctx);
+    _generator = simulateActivity(_combat, _activity, _avatar, ctx);
 
     for (const listener of listeners.started) {
       listener(state);
     }
   };
 
+  // cleans up our activity and notifies listeners
   const stopActivity = async () => {
     _activity = null;
 
@@ -86,6 +101,7 @@ export function createSimulation(
     }
 
     _done = true;
+    _generator = null;
 
     for (const listener of listeners.stopped) {
       listener(state);
@@ -94,22 +110,26 @@ export function createSimulation(
 
   const restartActivity = () => {
     invariant(_activityData, 'activity data is required');
+    invariant(_avatar, 'avatar is required');
     invariant(_combat, 'combat executor is required');
 
-    _character.reset();
+    _avatar.reset();
 
     _activity = createActivity(_activityData, ctx);
-    _combat = createCombatExecutor(_activity, state.character, ctx);
-    _generator = simulateActivity(_combat, _activity, state.character, ctx);
+    _combat = createCombatExecutor(_activity, _avatar, ctx);
+    _generator = simulateActivity(_combat, _activity, _avatar, ctx);
 
     for (const listener of listeners.restarted) {
       listener(state);
     }
   };
 
-  const run = async (timestep: number) => {
+  const run = async (timestep: number): Promise<ActivityCheckpoint | null> => {
+    if (!_generator) {
+      return null;
+    }
+
     invariant(_generator, 'generator is required');
-    invariant(_activity, 'activity is required');
 
     const prevState = getAppState(state);
 
@@ -136,11 +156,16 @@ export function createSimulation(
 
   return {
     // meta
-    rng,
+    get rng() {
+      return _rng;
+    },
 
     // getters
     get activity() {
       return state.activity;
+    },
+    get avatar() {
+      return state.avatar;
     },
     get ctx() {
       return ctx;
@@ -149,7 +174,7 @@ export function createSimulation(
       return state.elapsed;
     },
     get seed(): number {
-      return rng.seed;
+      return _rng.seed;
     },
     get state() {
       return state;
