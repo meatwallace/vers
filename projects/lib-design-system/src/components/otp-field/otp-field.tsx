@@ -1,13 +1,15 @@
 import * as React from 'react';
 import { Field } from '@base-ui-components/react/field';
 import { css, cx } from '@vers/styled-system/css';
-import { REGEXP_ONLY_DIGITS_AND_CHARS } from 'input-otp';
+import { REGEXP_ONLY_DIGITS, REGEXP_ONLY_DIGITS_AND_CHARS } from 'input-otp';
 import { InputOTP } from './input-otp.tsx';
 
 interface Props {
   className?: string;
   errors: Array<string>;
-  inputProps: React.ComponentProps<typeof Field.Control>;
+  inputProps: React.ComponentProps<typeof Field.Control> & {
+    mode?: 'alphanumeric' | 'numeric';
+  };
 }
 
 const container = css({
@@ -49,6 +51,14 @@ export function OTPField(props: Props) {
             controlProps.onChange?.(event);
           };
 
+          const pattern =
+            props.inputProps.mode === 'alphanumeric'
+              ? REGEXP_ONLY_DIGITS_AND_CHARS
+              : REGEXP_ONLY_DIGITS;
+
+          const inputMode =
+            props.inputProps.mode === 'alphanumeric' ? 'text' : 'numeric';
+
           return (
             <InputOTP
               {...controlProps}
@@ -56,8 +66,9 @@ export function OTPField(props: Props) {
               autoComplete="off"
               autoCorrect="off"
               data-testid="otp-input"
+              inputMode={inputMode}
               maxLength={6}
-              pattern={REGEXP_ONLY_DIGITS_AND_CHARS}
+              pattern={pattern}
               spellCheck={false}
               value={controlProps.value as string}
               onChange={onChange}

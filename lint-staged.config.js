@@ -7,7 +7,7 @@ export default {
   'projects/**/*.{ts,tsx}': [
     'yarn codegen:styles',
     (files) => `yarn nx affected --target=typecheck --files=${files.join(',')}`,
-    (files) => `yarn test run ${files.join(' ')}`,
+    'yarn test run --changed',
   ],
   'projects/**/*.{js,ts,jsx,tsx,json}': (files) => [
     `yarn format --files ${files.join(',')}`,

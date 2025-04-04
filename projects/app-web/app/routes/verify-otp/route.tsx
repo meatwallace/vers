@@ -188,6 +188,20 @@ const INSTRUCTION_BY_TYPE: Record<VerificationType, string> = {
     'To enable two-factor authentication, please enter your six digit code from your authenticator app',
 };
 
+const OTP_INPUT_MODE_BY_TYPE: Record<
+  VerificationType,
+  'alphanumeric' | 'numeric'
+> = {
+  [VerificationType.ChangeEmail]: 'numeric',
+  [VerificationType.ChangeEmailConfirmation]: 'alphanumeric',
+  [VerificationType.ChangePassword]: 'numeric',
+  [VerificationType.Onboarding]: 'alphanumeric',
+  [VerificationType.ResetPassword]: 'alphanumeric',
+  [VerificationType.TwoFactorAuth]: 'numeric',
+  [VerificationType.TwoFactorAuthDisable]: 'numeric',
+  [VerificationType.TwoFactorAuthSetup]: 'numeric',
+};
+
 const pageInfo = css({
   marginBottom: '8',
   textAlign: 'center',
@@ -240,6 +254,8 @@ export function VerifyOTPRoute(props: Route.ComponentProps) {
     ? INSTRUCTION_BY_TYPE[type]
     : 'Please enter your verification code';
 
+  const otpInputMode = type ? OTP_INPUT_MODE_BY_TYPE[type] : 'numeric';
+
   return (
     <>
       <section className={pageInfo}>
@@ -258,6 +274,7 @@ export function VerifyOTPRoute(props: Route.ComponentProps) {
             ...getInputProps(fields[QueryParam.Code], { type: 'text' }),
             autoComplete: 'one-time-code',
             autoFocus: true,
+            mode: otpInputMode,
           }}
         />
         <input

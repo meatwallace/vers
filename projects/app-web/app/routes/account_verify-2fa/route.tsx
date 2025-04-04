@@ -250,6 +250,7 @@ export function AccountVerify2FARoute(props: Route.ComponentProps) {
                 ...getInputProps(fields.code, { type: 'text' }),
                 autoComplete: 'one-time-code',
                 autoFocus: true,
+                mode: 'numeric',
               }}
             />
             <input {...getInputProps(fields.target, { type: 'hidden' })} />
