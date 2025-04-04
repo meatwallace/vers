@@ -8,3 +8,11 @@ test('it returns the login path with the redirect query param', () => {
 
   expect(result).toBe('/login?redirect=%2Fquery%3Ffoo%3Dbar');
 });
+
+test('it strips the .data from the path', () => {
+  const request = new Request('http://localhost:3000/query.data?foo=bar', {});
+
+  const result = getLoginPathWithRedirect(request);
+
+  expect(result).toBe('/login?redirect=%2Fquery%3Ffoo%3Dbar');
+});
