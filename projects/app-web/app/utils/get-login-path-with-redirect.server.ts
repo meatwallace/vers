@@ -5,7 +5,7 @@ import { Routes } from '~/types';
  */
 export function getLoginPathWithRedirect(request: Request) {
   const url = new URL(request.url);
-  const loginRedirect = `${url.pathname}?${url.searchParams.toString()}`;
+  const loginRedirect = `${url.pathname.replace('.data', '')}?${url.searchParams.toString()}`;
   const searchParams = new URLSearchParams({ redirect: loginRedirect });
   const loginWithRedirectPath = `${Routes.Login}?${searchParams.toString()}`;
 
