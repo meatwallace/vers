@@ -1,7 +1,7 @@
 import { TRPCError } from '@trpc/server';
 import * as schema from '@vers/postgres-schema';
 import { GetSessionsPayload } from '@vers/service-types';
-import { eq } from 'drizzle-orm';
+import { eq, inArray } from 'drizzle-orm';
 import { z } from 'zod';
 import type { Context } from '../types';
 import { logger } from '../logger';
@@ -20,7 +20,16 @@ export async function getSessions(
       where: eq(schema.sessions.userID, input.userID),
     });
 
-    return sessions;
+    const expiredSessionIDs = sessions
+      .filter((session) => session.expiresAt <= new Date())
+      .map((session) => session.id);
+
+    // yeet all our expired sessions
+    await ctx.db
+      .delete(schema.sessions)
+      .where(inArray(schema.sessions.id, expiredSessionIDs));
+
+    return sessions.filter((session) => session.expiresAt > new Date());
   } catch (error: unknown) {
     logger.error(error);
 
