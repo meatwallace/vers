@@ -1,5 +1,7 @@
 import type { GetSessionPayload } from '@vers/service-types';
 import { TRPCError } from '@trpc/server';
+import * as schema from '@vers/postgres-schema';
+import { eq } from 'drizzle-orm';
 import { z } from 'zod';
 import type { Context } from '../types';
 import { logger } from '../logger';
@@ -17,6 +19,14 @@ export async function getSession(
     const session = await ctx.db.query.sessions.findFirst({
       where: (sessions, { eq }) => eq(sessions.id, input.id),
     });
+
+    if (session?.expiresAt && session.expiresAt <= new Date()) {
+      await ctx.db
+        .delete(schema.sessions)
+        .where(eq(schema.sessions.id, input.id));
+
+      return null;
+    }
 
     if (!session) {
       return null;
