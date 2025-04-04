@@ -15,7 +15,6 @@ interface TestConfig {
   isAuthed: boolean;
   user?: {
     id?: string;
-    name?: string;
   };
 }
 
@@ -67,7 +66,7 @@ test('it redirects to the login route when not authenticated', async () => {
 test('it renders the nexus when authenticated and a user has an avatar', async () => {
   db.avatar.create({ userID: 'user_id' });
 
-  setupTest({ isAuthed: true, user: { id: 'user_id', name: 'Test User' } });
+  setupTest({ isAuthed: true, user: { id: 'user_id' } });
 
   const nexus = await screen.findByText('Nexus');
 
@@ -75,10 +74,7 @@ test('it renders the nexus when authenticated and a user has an avatar', async (
 });
 
 test('it renders a call to action when a user does not have an avatar', async () => {
-  const { user } = setupTest({
-    isAuthed: true,
-    user: { id: 'user_id', name: 'Test User' },
-  });
+  const { user } = setupTest({ isAuthed: true, user: { id: 'user_id' } });
 
   const callToAction = await screen.findByText('Awaken your Avatar');
 
