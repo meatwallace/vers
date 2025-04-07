@@ -11,7 +11,7 @@ import type {
   SetEntityStateFn,
   SimulationContext,
 } from '../types';
-import { createPlayerWeaponAttackBehaviour } from '../behaviours/avatar-weapon-attack';
+import { createAvatarWeaponAttackBehaviour } from '../behaviours/avatar-weapon-attack';
 import {
   EntityStatus,
   EntityType,
@@ -23,7 +23,7 @@ import { logger } from '../utils/logger';
 import { calcAvatarAttackDamage } from './utils/calc-avatar-attack-damage';
 import { handleReceiveAvatarDamage } from './utils/handle-receive-avatar-damage';
 
-const DEFAULT_BEHAVIOUR_FACTORIES = [createPlayerWeaponAttackBehaviour];
+const DEFAULT_BEHAVIOUR_FACTORIES = [createAvatarWeaponAttackBehaviour];
 
 interface ResetConfig {
   soft?: boolean;
@@ -55,8 +55,8 @@ export function createAvatar(data: AvatarData, ctx: SimulationContext): Avatar {
     return {
       ...state,
       behaviours: behaviourState,
+      class: data.class,
       id: data.id,
-      image: data.image,
       isAlive: state.status === EntityStatus.Alive,
       level: data.level,
       mainHandAttack,

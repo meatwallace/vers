@@ -52,19 +52,19 @@ export enum LifecycleEvent {
 }
 
 export enum BehaviourID {
+  AvatarWeaponAttack = 'avatarWeaponAttack',
   EnemyPrimaryAttack = 'enemyPrimaryAttack',
-  PlayerWeaponAttack = 'playerWeaponAttack',
   Test = 'test',
 }
 
-export type PlayerWeaponAttackBehaviourState = BehaviourState<{
+export type AvatarWeaponAttackBehaviourState = BehaviourState<{
   readonly lastAttackTime: number;
 }>;
 
-export interface PlayerWeaponAttackBehaviour
-  extends IBehaviour<Avatar, PlayerWeaponAttackBehaviourState> {
+export interface AvatarWeaponAttackBehaviour
+  extends IBehaviour<Avatar, AvatarWeaponAttackBehaviourState> {
   // meta
-  readonly id: BehaviourID.PlayerWeaponAttack;
+  readonly id: BehaviourID.AvatarWeaponAttack;
 
   // getters
   get lastAttackTime(): number;
@@ -85,7 +85,7 @@ export interface EnemyPrimaryAttackBehaviour
   get nextAttackTime(): number;
 }
 
-export interface PlayerTestBehaviour
+export interface AvatarTestBehaviour
   extends IBehaviour<Avatar, Record<never, never>> {
   readonly id: BehaviourID.Test;
 }
@@ -94,12 +94,12 @@ export interface EnemyTestBehaviour extends IBehaviour<Enemy> {
   readonly id: BehaviourID.Test;
 }
 
-export type AvatarBehaviour = PlayerTestBehaviour | PlayerWeaponAttackBehaviour;
+export type AvatarBehaviour = AvatarTestBehaviour | AvatarWeaponAttackBehaviour;
 
 export type EnemyBehaviour = EnemyPrimaryAttackBehaviour | EnemyTestBehaviour;
 
 export type Behaviour =
+  | AvatarTestBehaviour
+  | AvatarWeaponAttackBehaviour
   | EnemyPrimaryAttackBehaviour
-  | EnemyTestBehaviour
-  | PlayerTestBehaviour
-  | PlayerWeaponAttackBehaviour;
+  | EnemyTestBehaviour;

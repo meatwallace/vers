@@ -3,8 +3,8 @@ import xxhash from 'xxhash-wasm';
 import type { ActivityCheckpoint, ActivityData, AvatarData } from '../types';
 import { ActivityFailureAction } from '../types';
 import { isCompletedCheckpoint } from '../utils/is-completed-checkpoint';
-import { isEnemyGroupKilledCheckpoint } from '../utils/is-enemy-group-killed-checkpoint';
 import { isFailedCheckpoint } from '../utils/is-failed-checkpoint';
+import { isProgressCheckpoint } from '../utils/is-progress-checkpoint';
 import { isStartedCheckpoint } from '../utils/is-started-checkpoint';
 import { logger } from '../utils/logger';
 import { createSimulation } from './create-simulation';
@@ -95,8 +95,8 @@ export async function runSimulation(
       continue;
     }
 
-    if (isEnemyGroupKilledCheckpoint(checkpoint)) {
-      logger.debug(`${label} enemy group killed`);
+    if (isProgressCheckpoint(checkpoint)) {
+      logger.debug(`${label} progress checkpoint`);
 
       continue;
     }

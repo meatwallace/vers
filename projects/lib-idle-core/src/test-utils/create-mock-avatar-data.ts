@@ -1,4 +1,5 @@
 import { createId } from '@paralleldrive/cuid2';
+import { Class } from '@vers/data';
 import type { AvatarData } from '../types';
 import { EquipmentSlot } from '../types';
 
@@ -6,8 +7,8 @@ export function createMockAvatarData(
   overrides: Partial<AvatarData> = {},
 ): AvatarData {
   const avatar: AvatarData = {
+    class: Class.Brute,
     id: createId(),
-    image: '/assets/images/avatar-placeholder.png',
     level: 1,
     life: 200,
     name: 'Test Avatar',

@@ -1,9 +1,9 @@
-import type { Avatar, PlayerWeaponAttackBehaviourState } from '../../types';
+import type { Avatar, AvatarWeaponAttackBehaviourState } from '../../types';
 import { getAttackIntervalMS } from './get-attack-interval-ms';
 
 export function getNextAttackTime(
   entity: Avatar,
-  state: PlayerWeaponAttackBehaviourState,
+  state: AvatarWeaponAttackBehaviourState,
 ): number {
   return state.lastAttackTime + getAttackIntervalMS(entity);
 }

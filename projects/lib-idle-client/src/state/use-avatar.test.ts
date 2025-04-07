@@ -1,6 +1,7 @@
 import { expect, test } from 'vitest';
 import { renderHook } from '@testing-library/react';
 import type { AvatarAppState } from '@vers/idle-core';
+import { Class } from '@vers/data';
 import { EntityStatus } from '@vers/idle-core';
 import { setAvatar } from './set-avatar';
 import { useAvatar } from './use-avatar';
@@ -8,12 +9,12 @@ import { useAvatar } from './use-avatar';
 test('it provides the avatar state', () => {
   const avatar: AvatarAppState = {
     behaviours: {
-      playerWeaponAttack: {
+      avatarWeaponAttack: {
         lastAttackTime: 0,
       },
     },
+    class: Class.Brute,
     id: '1',
-    image: '/assets/images/avatar-placeholder.png',
     isAlive: true,
     level: 1,
     life: 75,
@@ -33,12 +34,12 @@ test('it provides the avatar state', () => {
 
   expect(result.current).toStrictEqual({
     behaviours: {
-      playerWeaponAttack: {
+      avatarWeaponAttack: {
         lastAttackTime: 0,
       },
     },
+    class: Class.Brute,
     id: '1',
-    image: '/assets/images/avatar-placeholder.png',
     isAlive: true,
     level: 1,
     life: 75,

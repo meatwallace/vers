@@ -1,5 +1,5 @@
 import { expect, test, vi } from 'vitest';
-import type { PlayerTestBehaviour } from '../types';
+import type { AvatarTestBehaviour } from '../types';
 import { createActivity } from '../core/create-activity';
 import { createCombatExecutor } from '../core/create-combat-executor';
 import { createMockActivityData } from '../test-utils/create-mock-activity-data';
@@ -71,7 +71,7 @@ test('it calls all registered handlers when handling a tick', () => {
 
   const handlerSpy = vi.fn();
 
-  const behaviour: PlayerTestBehaviour = {
+  const behaviour: AvatarTestBehaviour = {
     getState: () => ({}),
     handlers: {
       [LifecycleEvent.OnTick]: handlerSpy,
@@ -98,7 +98,7 @@ test('it allows removing behaviours', () => {
 
   const handlerSpy = vi.fn();
 
-  const behaviour: PlayerTestBehaviour = {
+  const behaviour: AvatarTestBehaviour = {
     getState: () => ({}),
     handlers: {
       [LifecycleEvent.OnTick]: handlerSpy,
@@ -141,7 +141,7 @@ test('it resets all behaviour states when resetting the avatar', () => {
 
   const resetHandlerSpy = vi.fn();
 
-  const behaviour: PlayerTestBehaviour = {
+  const behaviour: AvatarTestBehaviour = {
     getState: () => ({}),
     handlers: {
       [LifecycleEvent.Reset]: resetHandlerSpy,
@@ -166,7 +166,7 @@ test('it allows for preserving avatar state when resetting', () => {
 
   const resetHandlerSpy = vi.fn();
 
-  const behaviour: PlayerTestBehaviour = {
+  const behaviour: AvatarTestBehaviour = {
     getState: () => ({}),
     handlers: {
       [LifecycleEvent.Reset]: resetHandlerSpy,
@@ -203,12 +203,12 @@ test('it returns the expected avatar state for a client app', () => {
 
   expect(state).toStrictEqual({
     behaviours: {
-      playerWeaponAttack: {
+      avatarWeaponAttack: {
         lastAttackTime: expect.any(Number),
       },
     },
+    class: data.class,
     id: avatar.id,
-    image: expect.any(String),
     isAlive: true,
     level: avatar.level,
     life: avatar.life,

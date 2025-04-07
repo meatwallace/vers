@@ -1,25 +1,25 @@
 import { expect, test } from 'vitest';
 import type {
   ActivityCompletedCheckpoint,
-  ActivityEnemyGroupKilledCheckpoint,
   ActivityFailedCheckpoint,
+  ActivityProgressCheckpoint,
   ActivityStartedCheckpoint,
 } from '../types';
 import { ActivityCheckpointType } from '../types';
-import { isEnemyGroupKilledCheckpoint } from './is-enemy-group-killed-checkpoint';
+import { isProgressCheckpoint } from './is-progress-checkpoint';
 
-test('returns true for enemy group killed checkpoints', () => {
-  const enemyGroupKilledCheckpoint: ActivityEnemyGroupKilledCheckpoint = {
+test('returns true for progress checkpoints', () => {
+  const progressCheckpoint: ActivityProgressCheckpoint = {
     hash: 'abc123',
     nextSeed: 12_345,
     time: 300,
-    type: ActivityCheckpointType.EnemyGroupKilled,
+    type: ActivityCheckpointType.Progress,
   };
 
-  expect(isEnemyGroupKilledCheckpoint(enemyGroupKilledCheckpoint)).toBeTrue();
+  expect(isProgressCheckpoint(progressCheckpoint)).toBeTrue();
 });
 
-test('returns false for non-enemy-group-killed checkpoints', () => {
+test('returns false for non-progress checkpoints', () => {
   const startedCheckpoint: ActivityStartedCheckpoint = {
     hash: 'def456',
     seed: 54_321,
@@ -41,7 +41,7 @@ test('returns false for non-enemy-group-killed checkpoints', () => {
     type: ActivityCheckpointType.Failed,
   };
 
-  expect(isEnemyGroupKilledCheckpoint(startedCheckpoint)).toBeFalse();
-  expect(isEnemyGroupKilledCheckpoint(completedCheckpoint)).toBeFalse();
-  expect(isEnemyGroupKilledCheckpoint(failedCheckpoint)).toBeFalse();
+  expect(isProgressCheckpoint(startedCheckpoint)).toBeFalse();
+  expect(isProgressCheckpoint(completedCheckpoint)).toBeFalse();
+  expect(isProgressCheckpoint(failedCheckpoint)).toBeFalse();
 });

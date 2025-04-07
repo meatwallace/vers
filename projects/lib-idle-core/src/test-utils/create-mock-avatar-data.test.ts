@@ -1,4 +1,5 @@
 import { expect, test } from 'vitest';
+import { Class } from '@vers/data';
 import { EquipmentSlot } from '../types';
 import { createMockAvatarData } from './create-mock-avatar-data';
 
@@ -6,8 +7,8 @@ test('it creates avatar data with expected properties', () => {
   const avatar = createMockAvatarData();
 
   expect(avatar).toStrictEqual({
+    class: Class.Brute,
     id: expect.any(String),
-    image: '/assets/images/avatar-placeholder.png',
     level: 1,
     life: 200,
     name: 'Test Avatar',
@@ -25,8 +26,8 @@ test('it creates avatar data with expected properties', () => {
 
 test('it creates avatar data with custom properties', () => {
   const avatar = createMockAvatarData({
+    class: Class.Scholar,
     id: 'test-id',
-    image: '/assets/images/avatar-placeholder-2.png',
     level: 2,
     life: 100,
     name: 'Test Avatar 2',
@@ -42,8 +43,8 @@ test('it creates avatar data with custom properties', () => {
   });
 
   expect(avatar).toStrictEqual({
+    class: Class.Scholar,
     id: 'test-id',
-    image: '/assets/images/avatar-placeholder-2.png',
     level: 2,
     life: 100,
     name: 'Test Avatar 2',

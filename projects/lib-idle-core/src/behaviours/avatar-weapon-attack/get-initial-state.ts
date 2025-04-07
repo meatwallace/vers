@@ -1,6 +1,6 @@
-import type { PlayerWeaponAttackBehaviourState } from '../../types';
+import type { AvatarWeaponAttackBehaviourState } from '../../types';
 
-export function getInitialState(): PlayerWeaponAttackBehaviourState {
+export function getInitialState(): AvatarWeaponAttackBehaviourState {
   return {
     lastAttackTime: 0,
   };

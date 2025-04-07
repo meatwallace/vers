@@ -84,14 +84,14 @@ test('it generates enemy group killed checkpoints', async () => {
     hash: expect.any(String),
     nextSeed: expect.any(Number),
     time: expect.any(Number),
-    type: ActivityCheckpointType.EnemyGroupKilled,
+    type: ActivityCheckpointType.Progress,
   });
 
   expect(thirdCheckpoint).toStrictEqual({
     hash: expect.any(String),
     nextSeed: expect.any(Number),
     time: expect.any(Number),
-    type: ActivityCheckpointType.EnemyGroupKilled,
+    type: ActivityCheckpointType.Progress,
   });
 });
 
