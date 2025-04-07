@@ -1,5 +1,6 @@
 import { expect, test } from 'vitest';
 import type { SimulationAppState } from '@vers/idle-core';
+import { Class } from '@vers/data';
 import { EntityStatus } from '@vers/idle-core';
 import { WorkerMessageType } from '../types';
 import { createSimulationUpdateMessage } from './create-simulation-update-message';
@@ -17,8 +18,8 @@ test('it creates a simulation update message', () => {
     },
     avatar: {
       behaviours: {},
+      class: Class.Brute,
       id: '1',
-      image: '/assets/images/avatar-placeholder.png',
       isAlive: true,
       level: 1,
       life: 100,

@@ -1,7 +1,7 @@
 import type {
   Avatar,
+  AvatarWeaponAttackBehaviour,
   CombatExecutor,
-  PlayerWeaponAttackBehaviour,
 } from '../../types';
 import { createLogLabel } from '../../utils/create-log-label';
 import { logger } from '../../utils/logger';
@@ -11,7 +11,7 @@ import { isAttackReady } from './is-attack-ready';
 
 export function handleTick(
   entity: Avatar,
-  behaviour: PlayerWeaponAttackBehaviour,
+  behaviour: AvatarWeaponAttackBehaviour,
   executor: CombatExecutor,
 ): void {
   const label = createLogLabel('avatar', entity.id);

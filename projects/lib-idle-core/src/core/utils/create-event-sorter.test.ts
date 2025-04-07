@@ -38,7 +38,7 @@ test('it prioritizes avatar events when time is equal', () => {
   const data = createMockAvatarData();
   const avatar = createAvatar(data, ctx);
 
-  const playerEvent: AvatarAttackEvent = {
+  const avatarEvent: AvatarAttackEvent = {
     id: 'event-1',
     source: avatar.id,
     time: 100,
@@ -59,10 +59,10 @@ test('it prioritizes avatar events when time is equal', () => {
     type: CombatEventType.EnemyAttack,
   };
 
-  const events = [enemyEvent2, enemyEvent3, playerEvent];
+  const events = [enemyEvent2, enemyEvent3, avatarEvent];
   const sorter = createEventSorter(avatar);
 
   events.sort(sorter);
 
-  expect(events).toStrictEqual([playerEvent, enemyEvent2, enemyEvent3]);
+  expect(events).toStrictEqual([avatarEvent, enemyEvent2, enemyEvent3]);
 });

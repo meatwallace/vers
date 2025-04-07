@@ -1,19 +1,19 @@
 import type {
   Activity,
-  ActivityEnemyGroupKilledCheckpoint,
+  ActivityProgressCheckpoint,
   SimulationContext,
 } from '../../types';
 import { ActivityCheckpointType } from '../../types';
 import { hashObject } from '../../utils/hash-object';
 
-export function createEnemyGroupKilledCheckpoint(
+export function createProgressCheckpoint(
   activity: Activity,
   ctx: SimulationContext,
-): ActivityEnemyGroupKilledCheckpoint {
-  const data: Omit<ActivityEnemyGroupKilledCheckpoint, 'hash'> = {
+): ActivityProgressCheckpoint {
+  const data: Omit<ActivityProgressCheckpoint, 'hash'> = {
     nextSeed: ctx.rng.generateNewSeed(),
     time: activity.elapsed,
-    type: ActivityCheckpointType.EnemyGroupKilled,
+    type: ActivityCheckpointType.Progress,
   };
 
   const hash = hashObject(ctx.hasher, data);

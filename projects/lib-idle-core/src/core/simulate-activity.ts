@@ -8,8 +8,8 @@ import type {
 } from '../types';
 import { logger } from '../utils/logger';
 import { createCompletedCheckpoint } from './utils/create-completed-checkpoint';
-import { createEnemyGroupKilledCheckpoint } from './utils/create-enemy-group-killed-checkpoint';
 import { createFailedCheckpoint } from './utils/create-failed-checkpoint';
+import { createProgressCheckpoint } from './utils/create-progress-checkpoint';
 import { createStartedCheckpoint } from './utils/create-started-checkpoint';
 
 export async function* simulateActivity(
@@ -36,7 +36,7 @@ export async function* simulateActivity(
     executor.run(timestep);
 
     if (activity.currentEnemyGroup?.remaining === 0) {
-      yield createEnemyGroupKilledCheckpoint(activity, ctx);
+      yield createProgressCheckpoint(activity, ctx);
 
       logger.debug(`${label} moving to next enemy group`);
 

@@ -1,13 +1,13 @@
 import type {
   Avatar,
+  AvatarWeaponAttackBehaviourState,
   CombatExecutor,
-  PlayerWeaponAttackBehaviourState,
 } from '../../types';
 import { getNextAttackTime } from './get-next-attack-time';
 
 export function isAttackReady(
   entity: Avatar,
-  state: PlayerWeaponAttackBehaviourState,
+  state: AvatarWeaponAttackBehaviourState,
   executor: CombatExecutor,
 ): boolean {
   if (!entity.isAlive) {

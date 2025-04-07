@@ -1,9 +1,9 @@
 import { produce } from 'immer';
 import type {
   Avatar,
+  AvatarWeaponAttackBehaviour,
+  AvatarWeaponAttackBehaviourState,
   CombatExecutor,
-  PlayerWeaponAttackBehaviour,
-  PlayerWeaponAttackBehaviourState,
   SetEntityStateFn,
 } from '../../types';
 import { BehaviourID, LifecycleEvent } from '../../types';
@@ -12,13 +12,13 @@ import { getNextAttackTime } from './get-next-attack-time';
 import { handleTick } from './handle-tick';
 import { predicate } from './predicate';
 
-export function create(entity: Avatar): PlayerWeaponAttackBehaviour {
+export function create(entity: Avatar): AvatarWeaponAttackBehaviour {
   let state = getInitialState();
 
-  const getState = (): PlayerWeaponAttackBehaviourState => state;
+  const getState = (): AvatarWeaponAttackBehaviourState => state;
 
   const setState = (
-    setStateFn: SetEntityStateFn<PlayerWeaponAttackBehaviourState>,
+    setStateFn: SetEntityStateFn<AvatarWeaponAttackBehaviourState>,
   ): void => {
     state = produce(state, setStateFn);
   };
@@ -27,9 +27,9 @@ export function create(entity: Avatar): PlayerWeaponAttackBehaviour {
     state = getInitialState();
   };
 
-  const behaviour: PlayerWeaponAttackBehaviour = {
+  const behaviour: AvatarWeaponAttackBehaviour = {
     // meta
-    id: BehaviourID.PlayerWeaponAttack,
+    id: BehaviourID.AvatarWeaponAttack,
 
     // getters
     get lastAttackTime(): number {
@@ -38,7 +38,7 @@ export function create(entity: Avatar): PlayerWeaponAttackBehaviour {
     get nextAttackTime(): number {
       return getNextAttackTime(entity, state);
     },
-    get state(): PlayerWeaponAttackBehaviourState {
+    get state(): AvatarWeaponAttackBehaviourState {
       return state;
     },
 

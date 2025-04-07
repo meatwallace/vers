@@ -66,8 +66,8 @@ interface IActivityCheckpoint {
 
 export enum ActivityCheckpointType {
   Completed = 'completed',
-  EnemyGroupKilled = 'enemy_group_killed',
   Failed = 'failed',
+  Progress = 'progress',
   Started = 'started',
 }
 
@@ -86,14 +86,13 @@ export interface ActivityCompletedCheckpoint extends IActivityCheckpoint {
   type: ActivityCheckpointType.Completed;
 }
 
-export interface ActivityEnemyGroupKilledCheckpoint
-  extends IActivityCheckpoint {
+export interface ActivityProgressCheckpoint extends IActivityCheckpoint {
   nextSeed: number;
-  type: ActivityCheckpointType.EnemyGroupKilled;
+  type: ActivityCheckpointType.Progress;
 }
 
 export type ActivityCheckpoint =
   | ActivityCompletedCheckpoint
-  | ActivityEnemyGroupKilledCheckpoint
   | ActivityFailedCheckpoint
+  | ActivityProgressCheckpoint
   | ActivityStartedCheckpoint;

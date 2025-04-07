@@ -34,7 +34,7 @@ test('it schedules attacks on the tick event', () => {
 
   // we need to remove the behaviour from the avatar as it's already added
   // by default and would get ran when we run our combat executor
-  avatar.removeBehaviour(BehaviourID.PlayerWeaponAttack);
+  avatar.removeBehaviour(BehaviourID.AvatarWeaponAttack);
 
   const behaviour = create(avatar);
 
@@ -76,7 +76,7 @@ test('it schedules multiple attacks for high APS weapons', () => {
 
   // we need to remove the behaviour from the avatar as it's already added
   // by default and would get ran when we run our combat executor
-  avatar.removeBehaviour(BehaviourID.PlayerWeaponAttack);
+  avatar.removeBehaviour(BehaviourID.AvatarWeaponAttack);
 
   const behaviour = create(avatar);
 

@@ -1,1 +1,1 @@
-export { create as createPlayerWeaponAttackBehaviour } from './create';
+export { create as createAvatarWeaponAttackBehaviour } from './create';

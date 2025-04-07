@@ -1,3 +1,4 @@
+import type { ClassID } from '@vers/data';
 import type {
   AvatarBehaviour,
   Behaviour,
@@ -10,8 +11,8 @@ import type { EquipmentSlot, EquipmentWeapon } from './equipment';
 import type { SimulationContext } from './simulation';
 
 export interface AvatarData {
+  class: ClassID;
   id: string;
-  image: string; // temporary, will remove later
   level: number;
   life: number;
   name: string;
@@ -73,8 +74,8 @@ export type AvatarBehaviourAppState = {
 
 export interface AvatarAppState {
   readonly behaviours: AvatarBehaviourAppState;
+  readonly class: ClassID;
   readonly id: string;
-  readonly image: string; // temporary, will remove later
   readonly isAlive: boolean;
   readonly level: number;
   readonly life: number;
@@ -144,7 +145,7 @@ export enum EntityStatus {
 }
 
 export enum EntityType {
-  Avatar = 'player_avatar',
+  Avatar = 'avatar',
   Enemy = 'enemy',
 }
 

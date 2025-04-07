@@ -1,8 +1,8 @@
 import { expect, test } from 'vitest';
 import type {
   ActivityCompletedCheckpoint,
-  ActivityEnemyGroupKilledCheckpoint,
   ActivityFailedCheckpoint,
+  ActivityProgressCheckpoint,
   ActivityStartedCheckpoint,
 } from '../types';
 import { ActivityCheckpointType } from '../types';
@@ -34,14 +34,14 @@ test('returns false for non-completed checkpoints', () => {
     type: ActivityCheckpointType.Failed,
   };
 
-  const enemyGroupKilledCheckpoint: ActivityEnemyGroupKilledCheckpoint = {
+  const progressCheckpoint: ActivityProgressCheckpoint = {
     hash: 'jkl012',
     nextSeed: 24_680,
     time: 300,
-    type: ActivityCheckpointType.EnemyGroupKilled,
+    type: ActivityCheckpointType.Progress,
   };
 
   expect(isCompletedCheckpoint(startedCheckpoint)).toBeFalse();
   expect(isCompletedCheckpoint(failedCheckpoint)).toBeFalse();
-  expect(isCompletedCheckpoint(enemyGroupKilledCheckpoint)).toBeFalse();
+  expect(isCompletedCheckpoint(progressCheckpoint)).toBeFalse();
 });

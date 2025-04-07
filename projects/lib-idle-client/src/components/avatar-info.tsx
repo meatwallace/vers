@@ -1,4 +1,5 @@
 import type { AvatarAppState } from '@vers/idle-core';
+import { classes } from '@vers/data';
 import { Heading } from '@vers/design-system';
 import { AttackTimerBar } from './attack-timer-bar.tsx';
 import * as styles from './avatar-info.styles.ts';
@@ -9,8 +10,10 @@ interface AvatarInfoProps {
 }
 
 export function AvatarInfo(props: AvatarInfoProps) {
+  const classData = classes[props.avatar.class];
+
   const lastAttackTime =
-    props.avatar.behaviours.playerWeaponAttack?.lastAttackTime ?? 0;
+    props.avatar.behaviours.avatarWeaponAttack?.lastAttackTime ?? 0;
 
   const attackSpeed = props.avatar.mainHandAttack?.speed ?? 0;
   const nextAttackTime = lastAttackTime + 1000 / attackSpeed;
@@ -29,7 +32,7 @@ export function AvatarInfo(props: AvatarInfoProps) {
       <img
         alt={props.avatar.name}
         className={styles.avatarImage}
-        src={props.avatar.image}
+        src={classData.images.unitFrame}
       />
     </div>
   );

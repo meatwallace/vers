@@ -4,22 +4,22 @@ import { createMockSimulationContext } from '../../test-utils/create-mock-simula
 import { ActivityCheckpointType } from '../../types';
 import { hashObject } from '../../utils/hash-object';
 import { createActivity } from '../create-activity';
-import { createEnemyGroupKilledCheckpoint } from './create-enemy-group-killed-checkpoint';
+import { createProgressCheckpoint } from './create-progress-checkpoint';
 
-test('it creates a enemy group killed checkpoint', () => {
+test('it creates a progress checkpoint', () => {
   const ctx = createMockSimulationContext();
   const activityData = createMockActivityData();
   const activity = createActivity(activityData, ctx);
 
   activity.elapseTime(2500);
 
-  const checkpoint = createEnemyGroupKilledCheckpoint(activity, ctx);
+  const checkpoint = createProgressCheckpoint(activity, ctx);
 
   expect(checkpoint).toStrictEqual({
     hash: expect.any(String),
     nextSeed: expect.any(Number),
     time: 2500,
-    type: ActivityCheckpointType.EnemyGroupKilled,
+    type: ActivityCheckpointType.Progress,
   });
 });
 
@@ -30,7 +30,7 @@ test('it includes a hash based on checkpoint data', () => {
 
   activity.elapseTime(2500);
 
-  const checkpoint = createEnemyGroupKilledCheckpoint(activity, ctx);
+  const checkpoint = createProgressCheckpoint(activity, ctx);
 
   const { hash, ...hashParts } = checkpoint;
 

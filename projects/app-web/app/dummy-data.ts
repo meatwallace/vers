@@ -1,4 +1,5 @@
 import type { ActivityData, AvatarData } from '@vers/idle-core';
+import { Class } from '@vers/data';
 import {
   ActivityFailureAction,
   ActivityType,
@@ -28,8 +29,8 @@ export const activityData: ActivityData = {
 export const initialSeed = Date.now() ^ (Math.random() * 0x100000000);
 
 export const avatarData: AvatarData = {
+  class: Class.Brute,
   id: '1',
-  image: '/assets/images/rogue.png',
   level: 1,
   life: 200,
   name: 'Test Avatar',

@@ -145,7 +145,7 @@ test('it runs an activity and returns checkpoints', async () => {
     hash: expect.any(String),
     nextSeed: expect.any(Number),
     time: expect.any(Number),
-    type: ActivityCheckpointType.EnemyGroupKilled,
+    type: ActivityCheckpointType.Progress,
   });
 
   expect(simulation.elapsed).toBe(10_100);
