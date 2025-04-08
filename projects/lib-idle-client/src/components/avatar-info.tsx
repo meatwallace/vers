@@ -1,9 +1,9 @@
 import type { AvatarAppState } from '@vers/idle-core';
 import { classes } from '@vers/data';
 import { Heading } from '@vers/design-system';
-import { AttackTimerBar } from './attack-timer-bar.tsx';
-import * as styles from './avatar-info.styles.ts';
-import { LifeBar } from './life-bar.tsx';
+import { AttackTimerBar } from './attack-timer-bar';
+import * as styles from './avatar-info.styles';
+import { LifeBar } from './life-bar';
 
 interface AvatarInfoProps {
   avatar: AvatarAppState;

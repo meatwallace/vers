@@ -2,13 +2,13 @@
 
 import { ServiceID } from '@vers/service-types';
 import { Command } from 'commander';
-import { exec } from './stack/commands/exec.ts';
-import { logs } from './stack/commands/logs.ts';
-import { rm } from './stack/commands/rm.ts';
-import { start, type StartOptions } from './stack/commands/start.ts';
-import { status } from './stack/commands/status.ts';
-import { stop } from './stack/commands/stop.ts';
-import { parseServiceArg } from './stack/utils/parse-service-arg.ts';
+import { exec } from './stack/commands/exec';
+import { logs } from './stack/commands/logs';
+import { rm } from './stack/commands/rm';
+import { start, type StartOptions } from './stack/commands/start';
+import { status } from './stack/commands/status';
+import { stop } from './stack/commands/stop';
+import { parseServiceArg } from './stack/utils/parse-service-arg';
 
 const program = new Command()
   .name('stack')

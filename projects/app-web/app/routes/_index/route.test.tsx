@@ -2,11 +2,11 @@ import { expect, test } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { createRoutesStub } from 'react-router';
-import { composeDataFnWrappers } from '~/test-utils/compose-data-fn-wrappers.ts';
-import { withAppLoadContext } from '~/test-utils/with-app-load-context.ts';
-import { withAuthedUser } from '~/test-utils/with-authed-user.ts';
-import { Routes } from '~/types.ts';
-import { Index, loader } from './route.tsx';
+import { composeDataFnWrappers } from '~/test-utils/compose-data-fn-wrappers';
+import { withAppLoadContext } from '~/test-utils/with-app-load-context';
+import { withAuthedUser } from '~/test-utils/with-authed-user';
+import { Routes } from '~/types';
+import { Index, loader } from './route';
 
 interface TestConfig {
   isAuthed: boolean;

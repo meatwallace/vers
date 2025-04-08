@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Field } from '@base-ui-components/react/field';
 import { css, cx } from '@vers/styled-system/css';
 import { REGEXP_ONLY_DIGITS, REGEXP_ONLY_DIGITS_AND_CHARS } from 'input-otp';
-import { InputOTP } from './input-otp.tsx';
+import { InputOTP } from './input-otp';
 
 interface Props {
   className?: string;

@@ -14,21 +14,21 @@ import { NameSchema, UsernameSchema } from '@vers/validation';
 import { HoneypotInputs } from 'remix-utils/honeypot/react';
 import invariant from 'tiny-invariant';
 import { z } from 'zod';
-import { FormErrorList } from '~/components/form-error-list/form-error-list.tsx';
-import { RouteErrorBoundary } from '~/components/route-error-boundary.tsx';
+import { FormErrorList } from '~/components/form-error-list/form-error-list';
+import { RouteErrorBoundary } from '~/components/route-error-boundary';
 import { FinishEmailSignupMutation } from '~/data/mutations/finish-email-signup';
 import { useIsFormPending } from '~/hooks/use-is-form-pending';
-import { authSessionStorage } from '~/session/auth-session-storage.server.ts';
-import { verifySessionStorage } from '~/session/verify-session-storage.server.ts';
-import { Routes } from '~/types.ts';
-import { checkHoneypot } from '~/utils/check-honeypot.server.ts';
-import { handleGQLError } from '~/utils/handle-gql-error.ts';
+import { authSessionStorage } from '~/session/auth-session-storage.server';
+import { verifySessionStorage } from '~/session/verify-session-storage.server';
+import { Routes } from '~/types';
+import { checkHoneypot } from '~/utils/check-honeypot.server';
+import { handleGQLError } from '~/utils/handle-gql-error';
 import { isMutationError } from '~/utils/is-mutation-error';
-import { withErrorHandling } from '~/utils/with-error-handling.ts';
-import { ConfirmPasswordSchema } from '~/validation/confirm-password-schema.ts';
-import { FormBooleanSchema } from '~/validation/form-boolean-schema.ts';
-import type { Route } from './+types/route.ts';
-import { requireOnboardingSession } from './require-onboarding-session.server.ts';
+import { withErrorHandling } from '~/utils/with-error-handling';
+import { ConfirmPasswordSchema } from '~/validation/confirm-password-schema';
+import { FormBooleanSchema } from '~/validation/form-boolean-schema';
+import type { Route } from './+types/route';
+import { requireOnboardingSession } from './require-onboarding-session.server';
 
 const OnboardingFormSchema = z
   .object({

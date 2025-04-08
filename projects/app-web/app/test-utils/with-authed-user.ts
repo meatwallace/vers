@@ -1,6 +1,6 @@
 import { AppLoadContext } from 'react-router';
 import { authSessionStorage } from '~/session/auth-session-storage.server';
-import { createAuthedUser } from '~/test-utils/create-authed-user.ts';
+import { createAuthedUser } from '~/test-utils/create-authed-user';
 import { combineCookies } from './combine-cookies';
 
 interface Config {

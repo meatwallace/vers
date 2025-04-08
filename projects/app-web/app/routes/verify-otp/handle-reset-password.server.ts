@@ -1,8 +1,8 @@
 import { redirect } from 'react-router';
 import { safeRedirect } from 'remix-utils/safe-redirect';
 import invariant from 'tiny-invariant';
-import { verifySessionStorage } from '~/session/verify-session-storage.server.ts';
-import { type HandleVerificationContext } from './types.ts';
+import { verifySessionStorage } from '~/session/verify-session-storage.server';
+import { type HandleVerificationContext } from './types';
 
 export async function handleResetPassword(ctx: HandleVerificationContext) {
   invariant(

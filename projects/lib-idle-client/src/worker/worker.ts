@@ -1,9 +1,9 @@
-import { ClientMessage } from 'src/types.ts';
+import { ClientMessage } from 'src/types';
 import invariant from 'tiny-invariant';
-import { connections } from './connections.ts';
-import { handleClientMessage } from './handle-client-message.ts';
-import { runSimulation } from './run-simulation.ts';
-import { getSimulation } from './simulation.ts';
+import { connections } from './connections';
+import { handleClientMessage } from './handle-client-message';
+import { runSimulation } from './run-simulation';
+import { getSimulation } from './simulation';
 
 declare let self: SharedWorkerGlobalScope;
 

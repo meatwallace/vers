@@ -12,14 +12,14 @@ import { styleText } from 'node:util';
 import { createReadableStreamFromReadable } from '@react-router/node';
 import * as Sentry from '@sentry/node';
 import { isbot } from 'isbot';
-import { createTimings } from './utils/create-timings.server.ts';
-import { getServerTimingHeader } from './utils/get-server-timing-header.server.ts';
-import { NonceProvider } from './utils/nonce-provider.ts';
+import { createTimings } from './utils/create-timings.server';
+import { getServerTimingHeader } from './utils/get-server-timing-header.server';
+import { NonceProvider } from './utils/nonce-provider';
 
 export const streamTimeout = 5000;
 
 if (!import.meta.env.PROD && import.meta.env.VITE_ENABLE_MSW === 'true') {
-  const { server } = await import('./mocks/node.ts');
+  const { server } = await import('./mocks/node');
 
   server.listen();
 }

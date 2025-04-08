@@ -1,5 +1,5 @@
 import { expect, test } from 'vitest';
-import { generateWelcomeEmail } from './generate-welcome-email.tsx';
+import { generateWelcomeEmail } from './generate-welcome-email';
 
 test('it generates a welcome email with the provided configuration', async () => {
   const config = {

@@ -2,8 +2,8 @@
 
 import { Command } from 'commander';
 import { oraPromise } from 'ora';
-import { execa } from './utils/execa.ts';
-import { parseCommaSeperatedStrings } from './utils/parse-comma-seperated-strings.ts';
+import { execa } from './utils/execa';
+import { parseCommaSeperatedStrings } from './utils/parse-comma-seperated-strings';
 
 const filesToLint = ['projects/', 'scripts/'];
 

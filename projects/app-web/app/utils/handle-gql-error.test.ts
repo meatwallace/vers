@@ -1,6 +1,6 @@
 import { expect, test } from 'vitest';
 import { CombinedError } from '@urql/core';
-import { handleGQLError } from './handle-gql-error.ts';
+import { handleGQLError } from './handle-gql-error';
 
 test('it rethrows redirects', () => {
   const error = new CombinedError({

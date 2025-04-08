@@ -5,15 +5,15 @@ import { createRoutesStub } from 'react-router';
 import { drop } from '@mswjs/data';
 import { GraphQLError } from 'graphql';
 import { graphql } from 'msw';
-import { VerificationType } from '~/gql/graphql.ts';
-import { db } from '~/mocks/db.ts';
-import { server } from '~/mocks/node.ts';
-import { verifySessionStorage } from '~/session/verify-session-storage.server.ts';
-import { withAppLoadContext } from '~/test-utils/with-app-load-context.ts';
-import { withRouteProps } from '~/test-utils/with-route-props.tsx';
-import { Routes } from '~/types.ts';
-import type { Route } from './+types/route.ts';
-import { action, loader, ResetPassword } from './route.tsx';
+import { VerificationType } from '~/gql/graphql';
+import { db } from '~/mocks/db';
+import { server } from '~/mocks/node';
+import { verifySessionStorage } from '~/session/verify-session-storage.server';
+import { withAppLoadContext } from '~/test-utils/with-app-load-context';
+import { withRouteProps } from '~/test-utils/with-route-props';
+import { Routes } from '~/types';
+import type { Route } from './+types/route';
+import { action, loader, ResetPassword } from './route';
 
 interface TestConfig {
   initialPath: string;

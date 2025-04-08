@@ -1,5 +1,5 @@
-import { BackgroundPattern } from '../background-pattern/background-pattern.tsx';
-import { withContext } from './context.ts';
+import { BackgroundPattern } from '../background-pattern/background-pattern';
+import { withContext } from './context';
 
 interface TooltipHeaderProps {
   children: React.ReactNode;

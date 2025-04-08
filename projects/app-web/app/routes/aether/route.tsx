@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Spinner } from '@vers/design-system';
-import * as styles from './route.styles.ts';
+import * as styles from './route.styles';
 
 export function AetherRoute() {
   return (
@@ -13,7 +13,7 @@ export function AetherRoute() {
 }
 
 const Aether = React.lazy(async () => {
-  const module = await import('./aether.tsx');
+  const module = await import('./aether');
 
   return { default: module.Aether };
 });

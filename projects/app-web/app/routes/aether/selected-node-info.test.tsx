@@ -5,7 +5,7 @@ import { createRoutesStub } from 'react-router';
 import type { AetherNode } from '@vers/aether-core';
 import { setSelectedNode } from '@vers/aether-client';
 import { nodeHasText } from '@vers/client-test-utils';
-import { Routes } from '~/types.ts';
+import { Routes } from '~/types';
 import { SelectedNodeInfo } from './selected-node-info';
 
 function setupTest() {

@@ -7,11 +7,11 @@ import {
   useLoaderData,
 } from 'react-router';
 import { HoneypotProvider } from 'remix-utils/honeypot/react';
-import type { Route } from './+types/root.ts';
+import type { Route } from './+types/root';
 import stylesheet from './app.css?url';
-import { honeypot } from './honeypot.server.ts';
+import { honeypot } from './honeypot.server';
 import pandaStylesheet from './styled-system/styles.css?url';
-import { useNonce } from './utils/nonce-provider.ts';
+import { useNonce } from './utils/nonce-provider';
 
 export const links: Route.LinksFunction = () => {
   return [

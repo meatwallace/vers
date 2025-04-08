@@ -1,8 +1,8 @@
 import { redirect } from 'react-router';
 import invariant from 'tiny-invariant';
-import { verifySessionStorage } from '~/session/verify-session-storage.server.ts';
-import { Routes } from '~/types.ts';
-import { HandleVerificationContext } from './types.ts';
+import { verifySessionStorage } from '~/session/verify-session-storage.server';
+import { Routes } from '~/types';
+import { HandleVerificationContext } from './types';
 
 export async function handleOnboarding(ctx: HandleVerificationContext) {
   invariant(

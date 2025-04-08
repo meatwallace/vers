@@ -1,4 +1,4 @@
-import * as styles from './form-error-list.styles.ts';
+import * as styles from './form-error-list.styles';
 
 interface Props {
   errors?: Array<null | string | undefined> | null;

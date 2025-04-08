@@ -12,19 +12,19 @@ import {
 import { css } from '@vers/styled-system/css';
 import { HoneypotInputs } from 'remix-utils/honeypot/react';
 import { z } from 'zod';
-import { FormErrorList } from '~/components/form-error-list/form-error-list.tsx';
-import { RouteErrorBoundary } from '~/components/route-error-boundary.tsx';
+import { FormErrorList } from '~/components/form-error-list/form-error-list';
+import { RouteErrorBoundary } from '~/components/route-error-boundary';
 import { FinishPasswordResetMutation } from '~/data/mutations/finish-password-reset';
 import { useIsFormPending } from '~/hooks/use-is-form-pending';
-import { verifySessionStorage } from '~/session/verify-session-storage.server.ts';
-import { Routes } from '~/types.ts';
-import { checkHoneypot } from '~/utils/check-honeypot.server.ts';
-import { handleGQLError } from '~/utils/handle-gql-error.ts';
+import { verifySessionStorage } from '~/session/verify-session-storage.server';
+import { Routes } from '~/types';
+import { checkHoneypot } from '~/utils/check-honeypot.server';
+import { handleGQLError } from '~/utils/handle-gql-error';
 import { isMutationError } from '~/utils/is-mutation-error';
-import { requireAnonymous } from '~/utils/require-anonymous.server.ts';
-import { withErrorHandling } from '~/utils/with-error-handling.ts';
-import { ConfirmPasswordSchema } from '~/validation/confirm-password-schema.ts';
-import type { Route } from './+types/route.ts';
+import { requireAnonymous } from '~/utils/require-anonymous.server';
+import { withErrorHandling } from '~/utils/with-error-handling';
+import { ConfirmPasswordSchema } from '~/validation/confirm-password-schema';
+import type { Route } from './+types/route';
 
 const ResetPasswordFormSchema = z.intersection(
   z.object({

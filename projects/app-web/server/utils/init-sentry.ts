@@ -1,6 +1,6 @@
 import * as Sentry from '@sentry/node';
 import { nodeProfilingIntegration } from '@sentry/profiling-node';
-import { env } from '../env.ts';
+import { env } from '../env';
 
 export function initSentry() {
   Sentry.init({

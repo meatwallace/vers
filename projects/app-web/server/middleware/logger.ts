@@ -1,5 +1,5 @@
 import type { Context, Next } from 'hono';
-import { logger as appLogger } from '../logger.ts';
+import { logger as appLogger } from '../logger';
 
 enum Token {
   Bold = '\u001B[1m',

@@ -3,14 +3,14 @@ import type {
   InitialStateMessage,
   SimulationUpdateMessage,
   WorkerMessage,
-} from '../types.ts';
-import { setActivity } from '../state/set-activity.ts';
-import { setAvatar } from '../state/set-avatar.ts';
-import { setCombat } from '../state/set-combat.ts';
-import { setSimulationInitialized } from '../state/set-simulation-initialized.ts';
-import { setSimulationWorker } from '../state/set-simulation-worker.ts';
-import { useSimulationStore } from '../state/use-simulation-store.ts';
-import { WorkerMessageType } from '../types.ts';
+} from '../types';
+import { setActivity } from '../state/set-activity';
+import { setAvatar } from '../state/set-avatar';
+import { setCombat } from '../state/set-combat';
+import { setSimulationInitialized } from '../state/set-simulation-initialized';
+import { setSimulationWorker } from '../state/set-simulation-worker';
+import { useSimulationStore } from '../state/use-simulation-store';
+import { WorkerMessageType } from '../types';
 import SimulationWorker from './worker.ts?sharedworker';
 
 export function useSimulationWorker() {

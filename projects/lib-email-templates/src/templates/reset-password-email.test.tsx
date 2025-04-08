@@ -1,6 +1,6 @@
 import { expect, test } from 'vitest';
 import { render, screen } from '@testing-library/react';
-import { ResetPasswordEmail } from './reset-password-email.tsx';
+import { ResetPasswordEmail } from './reset-password-email';
 
 test('it renders the reset password email with all required elements', () => {
   render(<ResetPasswordEmail resetURL="https://example.com/reset-password" />);

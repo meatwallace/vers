@@ -12,22 +12,22 @@ import QRCode from 'qrcode';
 import invariant from 'tiny-invariant';
 import { z } from 'zod';
 import { ContentContainer } from '~/components/content-container';
-import { FormErrorList } from '~/components/form-error-list/form-error-list.tsx';
-import { RouteErrorBoundary } from '~/components/route-error-boundary.tsx';
+import { FormErrorList } from '~/components/form-error-list/form-error-list';
+import { RouteErrorBoundary } from '~/components/route-error-boundary';
 import { FinishEnable2FAMutation } from '~/data/mutations/finish-enable-2fa';
 import { VerifyOTPMutation } from '~/data/mutations/verify-otp';
-import { GetCurrentUserQuery } from '~/data/queries/get-current-user.ts';
+import { GetCurrentUserQuery } from '~/data/queries/get-current-user';
 import { GetEnable2FAVerificationQuery } from '~/data/queries/get-enable-2fa-verification';
-import { VerificationType } from '~/gql/graphql.ts';
-import { useIsFormPending } from '~/hooks/use-is-form-pending.ts';
-import { verifySessionStorage } from '~/session/verify-session-storage.server.ts';
+import { VerificationType } from '~/gql/graphql';
+import { useIsFormPending } from '~/hooks/use-is-form-pending';
+import { verifySessionStorage } from '~/session/verify-session-storage.server';
 import { Routes } from '~/types';
-import { captureGQLExceptions } from '~/utils/capture-gql-exceptions.server.ts';
-import { isMutationError } from '~/utils/is-mutation-error.ts';
-import { requireAuth } from '~/utils/require-auth.server.ts';
-import { withErrorHandling } from '~/utils/with-error-handling.ts';
-import type { Route } from './+types/route.ts';
-import * as styles from './route.styles.ts';
+import { captureGQLExceptions } from '~/utils/capture-gql-exceptions.server';
+import { isMutationError } from '~/utils/is-mutation-error';
+import { requireAuth } from '~/utils/require-auth.server';
+import { withErrorHandling } from '~/utils/with-error-handling';
+import type { Route } from './+types/route';
+import * as styles from './route.styles';
 
 const VerifyOTPFormSchema = z.object({
   code: z.string().length(6, 'Invalid code'),

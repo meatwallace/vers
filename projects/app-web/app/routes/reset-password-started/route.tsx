@@ -1,11 +1,11 @@
 import { Link as RRLink } from 'react-router';
 import { Brand, Heading, Link, Text } from '@vers/design-system';
 import { css } from '@vers/styled-system/css';
-import { RouteErrorBoundary } from '~/components/route-error-boundary.tsx';
-import { Routes } from '~/types.ts';
-import { requireAnonymous } from '~/utils/require-anonymous.server.ts';
-import { withErrorHandling } from '~/utils/with-error-handling.ts';
-import type { Route } from './+types/route.ts';
+import { RouteErrorBoundary } from '~/components/route-error-boundary';
+import { Routes } from '~/types';
+import { requireAnonymous } from '~/utils/require-anonymous.server';
+import { withErrorHandling } from '~/utils/with-error-handling';
+import type { Route } from './+types/route';
 
 export const meta: Route.MetaFunction = () => [
   {

@@ -94,8 +94,16 @@ jobs:
         if: ${{ github.ref_name == 'main' }}
         uses: superfly/flyctl-actions/setup-flyctl@master
 
+      - name: Deploy MongoDB
+        if: ${{ github.ref_name == 'main' && contains(steps.record-affected-projects.outputs.affected-projects, 'db-mongo') }}
+        run: yarn deploy:db-mongo --configuration=production
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+
       - name: Deploy Postgres Migrations
-        if: ${{ github.ref_name == 'main' && contains(steps.record-affected-projects.outputs.affected-projects, 'db-postgres') }}
+        if: ${{ github.ref_name == 'main' &&
+          (contains(steps.record-affected-projects.outputs.affected-projects, 'db-postgres') ||
+          contains(steps.record-affected-projects.outputs.affected-projects, 'lib-postgres-schema')) }}
         run: yarn deploy:db-postgres --configuration=production
         env:
           COMMIT_SHA: ${{ github.sha }}
@@ -112,7 +120,7 @@ jobs:
 
       - name: Deploy Avatar Service
         if: ${{ github.ref_name == 'main' && contains(steps.record-affected-projects.outputs.affected-projects, 'service-avatar') }}
-        run: yarn deploy:service-avatar--configuration=production
+        run: yarn deploy:service-avatar --configuration=production
         env:
           COMMIT_SHA: ${{ github.sha }}
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}

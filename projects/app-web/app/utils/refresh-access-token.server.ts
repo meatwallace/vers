@@ -2,9 +2,9 @@ import type { AuthUtilities } from '@urql/exchange-auth';
 import { UnreachableCodeError } from '@vers/utils';
 import invariant from 'tiny-invariant';
 import { graphql } from '~/gql';
-import { getLoginPathWithRedirect } from './get-login-path-with-redirect.server.ts';
-import { isMutationError } from './is-mutation-error.ts';
-import { logout } from './logout.server.ts';
+import { getLoginPathWithRedirect } from './get-login-path-with-redirect.server';
+import { isMutationError } from './is-mutation-error';
+import { logout } from './logout.server';
 
 const RefreshAccessTokenMutation = graphql(/* GraphQL */ `
   mutation RefreshAccessToken($input: RefreshAccessTokenInput!) {

@@ -2,10 +2,10 @@ import { afterEach, expect, test } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { createRoutesStub } from 'react-router';
 import { drop } from '@mswjs/data';
-import { db } from '~/mocks/db.ts';
-import { withAuthedUser } from '~/test-utils/with-authed-user.ts';
-import { Routes } from '~/types.ts';
-import { requireAnonymous } from './require-anonymous.server.ts';
+import { db } from '~/mocks/db';
+import { withAuthedUser } from '~/test-utils/with-authed-user';
+import { Routes } from '~/types';
+import { requireAnonymous } from './require-anonymous.server';
 
 interface TestConfig {
   isAuthed?: boolean;

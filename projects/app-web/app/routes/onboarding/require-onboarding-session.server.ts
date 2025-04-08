@@ -1,5 +1,5 @@
 import { redirect } from 'react-router';
-import { verifySessionStorage } from '~/session/verify-session-storage.server.ts';
+import { verifySessionStorage } from '~/session/verify-session-storage.server';
 import { Routes } from '~/types';
 import { requireAnonymous } from '~/utils/require-anonymous.server';
 

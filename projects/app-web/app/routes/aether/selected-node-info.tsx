@@ -1,8 +1,8 @@
 import { useSelectedNode } from '@vers/aether-client';
 import { BackgroundPattern, Button, Link, Text } from '@vers/design-system';
 import { cx } from '@vers/styled-system/css';
-import { Routes } from '~/types.ts';
-import * as styles from './selected-node-info.styles.ts';
+import { Routes } from '~/types';
+import * as styles from './selected-node-info.styles';
 
 interface SelectedNodeInfoProps {
   className?: string;

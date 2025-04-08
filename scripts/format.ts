@@ -3,7 +3,7 @@
 import { Command } from 'commander';
 import { execa } from 'execa';
 import { oraPromise } from 'ora';
-import { parseCommaSeperatedStrings } from './utils/parse-comma-seperated-strings.ts';
+import { parseCommaSeperatedStrings } from './utils/parse-comma-seperated-strings';
 
 const defaultFilesToFormat = ['.'];
 

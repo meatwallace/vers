@@ -1,1 +1,1 @@
-export { AuthedLayout } from './authed-layout.tsx';
+export { AuthedLayout } from './authed-layout';

@@ -1,10 +1,10 @@
 import { redirect } from 'react-router';
 import invariant from 'tiny-invariant';
 import { FinishDisable2FAMutation } from '~/data/mutations/finish-disable-2fa';
-import { verifySessionStorage } from '~/session/verify-session-storage.server.ts';
-import { Routes } from '~/types.ts';
-import { handleGQLError } from '~/utils/handle-gql-error.ts';
-import { type HandleVerificationContext } from './types.ts';
+import { verifySessionStorage } from '~/session/verify-session-storage.server';
+import { Routes } from '~/types';
+import { handleGQLError } from '~/utils/handle-gql-error';
+import { type HandleVerificationContext } from './types';
 
 export async function handle2FADisable(ctx: HandleVerificationContext) {
   invariant(

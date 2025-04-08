@@ -1,6 +1,6 @@
 import * as E from '@react-email/components';
-import { generateEmail } from './generate-email.ts';
-import { ResetPasswordEmail } from './templates/reset-password-email.tsx';
+import { generateEmail } from './generate-email';
+import { ResetPasswordEmail } from './templates/reset-password-email';
 
 interface Config {
   resetURL: string;

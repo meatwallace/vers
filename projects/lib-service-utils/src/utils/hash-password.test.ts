@@ -1,6 +1,6 @@
 import { expect, test } from 'vitest';
 import bcrypt from 'bcryptjs';
-import { hashPassword } from './hash-password.ts';
+import { hashPassword } from './hash-password';
 
 test('it hashes a password using bcrypt', async () => {
   const password = 'test_password123';

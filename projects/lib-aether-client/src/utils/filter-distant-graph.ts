@@ -5,7 +5,7 @@ import type {
 } from '@vers/aether-core';
 import type { Object3D } from 'three';
 import { Vector3 } from 'three';
-import { getScenePosition } from './get-scene-position.ts';
+import { getScenePosition } from './get-scene-position';
 
 // i dialed this in until it looked acceptable on 1080 with the fog
 const MAX_DISTANCE = 160;
