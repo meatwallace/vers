@@ -1,5 +1,5 @@
 import { expect, test } from 'vitest';
-import { generateResetPasswordEmail } from './generate-reset-password-email.tsx';
+import { generateResetPasswordEmail } from './generate-reset-password-email';
 
 test('it generates a reset password email with the provided configuration', async () => {
   const config = {

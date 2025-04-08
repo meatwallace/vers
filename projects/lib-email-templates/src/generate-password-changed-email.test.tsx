@@ -1,5 +1,5 @@
 import { expect, test } from 'vitest';
-import { generatePasswordChangedEmail } from './generate-password-changed-email.tsx';
+import { generatePasswordChangedEmail } from './generate-password-changed-email';
 
 test('it generates a password changed email with the provided configuration', async () => {
   const config = {

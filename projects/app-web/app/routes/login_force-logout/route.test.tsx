@@ -13,7 +13,7 @@ import { composeDataFnWrappers } from '~/test-utils/compose-data-fn-wrappers';
 import { withAppLoadContext } from '~/test-utils/with-app-load-context';
 import { withAuthedUser } from '~/test-utils/with-authed-user';
 import { withSession } from '~/test-utils/with-session';
-import { Routes } from '~/types.ts';
+import { Routes } from '~/types';
 import { action, loader, LoginForceLogout } from './route';
 
 let setCookieHeader: null | string = null;

@@ -2,13 +2,13 @@ import { redirect } from 'react-router';
 import { safeRedirect } from 'remix-utils/safe-redirect';
 import invariant from 'tiny-invariant';
 import { FinishLoginWith2FAMutation } from '~/data/mutations/finish-login-with-2fa';
-import { ForceLogoutPayload } from '~/gql/graphql.ts';
-import { authSessionStorage } from '~/session/auth-session-storage.server.ts';
-import { verifySessionStorage } from '~/session/verify-session-storage.server.ts';
-import { Routes } from '~/types.ts';
-import { handleGQLError } from '~/utils/handle-gql-error.ts';
-import { isMutationError } from '~/utils/is-mutation-error.ts';
-import { HandleVerificationContext } from './types.ts';
+import { ForceLogoutPayload } from '~/gql/graphql';
+import { authSessionStorage } from '~/session/auth-session-storage.server';
+import { verifySessionStorage } from '~/session/verify-session-storage.server';
+import { Routes } from '~/types';
+import { handleGQLError } from '~/utils/handle-gql-error';
+import { isMutationError } from '~/utils/is-mutation-error';
+import { HandleVerificationContext } from './types';
 
 export async function handle2FA(ctx: HandleVerificationContext) {
   invariant(

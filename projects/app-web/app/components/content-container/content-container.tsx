@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { cx } from '@vers/styled-system/css';
-import * as styles from './content-container.styles.ts';
+import * as styles from './content-container.styles';
 
 interface Props {
   children: React.ReactNode;

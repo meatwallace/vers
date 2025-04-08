@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
 import { useDebouncedState } from '@react-hookz/web';
 import { css, cx } from '@vers/styled-system/css';
-import type { Props as ButtonProps } from '../button/button.tsx';
-import { Button } from '../button/button.tsx';
-import { Icon } from '../icon/icon.tsx';
-import { Spinner } from '../spinner/spinner.tsx';
+import type { Props as ButtonProps } from '../button/button';
+import { Button } from '../button/button';
+import { Icon } from '../icon/icon';
+import { Spinner } from '../spinner/spinner';
 
 type Props = ButtonProps & {
   spinDelay?: number;

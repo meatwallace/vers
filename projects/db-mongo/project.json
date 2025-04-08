@@ -1,0 +1,32 @@
+{
+  "name": "db-mongo",
+  "$schema": "../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "projects/db-mongo/src",
+  "projectType": "application",
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "@nx/esbuild:esbuild",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
+      "options": {
+        "platform": "node",
+        "outputPath": "projects/db-mongo/dist",
+        "format": ["cjs"],
+        "bundle": true,
+        "main": "projects/db-mongo/src/index.ts",
+        "tsConfig": "projects/db-mongo/tsconfig.app.json",
+        "thirdParty": true,
+        "generatePackageJson": false
+      }
+    },
+    "deploy": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "flyctl deploy --local-only --dockerfile projects/db-mongo/Dockerfile --config projects/db-mongo/fly.toml"
+        ]
+      }
+    }
+  }
+}

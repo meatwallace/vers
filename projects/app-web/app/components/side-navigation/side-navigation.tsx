@@ -2,10 +2,10 @@ import type { IconType } from 'react-icons/lib';
 import type { NavLinkRenderProps } from 'react-router';
 import { Brand, Icon, NavLink, Text } from '@vers/design-system';
 import { cx } from '@vers/styled-system/css';
-import { setNavigationVisible } from '~/state/set-navigation-visible.ts';
-import { useNavigationVisible } from '~/state/use-navigation-visible.ts';
-import { Routes } from '~/types.ts';
-import * as styles from './side-navigation.styles.ts';
+import { setNavigationVisible } from '~/state/set-navigation-visible';
+import { useNavigationVisible } from '~/state/use-navigation-visible';
+import { Routes } from '~/types';
+import * as styles from './side-navigation.styles';
 
 export function SideNavigation() {
   const isNavVisible = useNavigationVisible();

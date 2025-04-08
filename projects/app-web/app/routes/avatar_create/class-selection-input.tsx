@@ -1,7 +1,7 @@
 import { useId } from 'react';
 import { Class } from '@vers/data';
-import { ClassPreview } from './class-preview.tsx';
-import * as styles from './class-selection-input.styles.ts';
+import { ClassPreview } from './class-preview';
+import * as styles from './class-selection-input.styles';
 
 const sortedClasses = [Class.Brute, Class.Scoundrel, Class.Scholar];
 

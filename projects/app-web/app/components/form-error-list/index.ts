@@ -1,1 +1,1 @@
-export { FormErrorList } from './form-error-list.tsx';
+export { FormErrorList } from './form-error-list';

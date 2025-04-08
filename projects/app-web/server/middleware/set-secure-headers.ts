@@ -1,7 +1,7 @@
 import type { Context, Next } from 'hono';
 import { isNonNullable } from '@vers/utils';
 import { secureHeaders } from 'hono/secure-headers';
-import { env } from '../env.ts';
+import { env } from '../env';
 
 const secureHeadersConfig = secureHeaders({
   contentSecurityPolicy: {

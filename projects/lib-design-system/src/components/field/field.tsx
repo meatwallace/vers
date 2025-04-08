@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Field as BaseField } from '@base-ui-components/react/field';
 import { cx } from '@vers/styled-system/css';
 import { Input } from '../input/input';
-import * as styles from './field.styles.ts';
+import * as styles from './field.styles';
 
 interface Props {
   className?: string;

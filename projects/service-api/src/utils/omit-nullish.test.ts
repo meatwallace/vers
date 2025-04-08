@@ -1,5 +1,5 @@
 import { expect, test } from 'vitest';
-import { omitNullish } from './omit-nullish.ts';
+import { omitNullish } from './omit-nullish';
 
 test('it removes null properties from an object', () => {
   const input = {

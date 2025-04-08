@@ -14,20 +14,20 @@ import { UserEmailSchema } from '@vers/validation';
 import { HoneypotInputs } from 'remix-utils/honeypot/react';
 import invariant from 'tiny-invariant';
 import { z } from 'zod';
-import { FormErrorList } from '~/components/form-error-list/form-error-list.tsx';
-import { RouteErrorBoundary } from '~/components/route-error-boundary.tsx';
-import { StartEmailSignupMutation } from '~/data/mutations/start-email-signup.ts';
-import { VerificationType } from '~/gql/graphql.ts';
-import { useIsFormPending } from '~/hooks/use-is-form-pending.ts';
-import { verifySessionStorage } from '~/session/verify-session-storage.server.ts';
-import { Routes } from '~/types.ts';
-import { checkHoneypot } from '~/utils/check-honeypot.server.ts';
-import { handleGQLError } from '~/utils/handle-gql-error.ts';
-import { isMutationError } from '~/utils/is-mutation-error.ts';
-import { requireAnonymous } from '~/utils/require-anonymous.server.ts';
-import { withErrorHandling } from '~/utils/with-error-handling.ts';
-import type { Route } from './+types/route.ts';
-import { QueryParam } from '../verify-otp/types.ts';
+import { FormErrorList } from '~/components/form-error-list/form-error-list';
+import { RouteErrorBoundary } from '~/components/route-error-boundary';
+import { StartEmailSignupMutation } from '~/data/mutations/start-email-signup';
+import { VerificationType } from '~/gql/graphql';
+import { useIsFormPending } from '~/hooks/use-is-form-pending';
+import { verifySessionStorage } from '~/session/verify-session-storage.server';
+import { Routes } from '~/types';
+import { checkHoneypot } from '~/utils/check-honeypot.server';
+import { handleGQLError } from '~/utils/handle-gql-error';
+import { isMutationError } from '~/utils/is-mutation-error';
+import { requireAnonymous } from '~/utils/require-anonymous.server';
+import { withErrorHandling } from '~/utils/with-error-handling';
+import type { Route } from './+types/route';
+import { QueryParam } from '../verify-otp/types';
 
 const SignupFormSchema = z.object({
   email: UserEmailSchema,

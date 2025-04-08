@@ -5,16 +5,16 @@ import { createRoutesStub, useSearchParams } from 'react-router';
 import { drop } from '@mswjs/data';
 import { GraphQLError } from 'graphql';
 import { graphql } from 'msw';
-import { db } from '~/mocks/db.ts';
-import { server } from '~/mocks/node.ts';
-import { verifySessionStorage } from '~/session/verify-session-storage.server.ts';
-import { composeDataFnWrappers } from '~/test-utils/compose-data-fn-wrappers.ts';
-import { withAppLoadContext } from '~/test-utils/with-app-load-context.ts';
-import { withAuthedUser } from '~/test-utils/with-authed-user.ts';
-import { withRouteProps } from '~/test-utils/with-route-props.tsx';
-import { withSession } from '~/test-utils/with-session.ts';
-import { Routes } from '~/types.ts';
-import { AccountChangeUserPassword, action, loader } from './route.tsx';
+import { db } from '~/mocks/db';
+import { server } from '~/mocks/node';
+import { verifySessionStorage } from '~/session/verify-session-storage.server';
+import { composeDataFnWrappers } from '~/test-utils/compose-data-fn-wrappers';
+import { withAppLoadContext } from '~/test-utils/with-app-load-context';
+import { withAuthedUser } from '~/test-utils/with-authed-user';
+import { withRouteProps } from '~/test-utils/with-route-props';
+import { withSession } from '~/test-utils/with-session';
+import { Routes } from '~/types';
+import { AccountChangeUserPassword, action, loader } from './route';
 
 interface TestConfig {
   isAuthed?: boolean;

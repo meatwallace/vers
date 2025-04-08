@@ -3,14 +3,14 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { createRoutesStub } from 'react-router';
 import { drop } from '@mswjs/data';
-import { db } from '~/mocks/db.ts';
-import { server } from '~/mocks/node.ts';
-import { composeDataFnWrappers } from '~/test-utils/compose-data-fn-wrappers.ts';
-import { withAppLoadContext } from '~/test-utils/with-app-load-context.ts';
-import { withAuthedUser } from '~/test-utils/with-authed-user.ts';
-import { withRouteProps } from '~/test-utils/with-route-props.tsx';
-import { Routes } from '~/types.ts';
-import { AuthedLayout, loader } from './authed-layout.tsx';
+import { db } from '~/mocks/db';
+import { server } from '~/mocks/node';
+import { composeDataFnWrappers } from '~/test-utils/compose-data-fn-wrappers';
+import { withAppLoadContext } from '~/test-utils/with-app-load-context';
+import { withAuthedUser } from '~/test-utils/with-authed-user';
+import { withRouteProps } from '~/test-utils/with-route-props';
+import { Routes } from '~/types';
+import { AuthedLayout, loader } from './authed-layout';
 
 interface TestConfig {
   isAuthed: boolean;

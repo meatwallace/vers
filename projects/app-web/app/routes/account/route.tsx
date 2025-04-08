@@ -4,21 +4,21 @@ import { Button, Heading, Link, StatusButton, Text } from '@vers/design-system';
 import invariant from 'tiny-invariant';
 import { z } from 'zod';
 import { ContentContainer } from '~/components/content-container';
-import { RouteErrorBoundary } from '~/components/route-error-boundary.tsx';
+import { RouteErrorBoundary } from '~/components/route-error-boundary';
 import { StartEnable2FAMutation } from '~/data/mutations/start-enable-2fa';
 import { StartStepUpAuthMutation } from '~/data/mutations/start-step-up-auth';
 import { GetCurrentUserQuery } from '~/data/queries/get-current-user';
-import { StepUpAction, VerificationType } from '~/gql/graphql.ts';
-import { useIsFormPending } from '~/hooks/use-is-form-pending.ts';
-import { verifySessionStorage } from '~/session/verify-session-storage.server.ts';
+import { StepUpAction, VerificationType } from '~/gql/graphql';
+import { useIsFormPending } from '~/hooks/use-is-form-pending';
+import { verifySessionStorage } from '~/session/verify-session-storage.server';
 import { Routes } from '~/types';
-import { handleGQLError } from '~/utils/handle-gql-error.ts';
-import { isMutationError } from '~/utils/is-mutation-error.ts';
-import { requireAuth } from '~/utils/require-auth.server.ts';
-import { withErrorHandling } from '~/utils/with-error-handling.ts';
-import type { Route } from './+types/route.ts';
-import { QueryParam } from '../verify-otp/types.ts';
-import * as styles from './route.styles.ts';
+import { handleGQLError } from '~/utils/handle-gql-error';
+import { isMutationError } from '~/utils/is-mutation-error';
+import { requireAuth } from '~/utils/require-auth.server';
+import { withErrorHandling } from '~/utils/with-error-handling';
+import type { Route } from './+types/route';
+import { QueryParam } from '../verify-otp/types';
+import * as styles from './route.styles';
 
 const TwoFactorDisableFormSchema = z.object({
   target: z.string().min(1),

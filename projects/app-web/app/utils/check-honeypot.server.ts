@@ -1,5 +1,5 @@
 import { SpamError } from 'remix-utils/honeypot/server';
-import { honeypot } from '~/honeypot.server.ts';
+import { honeypot } from '~/honeypot.server';
 
 export async function checkHoneypot(formData: FormData) {
   try {

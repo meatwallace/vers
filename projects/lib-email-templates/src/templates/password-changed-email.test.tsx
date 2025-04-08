@@ -1,6 +1,6 @@
 import { expect, test } from 'vitest';
 import { render, screen } from '@testing-library/react';
-import { PasswordChangedEmail } from './password-changed-email.tsx';
+import { PasswordChangedEmail } from './password-changed-email';
 
 test('it renders the password changed email with all required elements', () => {
   render(<PasswordChangedEmail email="test@example.com" />);

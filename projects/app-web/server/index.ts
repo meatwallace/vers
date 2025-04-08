@@ -3,23 +3,23 @@ import { remoteAddressMiddleware } from '@vers/service-utils';
 import { compress } from 'hono/compress';
 import { poweredBy } from 'hono/powered-by';
 import { Hono } from 'hono/quick';
-import { createGQLClient } from '~/utils/create-gql-client.server.ts';
-import { env } from './env.ts';
-import { logger as appLogger } from './logger.ts';
-import { enforceHTTPS } from './middleware/enforce-https.ts';
-import { logger } from './middleware/logger.ts';
-import { rateLimit } from './middleware/rate-limit.ts';
-import { removeTrailingSlash } from './middleware/remove-trailing-slash.ts';
-import { setCSPNonce } from './middleware/set-csp-nonce.ts';
-import { setSecureHeaders } from './middleware/set-secure-headers.ts';
+import { createGQLClient } from '~/utils/create-gql-client.server';
+import { env } from './env';
+import { logger as appLogger } from './logger';
+import { enforceHTTPS } from './middleware/enforce-https';
+import { logger } from './middleware/logger';
+import { rateLimit } from './middleware/rate-limit';
+import { removeTrailingSlash } from './middleware/remove-trailing-slash';
+import { setCSPNonce } from './middleware/set-csp-nonce';
+import { setSecureHeaders } from './middleware/set-secure-headers';
 
 if (env.isProduction && env.SENTRY_DSN) {
   // eslint-disable-next-line unicorn/prefer-top-level-await
-  void import('./utils/init-sentry.ts').then(({ initSentry }) => initSentry());
+  void import('./utils/init-sentry').then(({ initSentry }) => initSentry());
 }
 
 if (!import.meta.env.PROD && env.isE2E) {
-  void import('../app/mocks/e2e-migration.ts');
+  void import('../app/mocks/e2e-migration');
 }
 
 const app = new Hono();

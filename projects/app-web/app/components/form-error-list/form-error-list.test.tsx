@@ -1,6 +1,6 @@
 import { expect, test } from 'vitest';
 import { render, screen } from '@testing-library/react';
-import { FormErrorList } from './form-error-list.tsx';
+import { FormErrorList } from './form-error-list';
 
 test('it renders nothing when there are no errors', () => {
   const { container } = render(<FormErrorList errors={[]} id="test-errors" />);

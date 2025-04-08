@@ -1,5 +1,5 @@
-import { createStyleContext } from '../../utils/create-style-context.tsx';
-import { tooltip } from './tooltip.styles.ts';
+import { createStyleContext } from '../../utils/create-style-context';
+import { tooltip } from './tooltip.styles';
 
 const styleContext = createStyleContext(tooltip);
 

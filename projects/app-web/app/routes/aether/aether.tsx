@@ -4,8 +4,8 @@ import { DevTools, NodeTooltip, Scene } from '@vers/aether-client';
 import { setAetherGraph, setSelectedNode } from '@vers/aether-client';
 import { decompressAetherNodes } from '@vers/aether-core';
 import { aetherNodes } from '@vers/data';
-import * as styles from './route.styles.ts';
-import { SelectedNodeInfo } from './selected-node-info.tsx';
+import * as styles from './route.styles';
+import { SelectedNodeInfo } from './selected-node-info';
 
 const aetherGraph = decompressAetherNodes(
   aetherNodes as Array<CompressedAetherNode>,

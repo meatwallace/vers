@@ -1,7 +1,7 @@
 import { Class, classes } from '@vers/data';
 import { BackgroundPattern, Text } from '@vers/design-system';
 import { cx } from '@vers/styled-system/css';
-import * as styles from './class-preview.styles.ts';
+import * as styles from './class-preview.styles';
 
 interface Props {
   class: (typeof Class)[keyof typeof Class];

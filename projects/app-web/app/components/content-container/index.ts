@@ -1,1 +1,1 @@
-export { ContentContainer } from './content-container.tsx';
+export { ContentContainer } from './content-container';

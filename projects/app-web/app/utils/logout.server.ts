@@ -1,11 +1,11 @@
 import { redirect } from 'react-router';
 import { captureException } from '@sentry/react';
 import { safeRedirect } from 'remix-utils/safe-redirect';
-import { DeleteSessionMutation } from '~/data/mutations/delete-session.ts';
+import { DeleteSessionMutation } from '~/data/mutations/delete-session';
 import { authSessionStorage } from '~/session/auth-session-storage.server';
 import { Routes } from '~/types';
-import { combineHeaders } from './combine-headers.server.ts';
-import { createGQLClient } from './create-gql-client.server.ts';
+import { combineHeaders } from './combine-headers.server';
+import { createGQLClient } from './create-gql-client.server';
 
 interface LogoutOptions {
   deleteSession?: boolean;

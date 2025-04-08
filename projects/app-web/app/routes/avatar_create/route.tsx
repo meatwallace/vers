@@ -6,19 +6,19 @@ import { Field, Heading, StatusButton } from '@vers/design-system';
 import { AvatarNameSchema } from '@vers/validation';
 import invariant from 'tiny-invariant';
 import { z } from 'zod';
-import { FormErrorList } from '~/components/form-error-list/form-error-list.tsx';
-import { RouteErrorBoundary } from '~/components/route-error-boundary.tsx';
-import { CreateAvatarMutation } from '~/data/mutations/create-avatar.ts';
+import { FormErrorList } from '~/components/form-error-list/form-error-list';
+import { RouteErrorBoundary } from '~/components/route-error-boundary';
+import { CreateAvatarMutation } from '~/data/mutations/create-avatar';
 import { resolveGQLEnumFromClass } from '~/data/utils/resolve-gql-enum-from-class';
-import { useIsFormPending } from '~/hooks/use-is-form-pending.ts';
+import { useIsFormPending } from '~/hooks/use-is-form-pending';
 import { Routes } from '~/types';
-import { handleGQLError } from '~/utils/handle-gql-error.ts';
-import { isMutationError } from '~/utils/is-mutation-error.ts';
-import { requireAuth } from '~/utils/require-auth.server.ts';
-import { withErrorHandling } from '~/utils/with-error-handling.ts';
-import type { Route } from './+types/route.ts';
-import { ClassSelectionInput } from './class-selection-input.tsx';
-import * as styles from './route.styles.ts';
+import { handleGQLError } from '~/utils/handle-gql-error';
+import { isMutationError } from '~/utils/is-mutation-error';
+import { requireAuth } from '~/utils/require-auth.server';
+import { withErrorHandling } from '~/utils/with-error-handling';
+import type { Route } from './+types/route';
+import { ClassSelectionInput } from './class-selection-input';
+import * as styles from './route.styles';
 
 export const meta: Route.MetaFunction = () => [
   {

@@ -3,11 +3,11 @@ import { render, screen } from '@testing-library/react';
 import { createRoutesStub, LoaderFunctionArgs } from 'react-router';
 import { drop } from '@mswjs/data';
 import invariant from 'tiny-invariant';
-import { db } from '~/mocks/db.ts';
-import { authSessionStorage } from '~/session/auth-session-storage.server.ts';
-import { withAuthedUser } from '~/test-utils/with-authed-user.ts';
-import { Routes } from '~/types.ts';
-import { logout } from './logout.server.ts';
+import { db } from '~/mocks/db';
+import { authSessionStorage } from '~/session/auth-session-storage.server';
+import { withAuthedUser } from '~/test-utils/with-authed-user';
+import { Routes } from '~/types';
+import { logout } from './logout.server';
 
 interface TestConfig {
   deleteSession?: boolean;

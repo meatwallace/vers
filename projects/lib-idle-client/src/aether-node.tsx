@@ -1,6 +1,6 @@
 import { Spinner } from '@vers/design-system';
 import { cx } from '@vers/styled-system/css';
-import * as styles from './aether-node.styles.ts';
+import * as styles from './aether-node.styles';
 import { ActivityInfo } from './components/activity-info';
 import { AvatarInfo } from './components/avatar-info';
 import { EnemyInfo } from './components/enemy-info';

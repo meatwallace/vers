@@ -6,22 +6,22 @@ import { UserEmailSchema } from '@vers/validation';
 import invariant from 'tiny-invariant';
 import { z } from 'zod';
 import { ContentContainer } from '~/components/content-container';
-import { FormErrorList } from '~/components/form-error-list/form-error-list.tsx';
-import { RouteErrorBoundary } from '~/components/route-error-boundary.tsx';
-import { StartChangeUserEmailMutation } from '~/data/mutations/start-change-user-email.ts';
-import { StartStepUpAuthMutation } from '~/data/mutations/start-step-up-auth.ts';
+import { FormErrorList } from '~/components/form-error-list/form-error-list';
+import { RouteErrorBoundary } from '~/components/route-error-boundary';
+import { StartChangeUserEmailMutation } from '~/data/mutations/start-change-user-email';
+import { StartStepUpAuthMutation } from '~/data/mutations/start-step-up-auth';
 import { GetCurrentUserQuery } from '~/data/queries/get-current-user';
-import { StepUpAction, VerificationType } from '~/gql/graphql.ts';
-import { useIsFormPending } from '~/hooks/use-is-form-pending.ts';
-import { verifySessionStorage } from '~/session/verify-session-storage.server.ts';
-import { Routes } from '~/types.ts';
-import { handleGQLError } from '~/utils/handle-gql-error.ts';
-import { isMutationError } from '~/utils/is-mutation-error.ts';
-import { requireAuth } from '~/utils/require-auth.server.ts';
-import { withErrorHandling } from '~/utils/with-error-handling.ts';
-import type { Route } from './+types/route.ts';
-import { QueryParam } from '../verify-otp/types.ts';
-import * as styles from './route.styles.ts';
+import { StepUpAction, VerificationType } from '~/gql/graphql';
+import { useIsFormPending } from '~/hooks/use-is-form-pending';
+import { verifySessionStorage } from '~/session/verify-session-storage.server';
+import { Routes } from '~/types';
+import { handleGQLError } from '~/utils/handle-gql-error';
+import { isMutationError } from '~/utils/is-mutation-error';
+import { requireAuth } from '~/utils/require-auth.server';
+import { withErrorHandling } from '~/utils/with-error-handling';
+import type { Route } from './+types/route';
+import { QueryParam } from '../verify-otp/types';
+import * as styles from './route.styles';
 
 export const meta: Route.MetaFunction = () => [
   {

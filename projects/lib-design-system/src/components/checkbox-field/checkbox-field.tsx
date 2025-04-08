@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Field } from '@base-ui-components/react/field';
 import { css, cx } from '@vers/styled-system/css';
-import { Checkbox } from '../checkbox/checkbox.tsx';
+import { Checkbox } from '../checkbox/checkbox';
 
 interface Props {
   checkboxProps: React.ComponentProps<typeof Checkbox>;

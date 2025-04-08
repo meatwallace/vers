@@ -1,8 +1,8 @@
 import { Link as RRLink } from 'react-router';
 import { Brand, Button, Icon } from '@vers/design-system';
-import { toggleNavigationVisible } from '~/state/toggle-navigation-visible.ts';
-import { Routes } from '~/types.ts';
-import * as styles from './header.styles.ts';
+import { toggleNavigationVisible } from '~/state/toggle-navigation-visible';
+import { Routes } from '~/types';
+import * as styles from './header.styles';
 
 export function Header() {
   return (

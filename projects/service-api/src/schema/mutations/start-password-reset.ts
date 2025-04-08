@@ -1,16 +1,16 @@
 import { generateResetPasswordEmail } from '@vers/email-templates';
-import type { Context } from '~/types.ts';
-import { env } from '~/env.ts';
-import { logger } from '~/logger.ts';
-import { SecureAction } from '~/types.ts';
-import { createPendingTransaction } from '~/utils/create-pending-transaction.ts';
-import { builder } from '../builder.ts';
-import { UNKNOWN_ERROR } from '../errors.ts';
-import { MutationErrorPayload } from '../types/mutation-error-payload.ts';
-import { MutationSuccess } from '../types/mutation-success.ts';
-import { VerificationRequiredPayload } from '../types/verification-required-payload.ts';
-import { VerificationType } from '../types/verification-type.ts';
-import { createPayloadResolver } from '../utils/create-payload-resolver.ts';
+import type { Context } from '~/types';
+import { env } from '~/env';
+import { logger } from '~/logger';
+import { SecureAction } from '~/types';
+import { createPendingTransaction } from '~/utils/create-pending-transaction';
+import { builder } from '../builder';
+import { UNKNOWN_ERROR } from '../errors';
+import { MutationErrorPayload } from '../types/mutation-error-payload';
+import { MutationSuccess } from '../types/mutation-success';
+import { VerificationRequiredPayload } from '../types/verification-required-payload';
+import { VerificationType } from '../types/verification-type';
+import { createPayloadResolver } from '../utils/create-payload-resolver';
 
 interface Args {
   input: typeof StartPasswordResetInput.$inferInput;

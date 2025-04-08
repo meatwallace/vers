@@ -1,5 +1,5 @@
 import { expect, test } from 'vitest';
-import { generateEmail } from './generate-email.ts';
+import { generateEmail } from './generate-email';
 
 function TestEmail() {
   return (

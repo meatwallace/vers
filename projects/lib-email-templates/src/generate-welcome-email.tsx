@@ -1,6 +1,6 @@
 import * as E from '@react-email/components';
-import { generateEmail } from './generate-email.ts';
-import { WelcomeEmail } from './templates/welcome-email.tsx';
+import { generateEmail } from './generate-email';
+import { WelcomeEmail } from './templates/welcome-email';
 
 interface Config {
   verificationCode: string;

@@ -1,6 +1,6 @@
 import { expect, test } from 'vitest';
 import { render, screen } from '@testing-library/react';
-import { ExistingAccountEmail } from './existing-account-email.tsx';
+import { ExistingAccountEmail } from './existing-account-email';
 
 test('it renders the existing account email with all required elements', () => {
   render(<ExistingAccountEmail email={'test@example.com'} />);

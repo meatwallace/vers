@@ -4,13 +4,13 @@ import userEvent from '@testing-library/user-event';
 import { createRoutesStub, Form } from 'react-router';
 import { drop } from '@mswjs/data';
 import { graphql } from 'msw';
-import { db } from '~/mocks/db.ts';
-import { server } from '~/mocks/node.ts';
-import { composeDataFnWrappers } from '~/test-utils/compose-data-fn-wrappers.ts';
-import { withAppLoadContext } from '~/test-utils/with-app-load-context.ts';
-import { withAuthedUser } from '~/test-utils/with-authed-user.ts';
-import { Routes } from '~/types.ts';
-import { action, loader } from './route.tsx';
+import { db } from '~/mocks/db';
+import { server } from '~/mocks/node';
+import { composeDataFnWrappers } from '~/test-utils/compose-data-fn-wrappers';
+import { withAppLoadContext } from '~/test-utils/with-app-load-context';
+import { withAuthedUser } from '~/test-utils/with-authed-user';
+import { Routes } from '~/types';
+import { action, loader } from './route';
 
 interface TestConfig {
   initialPath?: string;

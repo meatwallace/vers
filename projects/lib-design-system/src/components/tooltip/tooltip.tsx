@@ -1,7 +1,7 @@
 import * as React from 'react';
-import { withContext, withProvider } from './context.ts';
-import { TooltipContent } from './tooltip-content.tsx';
-import { TooltipHeader } from './tooltip-header.tsx';
+import { withContext, withProvider } from './context';
+import { TooltipContent } from './tooltip-content';
+import { TooltipHeader } from './tooltip-header';
 
 interface TooltipProps {
   children: React.ReactNode;

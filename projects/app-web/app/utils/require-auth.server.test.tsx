@@ -3,10 +3,10 @@ import { render, screen } from '@testing-library/react';
 import { createRoutesStub, useSearchParams } from 'react-router';
 import type { LoaderFunction } from 'react-router';
 import { drop } from '@mswjs/data';
-import { db } from '~/mocks/db.ts';
-import { authSessionStorage } from '~/session/auth-session-storage.server.ts';
-import { Routes } from '~/types.ts';
-import { requireAuth } from './require-auth.server.ts';
+import { db } from '~/mocks/db';
+import { authSessionStorage } from '~/session/auth-session-storage.server';
+import { Routes } from '~/types';
+import { requireAuth } from './require-auth.server';
 
 interface TestConfig {
   accessToken?: string;

@@ -3,8 +3,8 @@ import { HTTPException } from 'hono/http-exception';
 import {
   createTokenVerifier,
   TokenVerifierConfig,
-} from '../utils/create-token-verifier.ts';
-import { getTokenFromHeader } from '../utils/get-token-from-header.ts';
+} from '../utils/create-token-verifier';
+import { getTokenFromHeader } from '../utils/get-token-from-header';
 
 interface AuthMiddlewareConfig {
   isAuthRequired?: boolean;

@@ -21,27 +21,24 @@ import { HoneypotInputs } from 'remix-utils/honeypot/react';
 import { safeRedirect } from 'remix-utils/safe-redirect';
 import invariant from 'tiny-invariant';
 import { z } from 'zod';
-import type {
-  ForceLogoutPayload,
-  TwoFactorLoginPayload,
-} from '~/gql/graphql.ts';
-import { FormErrorList } from '~/components/form-error-list/form-error-list.tsx';
-import { RouteErrorBoundary } from '~/components/route-error-boundary.tsx';
+import type { ForceLogoutPayload, TwoFactorLoginPayload } from '~/gql/graphql';
+import { FormErrorList } from '~/components/form-error-list/form-error-list';
+import { RouteErrorBoundary } from '~/components/route-error-boundary';
 import { LoginWithPasswordMutation } from '~/data/mutations/login-with-password';
-import { VerificationType } from '~/gql/graphql.ts';
+import { VerificationType } from '~/gql/graphql';
 import { useIsFormPending } from '~/hooks/use-is-form-pending';
-import { authSessionStorage } from '~/session/auth-session-storage.server.ts';
-import { verifySessionStorage } from '~/session/verify-session-storage.server.ts';
-import { Routes } from '~/types.ts';
-import { checkHoneypot } from '~/utils/check-honeypot.server.ts';
-import { handleGQLError } from '~/utils/handle-gql-error.ts';
+import { authSessionStorage } from '~/session/auth-session-storage.server';
+import { verifySessionStorage } from '~/session/verify-session-storage.server';
+import { Routes } from '~/types';
+import { checkHoneypot } from '~/utils/check-honeypot.server';
+import { handleGQLError } from '~/utils/handle-gql-error';
 import { isMutationError } from '~/utils/is-mutation-error';
-import { requireAnonymous } from '~/utils/require-anonymous.server.ts';
-import { withErrorHandling } from '~/utils/with-error-handling.ts';
-import { FormBooleanSchema } from '~/validation/form-boolean-schema.ts';
-import type { Route } from './+types/route.ts';
-import { QueryParam } from '../verify-otp/types.ts';
-import * as styles from './route.styles.ts';
+import { requireAnonymous } from '~/utils/require-anonymous.server';
+import { withErrorHandling } from '~/utils/with-error-handling';
+import { FormBooleanSchema } from '~/validation/form-boolean-schema';
+import type { Route } from './+types/route';
+import { QueryParam } from '../verify-otp/types';
+import * as styles from './route.styles';
 
 const LoginFormSchema = z.object({
   email: UserEmailSchema,

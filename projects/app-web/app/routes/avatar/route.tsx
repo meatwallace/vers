@@ -5,7 +5,7 @@ import invariant from 'tiny-invariant';
 import { ContentContainer } from '~/components/content-container';
 import { RouteErrorBoundary } from '~/components/route-error-boundary';
 import { GetAvatarsQuery } from '~/data/queries/get-avatars';
-import { resolveClassFromGQLEnum } from '~/data/utils/resolve-class-from-gql-enum.ts';
+import { resolveClassFromGQLEnum } from '~/data/utils/resolve-class-from-gql-enum';
 import { Routes } from '~/types';
 import { handleGQLError } from '~/utils/handle-gql-error';
 import { requireAuth } from '~/utils/require-auth.server';

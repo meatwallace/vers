@@ -1,13 +1,13 @@
-import { VerificationType } from '~/gql/graphql.ts';
-import { handle2FADisable } from './handle-2fa-disable.server.ts';
-import { handle2FA } from './handle-2fa.server.ts';
-import { handleChangeEmailConfirmation } from './handle-change-email-confirmation.server.ts';
-import { handleChangeEmail } from './handle-change-email.server.ts';
-import { handleChangePassword } from './handle-change-password.server.ts';
-import { handleOnboarding } from './handle-onboarding.server.ts';
-import { handleResetPassword } from './handle-reset-password.server.ts';
-import { handleUnsupported } from './handle-unsupported.server.ts';
-import { type HandleVerificationContext } from './types.ts';
+import { VerificationType } from '~/gql/graphql';
+import { handle2FADisable } from './handle-2fa-disable.server';
+import { handle2FA } from './handle-2fa.server';
+import { handleChangeEmailConfirmation } from './handle-change-email-confirmation.server';
+import { handleChangeEmail } from './handle-change-email.server';
+import { handleChangePassword } from './handle-change-password.server';
+import { handleOnboarding } from './handle-onboarding.server';
+import { handleResetPassword } from './handle-reset-password.server';
+import { handleUnsupported } from './handle-unsupported.server';
+import { type HandleVerificationContext } from './types';
 
 export async function handleVerification(
   type: VerificationType,

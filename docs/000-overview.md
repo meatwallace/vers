@@ -35,6 +35,7 @@ Applications & Services:
 
 - `app-web` - main web app
 - `app-web-e2e` - e2e test suite for main web app
+- `db-mongo` - mongodb production deployment
 - `db-postgres` - postgres production migration runner
 - `service-api` - GraphQL API gateway
 - `service-avatar` - avatar domain tRPC service
