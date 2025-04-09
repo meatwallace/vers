@@ -37,6 +37,11 @@ jobs:
       - name: Install Dependencies
         run: yarn install --immutable
 
+      - name: Capture SHA in NX Cloud
+        uses: nrwl/nx-set-shas@v4
+        env:
+          NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
+
       - name: Track main branch
         run: git branch --track main origin/main
         if: ${{ github.event_name == 'pull_request' }}
@@ -86,11 +91,13 @@ jobs:
         id: record-affected-projects
         if: ${{ github.ref_name == 'main' }}
         run: |
-          yarn nx show proejcts --affected
+          yarn nx show projects --affected
           delimiter="$(openssl rand -hex 8)"
           echo "affected-projects<<${delimiter}" >> "${GITHUB_OUTPUT}"
           yarn nx show projects --affected >> "${GITHUB_OUTPUT}"
           echo "${delimiter}" >> "${GITHUB_OUTPUT}"
+        env:
+          NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
 
       - name: Setup Fly CLI
         if: ${{ github.ref_name == 'main' }}
@@ -107,7 +114,7 @@ jobs:
 
       - name: Deploy MongoDB
         if: ${{ github.ref_name == 'main' && contains(steps.record-affected-projects.outputs.affected-projects, 'db-mongo') }}
-        run: yarn deploy:db-mongo --configuration=production
+        run: yarn deploy:db-mongo
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
 
@@ -115,64 +122,72 @@ jobs:
         if: ${{ github.ref_name == 'main' &&
           (contains(steps.record-affected-projects.outputs.affected-projects, 'db-postgres') ||
           contains(steps.record-affected-projects.outputs.affected-projects, 'lib-postgres-schema')) }}
-        run: yarn deploy:db-postgres --configuration=production
+        run: yarn deploy:db-postgres
         env:
           COMMIT_SHA: ${{ github.sha }}
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+          NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
 
       - name: Deploy API Service
         if: ${{ github.ref_name == 'main' && contains(steps.record-affected-projects.outputs.affected-projects, 'service-api') }}
-        run: yarn deploy:service-api --configuration=production
+        run: yarn deploy:service-api
         env:
           COMMIT_SHA: ${{ github.sha }}
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+          NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
 
       - name: Deploy Avatar Service
         if: ${{ github.ref_name == 'main' && contains(steps.record-affected-projects.outputs.affected-projects, 'service-avatar') }}
-        run: yarn deploy:service-avatar --configuration=production
+        run: yarn deploy:service-avatar
         env:
           COMMIT_SHA: ${{ github.sha }}
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+          NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
 
       - name: Deploy Email Service
         if: ${{ github.ref_name == 'main' && contains(steps.record-affected-projects.outputs.affected-projects, 'service-email') }}
-        run: yarn deploy:service-email --configuration=production
+        run: yarn deploy:service-email
         env:
           COMMIT_SHA: ${{ github.sha }}
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+          NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
 
       - name: Deploy Session Service
         if: ${{ github.ref_name == 'main' && contains(steps.record-affected-projects.outputs.affected-projects, 'service-session') }}
-        run: yarn deploy:service-session --configuration=production
+        run: yarn deploy:service-session
         env:
           COMMIT_SHA: ${{ github.sha }}
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+          NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
 
       - name: Deploy User Service
         if: ${{ github.ref_name == 'main' && contains(steps.record-affected-projects.outputs.affected-projects, 'service-user') }}
-        run: yarn deploy:service-user --configuration=production
+        run: yarn deploy:service-user
         env:
           COMMIT_SHA: ${{ github.sha }}
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+          NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
 
       - name: Deploy Verification Service
         if: ${{ github.ref_name == 'main' && contains(steps.record-affected-projects.outputs.affected-projects, 'service-verification') }}
-        run: yarn deploy:service-verification --configuration=production
+        run: yarn deploy:service-verification
         env:
           COMMIT_SHA: ${{ github.sha }}
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+          NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
 
       - name: Deploy Web App
         if: ${{ github.ref_name == 'main' && contains(steps.record-affected-projects.outputs.affected-projects, 'app-web') }}
-        run: yarn deploy:app-web --configuration=production
+        run: yarn deploy:app-web
         env:
           COMMIT_SHA: ${{ github.sha }}
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+          NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
