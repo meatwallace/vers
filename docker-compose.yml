@@ -48,7 +48,6 @@ services:
         BUILD_MODE: development
     env_file:
       - projects/service-avatar/.env.development
-      - projects/service-avatar/.env.development.local
     environment:
       - DATABASE_URL=postgresql://admin:password@postgres:5433/vers
     ports:
@@ -114,3 +113,4 @@ services:
       - postgres
 volumes:
   postgres:
+  mongo:

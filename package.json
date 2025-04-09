@@ -8,6 +8,7 @@
   "scripts": {
     "clean": "./scripts/clean.sh",
     "build": "nx run-many -t build",
+    "build:base": "docker build -t vers/monorepo-base:latest -f Dockerfile .",
     "lint": "tsx --tsconfig ./scripts/tsconfig.json ./scripts/lint.ts",
     "test": "vitest",
     "typecheck": "nx run-many -t typecheck",

@@ -37,14 +37,15 @@ jobs:
       - name: Install Dependencies
         run: yarn install --immutable
 
-      - name: Capture SHA in NX Cloud
-        uses: nrwl/nx-set-shas@v4
-        env:
-          NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
-
       - name: Track main branch
         run: git branch --track main origin/main
         if: ${{ github.event_name == 'pull_request' }}
+
+      - name: Setup Docker image cache
+        uses: ScribeMD/docker-cache@0.5.0
+        id: docker-cache
+        with:
+          key: docker-${{ runner.os }}-${{ github.sha }}
 
       - name: Generate Types
         run: yarn nx run app-web:typegen
@@ -93,6 +94,15 @@ jobs:
       - name: Setup Fly CLI
         if: ${{ github.ref_name == 'main' }}
         uses: superfly/flyctl-actions/setup-flyctl@master
+
+      - name: Create base Docker image
+        if: ${{ steps.docker-cache.outputs.cache-hit != 'true' }} && ${{ github.ref_name == 'main' }}
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: Dockerfile
+          tags: vers/monorepo-base:latest
+          push: false
 
       - name: Deploy MongoDB
         if: ${{ github.ref_name == 'main' && contains(steps.record-affected-projects.outputs.affected-projects, 'db-mongo') }}

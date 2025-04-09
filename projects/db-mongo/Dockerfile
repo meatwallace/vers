@@ -1,5 +1,6 @@
-ARG NODE_VERSION=20
-FROM node:${NODE_VERSION}-slim AS build
+ARG NODE_VERSION=20.18.3
+
+FROM vers/monorepo-base:latest AS build
 
 WORKDIR /app
 
