@@ -1,4 +1,4 @@
-import { createRNG } from '@vers/idle-core';
+import { createRNG } from '@vers/game-utils';
 import type { AetherNode, AetherNodeMap, CompressedAetherNode } from './types';
 import { getRandomizedPosition } from './get-randomized-position';
 

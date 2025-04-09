@@ -1,4 +1,4 @@
-import type { RNG } from '@vers/idle-core';
+import type { RNG } from '@vers/game-utils';
 
 const JITTER_FACTOR = 200;
 

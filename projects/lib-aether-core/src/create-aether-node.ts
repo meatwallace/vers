@@ -1,7 +1,7 @@
+import { createSeed } from '@vers/game-utils';
 import type { AetherNode } from './types';
 import { createID } from './create-id';
 import { getNodePosition } from './get-node-position';
-import { getSeed } from './get-seed';
 
 export function createAetherNode(
   index: number,
@@ -13,6 +13,6 @@ export function createAetherNode(
     id: createID(),
     index,
     position: getNodePosition(index, difficulty),
-    seed: getSeed(),
+    seed: createSeed(),
   };
 }

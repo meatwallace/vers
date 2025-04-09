@@ -1,4 +1,5 @@
 import type { XXHashAPI } from 'xxhash-wasm';
+import { createRNG } from '@vers/game-utils';
 import { deepEqual } from 'fast-equals';
 import invariant from 'tiny-invariant';
 import type {
@@ -16,7 +17,6 @@ import type {
   SimulationState,
 } from '../types';
 import { createAvatar } from '../entities/create-avatar';
-import { createRNG } from '../utils/create-rng';
 import { createActivity } from './create-activity';
 import { createCombatExecutor } from './create-combat-executor';
 import { simulateActivity } from './simulate-activity';

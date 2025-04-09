@@ -17,6 +17,7 @@ test('it creates a test user with the expected data', async () => {
     passwordHash: expect.any(String),
     passwordResetToken: null,
     passwordResetTokenExpiresAt: null,
+    seed: expect.any(Number),
     updatedAt: expect.any(Date),
     username: 'test_user',
   });
@@ -40,10 +41,20 @@ test('it allows overriding the default user data', async () => {
   const user = await createTestUser(db, {
     email: 'test@test.com',
     name: 'Test User',
+    seed: 123,
     username: 'test_user',
   });
 
-  expect(user.email).toBe('test@test.com');
-  expect(user.name).toBe('Test User');
-  expect(user.username).toBe('test_user');
+  expect(user).toStrictEqual({
+    createdAt: expect.any(Date),
+    email: 'test@test.com',
+    id: expect.any(String),
+    name: 'Test User',
+    passwordHash: expect.any(String),
+    passwordResetToken: null,
+    passwordResetTokenExpiresAt: null,
+    seed: 123,
+    updatedAt: expect.any(Date),
+    username: 'test_user',
+  });
 });

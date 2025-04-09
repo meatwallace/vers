@@ -1,3 +1,4 @@
+import type { RNG } from '@vers/game-utils';
 import type { XXHashAPI } from 'xxhash-wasm';
 import type {
   Activity,
@@ -6,7 +7,6 @@ import type {
   ActivityData,
 } from './activity';
 import type { CombatExecutor, CombatExecutorAppState } from './combat';
-import type { RNG } from './core';
 import type { Avatar, AvatarAppState, AvatarData } from './entities';
 
 export interface SimulationAppState {

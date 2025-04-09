@@ -1,3 +1,4 @@
+import { createSeed } from '@vers/game-utils';
 import * as schema from '@vers/postgres-schema';
 import { hashPassword } from '@vers/service-utils';
 import { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
@@ -28,6 +29,7 @@ export async function createTestUser(
     passwordHash,
     passwordResetToken: null,
     passwordResetTokenExpiresAt: null,
+    seed: createSeed(),
     updatedAt: now,
     username: 'test_user',
     ...data,

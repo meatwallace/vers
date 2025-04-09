@@ -8,6 +8,7 @@ test('it returns true if it is an authed request', () => {
     email: 'user@test.com',
     id: 'test-id',
     name: 'Test User',
+    seed: 123,
     updatedAt: new Date(),
     username: 'test_user',
   };
