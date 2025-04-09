@@ -1,6 +1,6 @@
 {
   "name": "app-web-e2e",
-  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "$schema": "https://raw.githubusercontent.com/nrwl/nx/refs/heads/master/packages/nx/schemas/project-schema.json",
   "projectType": "application",
   "sourceRoot": "projects/app-web-e2e/src",
   "implicitDependencies": ["app-web"],
@@ -9,13 +9,8 @@
     "typecheck": {
       "executor": "nx:run-commands",
       "options": {
-        "commands": [
-          {
-            "command": "tsc -p tsconfig.json --noEmit",
-            "forwardAllArgs": false
-          }
-        ],
-        "cwd": "projects/app-web-e2e"
+        "cwd": "{projectRoot}",
+        "commands": ["tsc -p tsconfig.json --noEmit"]
       }
     }
   }
