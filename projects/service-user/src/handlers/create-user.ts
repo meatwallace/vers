@@ -1,5 +1,6 @@
 import { createId } from '@paralleldrive/cuid2';
 import { TRPCError } from '@trpc/server';
+import { createSeed } from '@vers/game-utils';
 import * as schema from '@vers/postgres-schema';
 import { CreateUserPayload } from '@vers/service-types';
 import {
@@ -44,6 +45,7 @@ async function createUser(
       passwordHash,
       passwordResetToken: null,
       passwordResetTokenExpiresAt: null,
+      seed: createSeed(),
       updatedAt: createdAt,
       username,
     };
@@ -55,6 +57,7 @@ async function createUser(
       email: user.email,
       id: user.id,
       name: user.name,
+      seed: user.seed,
       updatedAt: user.updatedAt,
       username: user.username,
     };

@@ -86,6 +86,7 @@ jobs:
         id: record-affected-projects
         if: ${{ github.ref_name == 'main' }}
         run: |
+          yarn nx show proejcts --affected
           delimiter="$(openssl rand -hex 8)"
           echo "affected-projects<<${delimiter}" >> "${GITHUB_OUTPUT}"
           yarn nx show projects --affected >> "${GITHUB_OUTPUT}"
@@ -96,7 +97,7 @@ jobs:
         uses: superfly/flyctl-actions/setup-flyctl@master
 
       - name: Create base Docker image
-        if: ${{ steps.docker-cache.outputs.cache-hit != 'true' }} && ${{ github.ref_name == 'main' }}
+        if: ${{ github.ref_name == 'main' }} && ${{ steps.docker-cache.outputs.cache-hit != 'true' }}
         uses: docker/build-push-action@v6
         with:
           context: .

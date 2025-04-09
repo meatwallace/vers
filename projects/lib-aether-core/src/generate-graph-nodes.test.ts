@@ -14,12 +14,17 @@ vi.mock('./create-id', () => {
   return { createID };
 });
 
-vi.mock('./get-seed', () => {
+vi.mock('@vers/game-utils', async (importOriginal) => {
+  const original = await importOriginal<typeof import('@vers/game-utils')>();
+
   let seed = 0;
 
-  const getSeed = vi.fn(() => seed++);
+  const createSeed = vi.fn(() => seed++);
 
-  return { getSeed };
+  return {
+    ...original,
+    createSeed,
+  };
 });
 
 // rather than testing our implementation, snapshot a valid graph.

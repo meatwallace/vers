@@ -1,5 +1,5 @@
 import prand from 'pure-rand';
-import type { RNG } from '../types';
+import type { RNG } from './types';
 
 /**
  * thin wrapper around pure-rand as it's interface is verbose and we don't need

@@ -10,6 +10,7 @@
       "@vers/data": ["../lib-data/src"],
       "@vers/design-system": ["../lib-design-system/src"],
       "@vers/email-templates": ["../lib-email-templates/src"],
+      "@vers/game-utils": ["../lib-game-utils/src"],
       "@vers/idle-client": ["../lib-idle-client/src"],
       "@vers/idle-core": ["../lib-idle-core/src"],
       "@vers/panda-preset": ["../lib-panda-preset/src"],

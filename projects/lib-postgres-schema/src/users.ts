@@ -1,4 +1,4 @@
-import { pgTable, text, timestamp } from 'drizzle-orm/pg-core';
+import { integer, pgTable, text, timestamp } from 'drizzle-orm/pg-core';
 
 export const users = pgTable('users', {
   createdAt: timestamp('created_at').notNull().defaultNow(),
@@ -8,6 +8,7 @@ export const users = pgTable('users', {
   passwordHash: text('password_hash'),
   passwordResetToken: text('password_reset_token'),
   passwordResetTokenExpiresAt: timestamp('password_reset_token_expires_at'),
+  seed: integer('seed').notNull().default(0),
   updatedAt: timestamp('updated_at')
     .notNull()
     .defaultNow()

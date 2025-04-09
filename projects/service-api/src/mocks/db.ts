@@ -1,6 +1,7 @@
 import { factory, nullable, primaryKey } from '@mswjs/data';
 import { createId } from '@paralleldrive/cuid2';
 import { Class } from '@vers/data';
+import { createSeed } from '@vers/game-utils';
 
 export const db = factory({
   avatar: {
@@ -31,6 +32,7 @@ export const db = factory({
     passwordHash: nullable<string>(() => null),
     passwordResetToken: nullable<string>(() => null),
     passwordResetTokenExpiresAt: nullable<Date>(() => null),
+    seed: () => createSeed(),
     updatedAt: () => new Date(),
     username: () => 'test_user',
   },

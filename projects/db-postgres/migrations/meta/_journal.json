@@ -78,6 +78,13 @@
       "when": 1743577875051,
       "tag": "0010_stiff_spiral",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1744187991943,
+      "tag": "0011_nosy_the_stranger",
+      "breakpoints": true
     }
   ]
 }

@@ -1,6 +1,6 @@
+import { createRNG } from '@vers/game-utils';
 import xxhash from 'xxhash-wasm';
 import type { SimulationContext } from '../types';
-import { createRNG } from '../utils/create-rng';
 
 const hasher = await xxhash();
 

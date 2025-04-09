@@ -136,6 +136,7 @@ export default tseslint.config(
       'perfectionist/sort-sets': ['error', { partitionByComment: true }],
       'perfectionist/sort-union-types': ['error', { partitionByComment: true }],
       'unicorn/no-null': 'off',
+      'unicorn/number-literal-case': 'off',
       'unicorn/numeric-separators-style': [
         'error',
         {

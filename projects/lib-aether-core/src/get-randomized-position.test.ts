@@ -1,5 +1,5 @@
 import { expect, test } from 'vitest';
-import { createRNG } from '@vers/idle-core';
+import { createRNG } from '@vers/game-utils';
 import { getRandomizedPosition } from './get-randomized-position';
 
 test('it returns a position within the expected range', () => {

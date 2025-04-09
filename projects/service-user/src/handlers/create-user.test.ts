@@ -40,6 +40,7 @@ test('it creates a user with a hashed password', async () => {
     email: 'user@test.com',
     id: expect.any(String),
     name: 'Test User',
+    seed: expect.any(Number),
     updatedAt: expect.any(Date),
     username: 'test_user',
   });
