@@ -1,50 +1,30 @@
 {
   "name": "app-web",
-  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "$schema": "https://raw.githubusercontent.com/nrwl/nx/refs/heads/master/packages/nx/schemas/project-schema.json",
   "sourceRoot": "projects/app-web/src",
   "projectType": "application",
   "tags": [],
   "// targets": "to see all targets run: nx show project app-web --web",
   "targets": {
-    "typecheck": {
+    "codegen": {
       "executor": "nx:run-commands",
       "options": {
-        "commands": [
-          {
-            "command": "tsc -p tsconfig.json --noEmit",
-            "forwardAllArgs": false
-          }
-        ],
-        "cwd": "projects/app-web"
-      }
-    },
-    "build": {
-      "executor": "nx:run-commands",
-      "options": {
-        "commands": ["yarn run react-router build"],
-        "cwd": "projects/app-web"
-      }
-    },
-    "deploy": {
-      "executor": "nx:run-commands",
-      "options": {
-        "commands": [
-          "flyctl deploy --local-only --dockerfile projects/app-web/Dockerfile --config projects/app-web/fly.toml"
-        ]
+        "cwd": "{projectRoot}",
+        "commands": ["yarn panda cssgen"]
       }
     },
     "typegen": {
       "executor": "nx:run-commands",
       "options": {
-        "commands": ["yarn react-router typegen"],
-        "cwd": "projects/app-web"
+        "cwd": "{projectRoot}",
+        "commands": ["yarn react-router typegen"]
       }
     },
-    "codegen": {
+    "typecheck": {
       "executor": "nx:run-commands",
       "options": {
-        "commands": ["yarn panda cssgen"],
-        "cwd": "projects/app-web"
+        "cwd": "{projectRoot}",
+        "commands": ["tsc -p tsconfig.json --noEmit"]
       }
     }
   }

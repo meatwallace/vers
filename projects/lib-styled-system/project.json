@@ -1,28 +1,22 @@
 {
   "name": "lib-styled-system",
-  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "$schema": "https://raw.githubusercontent.com/nrwl/nx/refs/heads/master/packages/nx/schemas/project-schema.json",
   "sourceRoot": "projects/lib-styled-system/src",
   "projectType": "library",
   "targets": {
-    "typecheck": {
-      "executor": "nx:run-commands",
-      "options": {
-        "commands": [
-          {
-            "command": "tsc -p tsconfig.json --noEmit",
-            "forwardAllArgs": false
-          }
-        ],
-        "cwd": "projects/lib-styled-system"
-      }
-    },
     "codegen": {
       "executor": "nx:run-commands",
       "options": {
         "commands": ["yarn panda"],
         "cwd": "projects/lib-styled-system"
       }
+    },
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "{projectRoot}",
+        "commands": ["tsc -p tsconfig.json --noEmit"]
+      }
     }
-  },
-  "tags": []
+  }
 }

@@ -1,9 +1,8 @@
 {
   "name": "service-email",
-  "$schema": "../node_modules/nx/schemas/project-schema.json",
+  "$schema": "https://raw.githubusercontent.com/nrwl/nx/refs/heads/master/packages/nx/schemas/project-schema.json",
   "sourceRoot": "projects/service-email/src",
   "projectType": "application",
-  "tags": [],
   "targets": {
     "build": {
       "executor": "@nx/esbuild:esbuild",
@@ -37,24 +36,11 @@
         }
       }
     },
-    "deploy": {
-      "executor": "nx:run-commands",
-      "options": {
-        "commands": [
-          "flyctl deploy --local-only --dockerfile projects/service-email/Dockerfile --config projects/service-email/fly.toml --build-arg SENTRY_AUTH_TOKEN=$SENTRY_AUTH_TOKEN"
-        ]
-      }
-    },
     "typecheck": {
       "executor": "nx:run-commands",
       "options": {
-        "commands": [
-          {
-            "command": "tsc -p tsconfig.json --noEmit",
-            "forwardAllArgs": false
-          }
-        ],
-        "cwd": "projects/service-email"
+        "cwd": "{projectRoot}",
+        "commands": ["tsc -p tsconfig.json --noEmit"]
       }
     }
   }

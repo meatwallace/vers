@@ -1,6 +1,6 @@
 {
   "name": "lib-aether-core",
-  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "$schema": "https://raw.githubusercontent.com/nrwl/nx/refs/heads/master/packages/nx/schemas/project-schema.json",
   "sourceRoot": "projects/lib-aether-core/src",
   "projectType": "library",
   "tags": [],
@@ -9,13 +9,8 @@
     "typecheck": {
       "executor": "nx:run-commands",
       "options": {
-        "commands": [
-          {
-            "command": "tsc -p tsconfig.json --noEmit",
-            "forwardAllArgs": false
-          }
-        ],
-        "cwd": "projects/lib-aether-core"
+        "cwd": "{projectRoot}",
+        "commands": ["tsc -p tsconfig.json --noEmit"]
       }
     }
   }
