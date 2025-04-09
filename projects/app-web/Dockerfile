@@ -1,19 +1,9 @@
-# syntax = docker/dockerfile:1
-
-# Adjust NODE_VERSION as desired
 ARG NODE_VERSION=20.18.3
-FROM node:${NODE_VERSION}-slim AS build
 
-# Node.js app lives here
-WORKDIR /not_app
+FROM vers/monorepo-base:latest AS build
 
-# Set production environment
 ENV NODE_ENV="production"
 
-# Copy application code
-COPY --link . .
-
-# Build application
 RUN \
   # without removing dev/test env files, vite loads the wrong one in our prod bundle.
   # issue does not exist outside of docker - cannot be bothered spending any more time working out why.
@@ -29,22 +19,17 @@ RUN \
   cd projects/app-web && \
   npm install --omit=dev --legacy-peer-deps
 
-# Final stage for app image
 FROM node:${NODE_VERSION}-alpine
 
 LABEL fly_launch_runtime="Node.js"
 
-# Node.js app lives here
 WORKDIR /app
 
-# Set production environment
 ENV NODE_ENV="production"
 
-# Copy built application
-COPY --from=build /not_app/projects/app-web/package.json /not_app/projects/app-web/server.mjs /app/
-COPY --from=build /not_app/projects/app-web/node_modules /app/node_modules
-COPY --from=build /not_app/projects/app-web/build /app/build
+COPY --from=build /app/projects/app-web/package.json /app/projects/app-web/server.mjs /app/
+COPY --from=build /app/projects/app-web/node_modules /app/node_modules
+COPY --from=build /app/projects/app-web/build /app/build
 
-# Start the server by default, this can be overwritten at runtime
 EXPOSE 3000
 CMD [ "npm", "run", "start" ]

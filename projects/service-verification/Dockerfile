@@ -1,30 +1,20 @@
-# syntax = docker/dockerfile:1
+ARG NODE_VERSION=20.18.3
 
-# Adjust NODE_VERSION as desired
-ARG NODE_VERSION=20
-FROM node:${NODE_VERSION}-slim AS build
+FROM vers/monorepo-base:latest AS build
 
-# Node.js app lives here
 WORKDIR /app
 
-# Set production environment
 ENV NODE_ENV="production"
 
-# use a build arg to specify our vite build mode
 ARG BUILD_MODE=production
 ENV BUILD_MODE $BUILD_MODE
 
-# use a build arg to specify our sentry auth token
 ARG SENTRY_AUTH_TOKEN
 ENV SENTRY_AUTH_TOKEN $SENTRY_AUTH_TOKEN
 
-# Set up certificates so sentry can make a deployment
+# set up certificates so sentry can make a deployment
 RUN apt-get update && apt-get install -y ca-certificates
 
-# Copy application code
-COPY --link . .
-
-# Build application & install specific dependencies
 RUN \
   yarn run build:service-verification --mode "$BUILD_MODE" && \
   cd projects/service-verification/dist && \
@@ -32,20 +22,15 @@ RUN \
   yarn config set nodeLinker node-modules && \
   yarn install
 
-# Final stage for app image
 FROM node:${NODE_VERSION}-alpine
 
 LABEL fly_launch_runtime="Node.js"
 
-# Node.js app lives here
 WORKDIR /app
 
-# Set production environment
 ENV NODE_ENV="production"
 
-# Copy built application
 COPY --from=build /app/projects/service-verification/dist /app
 
-# Start the server by default, this can be overwritten at runtime
 EXPOSE 3004
 CMD [ "main.js" ]
